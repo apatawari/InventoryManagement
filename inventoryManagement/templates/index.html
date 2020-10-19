@@ -49,18 +49,19 @@
       <!-- Nav Bar End-->
 
       <!-- File Upload Start-->
-      <form method="POST" class="md-form upload-file">
+      <form method="POST" class="md-form upload-file" action="/insert" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="upload-header">
             <h1>Choose File!</h1>
         </div>
         <div class="upload-container">
-            <input class= "button" type="file">
+            <input class= "button" type="file" name="myfile">
 
             <br>
 
             <button class="button btn-primary" type="submit">Upload</button>
         </div>
-    </form>
+      </form>
       <!-- File Upload End -->
 
 </body>
