@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404,redirect
 from django.http import HttpResponse
 from django.template import RequestContext
 from .models import Record
@@ -59,7 +59,7 @@ def upload(request):
                 lr_no=data[11],
                 order_no=data[12]
         		)
-        	value.save()       
+        	value.save()
         
         #result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
 
@@ -68,3 +68,12 @@ def upload(request):
 
     # return render(request, 'index.html')
     return HttpResponse("done")
+
+def showIntransit(request):
+    records = Record.objects.all()
+    
+    return render(request, 'intransit.html',{'records':records})
+
+def record(request,id):
+    rec=get_object_or_404(Record, id=id)
+    return render(request, 'record.html', {'record':rec})

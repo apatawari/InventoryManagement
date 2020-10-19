@@ -48,22 +48,52 @@
       </nav>
       <!-- Nav Bar End-->
 
-      <!-- File Upload Start-->
-      <form method="POST" class="md-form upload-file" action="/insert" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="upload-header">
-            <h1>Choose File!</h1>
-        </div>
-        <div class="upload-container">
-            <input class= "button" type="file" name="myfile">
+      <br>
+      <br>
+      
 
-            <br>
-
-            <button class="button btn-primary" type="submit">Upload</button>
-        </div>
-      </form>
-      <!-- File Upload End -->
-
+      <!-- Display Table Start-->
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Party Name</th>
+            <th scope="col">Bill No</th>
+            <th scope="col">Bill Date</th>
+            <th scope="col">Bill Amt</th>
+            <th scope="col">Lot No</th>
+            <th scope="col">Quality</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Bale</th>
+            <th scope="col">Rate</th>
+            <th scope="col">LR No</th>
+            <th scope="col">Order No</th>
+            <th scope="col">State</th>
+          </tr>
+        </thead>
+        <tbody>
+        
+          <tr>
+            <td scope="row">{{record.sr_no}}</td>
+            <td>{{record.party_name}}</td>
+            <td>{{record.bill_no}}</td>
+            <td>{{record.bill_date}}</td>
+            <td>{{record.bill_amount}}</td>
+            <td>{{record.lot_no}}</td>
+            <td>{{record.quality}}</td>
+            <td>{{record.than}}</td>
+            <td>{{record.mtrs}}</td>
+            <td>{{record.bale}}</td>
+            <td>{{record.rate}}</td>
+            <td>{{record.lr_no}}</td>
+            <td>{{record.order_no}}</td>
+            <td>{{record.state}}</td>
+          </tr>
+        
+        </tbody>
+      </table>
+      <!-- Display Table End -->
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
