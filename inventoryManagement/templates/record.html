@@ -94,6 +94,81 @@
         </tbody>
       </table>
       <!-- Display Table End -->
+
+      <form class = "md-form view-file" method="POST" action="{% url 'edit' record.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group col-md-2">
+            <label for="S.No">S.No</label>
+            <input type="number" class="form-control" id="sr_no" placeholder="S.No" value="{{record.sr_no}}" name="sr_no">
+          </div>
+          <div class="form-group col-md-10">
+            <label for="Party Name">Party Name</label>
+            <input type="text" class="form-control" id="party_name" placeholder="Party Name" value="{{record.party_name}}" name="party_name">
+          </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="Bill No">Bill No</label>
+                <input type="number" class="form-control" id="bill_no" placeholder="Bill No" value="{{record.bill_no}}" name="bill_no">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Bill Date">Bill Date</label>
+                <input type="date" class="form-control" id="bill_date" placeholder="Bill Date" value="{{record.bill_date}}" name="bill_date">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Bill Amount">Bill Amount</label>
+                <input type="number" class="form-control" id="bill_amount" placeholder="Bill Amount" value="{{record.bill_amount}}" name="bill_amount">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="Lot No">Lot No</label>
+                <input type="number" class="form-control" id="lot_no" placeholder="Lot No" value="{{record.lot_no}}" name="lot_no">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Quality">Quality</label>
+                <input type="text" class="form-control" id="quality_date" placeholder="Quality" value="{{record.quality}}" name="quality">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Than">Than</label>
+                <input type="number" class="form-control" id="than" placeholder="Than" value="{{record.than}}" name="than">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="Mtrs">Mtrs</label>
+                <input type="number" class="form-control" id="mtrs" placeholder="Mtrs" value="{{record.mtrs}}" name="mtrs">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Bale">Bale</label>
+                <input type="number" class="form-control" id="bale" placeholder="Bale" value="{{record.bale}}" name="bale">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Rate">Rate</label>
+                <input type="number" class="form-control" id="rate" placeholder="Rate" value="{{record.rate}}" name="rate">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="LR Number">LR No</label>
+                <input type="number" class="form-control" id="lr_number" placeholder="LR Number" value="{{record.lr_no}}" name="lr_no">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Order No">Order No</label>
+                <input type="number" class="form-control" id="rate" placeholder="Order No" value="{{record.order_no}}" name="order_no">
+            </div>
+            <div class="form-group col-md-4">
+                  <label for="State">State</label>
+                  <select id="State" class="form-control">
+                    <option selected value="{{record.state_choices.state1}}">{{record.state}}</option>
+                    <option value="{{record.state_choices.state2}}">Order recieved</option>
+                  </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary button">Save Changes</button>
+        <!--<button type="submit" class="btn btn-danger button">Delete</button>-->
+      </form>
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

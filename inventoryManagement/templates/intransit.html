@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Index</title>
     {% load static %}
+    {% load widget_tweaks %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -50,7 +51,39 @@
 
       <br>
       <br>
-      
+      <form method="GET">
+        <div class="well">
+          <h4 style="margin-top: 0;">Filter</h4>
+          <div class="row">
+            <div class="form-group col-sm-4">
+              {{ filter.form.party_name.label_tag }}
+              {% render_field filter.form.party_name class="form-control" %}
+            </div>
+            <div class="form-group col-sm-2">
+              {{ filter.form.lot_no.label_tag }}
+              {% render_field filter.form.lot_no class="form-control" %}
+            </div>
+            <div class="form-group col-sm-4">
+              {{ filter.form.quality.label_tag }}
+              {% render_field filter.form.quality class="form-control" %}
+            </div>
+            <div class="form-group col-sm-2">
+              <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
+            </div>
+          </div>
+          
+          
+        </div>
+      </form>
+
+      <!--<div>
+        <form method="GET">
+          {{filter.form.as_p}}
+          <button type="submit">Search</button>
+        </form>
+      </div>
+      <br>-->
+      <br><br>
 
       <!-- Display Table Start-->
       <table class="table">
@@ -89,11 +122,33 @@
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td>{{record.state}}</td>
+          
           </tr>
         {% endfor %}
         </tbody>
       </table>
       <!-- Display Table End -->
+      <br><br>
+      <div class="pagination">
+        <div class="number-line">
+          {% if records.has_previous %}
+          <a href="?page={{ records.previous_page_number }}">Previous page</a>
+          {% endif%}
+          {% for num in records.paginator.page_range %}
+            {%if records.number == num%}
+              <span class="current-page"><strong>{{ num  }}</strong></span>
+            {% else %}
+              <a class="page-no" href="?page={{num}}">{{ num }}</a>
+            {% endif %}
+          {%endfor%}
+          {% if records.has_next %}
+            <a href="?page={{records.next_page_number}}">Next page</a>
+          {% endif%}
+        </div>
+        
+      </div>
+      <br>
+
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

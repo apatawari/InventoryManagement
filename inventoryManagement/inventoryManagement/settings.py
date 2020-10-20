@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inventoryapp',
     'import_export',
+    'django_filters',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

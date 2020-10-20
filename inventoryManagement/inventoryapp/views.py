@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record
 from .resources import ItemResources
+from .filters import RecordFilter
 from django.contrib import messages
 from tablib import Dataset
 import pandas
@@ -70,10 +72,48 @@ def upload(request):
     return HttpResponse("done")
 
 def showIntransit(request):
-    records = Record.objects.all()
+    records_list=Record.objects.all()
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
     
-    return render(request, 'intransit.html',{'records':records})
+    paginator = Paginator(records_filter.qs,10)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'intransit.html',{'records':records,'filter':records_filter})
+    
+
+    # records = Record.objects.all()
+    # paginator = Paginator(records,10)
+    # page = request.GET.get('page')
+    # records = paginator.get_page(page)
+
+    # return render(request, 'intransit.html',{'records':records})
 
 def record(request,id):
     rec=get_object_or_404(Record, id=id)
     return render(request, 'record.html', {'record':rec})
+
+def edit(request,id):
+    if request.method=="POST":
+        record = get_object_or_404(Record,id=id)
+        record.party_name=request.POST.get("party_name")
+        record.bill_no=request.POST.get("bill_no")
+        record.bill_amount=request.POST.get("bill_amount")
+        record.lot_no=request.POST.get("lot_no")
+        record.quality=request.POST.get("quality")
+        record.than=request.POST.get("than")
+        record.mtrs=request.POST.get("mtrs")
+        record.bale=request.POST.get("bale")
+        record.rate=request.POST.get("rate")
+        record.lr_no=request.POST.get("lr_no")
+        record.order_no=request.POST.get("order_no")
+        record.save()
+        records=Record.objects.all()
+        
+        return render(request,'intransit.html',{'records':records})
+        
+# def searchIntransit(request):
+#     records_list=Record.objects.all()
+#     records_filter = RecordFilter(request.GET,queryset=records_list)
+#     return render(request,'intransit.html',{'records':records_filter})
