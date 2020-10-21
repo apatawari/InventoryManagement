@@ -98,6 +98,7 @@ def edit(request,id):
         record = get_object_or_404(Record,id=id)
         record.party_name=request.POST.get("party_name")
         record.bill_no=request.POST.get("bill_no")
+        record.bill_date=request.POST.get("bill_date")
         record.bill_amount=request.POST.get("bill_amount")
         record.lot_no=request.POST.get("lot_no")
         record.quality=request.POST.get("quality")
@@ -108,6 +109,7 @@ def edit(request,id):
         record.lr_no=request.POST.get("lr_no")
         record.order_no=request.POST.get("order_no")
         record.save()
+        print(record.bill_date)
         return redirect('/intransit')
         # records=Record.objects.all()
         
