@@ -68,8 +68,7 @@ def upload(request):
         # if not result.has_errors():
         #    item_resource.import_data(dataset, dry_run=False)  # Actually import now
 
-    # return render(request, 'index.html')
-    return HttpResponse("done")
+    return render(request, 'index.html')
 
 def showIntransit(request):
     records_list=Record.objects.all()

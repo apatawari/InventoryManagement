@@ -15,10 +15,6 @@
 
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-          {% load static %}
-            <img src="{% static 'img/logo.png' %}" width="173" height="23" class="d-inline-block align-top" alt="">
-        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -26,42 +22,31 @@
         <div class="collapse navbar-collapse" id="navbarColor03">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">HOME <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{% url 'index' %}">HOME <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'intransit' %}">In Transit</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">MODULE 2</a>
+                <a class="nav-link" href="#">In Godown</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">MODULE 3</a>
+                <a class="nav-link" href="#">In Process</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">MODULE 4</a>
+                <a class="nav-link" href="#">Ready To Print</a>
             </li>
           </ul>
-          <form class="form-inline my-2 my-lg-0">
-            <button class="btn btn-primary my-2 my-sm-0" type="submit">SIGN IN</button>
-          </form>
         </div>
       </nav>
       <!-- Nav Bar End-->
 
-      <br>
-      <br>
-      
-
+      <!-- Diplay Record Start -->
      
-
       <form class = "md-form view-file" method="POST" action="{% url 'edit' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
-          <div class="form-group col-md-2">
-            <label for="S.No">S.No</label>
-            <input type="number" class="form-control" id="sr_no" placeholder="S.No" value="{{record.sr_no}}" name="sr_no">
-          </div>
-          <div class="form-group col-md-10">
+          <div class="form-group col-md-12">
             <label for="Party Name">Party Name</label>
             <input type="text" class="form-control" id="party_name" placeholder="Party Name" value="{{record.party_name}}" name="party_name">
           </div>
@@ -126,8 +111,8 @@
             </div>
         </div>
         <button type="submit" class="btn btn-primary button">Save Changes</button>
-        <!--<button type="submit" class="btn btn-danger button">Delete</button>-->
       </form>
+      <!-- Display Record End -->
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
