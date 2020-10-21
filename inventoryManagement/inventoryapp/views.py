@@ -109,9 +109,10 @@ def edit(request,id):
         record.lr_no=request.POST.get("lr_no")
         record.order_no=request.POST.get("order_no")
         record.save()
-        records=Record.objects.all()
+        return redirect('/intransit')
+        # records=Record.objects.all()
         
-        return render(request,'intransit.html',{'records':records})
+        # return render(request,'intransit.html',{'records':records})
         
 # def searchIntransit(request):
 #     records_list=Record.objects.all()

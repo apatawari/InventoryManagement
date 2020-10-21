@@ -52,48 +52,7 @@
       <br>
       
 
-      <!-- Display Table Start-->
-      <table class="table">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col">S.No</th>
-            <th scope="col">Party Name</th>
-            <th scope="col">Bill No</th>
-            <th scope="col">Bill Date</th>
-            <th scope="col">Bill Amt</th>
-            <th scope="col">Lot No</th>
-            <th scope="col">Quality</th>
-            <th scope="col">Than</th>
-            <th scope="col">Mtrs</th>
-            <th scope="col">Bale</th>
-            <th scope="col">Rate</th>
-            <th scope="col">LR No</th>
-            <th scope="col">Order No</th>
-            <th scope="col">State</th>
-          </tr>
-        </thead>
-        <tbody>
-        
-          <tr>
-            <td scope="row">{{record.sr_no}}</td>
-            <td>{{record.party_name}}</td>
-            <td>{{record.bill_no}}</td>
-            <td>{{record.bill_date}}</td>
-            <td>{{record.bill_amount}}</td>
-            <td>{{record.lot_no}}</td>
-            <td>{{record.quality}}</td>
-            <td>{{record.than}}</td>
-            <td>{{record.mtrs}}</td>
-            <td>{{record.bale}}</td>
-            <td>{{record.rate}}</td>
-            <td>{{record.lr_no}}</td>
-            <td>{{record.order_no}}</td>
-            <td>{{record.state}}</td>
-          </tr>
-        
-        </tbody>
-      </table>
-      <!-- Display Table End -->
+     
 
       <form class = "md-form view-file" method="POST" action="{% url 'edit' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}

@@ -6,7 +6,7 @@ class RecordFilter(django_filters.FilterSet):
     class Meta:
         model=Record
         fields = {
-            'party_name': ['exact', 'contains'],
+            'party_name': [ 'contains','exact'],
             'lot_no': ['exact', 'contains'],
             'quality': ['exact', 'contains'],
         }
