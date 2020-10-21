@@ -45,29 +45,38 @@ def upload(request):
         # result = item_resource.import_data(dataset, dry_run=True)
         # print(imported_data)
         for data in imported_data:
-        	
-        	value = Record(
-        		sr_no=data[0],
-        		party_name=data[1],
-                bill_no=data[2],
-                bill_date=data[3],
-                bill_amount=data[4],
-                lot_no=data[5],
-                quality=data[6],
-                than=data[7],
-                mtrs=data[8],
-                bale=data[9],
-                rate=data[10],
-                lr_no=data[11],
-                order_no=data[12]
-        		)
-        	value.save()
-        
-        #result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
-
-        # if not result.has_errors():
-        #    item_resource.import_data(dataset, dry_run=False)  # Actually import now
-
+            try:
+                rec=get_object_or_404(Record, 
+                    party_name=data[1],
+                    bill_no=data[2],
+                    bill_date=data[3],
+                    bill_amount=data[4],
+                    lot_no=data[5],
+                    quality=data[6],
+                    than=data[7],
+                    mtrs=data[8],
+                    bale=data[9],
+                    rate=data[10],
+                    lr_no=data[11],
+                    order_no=data[12])
+            except:
+                
+                value = Record(
+                    sr_no=data[0],
+                    party_name=data[1],
+                    bill_no=data[2],
+                    bill_date=data[3],
+                    bill_amount=data[4],
+                    lot_no=data[5],
+                    quality=data[6],
+                    than=data[7],
+                    mtrs=data[8],
+                    bale=data[9],
+                    rate=data[10],
+                    lr_no=data[11],
+                    order_no=data[12]
+                    )
+                value.save()
     return render(request, 'index.html')
 
 def showIntransit(request):
