@@ -77,7 +77,8 @@
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            <th scope="col">S.No</th>
+            
+            <th scope="col">ID</th>
             <th scope="col">Party Name</th>
             <th scope="col">Bill No</th>
             <th scope="col">Bill Date</th>
@@ -96,7 +97,8 @@
         <tbody>
         {% for record in records %}
           <tr>
-            <td scope="row">{{record.sr_no}}</td>
+            
+            <td scope="row">{{record.id}}</td>
             <td><a href="{% url 'record' record.id %}">{{record.party_name}}</a></td>
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>
@@ -123,7 +125,7 @@
           {% endif%}
           {% for num in records.paginator.page_range %}
             {%if records.number == num%}
-              page<span class="current-page"><strong>{{ num  }}</strong></span>of {{ records.paginator.num_pages }}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
             
             {% endif %}
           {%endfor%}

@@ -18,6 +18,7 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Navbar */
 .navbar ul li a {
   font-size: 1rem;
   display: inline-block;
@@ -37,6 +38,7 @@ input[type="number"] {
   transition: all 0.25s ease-out 0s;
 }
 
+/* Index */
 .upload-file {
   width: 360px;
   background: #f1f1f1;
@@ -70,6 +72,7 @@ input[type="number"] {
   transition: all 0.3s ease 0s;
 }
 
+/* View Data */
 .view-file {
   width: 80%;
   background: #f1f1f1;
@@ -139,4 +142,30 @@ input[type="number"] {
 .filter-form {
   width: 80%;
   margin: 10px auto;
+}
+
+.anchor-button {
+  font-size: 1rem;
+  display: inline-block;
+  text-transform: uppercase;
+  overflow: hidden;
+  padding: 0.5rem 1.3rem;
+  transition: all 0.25s ease-out 0s;
+  color: #fff;
+  border-radius: 5px;
+  background-color: #343a40;
+  border-color: #343a40;
+  text-decoration: none;
+}
+
+.space {
+  margin-right: 15px;
+}
+
+.anchor-button:hover {
+  color: #fff;
+  background-color: #23272b;
+  border-color: #1d2124;
+  text-decoration: none;
+  cursor: pointer;
 }

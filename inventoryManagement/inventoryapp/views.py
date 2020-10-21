@@ -75,7 +75,7 @@ def showIntransit(request):
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
-    paginator = Paginator(records_filter.qs,5)
+    paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
