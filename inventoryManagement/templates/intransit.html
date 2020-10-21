@@ -123,9 +123,8 @@
           {% endif%}
           {% for num in records.paginator.page_range %}
             {%if records.number == num%}
-              <span class="current-page"><strong>{{ num  }}</strong></span>
-            {% else %}
-              <a class="page-no" href="{% my_url num 'page' request.GET.urlencode %}">{{ num }}</a>
+              page<span class="current-page"><strong>{{ num  }}</strong></span>of {{ records.paginator.num_pages }}
+            
             {% endif %}
           {%endfor%}
           {% if records.has_next %}

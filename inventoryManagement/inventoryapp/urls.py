@@ -7,7 +7,8 @@ urlpatterns = [
     path('insert', views.upload,name='insert'),
     path('intransit',views.showIntransit, name='intransit'),
     path('<int:id>',views.record, name='record'),
-    path('item/<int:id>',views.edit, name="edit")
-    
+    path('item/<int:id>',views.edit, name="edit"),
+    path('nextitem/<int:id>', views.nextRec, name='nextRec'),
+    path('previtem/<int:id>', views.prevRec, name='prevRec'),
 
 ]

@@ -118,3 +118,14 @@ def edit(request,id):
 #     records_filter = RecordFilter(request.GET,queryset=records_list)
 #     return render(request,'intransit.html',{'records':records_filter})
 #?page={{records.next_page_number}}
+
+def nextRec(request,id):
+    rec=get_object_or_404(Record, id=id+1)
+    # lot_no=rec.lot_no
+    # record=get_object_or_404(Record, lot_no=lot_no+1)
+
+    return render(request, 'record.html', {'record':rec})
+
+def prevRec(request,id):
+    rec=get_object_or_404(Record, id=id-1)
+    return render(request, 'record.html', {'record':rec})
