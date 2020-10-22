@@ -159,3 +159,36 @@ def nextRec(request,id):
 def prevRec(request,id):
     rec=get_object_or_404(Record, id=id-1)
     return render(request, 'record.html', {'record':rec})
+
+def approveBale(request,id):
+    prevRec = get_object_or_404(Record,id=id)
+    bale_recieved=request.POST.get("bale_recieved")
+    bale_recieved = int(bale_recieved)
+    if(prevRec.bale == bale_recieved):
+        prevRec.state="Godown"
+        prevRec.save()
+        return redirect('/godown')
+    elif(prevRec.bale<bale_recieved):
+        return HttpResponse('invalid bale number')
+    else:
+        bale_in_transit = prevRec.bale - bale_recieved
+        value = Record(
+            sr_no=prevRec.sr_no,
+            party_name=prevRec.party_name,
+            bill_no=prevRec.bill_no,
+            bill_date=prevRec.bill_date,
+            bill_amount=prevRec.bill_amount,
+            lot_no=prevRec.lot_no,
+            quality=prevRec.quality,
+            than=prevRec.than,
+            mtrs=prevRec.mtrs,
+            bale=bale_recieved,
+            rate=prevRec.rate,
+            lr_no=prevRec.lr_no,
+            order_no=prevRec.order_no,
+            state="Godown"
+            )
+        value.save()
+        prevRec.bale = bale_in_transit
+        prevRec.save()
+        return redirect('/godown')

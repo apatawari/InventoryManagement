@@ -4,7 +4,7 @@
 {% block content%}
       <!-- Diplay Record Start -->
      
-      <form class = "md-form view-file" method="POST" action="{% url 'edit' record.id %}" enctype="multipart/form-data">
+      <form class = "md-form view-file" method="POST" action="{% url 'approvebale' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
           <div class="form-group col-md-12">

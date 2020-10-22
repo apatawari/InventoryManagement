@@ -14,5 +14,7 @@ urlpatterns = [
     path('item/<int:id>',views.edit, name="edit"),
     path('nextitem/<int:id>', views.nextRec, name='nextRec'),
     path('previtem/<int:id>', views.prevRec, name='prevRec'),
+    path('approve/<int:id>',views.approveBale, name="approvebale"),
+    
 
 ]

@@ -18,6 +18,7 @@ class Record(models.Model):
     order_no = models.IntegerField()
     state_choices=(('state1','In transit'), ('state2','Order recieved'), ('state3','In godown'), ('state4','done'))
     state = models.CharField(max_length=10,default='Transit')
+    bale_recieved = models.IntegerField(default=0)
     
     # def __str__(self):
     #     return self.sr_no +" " +self.party_name
