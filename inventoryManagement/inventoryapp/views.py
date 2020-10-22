@@ -80,7 +80,7 @@ def upload(request):
     return render(request, 'index.html')
 
 def showIntransit(request):
-    records_list=Record.objects.all()
+    records_list=Record.objects.filter(state="Transit")
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -91,12 +91,27 @@ def showIntransit(request):
     return render(request, 'intransit.html',{'records':records,'filter':records_filter})
     
 
-    # records = Record.objects.all()
-    # paginator = Paginator(records,10)
-    # page = request.GET.get('page')
-    # records = paginator.get_page(page)
+def showGodown(request):
+    records_list=Record.objects.filter(state="Godown")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
 
-    # return render(request, 'intransit.html',{'records':records})
+    return render(request, 'godown.html',{'records':records,'filter':records_filter})
+
+def showGodownRequest(request):
+    records_list=Record.objects.filter(state="Transit")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'godownrequest.html',{'records':records,'filter':records_filter})
 
 def record(request,id):
     rec=get_object_or_404(Record, id=id)

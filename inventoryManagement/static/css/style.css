@@ -43,6 +43,27 @@ input[type="number"] {
   transition: all 0.25s ease-out 0s;
 }
 
+.btn-request {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-right: 10px;
+  display: inline-block;
+  text-transform: uppercase;
+  overflow: hidden;
+  padding: 0.5rem 1.3rem;
+  transition: all 0.25s ease-out 0s;
+  color: #007bff;
+  border-radius: 5px;
+  background-color: #ffffff;
+  border-color: #ffffff;
+  text-decoration: none;
+}
+
+.btn-request:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
 /* Index */
 .upload-file {
   width: 360px;

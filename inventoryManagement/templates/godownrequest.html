@@ -1,0 +1,94 @@
+{% extends 'nav.html' %}
+
+{% block title%} Transit {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Filter Start -->
+      <form method="GET">
+          <div class="form-row filter-form">
+            <div class="form-group col-sm-4">
+              {{ filter.form.party_name.label_tag }}
+              {% render_field filter.form.party_name class="form-control" %}
+            </div>
+            <div class="form-group col-sm-2">
+              {{ filter.form.lot_no.label_tag }}
+              {% render_field filter.form.lot_no class="form-control" %}
+            </div>
+            <div class="form-group col-sm-4">
+              {{ filter.form.quality.label_tag }}
+              {% render_field filter.form.quality class="form-control" %}
+            </div>
+            <div class="form-group col-sm-2 filter-button">
+              <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
+            </div>
+          </div>
+      </form>
+      <!-- Filter End -->
+
+      <!-- Display Table Start-->
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">ID</th>
+            <th scope="col">Party Name</th>
+            <th scope="col">Bill No</th>
+            <th scope="col">Bill Date</th>
+            <th scope="col">Bill Amt</th>
+            <th scope="col">Lot No</th>
+            <th scope="col">Quality</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Bale</th>
+            <th scope="col">Rate</th>
+            <th scope="col">LR No</th>
+            <th scope="col">Order No</th>
+            <th scope="col">State</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for record in records %}
+          <tr>
+            
+            <td scope="row">{{record.id}}</td>
+            <td><a href="#">{{record.party_name}}</a></td>
+            <td>{{record.bill_no}}</td>
+            <td>{{record.bill_date}}</td>
+            <td>{{record.bill_amount}}</td>
+            <td>{{record.lot_no}}</td>
+            <td>{{record.quality}}</td>
+            <td>{{record.than}}</td>
+            <td>{{record.mtrs}}</td>
+            <td>{{record.bale}}</td>
+            <td>{{record.rate}}</td>
+            <td>{{record.lr_no}}</td>
+            <td>{{record.order_no}}</td>
+            <td>{{record.state}}</td>
+          
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <!-- Display Table End -->
+
+      <div class="pagination">
+        <div class="number-line">
+          {% if records.has_previous %}
+          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% endif%}
+          {% for num in records.paginator.page_range %}
+            {%if records.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+            
+            {% endif %}
+          {%endfor%}
+          {% if records.has_next %}
+            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% endif%}
+        </div>  
+      </div>
+
+      <br>
+
+{% endblock %}
