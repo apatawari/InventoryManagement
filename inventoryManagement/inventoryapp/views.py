@@ -117,6 +117,10 @@ def record(request,id):
     rec=get_object_or_404(Record, id=id)
     return render(request, 'record.html', {'record':rec})
 
+def goDownApprove(request,id):
+    rec=get_object_or_404(Record, id=id)
+    return render(request, 'godownapprove.html', {'record':rec})
+
 def edit(request,id):
     if request.method=="POST":
         record = get_object_or_404(Record,id=id)
