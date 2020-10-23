@@ -166,6 +166,7 @@ def approveBale(request,id):
     bale_recieved = int(bale_recieved)
     if(prevRec.bale == bale_recieved):
         prevRec.state="Godown"
+        prevRec.recieving_date=str(request.POST["recieving_date"])
         prevRec.save()
         return redirect('/godown')
     elif(prevRec.bale<bale_recieved):
@@ -186,7 +187,8 @@ def approveBale(request,id):
             rate=prevRec.rate,
             lr_no=prevRec.lr_no,
             order_no=prevRec.order_no,
-            state="Godown"
+            state="Godown",
+            recieving_date = str(request.POST["recieving_date"])
             )
         value.save()
         prevRec.bale = bale_in_transit

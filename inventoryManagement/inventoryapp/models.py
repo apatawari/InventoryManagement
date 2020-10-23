@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 
 # Create your models here.
 
@@ -19,6 +21,7 @@ class Record(models.Model):
     state_choices=(('state1','In transit'), ('state2','Order recieved'), ('state3','In godown'), ('state4','done'))
     state = models.CharField(max_length=10,default='Transit')
     bale_recieved = models.IntegerField(default=0)
+    recieving_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
     
     # def __str__(self):
     #     return self.sr_no +" " +self.party_name
