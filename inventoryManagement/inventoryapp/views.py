@@ -16,12 +16,6 @@ def index(request):
     return render(request, 'index.html')
 
 
-# def insert(request):
-#     if request.method == 'POST':
-#         return HttpResponse(request.FILES['myfile'].name)
-#     else:
-#         return HttpResponse("nofile")
-
 
 def upload(request):
     if request.method == 'POST':
@@ -173,6 +167,17 @@ def approveBale(request,id):
         return HttpResponse('invalid bale number')
     else:
         bale_in_transit = prevRec.bale - bale_recieved
+        
+        than_in_transit = prevRec.than/prevRec.bale 
+        than_in_transit = than_in_transit * bale_in_transit
+        than_in_godown = prevRec.than - than_in_transit
+        
+        mtrs_in_transit = prevRec.mtrs/prevRec.bale
+        mtrs_in_transit = mtrs_in_transit * bale_in_transit
+        mtrs_in_transit = round(mtrs_in_transit,2)
+        mtrs_in_godown = prevRec.mtrs - mtrs_in_transit
+
+
         value = Record(
             sr_no=prevRec.sr_no,
             party_name=prevRec.party_name,
@@ -181,8 +186,8 @@ def approveBale(request,id):
             bill_amount=prevRec.bill_amount,
             lot_no=prevRec.lot_no,
             quality=prevRec.quality,
-            than=prevRec.than,
-            mtrs=prevRec.mtrs,
+            than=than_in_godown,
+            mtrs=mtrs_in_godown,
             bale=bale_recieved,
             rate=prevRec.rate,
             lr_no=prevRec.lr_no,
@@ -192,5 +197,8 @@ def approveBale(request,id):
             )
         value.save()
         prevRec.bale = bale_in_transit
+        prevRec.than = than_in_transit
+        prevRec.mtrs = mtrs_in_transit
         prevRec.save()
+        print(than_in_transit,than_in_godown)
         return redirect('/godown')

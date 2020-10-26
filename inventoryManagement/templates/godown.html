@@ -31,6 +31,9 @@
                 <a class="nav-link" href="{% url 'godown' %}">Godown</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="#">Checking</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="#">Process</a>
             </li>
             <li class="nav-item">
@@ -95,7 +98,7 @@
           <tr>
             
             <td scope="row">{{record.id}}</td>
-            <td><a href="{% url 'record' record.id %}">{{record.party_name}}</a></td>
+            <td>{{record.party_name}}</td>
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
