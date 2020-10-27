@@ -118,7 +118,6 @@
             <th scope="col">Quality</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
-            <th scope="col">Bale</th>
             <th scope="col">Rate</th>
             <th scope="col">LR No</th>
             <th scope="col">Order No</th>
@@ -137,11 +136,10 @@
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
-            <td>{{record.lot_no}}</td>
+            <td><a href="{% url 'editchecked' record.id %}">{{record.lot_no}}</a></td>
             <td>{{record.quality}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
-            <td>{{record.bale}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>

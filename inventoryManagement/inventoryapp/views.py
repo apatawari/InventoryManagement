@@ -267,29 +267,29 @@ def checkingApprove(request,id):
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
-    bale_recieved=request.POST.get("bale_recieved")
-    bale_recieved = int(bale_recieved)
-    if(prevRec.bale == bale_recieved):
+    than_recieved=request.POST.get("than_recieved")
+    than_recieved = int(than_recieved)
+    if(prevRec.than == than_recieved):
         prevRec.state="Checked"
         prevRec.quality=request.POST.get("new-quality")
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/checking')
-    elif(prevRec.bale<bale_recieved):
-        messages.error(request,"Bale Recieved cannot be more than Original Amount of Bale")
+    elif(prevRec.than<than_recieved):
+        messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
-        bale_in_transit = prevRec.bale - bale_recieved
+        than_un_checked = prevRec.than - than_recieved
         
-        than_in_transit = prevRec.than/prevRec.bale 
-        than_in_transit = than_in_transit * bale_in_transit
-        than_in_godown = prevRec.than - than_in_transit
+        bale_per_than = prevRec.bale/prevRec.than
+        bale_un_checked = than_un_checked * bale_per_than
+        bale_checked = prevRec.bale - bale_un_checked
         
-        mtrs_in_transit = prevRec.mtrs/prevRec.bale
-        mtrs_in_transit = mtrs_in_transit * bale_in_transit
-        mtrs_in_transit = round(mtrs_in_transit,2)
-        mtrs_in_godown = prevRec.mtrs - mtrs_in_transit
-        mtrs_in_godown = round(mtrs_in_godown,2)
+        mtrs_un_checked = prevRec.mtrs/prevRec.than
+        mtrs_un_checked = mtrs_un_checked * than_un_checked
+        mtrs_un_checked = round(mtrs_un_checked,2)
+        mtrs_checked = prevRec.mtrs - mtrs_un_checked
+        mtrs_checked = round(mtrs_checked,2)
 
 
         value = Record(
@@ -300,9 +300,9 @@ def approveCheck(request,id):
             bill_amount=prevRec.bill_amount,
             lot_no=prevRec.lot_no,
             quality=request.POST.get("new-quality"),
-            than=than_in_godown,
-            mtrs=mtrs_in_godown,
-            bale=bale_recieved,
+            than=than_recieved,
+            mtrs=mtrs_checked,
+            bale=bale_checked,
             rate=prevRec.rate,
             lr_no=prevRec.lr_no,
             order_no=prevRec.order_no,
@@ -310,15 +310,44 @@ def approveCheck(request,id):
             recieving_date =prevRec.recieving_date
             
             )
-        if bale_recieved == 0 :
-            messages.error(request,"Bale Recieved cannot be Zero (0)")
+        if than_recieved == 0 :
+            messages.error(request,"Than Recieved cannot be Zero (0)")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             value.save()
-            prevRec.bale = bale_in_transit
-            prevRec.than = than_in_transit
-            prevRec.mtrs = mtrs_in_transit
+            prevRec.bale = bale_un_checked
+            prevRec.than = than_un_checked
+            prevRec.mtrs = mtrs_un_checked
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
         #print(than_in_transit,than_in_godown)
+        return redirect('/checking')
+
+def editChecked(request,id):
+    rec=get_object_or_404(Record, id=id)
+    return render(request, 'editchecked.html', {'record':rec})
+
+
+def checkedEdit(request,id):
+    if request.method=="POST":
+        record = get_object_or_404(Record,id=id)
+        record.party_name=request.POST.get("party_name")
+        record.bill_no=request.POST.get("bill_no")
+        record.bill_date=request.POST.get("bill_date")
+        record.bill_amount=request.POST.get("bill_amount")
+        record.lot_no=request.POST.get("lot_no")
+        record.quality=request.POST.get("quality")
+        record.than=request.POST.get("than")
+        record.mtrs=request.POST.get("mtrs")
+        record.bale=request.POST.get("bale")
+        record.rate=request.POST.get("rate")
+        record.lr_no=request.POST.get("lr_no")
+        record.order_no=request.POST.get("order_no")
+        if len(request.POST.get("party_name"))<1 or len(str(request.POST.get("bill_no")))<1 or len(str(request.POST.get("bill_amount")))<1 or len(request.POST.get("quality"))<1 or len(str(request.POST.get("than")))<1 or len(str(request.POST.get("mtrs")))<1 or len(str(request.POST.get("bale")))<1 or len(str(request.POST.get("rate")))<1 or len(str(request.POST.get("lr_no")))<1 or len(str(request.POST.get("order_no")))<1:
+            messages.error(request,"Field Cannot be EMPTY")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            record.save()
+            messages.success(request,"Data Updated Successfully")
+        #print(record.bill_date)
         return redirect('/checking')
