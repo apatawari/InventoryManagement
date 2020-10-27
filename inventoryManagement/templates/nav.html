@@ -12,7 +12,12 @@
 
 </head>
 <body>
-
+  {% url 'index' as index %}
+  {% url 'intransit' as intransit %}
+  {% url 'godown' as godown %}
+  {% url 'checking' as checking %}
+  {% url 'inprocess' as inprocess %}
+  {% url 'readytoprint' as readytoprint %}
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +31,19 @@
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Dropdown
+                {%if request.path == intransit %}
+                  Transit
+                {%elif request.path == godown %}
+                  Godown
+                {%elif request.path == checking %}
+                  Checking
+                {%elif request.path == inprocess %}
+                  Process
+                {%elif request.path == readytoprint %}
+                  Ready To Print
+                {% else %}
+                  Module
+                {% endif %}
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'intransit' %}">Transit</a>
