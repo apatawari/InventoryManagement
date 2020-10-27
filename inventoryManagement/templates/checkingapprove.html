@@ -4,7 +4,7 @@
 {% block content%}
       <!-- Diplay Record Start -->
      
-      <form class = "md-form view-file" method="POST" action="{% url 'approvebale' record.id %}" enctype="multipart/form-data">
+      <form class = "md-form view-file" method="POST" action="{% url 'approvecheck' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
           <div class="form-group col-md-12">
@@ -76,9 +76,18 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="recievingdate">Recieving Date</label>
-                <input type="date" class="form-control" id="recievingdate" name="recieving_date" required />
+                <input type="date" class="form-control" id="recievingdate" name="recieving_date" value="{{record.recieving_date}}" readonly/>
             </div>
-            
+            <div class="form-group col-md-4">
+                <label for="new-quality">new-quality</label>
+                <select name="new-quality">
+                    
+                    {% for q in qualities %}
+                        <option value="{{ q.qualities }}">{{ q.qualities }}</option>
+                    {% endfor %}
+                </select>
+                
+            </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-9">

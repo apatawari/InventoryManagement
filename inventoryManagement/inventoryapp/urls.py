@@ -15,6 +15,9 @@ urlpatterns = [
     path('nextitem/<int:id>', views.nextRec, name='nextRec'),
     path('previtem/<int:id>', views.prevRec, name='prevRec'),
     path('approve/<int:id>',views.approveBale, name="approvebale"),
-    
+    path('checking', views.showChecked, name="checking"),
+    path('checkingrequest',views.showCheckingRequest, name= "checkingrequest"),
+    path('checkingapprove/<int:id>',views.checkingApprove, name='checkingapprove'),
+    path('approvecheck/<int:id>',views.approveCheck, name="approvecheck"),
 
 ]

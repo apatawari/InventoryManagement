@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'inventoryManagement.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'internship',
+        'NAME': 'inter',
         'HOST': 'localhost',
         'PORT': '3306',
         'USER': 'admin',

@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404,redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record
+from .models import Record,Quality
 from .resources import ItemResources
 from .filters import RecordFilter
 from django.contrib import messages
@@ -71,6 +71,16 @@ def upload(request):
                     order_no=data[12]
                     )
                 value.save()
+                try:
+                    rec=get_object_or_404(Quality,
+                        qualities=data[6])
+                except:
+                    new_quality = Quality(
+                        qualities=data[6]
+                        )
+                    new_quality.save()
+
+
     return render(request, 'index.html')
 
 def showIntransit(request):
@@ -113,7 +123,8 @@ def record(request,id):
 
 def goDownApprove(request,id):
     rec=get_object_or_404(Record, id=id)
-    return render(request, 'godownapprove.html', {'record':rec})
+    qualities = Quality.objects.all()
+    return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities})
 
 def edit(request,id):
     if request.method=="POST":
@@ -145,9 +156,6 @@ def edit(request,id):
 
 def nextRec(request,id):
     rec=get_object_or_404(Record, id=id+1)
-    # lot_no=rec.lot_no
-    # record=get_object_or_404(Record, lot_no=lot_no+1)
-
     return render(request, 'record.html', {'record':rec})
 
 def prevRec(request,id):
@@ -176,6 +184,7 @@ def approveBale(request,id):
         mtrs_in_transit = mtrs_in_transit * bale_in_transit
         mtrs_in_transit = round(mtrs_in_transit,2)
         mtrs_in_godown = prevRec.mtrs - mtrs_in_transit
+        mtrs_in_godown = round(mtrs_in_godown,2)
 
 
         value = Record(
@@ -193,7 +202,8 @@ def approveBale(request,id):
             lr_no=prevRec.lr_no,
             order_no=prevRec.order_no,
             state="Godown",
-            recieving_date = str(request.POST["recieving_date"])
+            recieving_date = str(request.POST["recieving_date"]),
+            
             )
         value.save()
         prevRec.bale = bale_in_transit
@@ -202,3 +212,84 @@ def approveBale(request,id):
         prevRec.save()
         print(than_in_transit,than_in_godown)
         return redirect('/godown')
+
+#quality2 = request.POST.get("quality2")
+
+def showChecked(request):
+    records_list=Record.objects.filter(state="Checked")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'checking.html',{'records':records,'filter':records_filter})
+
+def showCheckingRequest(request):
+    records_list=Record.objects.filter(state="Godown")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'checkingrequest.html',{'records':records,'filter':records_filter})
+
+def checkingApprove(request,id):
+    rec=get_object_or_404(Record, id=id)
+    qualities = Quality.objects.all()
+    return render(request, 'checkingapprove.html', {'record':rec,'qualities':qualities})
+
+
+def approveCheck(request,id):
+    prevRec = get_object_or_404(Record,id=id)
+    bale_recieved=request.POST.get("bale_recieved")
+    bale_recieved = int(bale_recieved)
+    if(prevRec.bale == bale_recieved):
+        prevRec.state="Checked"
+        
+        prevRec.save()
+        return redirect('/checking')
+    elif(prevRec.bale<bale_recieved):
+        return HttpResponse('invalid bale number')
+    else:
+        bale_in_transit = prevRec.bale - bale_recieved
+        
+        than_in_transit = prevRec.than/prevRec.bale 
+        than_in_transit = than_in_transit * bale_in_transit
+        than_in_godown = prevRec.than - than_in_transit
+        
+        mtrs_in_transit = prevRec.mtrs/prevRec.bale
+        mtrs_in_transit = mtrs_in_transit * bale_in_transit
+        mtrs_in_transit = round(mtrs_in_transit,2)
+        mtrs_in_godown = prevRec.mtrs - mtrs_in_transit
+        mtrs_in_godown = round(mtrs_in_godown,2)
+
+
+        value = Record(
+            sr_no=prevRec.sr_no,
+            party_name=prevRec.party_name,
+            bill_no=prevRec.bill_no,
+            bill_date=prevRec.bill_date,
+            bill_amount=prevRec.bill_amount,
+            lot_no=prevRec.lot_no,
+            quality=request.POST.get("new-quality"),
+            than=than_in_godown,
+            mtrs=mtrs_in_godown,
+            bale=bale_recieved,
+            rate=prevRec.rate,
+            lr_no=prevRec.lr_no,
+            order_no=prevRec.order_no,
+            state="Checked",
+            recieving_date =prevRec.recieving_date
+            
+            )
+        value.save()
+        prevRec.bale = bale_in_transit
+        prevRec.than = than_in_transit
+        prevRec.mtrs = mtrs_in_transit
+        prevRec.save()
+        print(than_in_transit,than_in_godown)
+        return redirect('/checking')
