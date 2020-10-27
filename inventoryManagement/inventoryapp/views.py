@@ -74,6 +74,22 @@ def upload(request):
                     order_no=data[12]
                     )
                 value.save()
+                rec=get_object_or_404(Record, 
+                    party_name=data[1],
+                    bill_no=data[2],
+                    bill_date=data[3],
+                    bill_amount=data[4],
+                    lot_no=data[5],
+                    quality=data[6],
+                    than=data[7],
+                    mtrs=data[8],
+                    bale=data[9],
+                    rate=data[10],
+                    lr_no=data[11],
+                    order_no=data[12])
+                date=rec.bill_date
+                rec.bill_date=date.strip(" 00:00:00")
+                rec.save()
                 counter = counter + 1
                 try:
                     rec=get_object_or_404(Quality,
