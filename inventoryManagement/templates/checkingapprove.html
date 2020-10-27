@@ -79,13 +79,18 @@
                 <input type="date" class="form-control" id="recievingdate" name="recieving_date" value="{{record.recieving_date}}" readonly/>
             </div>
             <div class="form-group col-md-4">
-                <label for="new-quality">new-quality</label>
-                <select name="new-quality">
-                    
+                <label for="new-quality">New Qualiy</label>
+                <select class="form-control" name="new-quality">
+
                     {% for q in qualities %}
-                        <option value="{{ q.qualities }}">{{ q.qualities }}</option>
+                        {% ifequal record.quality q.qualities  %}
+                            <option value="{{ q.qualities }}" selected>{{ record.quality }}</option>
+                        {% else %}
+                            <option value="{{ q.qualities }}">{{ q.qualities }}</option>
+                        {% endifequal %}
                     {% endfor %}
                 </select>
+
                 
             </div>
         </div>

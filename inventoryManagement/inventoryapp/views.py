@@ -7,6 +7,8 @@ from .resources import ItemResources
 from .filters import RecordFilter
 from django.contrib import messages
 from tablib import Dataset
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 import pandas
 import numpy as np
 
@@ -18,6 +20,7 @@ def index(request):
 
 
 def upload(request):
+    counter = 0
     if request.method == 'POST':
         item_resource = ItemResources()
         dataset = Dataset()
@@ -71,6 +74,7 @@ def upload(request):
                     order_no=data[12]
                     )
                 value.save()
+                counter = counter + 1
                 try:
                     rec=get_object_or_404(Quality,
                         qualities=data[6])
@@ -79,6 +83,9 @@ def upload(request):
                         qualities=data[6]
                         )
                     new_quality.save()
+
+        if (counter > 0):
+            messages.success(request,str(counter)+ " Records were Inserted")
 
 
     return render(request, 'index.html')
@@ -141,8 +148,13 @@ def edit(request,id):
         record.rate=request.POST.get("rate")
         record.lr_no=request.POST.get("lr_no")
         record.order_no=request.POST.get("order_no")
-        record.save()
-        print(record.bill_date)
+        if len(request.POST.get("party_name"))<1 or len(str(request.POST.get("bill_no")))<1 or len(str(request.POST.get("bill_amount")))<1 or len(request.POST.get("quality"))<1 or len(str(request.POST.get("than")))<1 or len(str(request.POST.get("mtrs")))<1 or len(str(request.POST.get("bale")))<1 or len(str(request.POST.get("rate")))<1 or len(str(request.POST.get("lr_no")))<1 or len(str(request.POST.get("order_no")))<1:
+            messages.error(request,"Field Cannot be EMPTY")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            record.save()
+            messages.success(request,"Data Updated Successfully")
+        #print(record.bill_date)
         return redirect('/intransit')
         # records=Record.objects.all()
         
@@ -162,7 +174,8 @@ def prevRec(request,id):
     rec=get_object_or_404(Record, id=id-1)
     return render(request, 'record.html', {'record':rec})
 
-def approveBale(request,id):
+#Intransit To Godown
+def approveBale(request,id): 
     prevRec = get_object_or_404(Record,id=id)
     bale_recieved=request.POST.get("bale_recieved")
     bale_recieved = int(bale_recieved)
@@ -170,9 +183,11 @@ def approveBale(request,id):
         prevRec.state="Godown"
         prevRec.recieving_date=str(request.POST["recieving_date"])
         prevRec.save()
+        messages.success(request,"Data Updated Successfully")
         return redirect('/godown')
     elif(prevRec.bale<bale_recieved):
-        return HttpResponse('invalid bale number')
+        messages.error(request,"Bale Recieved cannot be more than Original Amount of Bale")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         bale_in_transit = prevRec.bale - bale_recieved
         
@@ -205,12 +220,18 @@ def approveBale(request,id):
             recieving_date = str(request.POST["recieving_date"]),
             
             )
-        value.save()
-        prevRec.bale = bale_in_transit
-        prevRec.than = than_in_transit
-        prevRec.mtrs = mtrs_in_transit
-        prevRec.save()
-        print(than_in_transit,than_in_godown)
+
+        if bale_recieved == 0 :
+            messages.error(request,"Bale Recieved cannot be Zero (0)")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            value.save()
+            prevRec.bale = bale_in_transit
+            prevRec.than = than_in_transit
+            prevRec.mtrs = mtrs_in_transit
+            prevRec.save()
+            messages.success(request,"Data Updated Successfully")
+        #print(than_in_transit,than_in_godown)
         return redirect('/godown')
 
 #quality2 = request.POST.get("quality2")
@@ -239,9 +260,8 @@ def showCheckingRequest(request):
 
 def checkingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
-    qualities = Quality.objects.all()
-    return render(request, 'checkingapprove.html', {'record':rec,'qualities':qualities})
-
+    qualities_all = Quality.objects.all().order_by('qualities')
+    return render(request, 'checkingapprove.html', {'record':rec,'qualities':qualities_all})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -249,11 +269,13 @@ def approveCheck(request,id):
     bale_recieved = int(bale_recieved)
     if(prevRec.bale == bale_recieved):
         prevRec.state="Checked"
-        
+        prevRec.quality=request.POST.get("new-quality")
         prevRec.save()
+        messages.success(request,"Data Updated Successfully")
         return redirect('/checking')
     elif(prevRec.bale<bale_recieved):
-        return HttpResponse('invalid bale number')
+        messages.error(request,"Bale Recieved cannot be more than Original Amount of Bale")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         bale_in_transit = prevRec.bale - bale_recieved
         
@@ -286,10 +308,15 @@ def approveCheck(request,id):
             recieving_date =prevRec.recieving_date
             
             )
-        value.save()
-        prevRec.bale = bale_in_transit
-        prevRec.than = than_in_transit
-        prevRec.mtrs = mtrs_in_transit
-        prevRec.save()
-        print(than_in_transit,than_in_godown)
+        if bale_recieved == 0 :
+            messages.error(request,"Bale Recieved cannot be Zero (0)")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            value.save()
+            prevRec.bale = bale_in_transit
+            prevRec.than = than_in_transit
+            prevRec.mtrs = mtrs_in_transit
+            prevRec.save()
+            messages.success(request,"Data Updated Successfully")
+        #print(than_in_transit,than_in_godown)
         return redirect('/checking')
