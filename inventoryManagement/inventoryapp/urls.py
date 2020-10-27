@@ -20,5 +20,7 @@ urlpatterns = [
     path('approvecheck/<int:id>',views.approveCheck, name="approvecheck"),
     path('editchecked/<int:id>',views.editChecked, name="editchecked"),
     path('checkededit/<int:id>',views.checkedEdit, name="checkededit"),
+    path('addquality',views.renderAddQuality, name="addquality"),
+    path('savequality',views.saveQuality, name="savequality"),
 
 ]

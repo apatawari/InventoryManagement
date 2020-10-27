@@ -42,18 +42,15 @@ def upload(request):
         # result = item_resource.import_data(dataset, dry_run=True)
         # print(imported_data)
         for data in imported_data:
+            billdate=str(data[3])
+            billdate=billdate.strip(" 00:00:00")
             try:
+                
                 rec=get_object_or_404(Record, 
                     party_name=data[1],
                     bill_no=data[2],
-                    bill_date=data[3],
                     bill_amount=data[4],
                     lot_no=data[5],
-                    quality=data[6],
-                    than=data[7],
-                    mtrs=data[8],
-                    bale=data[9],
-                    rate=data[10],
                     lr_no=data[11],
                     order_no=data[12])
             except:
@@ -62,7 +59,7 @@ def upload(request):
                     sr_no=data[0],
                     party_name=data[1],
                     bill_no=data[2],
-                    bill_date=data[3],
+                    bill_date=billdate,
                     bill_amount=data[4],
                     lot_no=data[5],
                     quality=data[6],
@@ -74,22 +71,7 @@ def upload(request):
                     order_no=data[12]
                     )
                 value.save()
-                rec=get_object_or_404(Record, 
-                    party_name=data[1],
-                    bill_no=data[2],
-                    bill_date=data[3],
-                    bill_amount=data[4],
-                    lot_no=data[5],
-                    quality=data[6],
-                    than=data[7],
-                    mtrs=data[8],
-                    bale=data[9],
-                    rate=data[10],
-                    lr_no=data[11],
-                    order_no=data[12])
-                date=rec.bill_date
-                rec.bill_date=date.strip(" 00:00:00")
-                rec.save()
+                
                 counter = counter + 1
                 try:
                     rec=get_object_or_404(Quality,
@@ -367,3 +349,15 @@ def checkedEdit(request,id):
             messages.success(request,"Data Updated Successfully")
         #print(record.bill_date)
         return redirect('/checking')
+
+
+def renderAddQuality(request):
+    return render(request,'addquality.html')
+
+def saveQuality(request):
+    new_quality = Quality(
+        qualities=request.POST.get("newer_quality")
+    )
+    new_quality.save()
+    messages.success(request,"Quality added")
+    return redirect('/index')

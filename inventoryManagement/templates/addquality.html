@@ -4,13 +4,13 @@
 {% block content%}
 
       <!-- Add Quality Start-->
-      <form method="POST" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'savequality' %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
             <h1>Add Quality</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="addquality" placeholder="Quality" name="addquality">
+            <input type="text" class="form-control" id="addquality" placeholder="Quality" name="newer_quality">
 
             <br>
 
