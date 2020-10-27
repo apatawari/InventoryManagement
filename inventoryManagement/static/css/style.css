@@ -18,7 +18,32 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+a {
+  color: #a044ff;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+a:hover {
+  color: #6a3093;
+  text-decoration: none;
+}
+
 /* Navbar */
+.navbar {
+  background: #6a3093; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #a044ff,
+    #6a3093
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #a044ff,
+    #6a3093
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
 .navbar ul li a {
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.9) !important;
@@ -27,6 +52,10 @@ input[type="number"] {
   font-weight: 700;
   padding: 0.5rem 1.3rem;
   transition: all 0.25s ease-out 0s;
+}
+
+.navbar ul li a:hover {
+  color: rgb(255, 255, 255) !important;
 }
 
 .navbar ul li a:hover {
@@ -52,7 +81,7 @@ input[type="number"] {
   overflow: hidden;
   padding: 0.5rem 1.3rem;
   transition: all 0.25s ease-out 0s;
-  color: #007bff;
+  color: #a044ff;
   border-radius: 5px;
   background-color: #ffffff;
   border-color: #ffffff;
@@ -60,8 +89,17 @@ input[type="number"] {
 }
 
 .btn-request:hover {
-  color: #0056b3;
+  color: #6a3093;
   text-decoration: none;
+}
+
+.btn-request:active {
+  background-color: #ffffff !important;
+  border-color: #a044ff !important;
+}
+
+.btn-request:focus {
+  background-color: #ffffff;
 }
 
 /* Index */
@@ -77,9 +115,11 @@ input[type="number"] {
 }
 
 .upload-file h1 {
+  color: #333333;
   text-align: center;
-  font-size: 26px;
+  font-size: 22px;
   line-height: 32px;
+  text-transform: uppercase;
 }
 
 .upload-container {
@@ -88,7 +128,7 @@ input[type="number"] {
 
 .upload-container .button {
   display: inline-block;
-  background-color: #007bff;
+  background-color: #a044ff;
   color: #fff;
   border-radius: 5px;
   width: 100%;
@@ -96,6 +136,31 @@ input[type="number"] {
   margin-top: 10px;
   padding: 8px 25px;
   transition: all 0.3s ease 0s;
+}
+
+.upload-container .upload-btn {
+  display: inline-block;
+  background-color: #a044ff;
+  color: #fff;
+  border-radius: 5px;
+  width: 100%;
+  border: none;
+  margin-top: 10px;
+  padding: 8px 25px;
+  transition: all 0.3s ease 0s;
+}
+
+.upload-container .upload-btn:hover {
+  background-color: #6a3093;
+}
+
+.upload-container .upload-btn:active {
+  background-color: #a044ff !important;
+  border-color: #a044ff !important;
+}
+
+.upload-container .upload-btn:focus {
+  background-color: #a044ff;
 }
 
 /* View Data */
@@ -111,7 +176,7 @@ input[type="number"] {
 }
 
 .view-file-container .button {
-  background-color: #007bff;
+  background-color: #6a3093;
   color: #fff;
   border-radius: 5px;
   width: 100%;
@@ -137,8 +202,8 @@ input[type="number"] {
   line-height: 1.25;
   z-index: 1;
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #6a3093;
+  border-color: #6a3093;
 }
 
 .page-no {
@@ -146,7 +211,7 @@ input[type="number"] {
   padding: 0.5rem 0.75rem;
   margin-left: -1px;
   line-height: 1.25;
-  color: #007bff;
+  color: #6a3093;
   background-color: #fff;
   border: 1px solid #dee2e6;
 }
@@ -156,7 +221,7 @@ input[type="number"] {
   padding: 0.5rem 0.75rem;
   margin-left: -1px;
   line-height: 1.25;
-  color: #007bff;
+  color: #6a3093;
   background-color: #fff;
   border: 1px solid #dee2e6;
 }
@@ -168,6 +233,25 @@ input[type="number"] {
 .filter-form {
   width: 80%;
   margin: 10px auto;
+}
+
+.btn {
+  background-color: #a044ff;
+  border-color: #a044ff;
+}
+
+.btn:hover {
+  background-color: #6a3093;
+  border-color: #6a3093;
+}
+
+.btn:active {
+  background-color: #a044ff !important;
+  border-color: #a044ff !important;
+}
+
+.btn:focus {
+  background-color: #a044ff;
 }
 
 .anchor-button {
