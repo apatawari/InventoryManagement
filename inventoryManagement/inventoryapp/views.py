@@ -86,6 +86,8 @@ def upload(request):
 
         if (counter > 0):
             messages.success(request,str(counter)+ " Records were Inserted")
+        else:
+            messages.error(request, "No Records were Inserted")
 
 
     return render(request, 'index.html')
