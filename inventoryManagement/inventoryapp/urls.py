@@ -22,5 +22,6 @@ urlpatterns = [
     path('checkededit/<int:id>',views.checkedEdit, name="checkededit"),
     path('addquality',views.renderAddQuality, name="addquality"),
     path('savequality',views.saveQuality, name="savequality"),
+    path('addparty',views.renderAddParty, name="addparty"),
 
 ]

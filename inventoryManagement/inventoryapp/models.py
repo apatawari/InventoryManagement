@@ -4,7 +4,7 @@ from django.utils import timezone
 
 # Create your models here.
 class Quality(models.Model):
-    qualities = models.CharField(max_length=20)
+    qualities = models.CharField(max_length=50)
 
     
 
@@ -27,8 +27,12 @@ class Record(models.Model):
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
     quality2 = models.CharField(max_length=20,default="-")
+    total_bale = models.IntegerField()
     
     # def __str__(self):
     #     return self.sr_no +" " +self.party_name
-class Trial(models.Model):
-    quality_name = models.CharField(max_length=20,default="no")
+
+
+
+class ProcessingPartyName(models.Model):
+    processing_party = models.CharField(max_length=50)

@@ -68,7 +68,9 @@ def upload(request):
                     bale=data[9],
                     rate=data[10],
                     lr_no=data[11],
-                    order_no=data[12]
+                    order_no=data[12],
+                    total_bale=data[9]
+
                     )
                 value.save()
                 
@@ -136,6 +138,7 @@ def goDownApprove(request,id):
 def edit(request,id):
     if request.method=="POST":
         record = get_object_or_404(Record,id=id)
+        prevBale=record.bale
         record.party_name=request.POST.get("party_name")
         record.bill_no=request.POST.get("bill_no")
         record.bill_date=request.POST.get("bill_date")
@@ -148,6 +151,11 @@ def edit(request,id):
         record.rate=request.POST.get("rate")
         record.lr_no=request.POST.get("lr_no")
         record.order_no=request.POST.get("order_no")
+        if prevBale == record.total_bale:
+            record.total_bale=request.POST.get("bale")
+        else:
+            messages.error(request,"Half of the goods have already advanced, so total bales cannot be updated")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         if len(request.POST.get("party_name"))<1 or len(str(request.POST.get("bill_no")))<1 or len(str(request.POST.get("bill_amount")))<1 or len(request.POST.get("quality"))<1 or len(str(request.POST.get("than")))<1 or len(str(request.POST.get("mtrs")))<1 or len(str(request.POST.get("bale")))<1 or len(str(request.POST.get("rate")))<1 or len(str(request.POST.get("lr_no")))<1 or len(str(request.POST.get("order_no")))<1:
             messages.error(request,"Field Cannot be EMPTY")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -218,7 +226,7 @@ def approveBale(request,id):
             order_no=prevRec.order_no,
             state="Godown",
             recieving_date = str(request.POST["recieving_date"]),
-            
+            total_bale=prevRec.total_bale
             )
 
         if bale_recieved == 0 :
@@ -361,3 +369,6 @@ def saveQuality(request):
     new_quality.save()
     messages.success(request,"Quality added")
     return redirect('/index')
+
+def renderAddParty(request):
+    return render(request,'addparty.html')
