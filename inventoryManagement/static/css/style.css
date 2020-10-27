@@ -182,6 +182,38 @@ a:hover {
   background-color: #a044ff;
 }
 
+.btn-add {
+  display: inline-block;
+  background-color: #a044ff;
+  color: #ffffff;
+  border-radius: 5px;
+  width: 100%;
+  border: none;
+  margin-top: 10px;
+  transition: all 0.3s ease 0s;
+  overflow: hidden;
+  padding: 0.5rem 1.3rem;
+  transition: all 0.25s ease-out 0s;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.btn-add:hover {
+  color: #ffffff;
+  background-color: #6a3093;
+  text-decoration: none;
+}
+
+.btn-add:active {
+  background-color: #a044ff !important;
+  border-color: #a044ff !important;
+}
+
+.btn-add:focus {
+  background-color: #a044ff;
+}
+
 /* View Data */
 .view-file {
   width: 80%;

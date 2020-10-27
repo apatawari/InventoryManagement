@@ -1,0 +1,22 @@
+{% extends 'nav.html' %}
+
+{% block title%} Add Quality {% endblock %}
+{% block content%}
+
+      <!-- Add Party Start-->
+      <form method="POST" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Add Party</h1>
+        </div>
+        <div class="upload-container">
+            <input type="text" class="form-control" id="addparty" placeholder="Party Name" name="addparty">
+
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit">Add</button>
+        </div>
+      </form>
+      <!-- Add Party End -->
+
+{% endblock %}
