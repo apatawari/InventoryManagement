@@ -33,7 +33,7 @@ class Record(models.Model):
     recieve_processed_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
     total_thans = models.IntegerField()
     total_mtrs = models.FloatField()
-
+    tally = models.BooleanField(default=False)
     
     # def __str__(self):
     #     return self.sr_no +" " +self.party_name

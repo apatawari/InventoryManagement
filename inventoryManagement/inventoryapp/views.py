@@ -544,12 +544,23 @@ def readyApprove(request,id):
 
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)
+    tally_lot_no = prevRec.lot_no
+    tally_total_thans=prevRec.total_thans
     than_recieved=request.POST.get("than_ready")
     than_recieved = int(than_recieved)
     if(prevRec.than == than_recieved):
         prevRec.state="Ready to print"
         prevRec.recieve_processed_date=str(request.POST.get("processing_date"))
+
         prevRec.save()
+        tally_records = Record.objects.filter(state="Ready to print",lot_no=tally_lot_no)
+        tally_thans=0
+        for tr in tally_records:
+            tally_thans=tally_thans+tr.than
+        if (tally_thans==tally_total_thans):
+            for tr in tally_records:
+                tr.tally=True
+                tr.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/readytoprint')
     elif(prevRec.than<than_recieved):
@@ -602,5 +613,7 @@ def readyToPrint(request,id):
             prevRec.mtrs = mtrs_un_checked
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
+
+
         #print(than_in_transit,than_in_godown)
         return redirect('/readytoprint')
