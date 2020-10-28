@@ -42,7 +42,7 @@
                 {%elif request.path == readytoprint %}
                   Ready To Print
                 {% else %}
-                  Module
+                  Grey
                 {% endif %}
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -55,7 +55,7 @@
             </li>
           </ul>
           <!-- Approval Start -->
-            <a class ="btn-request float-right" href="{% url 'checkingrequest' %}">Check Goods</a>
+            <a class ="btn-request float-right" href="{% url 'checkingrequest' %}">Check Grey</a>
           <!-- Approval End-->
         </div>
       </nav>
@@ -121,7 +121,7 @@
             <th scope="col">Rate</th>
             <th scope="col">LR No</th>
             <th scope="col">Order No</th>
-            <th scope="col">Recieving Date</th>
+            <th scope="col">Checking Date</th>
             <th scope="col">State</th>
             
             
@@ -143,7 +143,7 @@
             <td>{{record.rate}}</td>
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
-            <td>{{record.recieving_date}}</td>
+            <td>{{record.checking_date}}</td>
             <td>{{record.state}}</td>
             
           </tr>

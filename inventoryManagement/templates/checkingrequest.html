@@ -42,7 +42,7 @@
                 {%elif request.path == readytoprint %}
                   Ready To Print
                 {% else %}
-                  Module
+                  Grey
                 {% endif %}
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -55,7 +55,7 @@
             </li>
           </ul>
           <!-- Approval Start -->
-            <a class ="btn-request float-right" href="{% url 'addquality' %}">Add Quality</a>
+            <a class ="btn-request float-right" href="{% url 'addquality' %}">Add Grey Quality</a>
           <!-- Approval End-->
         </div>
       </nav>
@@ -116,6 +116,8 @@
             <th scope="col">Bill Amt</th>
             <th scope="col">Lot No</th>
             <th scope="col">Quality</th>
+            <th scope="col">Bale</th>
+            <th scope="col">Total Bale</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
             <th scope="col">Rate</th>
@@ -135,6 +137,8 @@
             <td>{{record.bill_amount}}</td>
             <td>{{record.lot_no}}</td>
             <td>{{record.quality}}</td>
+            <td>{{record.bale}}</td>
+            <td>{{record.total_bale}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.rate}}</td>

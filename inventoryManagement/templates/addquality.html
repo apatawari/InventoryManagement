@@ -8,10 +8,10 @@
       <form method="POST" action="{% url 'savequality' %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Quality</h1>
+            <h1>Add Grey Quality</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="addquality" placeholder="Quality" name="newer_quality">
+            <input type="text" class="form-control" id="addquality" placeholder="Grey Quality" name="newer_quality" required>
 
             <br>
 
@@ -25,7 +25,7 @@
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th scope="col">Quality</th>
+            <th scope="col">Grey Quality</th>
             
             
             

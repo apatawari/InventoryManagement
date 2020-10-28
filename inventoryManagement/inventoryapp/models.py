@@ -28,6 +28,12 @@ class Record(models.Model):
     recieving_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
     processing_party_name = models.CharField(max_length=50,default="-")
     total_bale = models.IntegerField()
+    checking_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
+    sent_to_processing_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
+    recieve_processed_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
+    total_thans = models.IntegerField()
+    total_mtrs = models.FloatField()
+
     
     # def __str__(self):
     #     return self.sr_no +" " +self.party_name

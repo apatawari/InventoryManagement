@@ -69,7 +69,9 @@ def upload(request):
                     rate=data[10],
                     lr_no=data[11],
                     order_no=data[12],
-                    total_bale=data[9]
+                    total_bale=data[9],
+                    total_thans=data[7],
+                    total_mtrs=data[8]
 
                     )
                 value.save()
@@ -153,6 +155,8 @@ def edit(request,id):
         record.order_no=request.POST.get("order_no")
         if prevBale == record.total_bale:
             record.total_bale=request.POST.get("bale")
+            record.total_thans=request.POST.get("than")
+            record.total_mtrs=request.POST.get("mtrs")
         else:
             messages.error(request,"Half of the goods have already advanced, so total bales cannot be updated")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -226,7 +230,9 @@ def approveBale(request,id):
             order_no=prevRec.order_no,
             state="Godown",
             recieving_date = str(request.POST["recieving_date"]),
-            total_bale=prevRec.total_bale
+            total_bale=prevRec.total_bale,
+            total_thans=prevRec.total_thans,
+            total_mtrs=prevRec.total_mtrs
             )
 
         if bale_recieved == 0 :
@@ -278,6 +284,7 @@ def approveCheck(request,id):
     if(prevRec.than == than_recieved):
         prevRec.state="Checked"
         prevRec.quality=request.POST.get("new-quality")
+        prevRec.checking_date=str(request.POST["checking_date"])
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/checking')
@@ -314,7 +321,10 @@ def approveCheck(request,id):
             order_no=prevRec.order_no,
             state="Checked",
             recieving_date =prevRec.recieving_date,
-            total_bale=prevRec.total_bale
+            total_bale=prevRec.total_bale,
+            total_mtrs=prevRec.total_mtrs,
+            total_thans=prevRec.total_thans,
+            checking_date=str(request.POST["checking_date"])
             
             )
         if than_recieved == 0 :
@@ -375,7 +385,9 @@ def saveQuality(request):
         existing_quality=get_object_or_404(Quality,qualities=q.upper())
         messages.error(request,"This quality already exists")
     except:
-
+        if q.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addquality')
         new_quality = Quality(
             qualities=q.upper()
         )
@@ -399,6 +411,9 @@ def saveParty(request):
         existing_party=get_object_or_404(ProcessingPartyName,processing_party=p)
         messages.error(request,"This Processing Party already exists")
     except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addparty')
         new_Party = ProcessingPartyName(
             processing_party= p
         )
@@ -441,6 +456,7 @@ def sendInProcess(request,id):
     if(prevRec.than == than_recieved):
         prevRec.state="In Process"
         prevRec.processing_party_name=request.POST.get("processing-party")
+        prevRec.sent_to_processing_date=str(request.POST["sending_date"]) 
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/inprocess')
@@ -478,7 +494,10 @@ def sendInProcess(request,id):
             state="In Process",
             recieving_date =prevRec.recieving_date,
             total_bale=prevRec.total_bale,
-            processing_party_name = request.POST.get("processing-party")
+            processing_party_name = request.POST.get("processing-party"),
+            sent_to_processing_date=str(request.POST["sending_date"]),
+            total_thans=prevRec.total_thans,
+            total_mtrs=prevRec.total_mtrs
             
             )
         if than_recieved == 0 :
@@ -529,6 +548,7 @@ def readyToPrint(request,id):
     than_recieved = int(than_recieved)
     if(prevRec.than == than_recieved):
         prevRec.state="Ready to print"
+        prevRec.recieve_processed_date=str(request.POST.get("processing_date"))
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/readytoprint')
@@ -566,7 +586,10 @@ def readyToPrint(request,id):
             state="Ready to print",
             recieving_date =prevRec.recieving_date,
             total_bale=prevRec.total_bale,
-            processing_party_name = prevRec.processing_party_name
+            processing_party_name = prevRec.processing_party_name,
+            recieve_processed_date=str(request.POST.get("processing_date")),
+            total_mtrs=prevRec.total_mtrs,
+            total_thans=prevRec.total_thans
             
             )
         if than_recieved == 0 :

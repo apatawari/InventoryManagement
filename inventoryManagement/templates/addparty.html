@@ -8,10 +8,10 @@
       <form method="POST" action="{% url 'saveparty' %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Party</h1>
+            <h1>Add Processing House Party name</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="addparty" placeholder="Party Name" name="processing-party">
+            <input type="text" class="form-control" id="addparty" placeholder="Processing House Party name" name="processing-party" required>
 
             <br>
 
@@ -24,7 +24,7 @@
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th scope="col">Processing Party Name</th>
+            <th scope="col">Processing House Party name</th>
             
             
             
