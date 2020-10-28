@@ -23,5 +23,13 @@ urlpatterns = [
     path('addquality',views.renderAddQuality, name="addquality"),
     path('savequality',views.saveQuality, name="savequality"),
     path('addparty',views.renderAddParty, name="addparty"),
+    path('saveparty',views.saveParty, name="saveparty"),
+    path('inprocess',views.showProcessing, name='inprocess'),
+    path('processingrequest',views.showProcessingRequest, name= "processingrequest"),
+    path('processingapprove/<int:id>',views.processingApprove, name='processingapprove'),
+    path('sendinprocess/<int:id>',views.sendInProcess, name="sendinprocess"),
+
+    path('readytoprint',views.showReadyToPrint, name='readytoprint'),
+    
 
 ]

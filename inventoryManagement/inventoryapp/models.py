@@ -26,7 +26,7 @@ class Record(models.Model):
     state = models.CharField(max_length=10,default='Transit')
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
-    quality2 = models.CharField(max_length=20,default="-")
+    processing_party_name = models.CharField(max_length=50,default="-")
     total_bale = models.IntegerField()
     
     # def __str__(self):

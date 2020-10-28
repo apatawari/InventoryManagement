@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404,redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality
+from .models import Record,Quality,ProcessingPartyName
 from .resources import ItemResources
 from .filters import RecordFilter
 from django.contrib import messages
@@ -313,7 +313,8 @@ def approveCheck(request,id):
             lr_no=prevRec.lr_no,
             order_no=prevRec.order_no,
             state="Checked",
-            recieving_date =prevRec.recieving_date
+            recieving_date =prevRec.recieving_date,
+            total_bale=prevRec.total_bale
             
             )
         if than_recieved == 0 :
@@ -360,15 +361,138 @@ def checkedEdit(request,id):
 
 
 def renderAddQuality(request):
-    return render(request,'addquality.html')
+    all_qualities = Quality.objects.all().order_by('qualities')
+    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    paginator = Paginator(all_qualities,10)
+    page = request.GET.get('page')
+    qualities = paginator.get_page(page)
+
+    return render(request,'addquality.html',{'records':qualities})
 
 def saveQuality(request):
+    q=request.POST.get("newer_quality")
     new_quality = Quality(
-        qualities=request.POST.get("newer_quality")
+        qualities=q.upper()
     )
     new_quality.save()
     messages.success(request,"Quality added")
-    return redirect('/index')
+    return redirect('/addquality')
 
 def renderAddParty(request):
-    return render(request,'addparty.html')
+    parties_all = ProcessingPartyName.objects.all().order_by('processing_party')
+    #return render(request,'addparty.html',{'parties':parties_all})
+
+    paginator = Paginator(parties_all,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'addparty.html',{'records':parties})
+
+def saveParty(request):
+    p = request.POST.get("processing-party")
+    new_Party = ProcessingPartyName(
+        processing_party= p.upper()
+    )
+    new_Party.save()
+    messages.success(request,"Party added successfully")
+    return redirect('/addparty')
+
+#processing-----
+def showProcessing(request):
+    records_list=Record.objects.filter(state="In Process")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'processing.html',{'records':records,'filter':records_filter})
+
+def showProcessingRequest(request):
+    records_list=Record.objects.filter(state="Checked")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'processingrequest.html',{'records':records,'filter':records_filter})
+
+def processingApprove(request,id):
+    rec=get_object_or_404(Record, id=id)
+    processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
+    return render(request, 'processingapprove.html', {'record':rec,'parties':processing_parties})
+
+def sendInProcess(request,id):
+    prevRec = get_object_or_404(Record,id=id)
+    than_recieved=request.POST.get("than_to_process")
+    than_recieved = int(than_recieved)
+    if(prevRec.than == than_recieved):
+        prevRec.state="In Process"
+        prevRec.processing_party_name=request.POST.get("processing-party")
+        prevRec.save()
+        messages.success(request,"Data Updated Successfully")
+        return redirect('/inprocess')
+    elif(prevRec.than<than_recieved):
+        messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        than_un_checked = prevRec.than - than_recieved
+        
+        bale_per_than = prevRec.bale/prevRec.than
+        bale_un_checked = than_un_checked * bale_per_than
+        bale_checked = prevRec.bale - bale_un_checked
+        
+        mtrs_un_checked = prevRec.mtrs/prevRec.than
+        mtrs_un_checked = mtrs_un_checked * than_un_checked
+        mtrs_un_checked = round(mtrs_un_checked,2)
+        mtrs_checked = prevRec.mtrs - mtrs_un_checked
+        mtrs_checked = round(mtrs_checked,2)
+
+
+        value = Record(
+            sr_no=prevRec.sr_no,
+            party_name=prevRec.party_name,
+            bill_no=prevRec.bill_no,
+            bill_date=prevRec.bill_date,
+            bill_amount=prevRec.bill_amount,
+            lot_no=prevRec.lot_no,
+            quality=prevRec.quality,
+            than=than_recieved,
+            mtrs=mtrs_checked,
+            bale=bale_checked,
+            rate=prevRec.rate,
+            lr_no=prevRec.lr_no,
+            order_no=prevRec.order_no,
+            state="In Process",
+            recieving_date =prevRec.recieving_date,
+            total_bale=prevRec.total_bale,
+            processing_party_name = request.POST.get("processing-party")
+            
+            )
+        if than_recieved == 0 :
+            messages.error(request,"Than Recieved cannot be Zero (0)")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            value.save()
+            prevRec.bale = bale_un_checked
+            prevRec.than = than_un_checked
+            prevRec.mtrs = mtrs_un_checked
+            prevRec.save()
+            messages.success(request,"Data Updated Successfully")
+        #print(than_in_transit,than_in_godown)
+        return redirect('/inprocess')
+
+
+#ready to print-----
+def showReadyToPrint(request):
+    records_list=Record.objects.filter(state="Ready to print")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'processing.html',{'records':records,'filter':records_filter})

@@ -2,7 +2,8 @@
 
 {% block title%} Add Quality {% endblock %}
 {% block content%}
-
+{% load widget_tweaks %}
+{% load my_tags %}
       <!-- Add Quality Start-->
       <form method="POST" action="{% url 'savequality' %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
@@ -18,5 +19,48 @@
         </div>
       </form>
       <!-- Add Quality End -->
+
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">Sr-no</th>
+            <th scope="col">Quality</th>
+            
+            
+            
+          </tr>
+        </thead>
+        <tbody>
+        
+        {% for q in records %}
+          <tr>
+            
+            <td scope="row">{{ forloop.counter }}</td>
+            <td>{{q.qualities}}</td>
+            
+            
+          </tr>
+          
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <div class="number-line">
+          {% if records.has_previous %}
+          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% endif%}
+          {% for num in records.paginator.page_range %}
+            {%if records.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+            
+            {% endif %}
+          {%endfor%}
+          {% if records.has_next %}
+            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% endif%}
+        </div>  
+      </div>
 
 {% endblock %}
