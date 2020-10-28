@@ -124,7 +124,7 @@ a:hover {
 /* Index */
 .upload-file {
   width: 360px;
-  background: #f1f1f1;
+  background: #e6e6e6;
   position: relative;
   margin: 50px auto 100px;
   padding: 50px 40px;
@@ -185,6 +185,9 @@ a:hover {
 .btn-add {
   display: inline-block;
   background-color: #a044ff;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.5;
   color: #ffffff;
   border-radius: 5px;
   width: 100%;
