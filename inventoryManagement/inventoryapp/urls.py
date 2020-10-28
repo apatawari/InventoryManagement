@@ -30,6 +30,8 @@ urlpatterns = [
     path('sendinprocess/<int:id>',views.sendInProcess, name="sendinprocess"),
 
     path('readytoprint',views.showReadyToPrint, name='readytoprint'),
-    
+    path('readytoprintrequest',views.showReadyRequest, name= "readytoprintrequest"),
+    path('readyapprove/<int:id>',views.readyApprove, name='readyapprove'),
+    path('sendreadytoprint/<int:id>',views.readyToPrint, name="sendreadytoprint"),
 
 ]

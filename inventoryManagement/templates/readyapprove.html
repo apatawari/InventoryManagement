@@ -55,7 +55,7 @@
             </li>
           </ul>
           <!-- Approval Start -->
-            <a class ="btn-request float-right" href="{% url 'addparty' %}">Add Processing Party</a>
+            <a class ="btn-request float-right" href="#">Button</a>
           <!-- Approval End-->
         </div>
       </nav>
@@ -85,7 +85,7 @@
       <!-- Filter Start -->
       
       <!-- Display Table End -->
-      <form class = "md-form view-file" method="POST" action="{% url 'sendinprocess' record.id %}" enctype="multipart/form-data">
+      <form class = "md-form view-file" method="POST" action="{% url 'sendreadytoprint' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
           <div class="form-group col-md-12">
@@ -152,8 +152,8 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label for="thaninprocess">Than in process</label>
-                <input type="number" class="form-control" id="thanrecieved" placeholder="Than in process" value=0 name="than_to_process" required>
+                <label for="thanreadytoprint">Than ready to print</label>
+                <input type="number" class="form-control" id="thanreadytoprint" placeholder="Than ready to print" value=0 name="than_ready" required>
             </div>
             <div class="form-group col-md-4">
                 <label for="recievingdate">Recieving Date</label>
@@ -161,21 +161,14 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="new-quality">Processing Party</label>
-                <select class="form-control" name="processing-party" required>
-
-                    {% for party in parties %}
-                        
-                        <option value="{{ party.processing_party }}">{{ party.processing_party }}</option>
-                        
-                    {% endfor %}
-                </select>
+                <input type="text" class="form-control" id="processing-party" name="processing_party" value="{{record.processing_party_name}}" readonly/>
 
                 
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-9">
-                <button type="submit" class="btn btn-success button">Approve</button>
+                <button type="submit" class="btn btn-success button">Ready to print</button>
             </div>
             <!--<div class="form-group col-md-3 next-previous">
                 <a class ="anchor-button float-right" href="{% url 'nextRec' record.id %}">Next</a>

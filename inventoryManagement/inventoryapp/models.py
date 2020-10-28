@@ -23,7 +23,7 @@ class Record(models.Model):
     lr_no = models.IntegerField()
     order_no = models.IntegerField()
     state_choices=(('state1','In transit'), ('state2','Order recieved'), ('state3','In godown'), ('state4','done'))
-    state = models.CharField(max_length=10,default='Transit')
+    state = models.CharField(max_length=30,default='Transit')
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(default=timezone.now().strftime("%Y-%m-%d"))
     processing_party_name = models.CharField(max_length=50,default="-")

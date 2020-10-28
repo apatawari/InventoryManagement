@@ -359,7 +359,7 @@ def checkedEdit(request,id):
         #print(record.bill_date)
         return redirect('/checking')
 
-
+#Quality and Processing part master
 def renderAddQuality(request):
     all_qualities = Quality.objects.all().order_by('qualities')
     #return render(request,'addquality.html',{'allqualities':all_qualities})
@@ -371,11 +371,16 @@ def renderAddQuality(request):
 
 def saveQuality(request):
     q=request.POST.get("newer_quality")
-    new_quality = Quality(
-        qualities=q.upper()
-    )
-    new_quality.save()
-    messages.success(request,"Quality added")
+    try:
+        existing_quality=get_object_or_404(Quality,qualities=q.upper())
+        messages.error(request,"This quality already exists")
+    except:
+
+        new_quality = Quality(
+            qualities=q.upper()
+        )
+        new_quality.save()
+        messages.success(request,"Quality added")
     return redirect('/addquality')
 
 def renderAddParty(request):
@@ -389,11 +394,16 @@ def renderAddParty(request):
 
 def saveParty(request):
     p = request.POST.get("processing-party")
-    new_Party = ProcessingPartyName(
-        processing_party= p.upper()
-    )
-    new_Party.save()
-    messages.success(request,"Party added successfully")
+    p=p.upper()
+    try:
+        existing_party=get_object_or_404(ProcessingPartyName,processing_party=p)
+        messages.error(request,"This Processing Party already exists")
+    except:
+        new_Party = ProcessingPartyName(
+            processing_party= p
+        )
+        new_Party.save()
+        messages.success(request,"Processing Party added successfully")
     return redirect('/addparty')
 
 #processing-----
@@ -495,4 +505,79 @@ def showReadyToPrint(request):
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, 'processing.html',{'records':records,'filter':records_filter})
+    return render(request, 'readytoprint.html',{'records':records,'filter':records_filter})
+
+def showReadyRequest(request):
+    records_list=Record.objects.filter(state="In Process")
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request, 'readytoprintrequest.html',{'records':records,'filter':records_filter})
+
+def readyApprove(request,id):
+    rec=get_object_or_404(Record, id=id)
+    #processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
+    return render(request, 'readyapprove.html', {'record':rec})
+
+def readyToPrint(request,id):
+    prevRec = get_object_or_404(Record,id=id)
+    than_recieved=request.POST.get("than_ready")
+    than_recieved = int(than_recieved)
+    if(prevRec.than == than_recieved):
+        prevRec.state="Ready to print"
+        prevRec.save()
+        messages.success(request,"Data Updated Successfully")
+        return redirect('/readytoprint')
+    elif(prevRec.than<than_recieved):
+        messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        than_un_checked = prevRec.than - than_recieved
+        
+        bale_per_than = prevRec.bale/prevRec.than
+        bale_un_checked = than_un_checked * bale_per_than
+        bale_checked = prevRec.bale - bale_un_checked
+        
+        mtrs_un_checked = prevRec.mtrs/prevRec.than
+        mtrs_un_checked = mtrs_un_checked * than_un_checked
+        mtrs_un_checked = round(mtrs_un_checked,2)
+        mtrs_checked = prevRec.mtrs - mtrs_un_checked
+        mtrs_checked = round(mtrs_checked,2)
+
+
+        value = Record(
+            sr_no=prevRec.sr_no,
+            party_name=prevRec.party_name,
+            bill_no=prevRec.bill_no,
+            bill_date=prevRec.bill_date,
+            bill_amount=prevRec.bill_amount,
+            lot_no=prevRec.lot_no,
+            quality=prevRec.quality,
+            than=than_recieved,
+            mtrs=mtrs_checked,
+            bale=bale_checked,
+            rate=prevRec.rate,
+            lr_no=prevRec.lr_no,
+            order_no=prevRec.order_no,
+            state="Ready to print",
+            recieving_date =prevRec.recieving_date,
+            total_bale=prevRec.total_bale,
+            processing_party_name = prevRec.processing_party_name
+            
+            )
+        if than_recieved == 0 :
+            messages.error(request,"Than Recieved cannot be Zero (0)")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            value.save()
+            prevRec.bale = bale_un_checked
+            prevRec.than = than_un_checked
+            prevRec.mtrs = mtrs_un_checked
+            prevRec.save()
+            messages.success(request,"Data Updated Successfully")
+        #print(than_in_transit,than_in_godown)
+        return redirect('/readytoprint')
