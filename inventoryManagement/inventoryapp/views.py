@@ -42,8 +42,6 @@ def upload(request):
         # result = item_resource.import_data(dataset, dry_run=True)
         # print(imported_data)
         for data in imported_data:
-            billdate=str(data[3])
-            billdate=billdate.strip(" 00:00:00")
             try:
                 
                 rec=get_object_or_404(Record, 
@@ -59,7 +57,7 @@ def upload(request):
                     sr_no=data[0],
                     party_name=data[1],
                     bill_no=data[2],
-                    bill_date=billdate,
+                    bill_date=(data[3]).date(),
                     bill_amount=data[4],
                     lot_no=data[5],
                     quality=data[6],
@@ -89,7 +87,7 @@ def upload(request):
         if (counter > 0):
             messages.success(request,str(counter)+ " Records were Inserted")
         else:
-            messages.error(request, "No Records were Inserted")
+            messages.error(request, "These records already exist")
 
 
     return render(request, 'index.html')
