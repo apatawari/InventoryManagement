@@ -2,6 +2,15 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+from django.conf.urls import (
+handler404, 
+handler500
+)
+
+handler404 = 'inventoryapp.views.page_not_found'
+handler500 = 'inventoryapp.views.server_error'
+
+
 urlpatterns = [
     path('index', views.index,name='index'),
     path('insert', views.upload,name='insert'),

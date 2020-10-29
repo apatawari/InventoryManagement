@@ -12,6 +12,23 @@ from django.http import HttpResponseRedirect
 import pandas
 import numpy as np
 
+from django.shortcuts import (
+render_to_response
+)
+from django.template import RequestContext
+
+# HTTP Error 400
+def server_error(request):
+    response = render_to_response('500.html', context_instance=RequestContext(request))
+    response.status_code = 500
+
+    return response
+
+def page_not_found(request, exception):
+    response = render_to_response('404.html', context_instance=RequestContext(request))
+    response.status_code = 404
+
+    return response
 
 # Create your views here.
 def index(request):
@@ -24,23 +41,25 @@ def upload(request):
     if request.method == 'POST':
         item_resource = ItemResources()
         dataset = Dataset()
-        new_item = request.FILES['myfile']
+        try:
+            new_item = request.FILES['myfile']
+            excel_data_df = pandas.read_excel(new_item, skiprows=[0,1,2,3,4,5])
+            excel_data_df.rename(columns = {'Unnamed: 0':'sr_no','Party Name':'party_name', 'Bill No':'bill_no', 'Bill Date':'bill_date', 'Bill Amt':'bill_amount','Unnamed: 7':'Lot Number', 'Quality':'quality', 'Than':'than', 'Mtrs':'mtrs', 'Bale':'bale', 'Rate':'rate', 'Unnamed: 14':'lr_no', 'Order No':'order_no',}, inplace = True)
+            excel_data_df.drop(['S.No', 'Lot No', 'LR No'],axis=1, inplace = True)
+            excel_data_df['sr_no'].replace('', np.nan, inplace=True)
 
+            excel_data_df.dropna(subset=['sr_no'], inplace=True)
+            empty_cols = [col for col in excel_data_df.columns if excel_data_df[col].isnull().all()]
+            # Drop these columns from the dataframe
+            excel_data_df.drop(empty_cols,axis=1,inplace=True)
 
-        excel_data_df = pandas.read_excel(new_item, skiprows=[0,1,2,3,4,5])
-        excel_data_df.rename(columns = {'Unnamed: 0':'sr_no','Party Name':'party_name', 'Bill No':'bill_no', 'Bill Date':'bill_date', 'Bill Amt':'bill_amount','Unnamed: 7':'Lot Number', 'Quality':'quality', 'Than':'than', 'Mtrs':'mtrs', 'Bale':'bale', 'Rate':'rate', 'Unnamed: 14':'lr_no', 'Order No':'order_no',}, inplace = True)
-        excel_data_df.drop(['S.No', 'Lot No', 'LR No'],axis=1, inplace = True)
-        excel_data_df['sr_no'].replace('', np.nan, inplace=True)
-
-        excel_data_df.dropna(subset=['sr_no'], inplace=True)
-        empty_cols = [col for col in excel_data_df.columns if excel_data_df[col].isnull().all()]
-        # Drop these columns from the dataframe
-        excel_data_df.drop(empty_cols,axis=1,inplace=True)
-
-
-        imported_data = dataset.load(excel_data_df)
-        # result = item_resource.import_data(dataset, dry_run=True)
-        # print(imported_data)
+            imported_data = dataset.load(excel_data_df)
+            # result = item_resource.import_data(dataset, dry_run=True)
+            # print(imported_data)
+        except:
+            messages.error(request, "Please Select Proper File")
+            return redirect('/index')
+            
         for data in imported_data:
             try:
                 
@@ -90,7 +109,7 @@ def upload(request):
             messages.error(request, "These records already exist")
 
 
-    return render(request, 'index.html')
+    return redirect('/index')
 
 def showIntransit(request):
     records_list=Record.objects.filter(state="Transit")
