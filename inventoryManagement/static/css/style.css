@@ -12,6 +12,10 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+.active {
+  text-decoration: underline;
+  color: #ffffff;
+}
 
 /* Firefox */
 input[type="number"] {
@@ -46,7 +50,7 @@ a:hover {
 
 .navbar ul li a {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: rgba(255, 255, 255, 0.8);
   display: inline-block;
   text-transform: uppercase;
   font-weight: 700;
@@ -220,7 +224,7 @@ a:hover {
 /* View Data */
 .view-file {
   width: 80%;
-  background: #f1f1f1;
+  background: #e6e6e6;
   position: relative;
   margin: 50px auto 100px;
   padding: 50px 40px;
