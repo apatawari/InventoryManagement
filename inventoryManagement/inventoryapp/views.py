@@ -7,25 +7,24 @@ from .resources import ItemResources
 from .filters import RecordFilter
 from django.contrib import messages
 from tablib import Dataset
-from django.contrib import messages
 from django.http import HttpResponseRedirect
 import pandas
 import numpy as np
 
-from django.shortcuts import (
-render_to_response
-)
-from django.template import RequestContext
+#from django.shortcuts import render_to_response
 
-# HTTP Error 400
+
+
+# HTTP Error 500
 def server_error(request):
-    response = render_to_response('500.html', context_instance=RequestContext(request))
+    response = render('500.html', context_instance=RequestContext(request))
     response.status_code = 500
 
     return response
 
+# HTTP Error 404
 def page_not_found(request, exception):
-    response = render_to_response('404.html', context_instance=RequestContext(request))
+    response = render('404.html', context_instance=RequestContext(request))
     response.status_code = 404
 
     return response
