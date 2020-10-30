@@ -67,7 +67,7 @@
                 <a class="dropdown-item" href="{% url 'godown' %}">Godown</a>
                 <a class="dropdown-item" href="{% url 'checking' %}">Checking</a>
                 <a class="dropdown-item" href="{% url 'inprocess' %}">Processing</a>
-                <a class="dropdown-item" href="{% url 'readytoprint' %}">ReadyToPrint</a>
+                <a class="dropdown-item" href="{% url 'readytoprint' %}">Processed Grey</a>
               </div>
             </li>
           </ul>
@@ -148,7 +148,7 @@
         {% for record in records %}
           <tr>
             
-            <td scope="row">{{record.id}}</td>
+            <td scope="row">{{ forloop.counter }}</td>
             <td>{{record.party_name}}</td>
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>

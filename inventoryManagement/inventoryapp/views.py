@@ -33,7 +33,28 @@ def page_not_found(request, exception):
 def index(request):
     return render(request, 'index.html')
 
+def back1(request):
+    return redirect('/intransit')
 
+def back2checking(request):
+    return redirect('/checking')
+# def back2processing(request):
+#     return redirect('/inprocess')
+# def back2ready(request):
+#     return redirect('/readytoprint')
+
+
+def back(request,state):
+    print(state)
+    if state == "Transit":
+        return redirect('/godownrequest')
+    elif state == "Godown":
+        return redirect('/checkingrequest')
+    elif state == "Checked":
+        return redirect('/processingrequest')
+    elif state == "In Process":
+        return redirect('/readytoprintrequest')
+    
 
 def upload(request):
     counter = 0

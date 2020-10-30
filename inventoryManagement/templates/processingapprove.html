@@ -67,7 +67,7 @@
                 <a class="dropdown-item" href="{% url 'godown' %}">Godown</a>
                 <a class="dropdown-item" href="{% url 'checking' %}">Checking</a>
                 <a class="dropdown-item" href="{% url 'inprocess' %}">Processing</a>
-                <a class="dropdown-item" href="{% url 'readytoprint' %}">ReadyToPrint</a>
+                <a class="dropdown-item" href="{% url 'readytoprint' %}">Processed Grey</a>
               </div>
             </li>
           </ul>
@@ -193,6 +193,10 @@
         <div class="form-row">
             <div class="form-group col-md-9">
                 <button type="submit" class="btn btn-success button">Approve</button>
+            </div>
+            <div class="form-group col-md-3 next-previous">
+                <a class ="anchor-button float-right" href="{% url 'back' record.state %}">Back</a>
+                
             </div>
             <!--<div class="form-group col-md-3 next-previous">
                 <a class ="anchor-button float-right" href="{% url 'nextRec' record.id %}">Next</a>

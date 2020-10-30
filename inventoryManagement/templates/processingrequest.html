@@ -55,9 +55,9 @@
                 {%elif request.path == processingrequest %}
                   Process
                 {%elif request.path == readytoprint %}
-                  Ready To Print
+                  Processed Grey
                 {%elif request.path == readytoprintrequest %}
-                  Ready To Print
+                  Processed Grey
                 {% else %}
                   Grey
                 {% endif %}
@@ -67,13 +67,11 @@
                 <a class="dropdown-item" href="{% url 'godown' %}">Godown</a>
                 <a class="dropdown-item" href="{% url 'checking' %}">Checking</a>
                 <a class="dropdown-item" href="{% url 'inprocess' %}">Processing</a>
-                <a class="dropdown-item" href="{% url 'readytoprint' %}">ReadyToPrint</a>
+                <a class="dropdown-item" href="{% url 'readytoprint' %}">Processed Grey</a>
               </div>
             </li>
           </ul>
-          <!-- Approval Start -->
-            <a class ="btn-request float-right" href="{% url 'addparty' %}">Add Processing House Party name</a>
-          <!-- Approval End-->
+          
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -145,17 +143,17 @@
         {% for record in records %}
           <tr>
             
-            <td scope="row">{{record.id}}</td>
+            <td scope="row">{{ forloop.counter }}</td>
             <td><a href="{% url 'processingapprove' record.id %}">{{record.party_name}}</a></td>
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
-            <td>{{record.lot_no}}</td>
+            <td><a href="{% url 'processingapprove' record.id %}">{{record.lot_no}}</a></td>
             <td>{{record.quality}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.rate}}</td>
-            <td><a href="{% url 'processingapprove' record.id %}">{{record.lr_no}}</a></td>
+            <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td>{{record.state}}</td>
           

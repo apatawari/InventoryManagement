@@ -42,5 +42,8 @@ urlpatterns = [
     path('readytoprintrequest',views.showReadyRequest, name= "readytoprintrequest"),
     path('readyapprove/<int:id>',views.readyApprove, name='readyapprove'),
     path('sendreadytoprint/<int:id>',views.readyToPrint, name="sendreadytoprint"),
+    path('back',views.back1,name="back1"),
+    path('back2',views.back2checking,name="back2checking"),
+    path('back/<str:state>',views.back,name="back"),
 
 ]

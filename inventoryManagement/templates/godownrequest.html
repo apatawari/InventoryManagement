@@ -51,7 +51,7 @@
         {% for record in records %}
           <tr>
             
-            <td scope="row">{{record.id}}</td>
+            <td scope="row">{{ forloop.counter }}</td>
             <td><a href="{% url 'godownapprove' record.id %}">{{record.party_name}}</a></td>
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>
