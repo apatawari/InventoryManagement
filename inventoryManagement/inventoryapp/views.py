@@ -458,6 +458,22 @@ def saveParty(request):
         messages.success(request,"Processing Party added successfully")
     return redirect('/addparty')
 
+def deleteProcessingParty(request,id):
+    ProcessingPartyName.objects.filter(id=id).delete()
+    messages.success(request,"Processing House Party deleted")
+    return redirect('/addparty')
+
+def renderEditParty(request,id):
+    party=get_object_or_404(ProcessingPartyName,id=id)
+    return render(request,'editparty.html',{'id':id,'name':party.processing_party})
+
+def editProcessingParty(request,id):
+    party=get_object_or_404(ProcessingPartyName,id=id)
+    party.processing_party = request.POST.get("edit-party")
+    party.save()
+    messages.success(request,"Processing House Party edited")
+    return redirect('/addparty')
+
 #processing-----
 def showProcessing(request):
     records_list=Record.objects.filter(state="In Process")

@@ -46,4 +46,8 @@ urlpatterns = [
     path('back2',views.back2checking,name="back2checking"),
     path('back/<str:state>',views.back,name="back"),
 
+    path('deleteparty/<int:id>',views.deleteProcessingParty,name="deleteprocessingparty"),
+    path('editparty/<int:id>',views.renderEditParty,name="rendereditparty"),
+    path('editprocessingparty/<int:id>',views.editProcessingParty,name="editprocessingparty"),
+
 ]
