@@ -432,6 +432,22 @@ def saveQuality(request):
         messages.success(request,"Quality added")
     return redirect('/addquality')
 
+def deleteQuality(request,id):
+    Quality.objects.filter(id=id).delete()
+    messages.success(request,"Quality deleted")
+    return redirect('/addquality')
+
+def renderEditQuality(request,id):
+    quality=get_object_or_404(Quality,id=id)
+    return render(request,'editquality.html',{'id':id,'name':quality.qualities})
+
+def editQuality(request,id):
+    quality=get_object_or_404(Quality,id=id)
+    quality.qualities = request.POST.get("edit-quality")
+    quality.save()
+    messages.success(request,"Grey Quality edited")
+    return redirect('/addquality')
+
 def renderAddParty(request):
     parties_all = ProcessingPartyName.objects.all().order_by('processing_party')
     #return render(request,'addparty.html',{'parties':parties_all})

@@ -49,5 +49,7 @@ urlpatterns = [
     path('deleteparty/<int:id>',views.deleteProcessingParty,name="deleteprocessingparty"),
     path('editparty/<int:id>',views.renderEditParty,name="rendereditparty"),
     path('editprocessingparty/<int:id>',views.editProcessingParty,name="editprocessingparty"),
-
+    path('deletequality/<int:id>',views.deleteQuality,name="deletequality"),
+    path('editquality/<int:id>',views.renderEditQuality,name="rendereditquality"),
+    path('editgreyquality/<int:id>',views.editQuality,name="editquality"),
 ]
