@@ -52,4 +52,6 @@ urlpatterns = [
     path('deletequality/<int:id>',views.deleteQuality,name="deletequality"),
     path('editquality/<int:id>',views.renderEditQuality,name="rendereditquality"),
     path('editgreyquality/<int:id>',views.editQuality,name="editquality"),
+
+    path('reportfilter',views.reportFilter, name='reportfilter'),
 ]

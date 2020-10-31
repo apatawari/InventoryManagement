@@ -696,3 +696,10 @@ def readyToPrint(request,id):
 
         #print(than_in_transit,than_in_godown)
         return redirect('/readytoprint')
+
+def reportFilter(request):
+    processing_parties= ProcessingPartyName.objects.all()
+    qualities= Quality.objects.all()
+
+
+    return render(request,'reportfilter.html',{'parties':processing_parties,'qualities':qualities})
