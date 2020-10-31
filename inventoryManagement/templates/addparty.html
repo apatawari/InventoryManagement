@@ -25,8 +25,7 @@
             
             <th scope="col">Sr-no</th>
             <th scope="col">Processing House Party name</th>
-            <th>-</th>
-            <th>-</th>
+            <th></th>
             
             
             
@@ -39,8 +38,10 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td>{{p.processing_party}}</td>
-            <td><a class ="anchor-button float-right" href="{% url 'rendereditparty' p.id %}">Edit</a></td>
-            <td><a class ="anchor-button float-right" href="{% url 'deleteprocessingparty' p.id %}">Delete</a></td>
+            <td>
+              <a class ="anchor-button float-right danger" href="{% url 'deleteprocessingparty' p.id %}">Delete</a>
+              <a class ="anchor-button float-right space" href="{% url 'rendereditparty' p.id %}">Edit</a>
+            </td>
             
             
           </tr>

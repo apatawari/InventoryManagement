@@ -3,9 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Report</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
 </head>
 <body>
-    Report
+  {% url 'index' as index %}
+  {% url 'intransit' as intransit %}
+  {% url 'godown' as godown %}
+  {% url 'godownrequest' as godownrequest %}
+  {% url 'checking' as checking %}
+  {% url 'checkingrequest' as checkingrequest %}
+  {% url 'inprocess' as inprocess %}
+  {% url 'processingrequest' as processingrequest %}
+  {% url 'readytoprint' as readytoprint %}
+  {% url 'readytoprintrequest' as readytoprintrequest %}
+    <!-- Nav Bar Start-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarColor03">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item {%if request.path == index %} active {%endif%}">
+                <a class="nav-link" href="{% url 'index' %}">HOME <!--<span class="sr-only">(current)</span>--></a>
+            </li>
+            <li class="nav-item dropdown {%if request.path == intransit %}active {%elif request.path == godown %} active
+            {%elif request.path == godownrequest %} active {%elif request.path == checking %} active
+            {%elif request.path == checkingrequest %} active {%elif request.path == inprocess %} active
+            {%elif request.path == processingrequest %} active {%elif request.path == readytoprint %} active
+            {%elif request.path == readytoprintrequest %} active
+            {%endif%}">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {%if request.path == intransit %}
+                  Transit
+                {%elif request.path == godown %}
+                  Godown
+                {%elif request.path == godownrequest %}
+                  Godown
+                {%elif request.path == checking %}
+                  Checking
+                {%elif request.path == checkingrequest %}
+                  Checking
+                {%elif request.path == inprocess %}
+                  Process
+                {%elif request.path == processingrequest %}
+                  Process
+                {%elif request.path == readytoprint %}
+                  Ready To Print
+                {%elif request.path == readytoprintrequest %}
+                  Ready To Print
+                {% else %}
+                  Grey
+                {% endif %}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'intransit' %}">Transit</a>
+                <a class="dropdown-item" href="{% url 'godown' %}">Godown</a>
+                <a class="dropdown-item" href="{% url 'checking' %}">Checking</a>
+                <a class="dropdown-item" href="{% url 'inprocess' %}">Processing</a>
+                <a class="dropdown-item" href="{% url 'readytoprint' %}">Processed Grey</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Nav Bar End-->
+
+      <!-- Messages Start -->
+    {% for message in messages %}
+    <div
+      class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show"
+      role="alert"
+    >
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+    <!-- Messages End -->
+    
+    {% load widget_tweaks %}
+    {% load my_tags %}
+      <!-- Record Filter Start-->
+      <form class = "md-form view-report" method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--First Section -->
+        <div class="form-row form-group">
+            <div class="form-group col-md-4">
+                <label for="firstdate">Start Date</label>
+                <input type="date" class="form-control" id="firstdate" name="first_date" placeholder="mm-dd-yyyy" required />
+                <label for="firstdate">End Date</label>
+                <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" required />
+
+                <label for="lotno">Lot No</label>
+                <input type="number" class="form-control" id="lot_no" placeholder="Lot No" value="{{record.lot_no}}" name="lot_no">
+            </div>
+            <!-- First Section End -->
+            <div class="form-group form-check col-md-4 scroll">
+                <label class="form-check-label" for="quality"><b>SELECT QUALITY</b></label>
+                {% for q in qualities %}
+                <input class="form-check-input" type="checkbox" value="" id="quality">
+                <label class="form-check-label">
+                    {{q.qualities}}
+                </label>
+                {% endfor %}
+            </div>
+            <div class="form-group form-check col-md-4 scroll">
+                <label class="form-check-label" for="quality"><b>SELECT PROCESSING PARTY</b></label>
+                {% for p in parties %}
+                <input class="form-check-input" type="checkbox" value="" id="partyname">
+                <label class="form-check-label">
+                    {{p.processing_party}}
+                </label>
+                {% endfor %}
+            </div>
+            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+            <div class="form-group form-check col-md-4">
+                <button type="submit" class="btn btn-primary button float-right mt-4">Generate Report</button>
+            </div>
+        </div>
+        <!-- Record Filter End-->
 </body>
+{% load static %}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+{% load static %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+{% load static %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </html>
