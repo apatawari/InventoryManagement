@@ -75,9 +75,14 @@
             </div>
             
             <div class="form-group col-md-6 next-previous">
-                <a class ="anchor-button" href="{% url 'back1' %}">Back</a>
-                <a class ="anchor-button float-right" href="{% url 'nextRec' record.id %}">Next</a>
-                <a class ="anchor-button float-right space" href="{% url 'prevRec' record.id %}">Previous</a>
+                <a class ="anchor-button float-right" href="{% url 'back1' %}">Back</a>
+            </div>
+            <div class="form-group col-md-4 next-previous">
+                <!-- Empty Space -->
+            </div>
+            <div class="form-group col-md-4 next-previous float-center">
+                <a class ="anchor-button space" href="{% url 'prevRec' record.id %}">Prev</a>
+                <a class ="anchor-button" href="{% url 'nextRec' record.id %}">Next</a>
             </div>
         </div>
       </form>

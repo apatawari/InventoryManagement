@@ -284,6 +284,11 @@ a:hover {
   border: 1px solid #dee2e6;
 }
 
+.float-center {
+  text-align: center;
+  display: block;
+}
+
 .filter-button {
   margin-top: 30px;
 }
