@@ -27,7 +27,6 @@
             <th scope="col">Sr-no</th>
             <th scope="col">Grey Quality</th>
             <th></th>
-            <th></th>
             
             
           </tr>
@@ -39,8 +38,10 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td>{{q.qualities}}</td>
-            <td><a class ="anchor-button float-right" href="{% url 'rendereditquality' q.id %}">Edit</a></td>
-            <td><a class ="anchor-button float-right" href="{% url 'deletequality' q.id %}">Delete</a></td>
+            <td>
+              <a class ="anchor-button float-right danger" href="{% url 'deletequality' q.id %}">Delete</a>
+              <a class ="anchor-button float-right space" href="{% url 'rendereditquality' q.id %}">Edit</a>
+            </td>
             
             
           </tr>
