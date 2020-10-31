@@ -10,6 +10,7 @@ from tablib import Dataset
 from django.http import HttpResponseRedirect
 import pandas
 import numpy as np
+import datetime
 
 #from django.shortcuts import render_to_response
 
@@ -91,12 +92,12 @@ def upload(request):
                     lr_no=data[11],
                     order_no=data[12])
             except:
-                
+                d=str(data[3])
                 value = Record(
                     sr_no=data[0],
                     party_name=data[1],
                     bill_no=data[2],
-                    bill_date=(data[3]).date(),
+                    bill_date=datetime.datetime.strptime(d[0:10], '%Y-%m-%d').strftime('%b %d,%Y'),#(data[3]).date(),
                     bill_amount=data[4],
                     lot_no=data[5],
                     quality=data[6],
@@ -112,7 +113,7 @@ def upload(request):
 
                     )
                 value.save()
-                
+                print(datetime.datetime.strptime(d[0:10], '%Y-%m-%d').strftime('%b %d,%Y'))
                 counter = counter + 1
                 try:
                     rec=get_object_or_404(Quality,
@@ -171,8 +172,10 @@ def record(request,id):
 
 def goDownApprove(request,id):
     rec=get_object_or_404(Record, id=id)
+    mindate=datetime.datetime.strptime(rec.bill_date,'%b %d,%Y').strftime('%Y-%m-%d')
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities = Quality.objects.all()
-    return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities})
+    return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate})
 
 def edit(request,id):
     if request.method=="POST":
@@ -311,8 +314,11 @@ def showCheckingRequest(request):
 
 def checkingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
+
+    mindate=str(rec.recieving_date)
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities_all = Quality.objects.all().order_by('qualities')
-    return render(request, 'checkingapprove.html', {'record':rec,'qualities':qualities_all})
+    return render(request, 'checkingapprove.html', {'record':rec,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -515,8 +521,10 @@ def showProcessingRequest(request):
 
 def processingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
+    mindate=str(rec.checking_date)
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
     processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
-    return render(request, 'processingapprove.html', {'record':rec,'parties':processing_parties})
+    return render(request, 'processingapprove.html', {'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
 
 def sendInProcess(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -608,8 +616,10 @@ def showReadyRequest(request):
 
 def readyApprove(request,id):
     rec=get_object_or_404(Record, id=id)
+    mindate=str(rec.sent_to_processing_date)
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
     #processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
-    return render(request, 'readyapprove.html', {'record':rec})
+    return render(request, 'readyapprove.html', {'record':rec,'mindate':mindate,'maxdate':maxdate})
 
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)

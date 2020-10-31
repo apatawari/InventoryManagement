@@ -76,10 +76,10 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="checkingdate">Checking Date</label>
-                <input type="date" class="form-control" id="checkingdate" name="checking_date" required/>
+                <input type="date" class="form-control" id="checkingdate" name="checking_date" min="{{mindate}}" max="{{maxdate}}" required/>
             </div>
             <div class="form-group col-md-4">
-                <label for="new-quality">New Qualiy</label>
+                <label for="new-quality">Grey Quality</label>
                 <select class="form-control" name="new-quality">
 
                     {% for q in qualities %}
@@ -89,6 +89,18 @@
                             <option value="{{ q.qualities }}">{{ q.qualities }}</option>
                         {% endifequal %}
                     {% endfor %}
+                </select>
+
+                
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="new-quality">Defect status</label>
+                <select class="form-control" name="defect">
+                    <option value="no defect">No defect</option>
+                    <option value="transport defect">Defect due to transport</option>
+                    <option value="manufacturing defect">Defect in manufacturing</option>
                 </select>
 
                 
