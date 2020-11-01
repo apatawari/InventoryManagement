@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Report</title>
+    <title>GoDown</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -71,6 +71,9 @@
               </div>
             </li>
           </ul>
+          <!-- Approval Start -->
+            <a class ="btn-request float-right" href="{% url 'godownrequest' %}">Approve Request</a>
+          <!-- Approval End-->
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -96,46 +99,99 @@
     
     {% load widget_tweaks %}
     {% load my_tags %}
-      <!-- Record Filter Start-->
-      <form class = "md-form view-report" method="POST" action="{% url 'generatereport' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <!--First Section -->
-        <div class="form-row form-group">
-            <div class="form-group col-md-4">
-                <label for="firstdate">Start Date</label>
-                <input type="date" class="form-control" id="firstdate" name="first_date" placeholder="mm-dd-yyyy" required />
-                <label for="firstdate">End Date</label>
-                <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" required />
+      <!-- Filter Start -->
+      <form method="GET">
+          <div class="form-row filter-form">
+            <div class="form-group col-sm-4">
+              {{ filter.form.party_name.label_tag }}
+              {% render_field filter.form.party_name class="form-control" %}
+            </div>
+            <div class="form-group col-sm-2">
+              {{ filter.form.lot_no.label_tag }}
+              {% render_field filter.form.lot_no class="form-control" %}
+            </div>
+            <div class="form-group col-sm-4">
+              {{ filter.form.quality.label_tag }}
+              {% render_field filter.form.quality class="form-control" %}
+            </div>
+            <div class="form-group col-sm-2 filter-button">
+              <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
+            </div>
+          </div>
+      </form>
+      <!-- Filter End -->
 
-                <label for="lotno">Lot No</label>
-                <input type="number" class="form-control" id="lot_no" placeholder="Lot No" value="{{record.lot_no}}" name="lot_no">
-            </div>
-            <!-- First Section End -->
-            <div class="form-group form-check col-md-4 scroll">
-                <label class="form-check-label" for="quality"><b>SELECT QUALITY</b></label>
-                {% for q in qualities %}
-                <input class="form-check-input" type="checkbox" value="{{q.qualities}}" name="{{q.qualities}}" id="quality">
-                <label class="form-check-label">
-                    {{q.qualities}}
-                </label>
-                {% endfor %}
-            </div>
-            <div class="form-group form-check col-md-4 scroll">
-                <label class="form-check-label" for="quality"><b>SELECT PROCESSING PARTY</b></label>
-                {% for p in parties %}
-                <input class="form-check-input" type="checkbox" value="{{p.processing_party}}" name="{{p.processing_party}}" id="partyname">
-                <label class="form-check-label">
-                    {{p.processing_party}}
-                </label>
-                {% endfor %}
-            </div>
-            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
-            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
-            <div class="form-group form-check col-md-4">
-                <button type="submit" class="btn btn-primary button float-right mt-4">Generate Report</button>
-            </div>
-        </div>
-        <!-- Record Filter End-->
+      <!-- Display Table Start-->
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">ID</th>
+            <th scope="col">Party Name</th>
+            <th scope="col">Bill No</th>
+            <th scope="col">Bill Date</th>
+            <th scope="col">Bill Amt</th>
+            <th scope="col">Lot No</th>
+            <th scope="col">Quality</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Bale</th>
+            <th scope="col">Total Bale</th>
+            <th scope="col">Rate</th>
+            <th scope="col">LR No</th>
+            <th scope="col">Order No</th>
+            <th scope="col">Recieving Date</th>
+            <th scope="col">State</th>
+            
+            
+          </tr>
+        </thead>
+        <tbody>
+        {% for record in records %}
+          <tr>
+            
+            <td scope="row">{{ forloop.counter }}</td>
+            <td>{{record.party_name}}</td>
+            <td>{{record.bill_no}}</td>
+            <td>{{record.bill_date}}</td>
+            <td>{{record.bill_amount}}</td>
+            <td>{{record.lot_no}}</td>
+            <td>{{record.quality}}</td>
+            <td>{{record.than}}</td>
+            <td>{{record.mtrs}}</td>
+            <td>{{record.bale}}</td>
+            <td>{{record.total_bale}}</td>
+            <td>{{record.rate}}</td>
+            <td>{{record.lr_no}}</td>
+            <td>{{record.order_no}}</td>
+            <td>{{record.recieving_date}}</td>
+            <td>{{record.state}}</td>
+            
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <!-- Display Table End -->
+
+      <div class="pagination">
+        <div class="number-line">
+          {% if records.has_previous %}
+          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% endif%}
+          {% for num in records.paginator.page_range %}
+            {%if records.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+            
+            {% endif %}
+          {%endfor%}
+          {% if records.has_next %}
+            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% endif%}
+        </div>  
+      </div>
+
+      <br>
+
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

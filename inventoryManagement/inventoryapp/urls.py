@@ -54,4 +54,5 @@ urlpatterns = [
     path('editgreyquality/<int:id>',views.editQuality,name="editquality"),
 
     path('reportfilter',views.reportFilter, name='reportfilter'),
+    path('report',views.generateReport,name='generatereport'),
 ]

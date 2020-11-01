@@ -703,3 +703,37 @@ def reportFilter(request):
 
 
     return render(request,'reportfilter.html',{'parties':processing_parties,'qualities':qualities})
+
+def generateReport(request):
+    parties= ProcessingPartyName.objects.all()
+    qualities= Quality.objects.all()
+    try:
+        lot=request.POST.get("lot_no")
+    except:
+        lot=None
+    selected_parties=[]
+    selected_qualities=[]
+    for q in qualities:
+        if(request.POST.get(q.qualities)!=None):
+            selected_qualities.append(request.POST.get(q.qualities))
+    print(selected_qualities)
+    for p in parties:
+        if(request.POST.get(p.processing_party)!=None):
+            selected_parties.append(request.POST.get(p.processing_party))
+    print(selected_parties)
+
+    
+    if(lot!=None and selected_qualities!=[] and selected_parties!=[]):
+        rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties)
+    elif(lot!=None and selected_qualities!=[]):
+        rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities)
+    elif(lot!=None and selected_parties!=[]):
+        rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties)
+    elif(selected_parties!=[] and selected_qualities!=[]):
+        rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties)
+    elif(lot!=None):
+        rec = Record.objects.all()
+    
+    
+    
+    return render(request,'report.html',{'records':rec})
