@@ -707,14 +707,11 @@ def reportFilter(request):
 def generateReport(request):
     parties= ProcessingPartyName.objects.all()
     qualities= Quality.objects.all()
-    try:
-        lot=[]
-        lot.append(request.POST.get("lot_no"))
-    except:
-        lot=[]
-        all_lot = Record.objects.all()
-        for l in all_lot:
-            lot.append(l.lot_no)
+    lot=request.POST.get("lot_no")
+    start_date=request.POST.get("start_date")
+    start_date=datetime.datetime.strptime(str(start_date), '%Y-%m-%d').strftime('%b %d,%Y')
+    end_date=request.POST.get("end_date")
+    end_date=datetime.datetime.strptime(str(end_date), '%Y-%m-%d').strftime('%b %d,%Y')
     selected_parties=[]
     selected_qualities=[]
     for q in qualities:
@@ -726,21 +723,43 @@ def generateReport(request):
             selected_parties.append(request.POST.get(p.processing_party))
     print(selected_parties)
 
+    if(lot==''):
+        if(selected_qualities!=[] and selected_parties!=[]):
+            rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__range=[start_date,end_date])
+        elif(selected_qualities!=[] and selected_parties==[]):
+            rec = Record.objects.filter(quality__in=selected_qualities,bill_date__range=[start_date,end_date])
+        elif(selected_qualities==[] and selected_parties!=[]):
+            rec = Record.objects.filter(processing_party_name__in=selected_parties,bill_date__range=[start_date,end_date])
+        else:            
+            rec= Record.objects.filter(bill_date__range=[start_date,end_date])
+            
+            
+    else:
+        if(selected_qualities!=[] and selected_parties!=[]):
+            rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__range=[start_date,end_date])
+        elif(selected_qualities!=[] and selected_parties==[]):
+            rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,bill_date__range=[start_date,end_date])
+        elif(selected_qualities==[] and selected_parties!=[]):
+            rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,bill_date__range=[start_date,end_date])
+        else:
+            rec= Record.objects.filter(lot_no=lot,bill_date__range=[start_date,end_date])
     
-    if(lot!=None and selected_qualities!=[] and selected_parties!=[]):
-        rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties)
-    elif(lot!=None and selected_qualities!=[]):
-        rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities)
-    elif(lot!=None and selected_parties!=[]):
-        rec = Record.objects.filter(lot_no__in=lot,processing_party_name__in=selected_parties)
-    elif(selected_parties!=[] and selected_qualities!=[]):
-        rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties)
-    elif(lot!=None):
-        rec = Record.objects.filter(lot_no__in=lot)
-    elif(selected_qualities!=[]):
-        rec = Record.objects.filter(quality__in=selected_qualities) 
-    elif(selected_parties!=[]):
-        rec = Record.objects.filter(processing_party_name__in=selected_parties)
+
+
+    # if(lot!=None and selected_qualities!=[] and selected_parties!=[]):
+    #     rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties)
+    # elif(lot!=None and selected_qualities!=[]):
+    #     rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities)
+    # elif(lot!=None and selected_parties!=[]):
+    #     rec = Record.objects.filter(lot_no__in=lot,processing_party_name__in=selected_parties)
+    # elif(selected_parties!=[] and selected_qualities!=[]):
+    #     rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties)
+    # elif(lot!=None):
+    #     rec = Record.objects.filter(lot_no__in=lot)
+    # elif(selected_qualities!=[]):
+    #     rec = Record.objects.filter(quality__in=selected_qualities) 
+    # elif(selected_parties!=[]):
+    #     rec = Record.objects.filter(processing_party_name__in=selected_parties)
        
     
     
