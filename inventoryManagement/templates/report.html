@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>GoDown</title>
+    <title>Report</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -141,6 +141,7 @@
             <th scope="col">LR No</th>
             <th scope="col">Order No</th>
             <th scope="col">Recieving Date</th>
+            <th scope="col">Processing Party</th>
             <th scope="col">State</th>
             
             
@@ -165,6 +166,7 @@
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td>{{record.recieving_date}}</td>
+            <td>{{record.processing_party_name}}</td>
             <td>{{record.state}}</td>
             
           </tr>

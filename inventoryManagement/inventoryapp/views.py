@@ -708,9 +708,13 @@ def generateReport(request):
     parties= ProcessingPartyName.objects.all()
     qualities= Quality.objects.all()
     try:
-        lot=request.POST.get("lot_no")
+        lot=[]
+        lot.append(request.POST.get("lot_no"))
     except:
-        lot=None
+        lot=[]
+        all_lot = Record.objects.all()
+        for l in all_lot:
+            lot.append(l.lot_no)
     selected_parties=[]
     selected_qualities=[]
     for q in qualities:
@@ -724,15 +728,20 @@ def generateReport(request):
 
     
     if(lot!=None and selected_qualities!=[] and selected_parties!=[]):
-        rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties)
+        rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties)
     elif(lot!=None and selected_qualities!=[]):
-        rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities)
+        rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities)
     elif(lot!=None and selected_parties!=[]):
-        rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties)
+        rec = Record.objects.filter(lot_no__in=lot,processing_party_name__in=selected_parties)
     elif(selected_parties!=[] and selected_qualities!=[]):
         rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties)
     elif(lot!=None):
-        rec = Record.objects.all()
+        rec = Record.objects.filter(lot_no__in=lot)
+    elif(selected_qualities!=[]):
+        rec = Record.objects.filter(quality__in=selected_qualities) 
+    elif(selected_parties!=[]):
+        rec = Record.objects.filter(processing_party_name__in=selected_parties)
+       
     
     
     
