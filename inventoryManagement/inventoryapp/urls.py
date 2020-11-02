@@ -3,10 +3,14 @@ from django.urls import path
 from . import views
 
 from django.conf.urls import (
-handler404, 
-handler500
+    handler400,
+    handler403,
+    handler404, 
+    handler500,
 )
 
+handler400 = 'inventoryapp.views.bad_request'
+handler403 = 'inventoryapp.views.permission_denied'
 handler404 = 'inventoryapp.views.page_not_found'
 handler500 = 'inventoryapp.views.server_error'
 

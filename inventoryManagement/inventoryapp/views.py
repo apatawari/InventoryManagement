@@ -15,6 +15,26 @@ import datetime
 #from django.shortcuts import render_to_response
 
 
+# Bad Request 400
+def bad_request(request, exception):
+    response = render('400.html', context_instance=RequestContext(request))
+    response.status_code = 400
+
+    return response
+
+# Permission Denied 403
+def permission_denied(request, exception):
+    response = render('403.html', context_instance=RequestContext(request))
+    response.status_code = 403
+
+    return response
+
+# Page Not Found 404
+def page_not_found(request, exception):
+    response = render('404.html', context_instance=RequestContext(request))
+    response.status_code = 404
+
+    return response
 
 # HTTP Error 500
 def server_error(request):
@@ -23,12 +43,6 @@ def server_error(request):
 
     return response
 
-# HTTP Error 404
-def page_not_found(request, exception):
-    response = render('404.html', context_instance=RequestContext(request))
-    response.status_code = 404
-
-    return response
 
 # Create your views here.
 def index(request):
