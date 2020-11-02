@@ -324,64 +324,128 @@ def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
     than_recieved=request.POST.get("than_recieved")
     than_recieved = int(than_recieved)
-    if(prevRec.than == than_recieved):
-        prevRec.state="Checked"
-        prevRec.quality=request.POST.get("new-quality")
-        prevRec.checking_date=str(request.POST["checking_date"])
-        prevRec.save()
-        messages.success(request,"Data Updated Successfully")
-        return redirect('/checking')
-    elif(prevRec.than<than_recieved):
-        messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    else:
-        than_un_checked = prevRec.than - than_recieved
-        
-        bale_per_than = prevRec.bale/prevRec.than
-        bale_un_checked = than_un_checked * bale_per_than
-        bale_checked = prevRec.bale - bale_un_checked
-        
-        mtrs_un_checked = prevRec.mtrs/prevRec.than
-        mtrs_un_checked = mtrs_un_checked * than_un_checked
-        mtrs_un_checked = round(mtrs_un_checked,2)
-        mtrs_checked = prevRec.mtrs - mtrs_un_checked
-        mtrs_checked = round(mtrs_checked,2)
+    defect=request.POST.get("defect")
 
-
-        value = Record(
-            sr_no=prevRec.sr_no,
-            party_name=prevRec.party_name,
-            bill_no=prevRec.bill_no,
-            bill_date=prevRec.bill_date,
-            bill_amount=prevRec.bill_amount,
-            lot_no=prevRec.lot_no,
-            quality=request.POST.get("new-quality"),
-            than=than_recieved,
-            mtrs=mtrs_checked,
-            bale=bale_checked,
-            rate=prevRec.rate,
-            lr_no=prevRec.lr_no,
-            order_no=prevRec.order_no,
-            state="Checked",
-            recieving_date =prevRec.recieving_date,
-            total_bale=prevRec.total_bale,
-            total_mtrs=prevRec.total_mtrs,
-            total_thans=prevRec.total_thans,
-            checking_date=str(request.POST["checking_date"])
-            
-            )
-        if than_recieved == 0 :
-            messages.error(request,"Than Recieved cannot be Zero (0)")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        else:
-            value.save()
-            prevRec.bale = bale_un_checked
-            prevRec.than = than_un_checked
-            prevRec.mtrs = mtrs_un_checked
+    if(defect=="no defect"):
+    
+        if(prevRec.than == than_recieved):
+            prevRec.state="Checked"
+            prevRec.quality=request.POST.get("new-quality")
+            prevRec.checking_date=str(request.POST["checking_date"])
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
-        #print(than_in_transit,than_in_godown)
-        return redirect('/checking')
+            return redirect('/checking')
+        elif(prevRec.than<than_recieved):
+            messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            than_un_checked = prevRec.than - than_recieved
+        
+            bale_per_than = prevRec.bale/prevRec.than
+            bale_un_checked = than_un_checked * bale_per_than
+            bale_checked = prevRec.bale - bale_un_checked
+        
+            mtrs_un_checked = prevRec.mtrs/prevRec.than
+            mtrs_un_checked = mtrs_un_checked * than_un_checked
+            mtrs_un_checked = round(mtrs_un_checked,2)
+            mtrs_checked = prevRec.mtrs - mtrs_un_checked
+            mtrs_checked = round(mtrs_checked,2)
+
+
+            value = Record(
+                sr_no=prevRec.sr_no,
+                party_name=prevRec.party_name,
+                bill_no=prevRec.bill_no,
+                bill_date=prevRec.bill_date,
+                bill_amount=prevRec.bill_amount,
+                lot_no=prevRec.lot_no,
+                quality=request.POST.get("new-quality"),
+                than=than_recieved,
+                mtrs=mtrs_checked,
+                bale=bale_checked,
+                rate=prevRec.rate,
+                lr_no=prevRec.lr_no,
+                order_no=prevRec.order_no,
+                state="Checked",
+                recieving_date =prevRec.recieving_date,
+                total_bale=prevRec.total_bale,
+                total_mtrs=prevRec.total_mtrs,
+                total_thans=prevRec.total_thans,
+                checking_date=str(request.POST["checking_date"])
+            
+                )
+            if than_recieved == 0 :
+                messages.error(request,"Than Recieved cannot be Zero (0)")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                value.save()
+                prevRec.bale = bale_un_checked
+                prevRec.than = than_un_checked
+                prevRec.mtrs = mtrs_un_checked
+                prevRec.save()
+                messages.success(request,"Data Updated Successfully")
+                
+    else:
+        if(prevRec.than == than_recieved):
+            prevRec.state=request.POST.get("defect")
+            prevRec.quality=request.POST.get("new-quality")
+            prevRec.checking_date=str(request.POST["checking_date"])
+            prevRec.save()
+            messages.success(request,"Data updated to defective state")
+
+            return redirect('/checking')
+        elif(prevRec.than<than_recieved):
+            messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            
+        else:
+            than_un_checked = prevRec.than - than_recieved
+        
+            bale_per_than = prevRec.bale/prevRec.than
+            bale_un_checked = than_un_checked * bale_per_than
+            bale_checked = prevRec.bale - bale_un_checked
+        
+            mtrs_un_checked = prevRec.mtrs/prevRec.than
+            mtrs_un_checked = mtrs_un_checked * than_un_checked
+            mtrs_un_checked = round(mtrs_un_checked,2)
+            mtrs_checked = prevRec.mtrs - mtrs_un_checked
+            mtrs_checked = round(mtrs_checked,2)
+
+
+            value = Record(
+                sr_no=prevRec.sr_no,
+                party_name=prevRec.party_name,
+                bill_no=prevRec.bill_no,
+                bill_date=prevRec.bill_date,
+                bill_amount=prevRec.bill_amount,
+                lot_no=prevRec.lot_no,
+                quality=request.POST.get("new-quality"),
+                than=than_recieved,
+                mtrs=mtrs_checked,
+                bale=bale_checked,
+                rate=prevRec.rate,
+                lr_no=prevRec.lr_no,
+                order_no=prevRec.order_no,
+                state=request.POST.get("defect"),
+                recieving_date =prevRec.recieving_date,
+                total_bale=prevRec.total_bale,
+                total_mtrs=prevRec.total_mtrs,
+                total_thans=prevRec.total_thans,
+                checking_date=str(request.POST["checking_date"])
+            
+                )
+            if than_recieved == 0 :
+                messages.error(request,"Than Recieved cannot be Zero (0)")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                value.save()
+                prevRec.bale = bale_un_checked
+                prevRec.than = than_un_checked
+                prevRec.mtrs = mtrs_un_checked
+                prevRec.save()
+                messages.success(request,"Data updated to defective state")
+
+    return redirect('/checking')
 
 def editChecked(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -717,11 +781,11 @@ def generateReport(request):
     for q in qualities:
         if(request.POST.get(q.qualities)!=None):
             selected_qualities.append(request.POST.get(q.qualities))
-    print(selected_qualities)
+    
     for p in parties:
         if(request.POST.get(p.processing_party)!=None):
             selected_parties.append(request.POST.get(p.processing_party))
-    print(selected_parties)
+    
 
     if(lot==''):
         if(selected_qualities!=[] and selected_parties!=[]):
@@ -731,7 +795,7 @@ def generateReport(request):
         elif(selected_qualities==[] and selected_parties!=[]):
             rec = Record.objects.filter(processing_party_name__in=selected_parties,bill_date__range=[start_date,end_date])
         else:            
-            rec= Record.objects.filter(bill_date__range=[start_date,end_date])
+            rec= Record.objects.filter(bill_date__range=['Oct 09,2020','Oct 20,2020'])
             
             
     else:
@@ -743,25 +807,15 @@ def generateReport(request):
             rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,bill_date__range=[start_date,end_date])
         else:
             rec= Record.objects.filter(lot_no=lot,bill_date__range=[start_date,end_date])
-    
-
-
-    # if(lot!=None and selected_qualities!=[] and selected_parties!=[]):
-    #     rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties)
-    # elif(lot!=None and selected_qualities!=[]):
-    #     rec = Record.objects.filter(lot_no__in=lot,quality__in=selected_qualities)
-    # elif(lot!=None and selected_parties!=[]):
-    #     rec = Record.objects.filter(lot_no__in=lot,processing_party_name__in=selected_parties)
-    # elif(selected_parties!=[] and selected_qualities!=[]):
-    #     rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties)
-    # elif(lot!=None):
-    #     rec = Record.objects.filter(lot_no__in=lot)
-    # elif(selected_qualities!=[]):
-    #     rec = Record.objects.filter(quality__in=selected_qualities) 
-    # elif(selected_parties!=[]):
-    #     rec = Record.objects.filter(processing_party_name__in=selected_parties)
        
     
-    
-    
     return render(request,'report.html',{'records':rec})
+
+def showDefective(request):
+    records_list=Record.objects.filter(state__in=['Defect- Transport defect','Defect- Manufacturing defect'])
+    records_filter = RecordFilter(request.GET,queryset=records_list)
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+    return render(request,'defective.html',{'records':records,'filter':records_filter})
+

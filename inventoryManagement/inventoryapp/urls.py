@@ -55,4 +55,5 @@ urlpatterns = [
 
     path('reportfilter',views.reportFilter, name='reportfilter'),
     path('report',views.generateReport,name='generatereport'),
+    path('showdefective',views.showDefective,name='showdefective'),
 ]
