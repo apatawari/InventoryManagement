@@ -103,24 +103,37 @@
       <!-- Filter End -->
 
       <!-- Display Table Start-->
-      <table class="table">
+      <table class="table table-bordered">
         <thead class="thead-dark">
           <tr>
-            
+
             <th scope="col">ID</th>
             <th scope="col">Quality</th>
-            <th scope="col">Than transit</th>
-            <th scope="col">Mtrs transit</th>
-            <th scope="col">Than godown</th>
-            <th scope="col">Mtrs godown</th>
-            <th scope="col">Than checked</th>
-            <th scope="col">Mtrs checked</th>
-            <th scope="col">Than in process</th>
-            <th scope="col">Mtrs in process</th>
-            <th scope="col">Than ready</th>
-            <th scope="col">Mtrs ready</th>
+            <th colspan="2" scope="colgroup">Transit</th>
+            <th colspan="2" scope="colgroup">Godown</th>
+            <th colspan="2" scope="colgroup">Checked</th>
+            <th colspan="2" scope="colgroup">Process</th>
+            <th colspan="2" scope="colgroup">Ready To Print</th>
             
           </tr>
+
+          <tr>
+
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            
+          </tr>
+
         </thead>
         <tbody>
         {% for d in data %}
