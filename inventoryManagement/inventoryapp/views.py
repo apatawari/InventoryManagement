@@ -127,7 +127,7 @@ def upload(request):
 
                     )
                 value.save()
-                print(datetime.datetime.strptime(d[0:10], '%Y-%m-%d').strftime('%b %d,%Y'))
+                # print(datetime.datetime.strptime(d[0:10], '%Y-%m-%d').strftime('%b %d,%Y'))
                 counter = counter + 1
                 try:
                     rec=get_object_or_404(Quality,
@@ -851,3 +851,66 @@ def showDefective(request):
     records = paginator.get_page(page)
     return render(request,'defective.html',{'records':records,'filter':records_filter})
 
+def qualityReportFilter(request):
+    qualities= Quality.objects.all()
+    return render(request,'qualityreportfilter.html',{'qualities':qualities})
+
+def qualityReport(request):
+    # qualities=[]
+    final_qs=[]
+    
+    qualities= Quality.objects.all()
+    selected_qualities=[]
+    for q in qualities:
+        
+        if(request.POST.get(q.qualities)!=None):
+            selected_qualities.append(request.POST.get(q.qualities))
+            rec_transit=Record.objects.filter(state="Transit",quality=request.POST.get(q.qualities))
+            total_than_in_transit=0
+            total_mtrs_in_transit=0
+            for r in rec_transit:
+                total_than_in_transit=total_than_in_transit+r.than
+                total_mtrs_in_transit=total_mtrs_in_transit+r.mtrs
+
+            rec_godown=Record.objects.filter(state="Godown",quality=request.POST.get(q.qualities))
+            total_than_in_godown=0
+            total_mtrs_in_godown=0
+            for r in rec_godown:
+                total_than_in_godown=total_than_in_godown+r.than
+                total_mtrs_in_godown=total_mtrs_in_godown+r.mtrs
+            
+            
+            rec_checked=Record.objects.filter(state="Checked",quality=request.POST.get(q.qualities))
+            total_than_in_checked=0
+            total_mtrs_in_checked=0
+            for r in rec_checked:
+                total_than_in_checked=total_than_in_checked+r.than
+                total_mtrs_in_checked=total_mtrs_in_checked+r.mtrs
+
+            rec_process=Record.objects.filter(state="In Process",quality=request.POST.get(q.qualities))
+            total_than_in_process=0
+            total_mtrs_in_process=0
+            for r in rec_process:
+                total_than_in_process=total_than_in_process+r.than
+                total_mtrs_in_process=total_mtrs_in_process+r.mtrs
+
+            rec_ready=Record.objects.filter(state="Ready to print",quality=request.POST.get(q.qualities))
+            total_than_in_ready=0
+            total_mtrs_in_ready=0
+            for r in rec_ready:
+                total_than_in_ready=total_than_in_ready+r.than
+                total_mtrs_in_ready=total_mtrs_in_ready+r.mtrs
+
+
+            d1=[q.qualities,
+            total_than_in_transit,round(total_mtrs_in_transit,2),
+            total_than_in_godown,round(total_mtrs_in_godown,2),
+            total_than_in_checked,round(total_mtrs_in_checked,2),
+            total_than_in_process,round(total_mtrs_in_process,2),
+            total_than_in_ready,round(total_mtrs_in_ready,2)
+            ]
+            
+            final_qs.append(d1)
+            
+            # d=[d1,[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
+    return render(request,'qualityreport.html',{'data':final_qs})
