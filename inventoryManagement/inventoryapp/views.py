@@ -650,6 +650,7 @@ def sendInProcess(request,id):
             recieving_date =prevRec.recieving_date,
             total_bale=prevRec.total_bale,
             processing_party_name = request.POST.get("processing-party"),
+            checking_date = prevRec.checking_date,
             sent_to_processing_date=str(request.POST["sending_date"]),
             total_thans=prevRec.total_thans,
             total_mtrs=prevRec.total_mtrs
@@ -755,6 +756,7 @@ def readyToPrint(request,id):
             recieving_date =prevRec.recieving_date,
             total_bale=prevRec.total_bale,
             processing_party_name = prevRec.processing_party_name,
+            sent_to_processing_date = prevRec.sent_to_processing_date,
             recieve_processed_date=str(request.POST.get("processing_date")),
             total_mtrs=prevRec.total_mtrs,
             total_thans=prevRec.total_thans
@@ -791,11 +793,15 @@ def generateReport(request):
     # end_date=request.POST.get("end_date")
     # end_date=datetime.datetime.strptime(str(end_date), '%Y-%m-%d').strftime('%b %d,%Y')
 # jjjj
+##  Date filter  
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
     end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
     selected_dates=[]
+    selected_states=[]
+    selected_parties=[]
+    selected_qualities=[]
     next_day = begin
     while True:
         if next_day > end:
@@ -806,9 +812,13 @@ def generateReport(request):
         selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d').strftime('%b %d,%Y'))
         next_day += datetime.timedelta(days=1)
     # print(selected_dates)
-# hhhhh
-    selected_parties=[]
-    selected_qualities=[]
+# hhhhh date filter end
+    
+    for i in range(5):
+        name="state"+ str(i)
+        if(request.POST.get(name)!=None):
+            selected_states.append(request.POST.get(name))
+
     for q in qualities:
         if(request.POST.get(q.qualities)!=None):
             selected_qualities.append(request.POST.get(q.qualities))
@@ -819,27 +829,47 @@ def generateReport(request):
     
 
     if(lot==''):
-        if(selected_qualities!=[] and selected_parties!=[]):
-            rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__in=selected_dates)
-        elif(selected_qualities!=[] and selected_parties==[]):
-            rec = Record.objects.filter(quality__in=selected_qualities,bill_date__in=selected_dates)
-        elif(selected_qualities==[] and selected_parties!=[]):
-            rec = Record.objects.filter(processing_party_name__in=selected_parties,bill_date__in=selected_dates)
-        else:
-            rec= Record.objects.filter(bill_date__in=selected_dates)            
+        if(selected_states==[]):
+            if(selected_qualities!=[] and selected_parties!=[]):
+                rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__in=selected_dates)
+            elif(selected_qualities!=[] and selected_parties==[]):
+                rec = Record.objects.filter(quality__in=selected_qualities,bill_date__in=selected_dates)
+            elif(selected_qualities==[] and selected_parties!=[]):
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,bill_date__in=selected_dates)
+            else:
+                rec= Record.objects.filter(bill_date__in=selected_dates)            
             # rec= Record.objects.filter(bill_date__range=[start_date,end_date])
             # rec = Record.objects.raw('select * from Record where bill_date from "' +start_date+'" and "' +end_date+'"')
-            
-    else:
-        if(selected_qualities!=[] and selected_parties!=[]):
-            rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__in=selected_dates) #bill_date__range=[start_date,end_date]
-        elif(selected_qualities!=[] and selected_parties==[]):
-            rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,bill_date__in=selected_dates)
-        elif(selected_qualities==[] and selected_parties!=[]):
-            rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,bill_date__in=selected_dates)
         else:
-            rec= Record.objects.filter(lot_no=lot,bill_date__in=selected_dates)
-       
+            if(selected_qualities!=[] and selected_parties!=[]):
+                rec = Record.objects.filter(quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__in=selected_dates,state__in=selected_states)
+            elif(selected_qualities!=[] and selected_parties==[]):
+                rec = Record.objects.filter(quality__in=selected_qualities,bill_date__in=selected_dates,state__in=selected_states)
+            elif(selected_qualities==[] and selected_parties!=[]):
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,bill_date__in=selected_dates,state__in=selected_states)
+            else:
+                rec= Record.objects.filter(bill_date__in=selected_dates,state__in=selected_states)
+                print("this")
+
+    else:
+        if(selected_states==[]):
+            if(selected_qualities!=[] and selected_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__in=selected_dates) #bill_date__range=[start_date,end_date]
+            elif(selected_qualities!=[] and selected_parties==[]):
+                rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,bill_date__in=selected_dates)
+            elif(selected_qualities==[] and selected_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,bill_date__in=selected_dates)
+            else:
+                rec= Record.objects.filter(lot_no=lot,bill_date__in=selected_dates)
+        else:
+            if(selected_qualities!=[] and selected_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,processing_party_name__in=selected_parties,bill_date__in=selected_dates,state__in=selected_states) #bill_date__range=[start_date,end_date]
+            elif(selected_qualities!=[] and selected_parties==[]):
+                rec = Record.objects.filter(lot_no=lot,quality__in=selected_qualities,bill_date__in=selected_dates,state__in=selected_states)
+            elif(selected_qualities==[] and selected_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,bill_date__in=selected_dates,state__in=selected_states)
+            else:
+                rec= Record.objects.filter(lot_no=lot,bill_date__in=selected_dates,state__in=selected_states)
     
     return render(request,'report.html',{'records':rec})
 
@@ -851,6 +881,8 @@ def showDefective(request):
     records = paginator.get_page(page)
     return render(request,'defective.html',{'records':records,'filter':records_filter})
 
+
+# Ledger
 def qualityReportFilter(request):
     qualities= Quality.objects.all()
     return render(request,'qualityreportfilter.html',{'qualities':qualities})
