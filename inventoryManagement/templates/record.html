@@ -3,13 +3,16 @@
 {% block title%} Record {% endblock %}
 {% block content%}
       <!-- Diplay Record Start -->
-     
+        <div class="page-title">
+            <h3 class="title-text">TRANSIT - EDIT RECORD</h3>
+        </div>
+
       <form class = "md-form view-file" method="POST" action="{% url 'edit' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
           <div class="form-group col-md-12">
             <label for="Party Name">Party Name</label>
-            <input type="text" class="form-control" id="party_name" placeholder="Party Name" value="{{record.party_name}}" name="party_name">
+            <input type="text" class="form-control" id="party_name" placeholder="Party Name" value="{{record.party_name}}" name="party_name" autofocus>
           </div>
         </div>
         <div class="form-row">

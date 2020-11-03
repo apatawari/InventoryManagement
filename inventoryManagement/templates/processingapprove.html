@@ -71,9 +71,6 @@
               </div>
             </li>
           </ul>
-          <!-- Approval Start -->
-            <a class ="btn-request float-right" href="{% url 'addparty' %}">Add Processing Party</a>
-          <!-- Approval End-->
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -99,6 +96,9 @@
 
 {% load widget_tweaks %}
 {% load my_tags %}
+      <div class="page-title">
+        <h3 class="title-text">PROCESSING - APPROVE RECORD</h3>
+      </div>
       <!-- Filter Start -->
       
       <!-- Display Table End -->
@@ -170,7 +170,7 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="thaninprocess">Than in process</label>
-                <input type="number" class="form-control" id="thanrecieved" placeholder="0" name="than_to_process" required>
+                <input type="number" class="form-control" id="thanrecieved" placeholder="0" name="than_to_process" autofocus required>
             </div>
             <div class="form-group col-md-4">
                 <label for="senttoprocessingdate">Sending Date</label>

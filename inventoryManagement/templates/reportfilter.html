@@ -96,6 +96,10 @@
     
     {% load widget_tweaks %}
     {% load my_tags %}
+
+    <div class="page-title">
+      <h3 class="title-text">LEDGER</h3>
+    </div>
       <!-- Record Filter Start-->
       <form class = "md-form view-report" method="POST" action="{% url 'generatereport' %}" enctype="multipart/form-data">
         {% csrf_token %}

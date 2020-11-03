@@ -419,3 +419,10 @@ td {
   width: 100%;
   text-align: center;
 }
+
+/* Web Page Title */
+.title-text {
+  margin-top: 15px;
+  text-align: center;
+  color: #a044ff;
+}

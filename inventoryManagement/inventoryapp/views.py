@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404,redirect
+from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.template import RequestContext
@@ -98,7 +98,7 @@ def upload(request):
         for data in imported_data:
             try:
                 
-                rec=get_object_or_404(Record, 
+                rec=get_list_or_404(Record, 
                     party_name=data[1],
                     bill_no=data[2],
                     bill_amount=data[4],

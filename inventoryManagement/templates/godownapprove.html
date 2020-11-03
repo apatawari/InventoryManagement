@@ -3,6 +3,9 @@
 {% block title%} Record {% endblock %}
 {% block content%}
       <!-- Diplay Record Start -->
+      <div class="page-title">
+        <h3 class="title-text">GODOWN - APPROVE RECORD</h3>
+      </div>
      
       <form class = "md-form view-file" method="POST" action="{% url 'approvebale' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
@@ -72,7 +75,7 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="balerecieved">Bale Recieved</label>
-                <input type="number" class="form-control" id="balerecieved" placeholder="0" name="bale_recieved" required>
+                <input type="number" class="form-control" id="balerecieved" placeholder="0" name="bale_recieved" autofocus required>
             </div>
             <div class="form-group col-md-4">
                 <label for="recievingdate">Recieving Date</label>
