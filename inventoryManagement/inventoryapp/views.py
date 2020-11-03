@@ -189,7 +189,9 @@ def goDownApprove(request,id):
     mindate=datetime.datetime.strptime(rec.bill_date,'%b %d,%Y').strftime('%Y-%m-%d')
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities = Quality.objects.all()
-    return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate})
+    d=datetime.date.today()
+    d=str(d)
+    return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
 
 def edit(request,id):
     if request.method=="POST":
@@ -245,12 +247,17 @@ def approveBale(request,id):
     prevRec = get_object_or_404(Record,id=id)
     bale_recieved=request.POST.get("bale_recieved")
     bale_recieved = int(bale_recieved)
+
+    total_amount=prevRec.bill_amount
+    totalthan=prevRec.than
+    cost_per_than=total_amount/totalthan
+    cost_per_than=round(cost_per_than,2)
     if(prevRec.bale == bale_recieved):
         prevRec.state="Godown"
         prevRec.recieving_date=str(request.POST["recieving_date"])
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/godown')
+        return redirect('/godownrequest')
     elif(prevRec.bale<bale_recieved):
         messages.error(request,"Bale Recieved cannot be more than Original Amount of Bale")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -273,7 +280,7 @@ def approveBale(request,id):
             party_name=prevRec.party_name,
             bill_no=prevRec.bill_no,
             bill_date=prevRec.bill_date,
-            bill_amount=prevRec.bill_amount,
+            bill_amount=round(than_in_godown * cost_per_than,2),
             lot_no=prevRec.lot_no,
             quality=prevRec.quality,
             than=than_in_godown,
@@ -297,10 +304,11 @@ def approveBale(request,id):
             prevRec.bale = bale_in_transit
             prevRec.than = than_in_transit
             prevRec.mtrs = mtrs_in_transit
+            prevRec.bill_amount = round(than_in_transit * cost_per_than,2)
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
         #print(than_in_transit,than_in_godown)
-        return redirect('/godown')
+        return redirect('/godownrequest')
 
 #quality2 = request.POST.get("quality2")
 
@@ -332,14 +340,20 @@ def checkingApprove(request,id):
     mindate=str(rec.recieving_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities_all = Quality.objects.all().order_by('qualities')
-    return render(request, 'checkingapprove.html', {'record':rec,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    d=datetime.date.today()
+    d=str(d)
+    return render(request, 'checkingapprove.html', {'date':d,'record':rec,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
     than_recieved=request.POST.get("than_recieved")
     than_recieved = int(than_recieved)
     defect=request.POST.get("defect")
-
+    
+    total_amount=prevRec.bill_amount
+    totalthan=prevRec.than
+    cost_per_than=total_amount/totalthan
+    cost_per_than=round(cost_per_than,2)
     if(defect=="no defect"):
     
         if(prevRec.than == than_recieved):
@@ -348,7 +362,7 @@ def approveCheck(request,id):
             prevRec.checking_date=str(request.POST["checking_date"])
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
-            return redirect('/checking')
+            return redirect('/checkingrequest')
         elif(prevRec.than<than_recieved):
             messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -371,7 +385,7 @@ def approveCheck(request,id):
                 party_name=prevRec.party_name,
                 bill_no=prevRec.bill_no,
                 bill_date=prevRec.bill_date,
-                bill_amount=prevRec.bill_amount,
+                bill_amount=round(cost_per_than * than_recieved,2),
                 lot_no=prevRec.lot_no,
                 quality=request.POST.get("new-quality"),
                 than=than_recieved,
@@ -396,6 +410,7 @@ def approveCheck(request,id):
                 prevRec.bale = bale_un_checked
                 prevRec.than = than_un_checked
                 prevRec.mtrs = mtrs_un_checked
+                prevRec.bill_amount = round(cost_per_than * than_un_checked,2)
                 prevRec.save()
                 messages.success(request,"Data Updated Successfully")
                 
@@ -407,7 +422,7 @@ def approveCheck(request,id):
             prevRec.save()
             messages.success(request,"Data updated to defective state")
 
-            return redirect('/checking')
+            return redirect('/checkingrequest')
         elif(prevRec.than<than_recieved):
             messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -431,7 +446,7 @@ def approveCheck(request,id):
                 party_name=prevRec.party_name,
                 bill_no=prevRec.bill_no,
                 bill_date=prevRec.bill_date,
-                bill_amount=prevRec.bill_amount,
+                bill_amount=round(cost_per_than * than_recieved,2),
                 lot_no=prevRec.lot_no,
                 quality=request.POST.get("new-quality"),
                 than=than_recieved,
@@ -456,10 +471,11 @@ def approveCheck(request,id):
                 prevRec.bale = bale_un_checked
                 prevRec.than = than_un_checked
                 prevRec.mtrs = mtrs_un_checked
+                prevRec.bill_amount = round(cost_per_than * than_un_checked,2)
                 prevRec.save()
                 messages.success(request,"Data updated to defective state")
 
-    return redirect('/checking')
+    return redirect('/checkingrequest')
 
 def editChecked(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -646,13 +662,20 @@ def processingApprove(request,id):
     mindate=str(rec.checking_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
-    return render(request, 'processingapprove.html', {'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
+    d=datetime.date.today()
+    d=str(d)
+    return render(request, 'processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
 
 def sendInProcess(request,id):
     prevRec = get_object_or_404(Record,id=id)
     than_recieved=request.POST.get("than_to_process")
     than_recieved = int(than_recieved)
     process_type = request.POST.get("processing-type")
+    
+    total_amount=prevRec.bill_amount
+    totalthan=prevRec.than
+    cost_per_than=total_amount/totalthan
+    cost_per_than=round(cost_per_than,2)
     if(prevRec.than == than_recieved):
         prevRec.state="In Process"
         prevRec.processing_party_name=request.POST.get("processing-party")
@@ -660,7 +683,7 @@ def sendInProcess(request,id):
         prevRec.processing_type = process_type 
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/inprocess')
+        return redirect('/processingrequest')
     elif(prevRec.than<than_recieved):
         messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -683,7 +706,7 @@ def sendInProcess(request,id):
             party_name=prevRec.party_name,
             bill_no=prevRec.bill_no,
             bill_date=prevRec.bill_date,
-            bill_amount=prevRec.bill_amount,
+            bill_amount=round(cost_per_than * than_recieved,2),
             lot_no=prevRec.lot_no,
             quality=prevRec.quality,
             than=than_recieved,
@@ -711,10 +734,11 @@ def sendInProcess(request,id):
             prevRec.bale = bale_un_checked
             prevRec.than = than_un_checked
             prevRec.mtrs = mtrs_un_checked
+            prevRec.bill_amount = round(cost_per_than * than_un_checked,2)
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
         #print(than_in_transit,than_in_godown)
-        return redirect('/inprocess')
+        return redirect('/processingrequest')
 
 
 #ready to print-----
@@ -745,7 +769,9 @@ def readyApprove(request,id):
     mindate=str(rec.sent_to_processing_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     locations = ArrivalLocation.objects.all().order_by('location')
-    return render(request, 'readyapprove.html', {'record':rec,'mindate':mindate,'maxdate':maxdate,'parties':locations})
+    d=datetime.date.today()
+    d=str(d)
+    return render(request, 'readyapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'parties':locations})
 
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -754,6 +780,11 @@ def readyToPrint(request,id):
     tally_total_thans=prevRec.total_thans
     than_recieved=request.POST.get("than_ready")
     than_recieved = int(than_recieved)
+
+    total_amount=prevRec.bill_amount
+    totalthan=prevRec.than
+    cost_per_than=total_amount/totalthan
+    cost_per_than=round(cost_per_than,2)
     if(prevRec.than == than_recieved):
         prevRec.state="Ready to print"
         prevRec.recieve_processed_date=str(request.POST.get("processing_date"))
@@ -768,7 +799,7 @@ def readyToPrint(request,id):
                 tr.tally=True
                 tr.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/readytoprint')
+        return redirect('/readytoprintrequest')
     elif(prevRec.than<than_recieved):
         messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -791,7 +822,7 @@ def readyToPrint(request,id):
             party_name=prevRec.party_name,
             bill_no=prevRec.bill_no,
             bill_date=prevRec.bill_date,
-            bill_amount=prevRec.bill_amount,
+            bill_amount=round(cost_per_than * than_recieved,2),
             lot_no=prevRec.lot_no,
             quality=prevRec.quality,
             than=than_recieved,
@@ -808,7 +839,8 @@ def readyToPrint(request,id):
             recieve_processed_date=str(request.POST.get("processing_date")),
             total_mtrs=prevRec.total_mtrs,
             total_thans=prevRec.total_thans,
-            arrival_location=location
+            arrival_location=location,
+            processing_type=prevRec.processing_type
             
             )
         if than_recieved == 0 :
@@ -819,12 +851,13 @@ def readyToPrint(request,id):
             prevRec.bale = bale_un_checked
             prevRec.than = than_un_checked
             prevRec.mtrs = mtrs_un_checked
+            prevRec.bill_amount = round(cost_per_than * than_un_checked,2)
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
 
 
         #print(than_in_transit,than_in_godown)
-        return redirect('/readytoprint')
+        return redirect('/readytoprintrequest')
 
 def reportFilter(request):
     processing_parties= ProcessingPartyName.objects.all()
@@ -924,6 +957,8 @@ def generateReport2(request):                   #deprecated version
 
 
 def generateReport(request):
+    selected_states=['In Process','Ready to print']
+    selected_parties=[]
     parties= ProcessingPartyName.objects.all()
     # qualities= Quality.objects.all()
     lot=request.POST.get("lot_no")
@@ -933,23 +968,29 @@ def generateReport(request):
     # end_date=datetime.datetime.strptime(str(end_date), '%Y-%m-%d').strftime('%b %d,%Y')
 # jjjj
 ##  Date filter  
+    
+    for p in parties:
+        if(request.POST.get(p.processing_party)!=None):
+            selected_parties.append(request.POST.get(p.processing_party))
+    
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
-    begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
-    end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
-    selected_dates=[]
-    selected_states=['In Process','Ready to print']
-    selected_parties=[]
+    if(begin!="" or end!=""):
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
     # selected_qualities=[]
-    next_day = begin
-    while True:
-        if next_day > end:
-            break
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
     
         
     
-        selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
-        next_day += datetime.timedelta(days=1)
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
     # print(selected_dates)
 # hhhhh date filter end
     
@@ -962,25 +1003,86 @@ def generateReport(request):
     #     if(request.POST.get(q.qualities)!=None):
     #         selected_qualities.append(request.POST.get(q.qualities))
     
-    for p in parties:
-        if(request.POST.get(p.processing_party)!=None):
-            selected_parties.append(request.POST.get(p.processing_party))
+        if(lot==''):
+            if(selected_parties!=[]):
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
+            else:
+                rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states)            
+            
+        else:
+        
+            if(selected_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates) #bill_date__range=[start_date,end_date]
+            else:
+                rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
+        
+        return render(request,'report.html',{'records':rec})
+
+    else:
+        if(lot==''):
+            if(selected_parties!=[]):
+                rec = Record.objects.filter(processing_party_name__in=selected_parties)
+            else:
+                rec= Record.objects.filter(state__in=selected_states)            
+            
+        else:
+        
+            if(selected_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties) #bill_date__range=[start_date,end_date]
+            else:
+                rec= Record.objects.filter(lot_no=lot,state__in=selected_states)
+        
+        return render(request,'report.html',{'records':rec})
+
+
+
+
+#     begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+#     end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+#     selected_dates=[]
+#     selected_states=['In Process','Ready to print']
+#     selected_parties=[]
+#     # selected_qualities=[]
+#     next_day = begin
+#     while True:
+#         if next_day > end:
+#             break
+    
+        
+    
+#         selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+#         next_day += datetime.timedelta(days=1)
+#     # print(selected_dates)
+# # hhhhh date filter end
+    
+#     # for i in range(2):
+#     #     name="state"+ str(i)
+#     #     if(request.POST.get(name)!=None):
+#     #         selected_states.append(request.POST.get(name))
+
+#     # for q in qualities:
+#     #     if(request.POST.get(q.qualities)!=None):
+#     #         selected_qualities.append(request.POST.get(q.qualities))
+    
+#     for p in parties:
+#         if(request.POST.get(p.processing_party)!=None):
+#             selected_parties.append(request.POST.get(p.processing_party))
     
 
-    if(lot==''):
-        if(selected_parties!=[]):
-            rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
-        else:
-            rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states)            
+#     if(lot==''):
+#         if(selected_parties!=[]):
+#             rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
+#         else:
+#             rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states)            
             
-    else:
+#     else:
         
-        if(selected_parties!=[]):
-            rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates) #bill_date__range=[start_date,end_date]
-        else:
-            rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
+#         if(selected_parties!=[]):
+#             rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates) #bill_date__range=[start_date,end_date]
+#         else:
+#             rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
         
-    return render(request,'report.html',{'records':rec})
+#     return render(request,'report.html',{'records':rec})
 
 
 def showDefective(request):
@@ -1008,8 +1110,11 @@ def qualityReport(request):
         if(request.POST.get(q.qualities)!=None):
             selected_qualities.append(request.POST.get(q.qualities))
             rec_transit=Record.objects.filter(state="Transit",quality=request.POST.get(q.qualities))
+            tally_than=0
+            tally_mtrs=0
             total_than_in_transit=0
             total_mtrs_in_transit=0
+            
             for r in rec_transit:
                 total_than_in_transit=total_than_in_transit+r.than
                 total_mtrs_in_transit=total_mtrs_in_transit+r.mtrs
@@ -1043,13 +1148,16 @@ def qualityReport(request):
                 total_than_in_ready=total_than_in_ready+r.than
                 total_mtrs_in_ready=total_mtrs_in_ready+r.mtrs
 
-
+            tally_mtrs=total_mtrs_in_transit+total_mtrs_in_godown+total_mtrs_in_checked+total_mtrs_in_process+total_mtrs_in_ready
+            tally_than=total_than_in_transit+total_than_in_godown+total_than_in_checked+total_than_in_process+total_than_in_ready
+            
             d1=[q.qualities,
             total_than_in_transit,round(total_mtrs_in_transit,2),
             total_than_in_godown,round(total_mtrs_in_godown,2),
             total_than_in_checked,round(total_mtrs_in_checked,2),
             total_than_in_process,round(total_mtrs_in_process,2),
-            total_than_in_ready,round(total_mtrs_in_ready,2)
+            total_than_in_ready,round(total_mtrs_in_ready,2),
+            tally_than,round(tally_mtrs,2)
             ]
             
             final_qs.append(d1)
