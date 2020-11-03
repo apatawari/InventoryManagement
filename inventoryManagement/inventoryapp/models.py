@@ -29,7 +29,9 @@ class Record(models.Model):
     processing_party_name = models.CharField(max_length=50,default="-")
     total_bale = models.IntegerField()
     checking_date = models.DateField(null=True, default=None)
+    processing_type = models.CharField(max_length=50,default="-")           #new
     sent_to_processing_date = models.DateField(null=True, default=None)
+    arrival_location = models.CharField(max_length=50,default="-")          #new
     recieve_processed_date = models.DateField(null=True, default=None)
     total_thans = models.IntegerField()
     total_mtrs = models.FloatField()
@@ -42,3 +44,6 @@ class Record(models.Model):
 
 class ProcessingPartyName(models.Model):
     processing_party = models.CharField(max_length=50)
+
+class ArrivalLocation(models.Model):
+    location = models.CharField(max_length=50)

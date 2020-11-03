@@ -184,6 +184,22 @@
             </div>
         </div>
         <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="new-quality">Arrival location</label>
+                <select class="form-control" name="arrival-location" required>
+
+                  {% for party in parties %}
+                      
+                      <option value="{{ party.location }}">{{ party.location }}</option>
+                      
+                  {% endfor %}
+                </select>
+
+              
+            </div>
+        </div>
+
+        <div class="form-row">
             <div class="form-group col-md-9">
                 <button type="submit" class="btn btn-success button">Ready to print</button>
             </div>

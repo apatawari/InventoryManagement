@@ -42,6 +42,9 @@ urlpatterns = [
     path('processingapprove/<int:id>',views.processingApprove, name='processingapprove'),
     path('sendinprocess/<int:id>',views.sendInProcess, name="sendinprocess"),
 
+    path('addarrivallocation',views.renderAddLocation, name="addarrivallocation"),
+    path('savelocation',views.saveLocation, name="savelocation"),
+
     path('readytoprint',views.showReadyToPrint, name='readytoprint'),
     path('readytoprintrequest',views.showReadyRequest, name= "readytoprintrequest"),
     path('readyapprove/<int:id>',views.readyApprove, name='readyapprove'),
@@ -56,6 +59,9 @@ urlpatterns = [
     path('deletequality/<int:id>',views.deleteQuality,name="deletequality"),
     path('editquality/<int:id>',views.renderEditQuality,name="rendereditquality"),
     path('editgreyquality/<int:id>',views.editQuality,name="editquality"),
+    path('deletelocation/<int:id>',views.deleteLocation,name="deletelocation"),
+    path('editlocation/<int:id>',views.renderEditLocation,name="rendereditlocation"),
+    path('editarrivallocation/<int:id>',views.editArrivalLocation,name="editarrivallocation"),
 
     path('reportfilter',views.reportFilter, name='reportfilter'),
     path('report',views.generateReport,name='generatereport'),

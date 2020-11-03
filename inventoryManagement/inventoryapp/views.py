@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404,redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName
+from .models import Record,Quality,ProcessingPartyName,ArrivalLocation
 from .resources import ItemResources
 from .filters import RecordFilter
 from django.contrib import messages
@@ -532,6 +532,50 @@ def editQuality(request,id):
     messages.success(request,"Grey Quality edited")
     return redirect('/addquality')
 
+def renderAddLocation(request):
+    location_all = ArrivalLocation.objects.all().order_by('location')
+    #return render(request,'addparty.html',{'parties':parties_all})
+
+    paginator = Paginator(location_all,10)
+    page = request.GET.get('page')
+    locations = paginator.get_page(page)
+    return render(request,'addlocation.html',{'records':locations})
+
+def saveLocation(request):
+    p = request.POST.get("location")
+    p=p.upper()
+    try:
+        existing_party=get_object_or_404(ArrivalLocation,location=p)
+        messages.error(request,"This arrival location already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addarrivallocation')
+        new_loc = ArrivalLocation(
+            location= p
+        )
+        new_loc.save()
+        messages.success(request,"Arrival location added successfully")
+    return redirect('/addarrivallocation')
+
+def deleteLocation(request,id):
+    ArrivalLocation.objects.filter(id=id).delete()
+    messages.success(request,"Arrival location deleted")
+    return redirect('/addarrivallocation')
+
+def renderEditLocation(request,id):
+    loc=get_object_or_404(ArrivalLocation,id=id)
+    return render(request,'editlocation.html',{'id':id,'name':loc.location})
+
+def editArrivalLocation(request,id):
+    party=get_object_or_404(ArrivalLocation,id=id)
+    party.location = request.POST.get("edit-location")
+    party.save()
+    messages.success(request,"Arrival location edited")
+    return redirect('/addarrivallocation')
+
+
+#Processing party.......
 def renderAddParty(request):
     parties_all = ProcessingPartyName.objects.all().order_by('processing_party')
     #return render(request,'addparty.html',{'parties':parties_all})
@@ -608,10 +652,12 @@ def sendInProcess(request,id):
     prevRec = get_object_or_404(Record,id=id)
     than_recieved=request.POST.get("than_to_process")
     than_recieved = int(than_recieved)
+    process_type = request.POST.get("processing-type")
     if(prevRec.than == than_recieved):
         prevRec.state="In Process"
         prevRec.processing_party_name=request.POST.get("processing-party")
-        prevRec.sent_to_processing_date=str(request.POST["sending_date"]) 
+        prevRec.sent_to_processing_date=str(request.POST["sending_date"])
+        prevRec.processing_type = process_type 
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/inprocess')
@@ -650,6 +696,7 @@ def sendInProcess(request,id):
             recieving_date =prevRec.recieving_date,
             total_bale=prevRec.total_bale,
             processing_party_name = request.POST.get("processing-party"),
+            processing_type = process_type,
             checking_date = prevRec.checking_date,
             sent_to_processing_date=str(request.POST["sending_date"]),
             total_thans=prevRec.total_thans,
@@ -697,11 +744,12 @@ def readyApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=str(rec.sent_to_processing_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    #processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
-    return render(request, 'readyapprove.html', {'record':rec,'mindate':mindate,'maxdate':maxdate})
+    locations = ArrivalLocation.objects.all().order_by('location')
+    return render(request, 'readyapprove.html', {'record':rec,'mindate':mindate,'maxdate':maxdate,'parties':locations})
 
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)
+    location = request.POST.get("arrival-location")
     tally_lot_no = prevRec.lot_no
     tally_total_thans=prevRec.total_thans
     than_recieved=request.POST.get("than_ready")
@@ -709,7 +757,7 @@ def readyToPrint(request,id):
     if(prevRec.than == than_recieved):
         prevRec.state="Ready to print"
         prevRec.recieve_processed_date=str(request.POST.get("processing_date"))
-
+        prevRec.arrival_location = location
         prevRec.save()
         tally_records = Record.objects.filter(state="Ready to print",lot_no=tally_lot_no)
         tally_thans=0
@@ -759,7 +807,8 @@ def readyToPrint(request,id):
             sent_to_processing_date = prevRec.sent_to_processing_date,
             recieve_processed_date=str(request.POST.get("processing_date")),
             total_mtrs=prevRec.total_mtrs,
-            total_thans=prevRec.total_thans
+            total_thans=prevRec.total_thans,
+            arrival_location=location
             
             )
         if than_recieved == 0 :
