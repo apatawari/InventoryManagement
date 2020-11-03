@@ -938,7 +938,7 @@ def generateReport(request):
     begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
     end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
     selected_dates=[]
-    selected_states=[]
+    selected_states=['In Process','Ready to print']
     selected_parties=[]
     # selected_qualities=[]
     next_day = begin
@@ -948,15 +948,15 @@ def generateReport(request):
     
         
     
-        selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d').strftime('%b %d,%Y'))
+        selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
         next_day += datetime.timedelta(days=1)
     # print(selected_dates)
 # hhhhh date filter end
     
-    for i in range(2):
-        name="state"+ str(i)
-        if(request.POST.get(name)!=None):
-            selected_states.append(request.POST.get(name))
+    # for i in range(2):
+    #     name="state"+ str(i)
+    #     if(request.POST.get(name)!=None):
+    #         selected_states.append(request.POST.get(name))
 
     # for q in qualities:
     #     if(request.POST.get(q.qualities)!=None):
@@ -969,16 +969,16 @@ def generateReport(request):
 
     if(lot==''):
         if(selected_parties!=[]):
-            rec = Record.objects.filter(processing_party_name__in=selected_parties,bill_date__in=selected_dates)
+            rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
         else:
-            rec= Record.objects.filter(bill_date__in=selected_dates,state__in=selected_states)            
+            rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states)            
             
     else:
         
         if(selected_parties!=[]):
-            rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,bill_date__in=selected_dates) #bill_date__range=[start_date,end_date]
+            rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates) #bill_date__range=[start_date,end_date]
         else:
-            rec= Record.objects.filter(lot_no=lot,bill_date__in=selected_dates,state__in=selected_states)
+            rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
         
     return render(request,'report.html',{'records':rec})
 
