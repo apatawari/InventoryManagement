@@ -994,7 +994,7 @@ def showDefective(request):
 
 # Ledger
 def qualityReportFilter(request):
-    qualities= Quality.objects.all()
+    qualities= Quality.objects.all().order_by('qualities')
     return render(request,'qualityreportfilter.html',{'qualities':qualities})
 
 def qualityReport(request):
