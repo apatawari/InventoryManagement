@@ -784,7 +784,7 @@ def reportFilter(request):
 
     return render(request,'reportfilter.html',{'parties':processing_parties,'qualities':qualities})
 
-def generateReport(request):
+def generateReport2(request):                   #deprecated version
     parties= ProcessingPartyName.objects.all()
     qualities= Quality.objects.all()
     lot=request.POST.get("lot_no")
@@ -872,6 +872,67 @@ def generateReport(request):
                 rec= Record.objects.filter(lot_no=lot,bill_date__in=selected_dates,state__in=selected_states)
     
     return render(request,'report.html',{'records':rec})
+
+
+def generateReport(request):
+    parties= ProcessingPartyName.objects.all()
+    # qualities= Quality.objects.all()
+    lot=request.POST.get("lot_no")
+    # start_date=request.POST.get("start_date")
+    # start_date=datetime.datetime.strptime(str(start_date), '%Y-%m-%d').strftime('%b %d,%Y')
+    # end_date=request.POST.get("end_date")
+    # end_date=datetime.datetime.strptime(str(end_date), '%Y-%m-%d').strftime('%b %d,%Y')
+# jjjj
+##  Date filter  
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+    begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+    end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+    selected_dates=[]
+    selected_states=[]
+    selected_parties=[]
+    # selected_qualities=[]
+    next_day = begin
+    while True:
+        if next_day > end:
+            break
+    
+        
+    
+        selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d').strftime('%b %d,%Y'))
+        next_day += datetime.timedelta(days=1)
+    # print(selected_dates)
+# hhhhh date filter end
+    
+    for i in range(2):
+        name="state"+ str(i)
+        if(request.POST.get(name)!=None):
+            selected_states.append(request.POST.get(name))
+
+    # for q in qualities:
+    #     if(request.POST.get(q.qualities)!=None):
+    #         selected_qualities.append(request.POST.get(q.qualities))
+    
+    for p in parties:
+        if(request.POST.get(p.processing_party)!=None):
+            selected_parties.append(request.POST.get(p.processing_party))
+    
+
+    if(lot==''):
+        if(selected_parties!=[]):
+            rec = Record.objects.filter(processing_party_name__in=selected_parties,bill_date__in=selected_dates)
+        else:
+            rec= Record.objects.filter(bill_date__in=selected_dates,state__in=selected_states)            
+            
+    else:
+        
+        if(selected_parties!=[]):
+            rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,bill_date__in=selected_dates) #bill_date__range=[start_date,end_date]
+        else:
+            rec= Record.objects.filter(lot_no=lot,bill_date__in=selected_dates,state__in=selected_states)
+        
+    return render(request,'report.html',{'records':rec})
+
 
 def showDefective(request):
     records_list=Record.objects.filter(state__in=['Defect- Transport defect','Defect- Manufacturing defect'])
