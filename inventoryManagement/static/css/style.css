@@ -434,3 +434,7 @@ hr {
 .td-text {
   text-align: left;
 }
+
+.small {
+  width: 100%;
+}
