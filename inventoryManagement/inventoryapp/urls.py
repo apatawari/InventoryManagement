@@ -69,4 +69,6 @@ urlpatterns = [
 
     path('qualityreportfilter',views.qualityReportFilter, name='qualityreportfilter'),
     path('qualityreport',views.qualityReport,name='qualityreport'),
+
+    path('export/excel', views.export_godown_xls, name='export_excel'),
 ]
