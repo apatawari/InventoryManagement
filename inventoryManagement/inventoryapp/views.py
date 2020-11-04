@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record,Quality,ProcessingPartyName,ArrivalLocation
@@ -165,6 +165,7 @@ def showIntransit(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
+    
 
     return render(request, 'intransit.html',{'records':records,'filter':records_filter,'sums':sums})
     
@@ -1210,7 +1211,10 @@ def qualityReport(request):
     return render(request,'qualityreport.html',{'data':final_qs})
 
 #Download Excel Files
-def export_godown_xls(request):
+
+
+def export_godown_xls2(request):
+    ur=request.META.get('HTTP_REFERER')
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="godown.xls"'
 
@@ -1230,13 +1234,44 @@ def export_godown_xls(request):
 
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
+    
+    #prev url req string to dict to querydict
+    ur=ur.split('?')
+    if(len(ur)==2):
 
-    rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
-    for row in rows:
+        l=ur[1]
+        l=l.split('&')
+        l0=l[0]
+        l0=l0.split('=')
+        l1=l[1]
+        l1=l1.split('=')
+        l2=l[2]
+        l2=l2.split('=')
+        dic1={l0[0]:l0[1],l1[0]:l1[1],l2[0]:l2[1]}
+    else:
+        dic1={'party_name':'','lot_no':'','quality':''}
+    
+    d=QueryDict('',mutable=True)
+    d.update(dic1)
+
+
+
+    records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+    records_filter = RecordFilter(d,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+
+
+    # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+    for row in records:
         row_num += 1
         for col_num in range(len(row)):
             ws.write(row_num, col_num, row[col_num], font_style)
 
     wb.save(response)
-
+    
     return response
+
