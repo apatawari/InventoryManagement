@@ -72,6 +72,7 @@
             </li>
           </ul>
           <!-- Approval Start -->
+            <button onclick="window.print();">CLICK HERE TO PRINT FORM!</button>
             <a class ="btn-request float-right" href="{% url 'checkingrequest' %}">Check Grey</a>
           <!-- Approval End-->
         </div>
@@ -165,6 +166,27 @@
             <td><a class ="anchor-button" href="{% url 'editchecked' record.id %}">Edit</a></td>
           </tr>
         {% endfor %}
+
+        <tr>
+            
+          <td scope="row"><strong>Total</strong></td>
+          <td class="td-text">-</td>
+          <td>-</td>
+          <td>-</td>
+          <td><strong>{{sums.0}}</strong></td>
+          <td>-</td>
+          <td class="td-text">-</td>
+          <td><strong>{{sums.1}}</strong></td>
+          <td><strong>{{sums.2}}</strong></td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          
+        
+        </tr>
         </tbody>
       </table>
       <!-- Display Table End -->

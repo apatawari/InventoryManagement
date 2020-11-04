@@ -72,6 +72,7 @@
             </li>
           </ul>
           <!-- Approval Start -->
+            <button onclick="printTable()">CLICK HERE TO PRINT FORM!</button>
             <a class ="btn-request float-right" href="{% url 'godownrequest' %}">Approve Request</a>
           <!-- Approval End-->
         </div>
@@ -122,6 +123,7 @@
       <!-- Filter End -->
 
       <!-- Display Table Start-->
+      <div id="datatable">
       <table class="table">
         <thead class="thead-dark">
           <tr>
@@ -169,8 +171,30 @@
             
           </tr>
         {% endfor %}
+          
+          <tr>
+            
+            <td scope="row"><strong>Total</strong></td>
+            <td class="td-text">-</td>
+            <td>-</td>
+            <td>-</td>
+            <td><strong>{{sums.0}}</strong></td>
+            <td>-</td>
+            <td class="td-text">-</td>
+            <td><strong>{{sums.1}}</strong></td>
+            <td><strong>{{sums.2}}</strong></td>
+            <td><strong>{{sums.3}}</strong></td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td class="td-text">-</td>
+          
+          </tr>
         </tbody>
       </table>
+      </div>
       <!-- Display Table End -->
 
       <div class="pagination">
@@ -193,6 +217,19 @@
       <br>
 
 </body>
+
+<script>
+  function printTable(){
+    var prtContent = document.getElementById("datatable");
+    var WinPrint = window.open('', '', 'left=0,top=0,width=1000,height=900,toolbar=0,scrollbars=0,status=0');
+    WinPrint.document.write(prtContent.innerHTML);
+    WinPrint.document.close();
+    WinPrint.focus();
+    WinPrint.print();
+    WinPrint.close();
+  }
+  
+</script>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

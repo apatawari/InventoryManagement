@@ -106,10 +106,15 @@
         <div class="form-row form-group">
             
             <!-- First Section End -->
+            <label class="form-check-label" for="quality"><b>SELECT QUALITY</b></label>
+            
+            <input type="checkbox" class="form-check-input" onClick="toggle(this)" />
+            <label class="form-check-label">SELECT ALL</label>
+            
             <div class="form-group form-check scroll">
-                <label class="form-check-label" for="quality"><b>SELECT QUALITY</b></label>
+                
                 {% for q in qualities %}
-                <input class="form-check-input" type="checkbox" value="{{q.qualities}}" name="{{q.qualities}}" id="quality">
+                <input class="form-check-input" type="checkbox" value="{{q.qualities}}" name="{{q.qualities}}" id="checkquality">
                 <label class="form-check-label">
                     {{q.qualities}}
                 </label>
@@ -124,6 +129,15 @@
         </div>
         <!-- Record Filter End-->
 </body>
+
+<script>
+  function toggle(source) {
+    checkboxes = document.getElementsByClassName('form-check-input');
+    for(var i=0, n=checkboxes.length;i<n;i++) {
+      checkboxes[i].checked = source.checked;
+    }
+  }
+</script>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

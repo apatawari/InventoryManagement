@@ -154,8 +154,18 @@ def showIntransit(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
+    sum_amount = 0
+    sum_than = 0
+    sum_bale = 0
+    sum_mtrs = 0
+    for i in records:
+        sum_amount=sum_amount+i.bill_amount
+        sum_bale=sum_bale+i.bale
+        sum_than=sum_than+i.than
+        sum_mtrs=sum_mtrs+i.mtrs
+    sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
 
-    return render(request, 'intransit.html',{'records':records,'filter':records_filter})
+    return render(request, 'intransit.html',{'records':records,'filter':records_filter,'sums':sums})
     
 
 def showGodown(request):
@@ -166,8 +176,17 @@ def showGodown(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
-
-    return render(request, 'godown.html',{'records':records,'filter':records_filter})
+    sum_amount = 0
+    sum_than = 0
+    sum_bale = 0
+    sum_mtrs = 0
+    for i in records:
+        sum_amount=sum_amount+i.bill_amount
+        sum_bale=sum_bale+i.bale
+        sum_than=sum_than+i.than
+        sum_mtrs=sum_mtrs+i.mtrs
+    sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
+    return render(request, 'godown.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showGodownRequest(request):
     records_list=Record.objects.filter(state="Transit")
@@ -320,8 +339,16 @@ def showChecked(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
+    sum_amount = 0
+    sum_than = 0
+    sum_mtrs = 0
+    for i in records:
+        sum_amount=sum_amount+i.bill_amount
+        sum_than=sum_than+i.than
+        sum_mtrs=sum_mtrs+i.mtrs
+    sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
 
-    return render(request, 'checking.html',{'records':records,'filter':records_filter})
+    return render(request, 'checking.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showCheckingRequest(request):
     records_list=Record.objects.filter(state="Godown")
@@ -643,8 +670,16 @@ def showProcessing(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
+    sum_amount = 0
+    sum_than = 0
+    sum_mtrs = 0
+    for i in records:
+        sum_amount=sum_amount+i.bill_amount
+        sum_than=sum_than+i.than
+        sum_mtrs=sum_mtrs+i.mtrs
+    sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
 
-    return render(request, 'processing.html',{'records':records,'filter':records_filter})
+    return render(request, 'processing.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showProcessingRequest(request):
     records_list=Record.objects.filter(state="Checked")
@@ -750,8 +785,16 @@ def showReadyToPrint(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
+    sum_amount = 0
+    sum_than = 0
+    sum_mtrs = 0
+    for i in records:
+        sum_amount=sum_amount+i.bill_amount
+        sum_than=sum_than+i.than
+        sum_mtrs=sum_mtrs+i.mtrs
+    sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
 
-    return render(request, 'readytoprint.html',{'records':records,'filter':records_filter})
+    return render(request, 'readytoprint.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showReadyRequest(request):
     records_list=Record.objects.filter(state="In Process")
