@@ -165,7 +165,7 @@
             <td>{{record.order_no}}</td>
             <td class="td-text">{{record.state}}</td>
             <td class="td-text">{{record.processing_party_name}}</td>
-            <td><a class ="anchor-button" href="{% url 'readyapprove' record.id %}">Approve</a></td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'readyapprove' record.id %}">Recieve Processed Grey</a></td>
           </tr>
         {% endfor %}
         </tbody>

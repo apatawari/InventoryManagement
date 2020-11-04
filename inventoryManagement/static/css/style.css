@@ -438,3 +438,8 @@ hr {
 .small {
   width: 100%;
 }
+
+.button-small-text {
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}

@@ -161,7 +161,7 @@
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td class="td-text">{{record.state}}</td>
-            <td><a class ="anchor-button" href="{% url 'processingapprove' record.id %}">Approve</a></td>
+            <td><a class ="anchor-button" href="{% url 'processingapprove' record.id %}">Send For Processing</a></td>
           </tr>
         {% endfor %}
         </tbody>
