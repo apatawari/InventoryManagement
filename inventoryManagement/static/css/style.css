@@ -426,3 +426,8 @@ td {
   text-align: center;
   color: #a044ff;
 }
+
+/* Record Display */
+.td-text {
+  text-align: left;
+}

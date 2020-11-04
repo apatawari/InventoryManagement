@@ -140,7 +140,7 @@
             <th scope="col">Order No</th>
             <th scope="col">Checking Date</th>
             <th scope="col">State</th>
-            
+            <th scope="col"></th>
             
           </tr>
         </thead>
@@ -149,20 +149,20 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td>{{record.party_name}}</td>
+            <td class="td-text">{{record.party_name}}</td>
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
-            <td><a href="{% url 'editchecked' record.id %}">{{record.lot_no}}</a></td>
-            <td>{{record.quality}}</td>
+            <td>{{record.lot_no}}</td>
+            <td class="td-text">{{record.quality}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td>{{record.checking_date}}</td>
-            <td>{{record.state}}</td>
-            
+            <td class="td-text">{{record.state}}</td>
+            <td><a class ="anchor-button" href="{% url 'editchecked' record.id %}">Edit</a></td>
           </tr>
         {% endfor %}
         </tbody>
