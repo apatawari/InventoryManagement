@@ -70,7 +70,7 @@ urlpatterns = [
     path('qualityreportfilter',views.qualityReportFilter, name='qualityreportfilter'),
     path('qualityreport',views.qualityReport,name='qualityreport'),
 
-    path('export/excelpage', views.export_page_transit_xls, name='excel_page_transit'),
-    path('export/excelall', views.export_all_transit_xls, name='excel_all_transit'),
-    path('export/excelfilter', views.export_filter_all_transit_xls, name='excel_filter_all_transit'),
+    path('export/excelpage', views.export_page_xls, name='excel_page'),
+    path('export/excelall', views.export_all_xls, name='excel_all'),
+    path('export/excelfilter', views.export_filter_all_xls, name='excel_filter_all'),
 ]

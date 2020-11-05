@@ -377,6 +377,8 @@ def approveCheck(request,id):
     than_recieved=request.POST.get("than_recieved")
     than_recieved = int(than_recieved)
     defect=request.POST.get("defect")
+    mtrs_edit=request.POST.get("mtrs-checked")
+    
     
     total_amount=prevRec.bill_amount
     totalthan=prevRec.than
@@ -388,6 +390,9 @@ def approveCheck(request,id):
             prevRec.state="Checked"
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
+            if(mtrs_edit=="0"):
+                mtrs_edit=prevRec.mtrs
+            prevRec.mtrs=mtrs_edit
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
             return redirect('/checkingrequest')
@@ -404,9 +409,13 @@ def approveCheck(request,id):
             mtrs_un_checked = prevRec.mtrs/prevRec.than
             mtrs_un_checked = mtrs_un_checked * than_un_checked
             mtrs_un_checked = round(mtrs_un_checked,2)
-            mtrs_checked = prevRec.mtrs - mtrs_un_checked
-            mtrs_checked = round(mtrs_checked,2)
-
+            if(mtrs_edit=="0"):
+                print(mtrs_edit)
+                mtrs_checked = prevRec.mtrs - mtrs_un_checked
+                mtrs_checked = round(mtrs_checked,2)
+            else:
+                print(type(mtrs_edit))
+                mtrs_checked=mtrs_edit
 
             value = Record(
                 sr_no=prevRec.sr_no,
@@ -447,6 +456,9 @@ def approveCheck(request,id):
             prevRec.state=request.POST.get("defect")
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
+            if(mtrs_edit=="0"):
+                mtrs_edit=prevRec.mtrs
+            prevRec.mtrs=mtrs_edit
             prevRec.save()
             messages.success(request,"Data updated to defective state")
 
@@ -465,9 +477,13 @@ def approveCheck(request,id):
             mtrs_un_checked = prevRec.mtrs/prevRec.than
             mtrs_un_checked = mtrs_un_checked * than_un_checked
             mtrs_un_checked = round(mtrs_un_checked,2)
-            mtrs_checked = prevRec.mtrs - mtrs_un_checked
-            mtrs_checked = round(mtrs_checked,2)
-
+            if(mtrs_edit=="0"):
+                print(mtrs_edit)
+                mtrs_checked = prevRec.mtrs - mtrs_un_checked
+                mtrs_checked = round(mtrs_checked,2)
+            else:
+                print(type(mtrs_edit))
+                mtrs_checked=mtrs_edit
 
             value = Record(
                 sr_no=prevRec.sr_no,
@@ -1212,7 +1228,7 @@ def qualityReport(request):
 #Download Excel Files
 
 
-def export_page_transit_xls(request):
+def export_page_xls(request):
     ur=request.META.get('HTTP_REFERER')
     ur=ur.split('?')
     stateur=ur[0]
@@ -1321,7 +1337,7 @@ def export_page_transit_xls(request):
     return response
 
 
-def export_filter_all_transit_xls(request):
+def export_filter_all_xls(request):
     ur=request.META.get('HTTP_REFERER')
     
     ur=ur.split('?')
@@ -1427,7 +1443,7 @@ def export_filter_all_transit_xls(request):
 
 
 
-def export_all_transit_xls(request):
+def export_all_xls(request):
     ur=request.META.get('HTTP_REFERER')
     ur=ur.split('?')
     stateur=ur[0]

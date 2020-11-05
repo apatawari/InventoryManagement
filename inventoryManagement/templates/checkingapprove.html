@@ -47,7 +47,7 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Mtrs">Mtrs</label>
-                <input type="number" class="form-control" id="mtrs" placeholder="Mtrs" value="{{record.mtrs}}" name="mtrs" readonly>
+                <input type="number" class="form-control" id="mtrs" placeholder="0"  value="{{record.mtrs}}" name="mtrs" readonly >
             </div>
             <div class="form-group col-md-4">
                 <label for="Bale">Bale</label>
@@ -105,9 +105,12 @@
                     <option value="Defect- Transport defect">Defect due to transport</option>
                     <option value="Defect- Manufacturing defect">Defect in manufacturing</option>
                 </select>
-
-                
             </div>
+            <div class="form-group col-md-4">
+                <label for="Mtrs checked">Mtrs Checked</label>
+                <input type="float" class="form-control" id="mtrs" placeholder="0" value=0 name="mtrs-checked"  >
+            </div>
+
         </div>
         <div class="form-row">
             <div class="form-group col-md-9">

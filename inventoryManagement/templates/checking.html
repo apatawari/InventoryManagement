@@ -99,9 +99,9 @@
     
     {% load widget_tweaks %}
     {% load my_tags %}
-    <a href="{% url 'excel_all_transit' %}">All Intransit</a>
-    <a href="{% url 'excel_filter_all_transit' %}">filtered all</a>
-    <a href="{% url 'excel_page_transit' %}">This page</a>
+    <a href="{% url 'excel_all' %}">All Intransit</a>
+    <a href="{% url 'excel_filter_all' %}">filtered all</a>
+    <a href="{% url 'excel_page' %}">This page</a>
       <!-- Filter Start -->
       <form method="GET">
           <div class="form-row filter-form">
