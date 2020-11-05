@@ -72,7 +72,7 @@
             </li>
           </ul>
           <!-- Approval Start -->
-            <a href="{% url 'excel_all_transit' %}">all godown</a>
+            
             <a class ="btn-request float-right" href="{% url 'godownrequest' %}">Move To Godown</a>
           <!-- Approval End-->
         </div>
@@ -100,6 +100,10 @@
     
     {% load widget_tweaks %}
     {% load my_tags %}
+
+    <a href="{% url 'excel_all_transit' %}">All Intransit</a>
+    <a href="{% url 'excel_filter_all_transit' %}">filtered all</a>
+    <a href="{% url 'excel_page_transit' %}">This page</a>
       <!-- Filter Start -->
       <form method="GET">
           <div class="form-row filter-form">

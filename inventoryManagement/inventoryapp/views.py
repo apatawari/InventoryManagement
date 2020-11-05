@@ -1214,12 +1214,40 @@ def qualityReport(request):
 
 def export_page_transit_xls(request):
     ur=request.META.get('HTTP_REFERER')
-    print(ur)
+    ur=ur.split('?')
+    stateur=ur[0]
+    stateur=stateur.split('/')
+    stateur=stateur[-1]
+    if(stateur=="intransit"):
+        file_name="Intransit"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+    
+    elif(stateur=="godown"):
+        file_name="Godown"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+    elif(stateur=="checking"):
+        file_name="Checked"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ]
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state')
+    elif(stateur=="inprocess"):
+        file_name="InProcess"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
+    else:
+        file_name="ProcessedGrey"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+    
+
+    # ur=request.META.get('HTTP_REFERER')
+    
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="Intransit-thispage.xls"'
+    response['Content-Disposition'] = 'attachment; filename=%s.xls'%file_name
 
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Godown Data') # this will make a sheet named Users Data
+    ws = wb.add_sheet('Grey Data') # this will make a sheet named Users Data
 
     # Sheet header, first row
     row_num = 0
@@ -1227,8 +1255,7 @@ def export_page_transit_xls(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-
+    
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
 
@@ -1236,7 +1263,7 @@ def export_page_transit_xls(request):
     font_style = xlwt.XFStyle()
     
     #prev url req string to dict to querydict
-    ur=ur.split('?')
+    # ur=ur.split('?')
     if(len(ur)==2):
 
         l=ur[1]
@@ -1275,7 +1302,6 @@ def export_page_transit_xls(request):
 
     print(d)
 
-    records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     records_filter = RecordFilter(d,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     paginator = Paginator(records_filter.qs,10)
@@ -1297,9 +1323,37 @@ def export_page_transit_xls(request):
 
 def export_filter_all_transit_xls(request):
     ur=request.META.get('HTTP_REFERER')
-    print(ur)
+    
+    ur=ur.split('?')
+    stateur=ur[0]
+    stateur=stateur.split('/')
+    stateur=stateur[-1]
+    if(stateur=="intransit"):
+        file_name="Intransit-filt"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+    
+    elif(stateur=="godown"):
+        file_name="Godown-filt"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+    elif(stateur=="checking"):
+        file_name="Checked-filt"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ]
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state')
+    elif(stateur=="inprocess"):
+        file_name="InProcess-filt"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
+    else:
+        file_name="ProcessedGrey-filt"
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+    
+
+
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="Intransit-thispage.xls"'
+    response['Content-Disposition'] = 'attachment; filename=%s.xls'%file_name
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Godown Data') # this will make a sheet named Users Data
@@ -1310,8 +1364,7 @@ def export_filter_all_transit_xls(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-
+    
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
 
@@ -1319,7 +1372,7 @@ def export_filter_all_transit_xls(request):
     font_style = xlwt.XFStyle()
     
     #prev url req string to dict to querydict
-    ur=ur.split('?')
+    # ur=ur.split('?')
     if(len(ur)==2):
 
         l=ur[1]
@@ -1356,9 +1409,8 @@ def export_filter_all_transit_xls(request):
     d=QueryDict('',mutable=True)
     d.update(dic1)
 
-    print(d)
+    
 
-    records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     records_filter = RecordFilter(d,queryset=records_list)
     
     # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')

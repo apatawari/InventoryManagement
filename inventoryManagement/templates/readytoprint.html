@@ -100,6 +100,10 @@
     {% load widget_tweaks %}
     {% load my_tags %}
       <!-- Filter Start -->
+
+      <a href="{% url 'excel_all_transit' %}">All Intransit</a>
+      <a href="{% url 'excel_filter_all_transit' %}">filtered all</a>
+      <a href="{% url 'excel_page_transit' %}">This page</a>
       <form method="GET">
           <div class="form-row filter-form">
             <div class="form-group col-sm-4">
@@ -120,7 +124,7 @@
           </div>
       </form>
       <!-- Filter End -->
-      <a href="{% url 'excel_all_transit' %}">All Ready</a>
+      
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">
