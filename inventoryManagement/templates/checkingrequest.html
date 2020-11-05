@@ -162,7 +162,7 @@
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td class="td-text">{{record.state}}</td>
-            <td><a class ="anchor-button" href="{% url 'checkingapprove' record.id %}">Complete Checking</a></td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'checkingapprove' record.id %}">Complete Checking</a></td>
           </tr>
         {% endfor %}
         </tbody>

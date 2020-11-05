@@ -152,7 +152,7 @@ def showIntransit(request):
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
-    paginator = Paginator(records_filter.qs,10)
+    paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
     sum_amount = 0
@@ -165,7 +165,7 @@ def showIntransit(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
-    
+
     return render(request, 'intransit.html',{'records':records,'filter':records_filter,'sums':sums})
     
 
@@ -390,7 +390,7 @@ def approveCheck(request,id):
             prevRec.state="Checked"
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
-            if(mtrs_edit=="0"):
+            if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
             prevRec.save()
@@ -409,7 +409,7 @@ def approveCheck(request,id):
             mtrs_un_checked = prevRec.mtrs/prevRec.than
             mtrs_un_checked = mtrs_un_checked * than_un_checked
             mtrs_un_checked = round(mtrs_un_checked,2)
-            if(mtrs_edit=="0"):
+            if(mtrs_edit==""):
                 print(mtrs_edit)
                 mtrs_checked = prevRec.mtrs - mtrs_un_checked
                 mtrs_checked = round(mtrs_checked,2)
@@ -456,7 +456,7 @@ def approveCheck(request,id):
             prevRec.state=request.POST.get("defect")
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
-            if(mtrs_edit=="0"):
+            if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
             prevRec.save()
@@ -477,7 +477,7 @@ def approveCheck(request,id):
             mtrs_un_checked = prevRec.mtrs/prevRec.than
             mtrs_un_checked = mtrs_un_checked * than_un_checked
             mtrs_un_checked = round(mtrs_un_checked,2)
-            if(mtrs_edit=="0"):
+            if(mtrs_edit==""):
                 print(mtrs_edit)
                 mtrs_checked = prevRec.mtrs - mtrs_un_checked
                 mtrs_checked = round(mtrs_checked,2)
@@ -1292,10 +1292,14 @@ def export_page_xls(request):
         elif(len(l)==3):
             l0=l[0]
             l0=l0.split('=')
+            party=l0[1]
+            l0[1]=party.replace('+',' ')
             l1=l[1]
             l1=l1.split('=')
             l2=l[2]
             l2=l2.split('=')
+            party=l2[1]
+            l2[1]=party.replace('+',' ')
             dic1={'page':'1',l0[0]:l0[1],l1[0]:l1[1],l2[0]:l2[1]}
             page=1
         else:
@@ -1303,10 +1307,14 @@ def export_page_xls(request):
             l0=l0.split('=')
             l1=l[1]
             l1=l1.split('=')
+            party=l1[1]
+            l1[1]=party.replace('+',' ')
             l2=l[2]
             l2=l2.split('=')
             l3=l[3]
             l3=l3.split('=')
+            party=l3[1]
+            l3[1]=party.replace('+',' ')
             dic1={l0[0]:l0[1],l1[0]:l1[1],l2[0]:l2[1],l3[0]:l3[1]}
             page=l0[1]
 
@@ -1320,7 +1328,7 @@ def export_page_xls(request):
 
     records_filter = RecordFilter(d,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
-    paginator = Paginator(records_filter.qs,10)
+    paginator = Paginator(records_filter.qs,20)
     page = d.get('page')
     page=int(page)
     
@@ -1401,10 +1409,14 @@ def export_filter_all_xls(request):
         elif(len(l)==3):
             l0=l[0]
             l0=l0.split('=')
+            party=l0[1]
+            l0[1]=party.replace('+',' ')
             l1=l[1]
             l1=l1.split('=')
             l2=l[2]
             l2=l2.split('=')
+            party=l2[1]
+            l2[1]=party.replace('+',' ')
             dic1={'page':'1',l0[0]:l0[1],l1[0]:l1[1],l2[0]:l2[1]}
             page=1
         else:
@@ -1412,10 +1424,14 @@ def export_filter_all_xls(request):
             l0=l0.split('=')
             l1=l[1]
             l1=l1.split('=')
+            party=l1[1]
+            l1[1]=party.replace('+',' ')
             l2=l[2]
             l2=l2.split('=')
             l3=l[3]
             l3=l3.split('=')
+            party=l3[1]
+            l3[1]=party.replace('+',' ')
             dic1={l0[0]:l0[1],l1[0]:l1[1],l2[0]:l2[1],l3[0]:l3[1]}
             page=l0[1]
 

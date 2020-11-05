@@ -443,3 +443,40 @@ hr {
   font-size: 0.75rem;
   text-transform: capitalize;
 }
+
+/* Download Button */
+.download-button {
+  color: #a044ff;
+  background-color: transparent;
+  background-image: none;
+  border-color: #a044ff;
+  border: 1px solid;
+  padding: 0.375rem 0.75rem;
+  margin-right: 10px;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.download-button:hover {
+  color: #ffffff;
+  background-color: #6a3093;
+  background-image: none;
+  border-color: #6a3093;
+  border: 1px solid;
+  padding: 0.375rem 0.75rem;
+  margin-right: 10px;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.download {
+  text-align: right;
+  padding-right: 10px;
+  margin-bottom: 20px;
+}

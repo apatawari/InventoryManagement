@@ -5,9 +5,6 @@
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Filter Start -->
-      <a href="{% url 'excel_all' %}">All Intransit</a>
-      <a href="{% url 'excel_filter_all' %}">filtered all</a>
-      <a href="{% url 'excel_page' %}">This page</a>
 
       <form method="GET">
           <div class="form-row filter-form">
@@ -29,6 +26,14 @@
           </div>
       </form>
       <!-- Filter End -->
+
+      <!-- Download Button Start-->
+      <div class="download">
+        <a class="download-button" href="{% url 'excel_page' %}">Print This Page</a>
+        <a class="download-button" href="{% url 'excel_filter_all' %}">Print All Filtered Data</a>
+        <a class="download-button" href="{% url 'excel_all' %}">Print All Data</a>
+      </div>
+      <!-- Download Button End-->
 
       <!-- Display Table Start-->
       <table class="table">
