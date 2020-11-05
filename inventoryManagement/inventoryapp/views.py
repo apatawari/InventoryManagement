@@ -152,7 +152,7 @@ def showIntransit(request):
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
-    paginator = Paginator(records_filter.qs,20)
+    paginator = Paginator(records_filter.qs,10)
     page = request.GET.get('page')
     records = paginator.get_page(page)
     sum_amount = 0
@@ -1278,7 +1278,7 @@ def export_page_transit_xls(request):
     records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     records_filter = RecordFilter(d,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
-    paginator = Paginator(records_filter.qs,20)
+    paginator = Paginator(records_filter.qs,10)
     page = d.get('page')
     page=int(page)
     
@@ -1295,12 +1295,98 @@ def export_page_transit_xls(request):
     return response
 
 
+def export_filter_all_transit_xls(request):
+    ur=request.META.get('HTTP_REFERER')
+    print(ur)
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Intransit-thispage.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Godown Data') # this will make a sheet named Users Data
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    
+    #prev url req string to dict to querydict
+    ur=ur.split('?')
+    if(len(ur)==2):
+
+        l=ur[1]
+        l=l.split('&')
+        if(len(l)<3):
+            l0=l[0]
+            l0=l0.split('=')
+            dic1={l0[0]:l0[1]}
+            page=l0[1]
+        elif(len(l)==3):
+            l0=l[0]
+            l0=l0.split('=')
+            l1=l[1]
+            l1=l1.split('=')
+            l2=l[2]
+            l2=l2.split('=')
+            dic1={'page':'1',l0[0]:l0[1],l1[0]:l1[1],l2[0]:l2[1]}
+            page=1
+        else:
+            l0=l[0]
+            l0=l0.split('=')
+            l1=l[1]
+            l1=l1.split('=')
+            l2=l[2]
+            l2=l2.split('=')
+            l3=l[3]
+            l3=l3.split('=')
+            dic1={l0[0]:l0[1],l1[0]:l1[1],l2[0]:l2[1],l3[0]:l3[1]}
+            page=l0[1]
+
+    else:
+        dic1={'page':'1','party_name':'','lot_no':'','quality':''}
+    
+    d=QueryDict('',mutable=True)
+    d.update(dic1)
+
+    print(d)
+
+    records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+    records_filter = RecordFilter(d,queryset=records_list)
+    # return render(request,'intransit.html',{'records':records_filter})
+    paginator = Paginator(records_filter.qs,20)
+    page = d.get('page')
+    page=int(page)
+    
+    records = paginator.get_page(page)
+    # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+    for row in records_filter.qs:
+        row_num += 1
+        for col_num in range(len(row)):
+            
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    
+    return response
+
+
+
+
 def export_all_transit_xls(request):
+    print("this is all")
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Intransit-all.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Godown Data') # this will make a sheet named Users Data
+    ws = wb.add_sheet('Transit Data') # this will make a sheet named Users Data
 
     # Sheet header, first row
     row_num = 0
@@ -1331,4 +1417,3 @@ def export_all_transit_xls(request):
     wb.save(response)
     
     return response
-
