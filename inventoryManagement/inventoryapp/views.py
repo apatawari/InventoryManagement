@@ -562,6 +562,7 @@ def renderAddQuality(request):
 
 def saveQuality(request):
     q=request.POST.get("newer_quality")
+    q = q.strip()
     try:
         existing_quality=get_object_or_404(Quality,qualities=q.upper())
         messages.error(request,"This quality already exists")
@@ -603,7 +604,8 @@ def renderAddLocation(request):
 
 def saveLocation(request):
     p = request.POST.get("location")
-    p=p.upper()
+    p = p.upper()
+    p = p.strip()
     try:
         existing_party=get_object_or_404(ArrivalLocation,location=p)
         messages.error(request,"This arrival location already exists")
@@ -647,7 +649,8 @@ def renderAddParty(request):
 
 def saveParty(request):
     p = request.POST.get("processing-party")
-    p=p.upper()
+    p = p.upper()
+    p = p.strip()
     try:
         existing_party=get_object_or_404(ProcessingPartyName,processing_party=p)
         messages.error(request,"This Processing Party already exists")
