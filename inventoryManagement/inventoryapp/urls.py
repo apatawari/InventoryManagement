@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from . import views
+import debug_toolbar
 
 from django.conf.urls import (
     handler400,
@@ -73,4 +74,6 @@ urlpatterns = [
     path('export/excelpage', views.export_page_xls, name='excel_page'),
     path('export/excelall', views.export_all_xls, name='excel_all'),
     path('export/excelfilter', views.export_filter_all_xls, name='excel_filter_all'),
+
+    path('__debug__/', include(debug_toolbar.urls)),
 ]
