@@ -148,7 +148,7 @@ def upload(request):
     return redirect('/index')
 
 def showIntransit(request):
-    records_list=Record.objects.filter(state="Transit")
+    records_list=Record.objects.filter(state="Transit").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -170,7 +170,7 @@ def showIntransit(request):
     
 
 def showGodown(request):
-    records_list=Record.objects.filter(state="Godown")
+    records_list=Record.objects.filter(state="Godown").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -190,7 +190,7 @@ def showGodown(request):
     return render(request, 'godown.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showGodownRequest(request):
-    records_list=Record.objects.filter(state="Transit")
+    records_list=Record.objects.filter(state="Transit").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -333,7 +333,7 @@ def approveBale(request,id):
 #quality2 = request.POST.get("quality2")
 
 def showChecked(request):
-    records_list=Record.objects.filter(state="Checked")
+    records_list=Record.objects.filter(state="Checked").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -352,7 +352,7 @@ def showChecked(request):
     return render(request, 'checking.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showCheckingRequest(request):
-    records_list=Record.objects.filter(state="Godown")
+    records_list=Record.objects.filter(state="Godown").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -680,7 +680,7 @@ def editProcessingParty(request,id):
 
 #processing-----
 def showProcessing(request):
-    records_list=Record.objects.filter(state="In Process")
+    records_list=Record.objects.filter(state="In Process").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -699,7 +699,7 @@ def showProcessing(request):
     return render(request, 'processing.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showProcessingRequest(request):
-    records_list=Record.objects.filter(state="Checked")
+    records_list=Record.objects.filter(state="Checked").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -795,7 +795,7 @@ def sendInProcess(request,id):
 
 #ready to print-----
 def showReadyToPrint(request):
-    records_list=Record.objects.filter(state="Ready to print")
+    records_list=Record.objects.filter(state="Ready to print").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -814,7 +814,7 @@ def showReadyToPrint(request):
     return render(request, 'readytoprint.html',{'records':records,'filter':records_filter,'sums':sums})
 
 def showReadyRequest(request):
-    records_list=Record.objects.filter(state="In Process")
+    records_list=Record.objects.filter(state="In Process").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
