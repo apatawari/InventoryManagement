@@ -923,11 +923,8 @@ def readyToPrint(request,id):
         return redirect('/readytoprintrequest')
 
 def reportFilter(request):
-    processing_parties= ProcessingPartyName.objects.all()
-    qualities= Quality.objects.all()
-
-
-    return render(request,'reportfilter.html',{'parties':processing_parties,'qualities':qualities})
+    processing_parties= ProcessingPartyName.objects.all().order_by('processing_party')
+    return render(request,'reportfilter.html',{'parties':processing_parties})
 
 def generateReport2(request):                   #deprecated version
     parties= ProcessingPartyName.objects.all()
