@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Report Filter</title>
+    <title>Report</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -71,6 +71,9 @@
               </div>
             </li>
           </ul>
+          <!-- Approval Start -->
+            
+          <!-- Approval End-->
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -96,68 +99,57 @@
     
     {% load widget_tweaks %}
     {% load my_tags %}
+      <br>
+      <!-- Filter End -->
 
-    <div class="page-title">
-      <h3 class="title-text">LEDGER</h3>
-    </div>
-      <!-- Record Filter Start-->
-      <form class = "md-form view-report" method="POST" action="{% url 'generatereport' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <!--First Section -->
-        <div class="form-row form-group">
-          <div class="form-group col-md-4">
-            <label for="firstdate">Start Date</label>
-            <input type="date" class="form-control" id="firstdate" name="start_date" placeholder="mm-dd-yyyy"/>
-            <label for="firstdate">End Date</label>
-            <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" />
+      <!-- Display Table Start-->
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">Sr-no</th>
+            <th scope="col">Party Name</th>
+            <th scope="col">Lot No</th>
+            <th scope="col">Quality</th>
+            <th scope="col">Than</th>
+            <th scope="col">Mtrs</th>
+            <th scope="col">Rate</th>
+            <th scope="col">Sent in processing date</th>
+            <th scope="col">Recieve from processing date</th>
+            <th scope="col">Processing Party</th>
+            <th scope="col">State</th>
+            
+            
+          </tr>
 
-            <label for="lotno">Lot No</label>
-            <input type="number" class="form-control" id="lot_no" placeholder="Lot No" value="{{record.lot_no}}" name="lot_no">
-          </div>
-        <!-- First Section End -->
-          <div class="form-group col-md-4">
-            {% for p in sendingparty %}
-                <input class="form-check-input-2" type="checkbox" value="{{p}}" name="{{p}}" id="partyname">
-                <label class="form-check-label">
-                    {{p}}
-                </label>
-              {% endfor %}
-          </div>
-          <div class="form-group col-md-4">
-            <label class="form-check-label pl-4" for="processing_party"><b>SELECT PROCESSING PARTY</b></label>
-            <div class="form-group form-check ">
-              <hr class="small">
-              <input class="form-check-input" type="checkbox" onClick="toggle(this)" />
-              <label class="form-check-label">SELECT ALL</label>
-              <hr class="small">
-            </div>
-            <div class="form-group form-check scroll">
-                
-                {% for p in parties %}
-                <input class="form-check-input" type="checkbox" value="{{p.processing_party}}" name="{{p.processing_party}}" id="partyname">
-                <label class="form-check-label">
-                    {{p.processing_party}}
-                </label>
-                {% endfor %}
-            </div>
-          </div>
-            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
-            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
-            <div class="form-group form-check col-md-4">
-                <button type="submit" class="btn btn-primary button float-right mt-4">Generate Report</button>
-            </div>
-        </div>
-        <!-- Record Filter End-->
+        </thead>
+        <tbody>
+        {% for record in records %}
+          <tr>
+            
+            <td scope="row">{{ forloop.counter }}</td>
+            <td>{{record.party_name}}</td>
+            <td>{{record.lot_no}}</td>
+            <td>{{record.quality}}</td>
+            <td>{{record.than}}</td>
+            <td>{{record.mtrs}}</td>  
+            <td>{{record.rate}}</td>
+            <td>{{record.sent_to_processing_date}}</td>
+            <td>{{record.recieve_processed_date}}</td>
+            <td>{{record.processing_party_name}}</td>
+            <td>{{record.state}}</td>
+            
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <!-- Display Table End -->
+
+      
+
+      <br>
+
 </body>
-
-<script>
-  function toggle(source) {
-    checkboxes = document.getElementsByClassName('form-check-input');
-    for(var i=0, n=checkboxes.length;i<n;i++) {
-      checkboxes[i].checked = source.checked;
-    }
-  }
-</script>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

@@ -1025,7 +1025,13 @@ def reportFilter(request):
 
 def generateReport(request):
     selected_states=['In Process','Ready to print']
+    selected_states_all=['Transit','Godown','Checked','In Process','Ready to print']
     selected_parties=[]
+    partyname=[]
+    send_parties=[]
+
+    send_data=[]
+
     parties= ProcessingPartyName.objects.all()
     # qualities= Quality.objects.all()
     lot=request.POST.get("lot_no")
@@ -1036,6 +1042,16 @@ def generateReport(request):
 # jjjj
 ##  Date filter  
     
+    records = Record.objects.all()
+    for rec in records:
+        if(rec.party_name in partyname):
+            pass
+        else:
+            partyname.append(rec.party_name)
+
+    for p in partyname:
+        if(request.POST.get(p)!=None):
+            send_parties.append(request.POST.get(p))
     for p in parties:
         if(request.POST.get(p.processing_party)!=None):
             selected_parties.append(request.POST.get(p.processing_party))
@@ -1071,15 +1087,90 @@ def generateReport(request):
     #         selected_qualities.append(request.POST.get(q.qualities))
     
         if(lot==''):
-            if(selected_parties!=[]):
+            if(selected_parties!=[] and send_parties!=[]):
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates)
+                
+            elif(selected_parties!=[] and send_parties==[]):
                 rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
+            elif(selected_parties==[] and send_parties!=[]):
+                
+                
+                for s in send_parties:
+                    transit_than=0
+                    godown_than=0
+                    checked_than=0
+                    processing_than=0
+                    ready_than=0
+                    transit_mtrs=0
+                    godown_mtrs=0
+                    checked_mtrs=0
+                    processing_mtrs=0
+                    ready_mtrs=0
+                    send_list=[]
+                    rec = Record.objects.filter(party_name=s)
+                    for r in rec:
+                        if(r.state=='Transit'):
+                            transit_mtrs=transit_mtrs+r.mtrs
+                            transit_than=transit_than+r.than
+                        elif(r.state=='Godown'):
+                            godown_mtrs=godown_mtrs+r.mtrs
+                            godown_than=godown_than+r.than
+                        elif(r.state=='In Process'):
+                            processing_mtrs=processing_mtrs+r.mtrs
+                            processing_than=processing_than+r.than
+                        elif(r.state=='Ready to print'):
+                            ready_mtrs=ready_mtrs+r.mtrs
+                            ready_than=ready_than+r.than
+                        else:
+                            checked_mtrs=checked_mtrs+r.mtrs
+                            checked_than=checked_than+r.than
+                    send_list=[s,round(transit_than),round(transit_mtrs),round(godown_than),round(godown_mtrs),round(checked_than),round(checked_mtrs),round(processing_than),round(processing_mtrs),round(ready_than),round(ready_mtrs)]
+                    send_data.append(send_list)
+                return render(request,'reportparty.html',{'data':send_data})
             else:
                 rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states)            
             
         else:
         
-            if(selected_parties!=[]):
-                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates) #bill_date__range=[start_date,end_date]
+            if(selected_parties!=[] and send_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
+            elif(selected_parties!=[] and send_parties==[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
+            elif(selected_parties==[] and send_parties!=[]):
+                
+                
+                for s in send_parties:
+                    transit_than=0
+                    godown_than=0
+                    checked_than=0
+                    processing_than=0
+                    ready_than=0
+                    transit_mtrs=0
+                    godown_mtrs=0
+                    checked_mtrs=0
+                    processing_mtrs=0
+                    ready_mtrs=0
+                    send_list=[]
+                    rec = Record.objects.filter(lot_no=lot,party_name=s)
+                    for r in rec:
+                        if(r.state=='Transit'):
+                            transit_mtrs=transit_mtrs+r.mtrs
+                            transit_than=transit_than+r.than
+                        elif(r.state=='Godown'):
+                            godown_mtrs=godown_mtrs+r.mtrs
+                            godown_than=godown_than+r.than
+                        elif(r.state=='In Process'):
+                            processing_mtrs=processing_mtrs+r.mtrs
+                            processing_than=processing_than+r.than
+                        elif(r.state=='Ready to print'):
+                            ready_mtrs=ready_mtrs+r.mtrs
+                            ready_than=ready_than+r.than
+                        else:
+                            checked_mtrs=checked_mtrs+r.mtrs
+                            checked_than=checked_than+r.than
+                    send_list=[s,round(transit_than),round(transit_mtrs),round(godown_than),round(godown_mtrs),round(checked_than),round(checked_mtrs),round(processing_than),round(processing_mtrs),round(ready_than),round(ready_mtrs)]
+                    send_data.append(send_list)
+                return render(request,'reportparty.html',{'data':send_data})
             else:
                 rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
         
@@ -1087,19 +1178,98 @@ def generateReport(request):
 
     else:
         if(lot==''):
-            if(selected_parties!=[]):
+            if(selected_parties!=[] and send_parties!=[]):
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties)
+                return render(request,'reportall.html',{'records':rec})
+            elif(selected_parties!=[] and send_parties==[]):
                 rec = Record.objects.filter(processing_party_name__in=selected_parties)
+            elif(selected_parties==[] and send_parties!=[]):
+                
+                
+                for s in send_parties:
+                    transit_than=0
+                    godown_than=0
+                    checked_than=0
+                    processing_than=0
+                    ready_than=0
+                    transit_mtrs=0
+                    godown_mtrs=0
+                    checked_mtrs=0
+                    processing_mtrs=0
+                    ready_mtrs=0
+                    send_list=[]
+                    rec = Record.objects.filter(party_name=s)
+                    for r in rec:
+                        if(r.state=='Transit'):
+                            transit_mtrs=transit_mtrs+r.mtrs
+                            transit_than=transit_than+r.than
+                        elif(r.state=='Godown'):
+                            godown_mtrs=godown_mtrs+r.mtrs
+                            godown_than=godown_than+r.than
+                        elif(r.state=='In Process'):
+                            processing_mtrs=processing_mtrs+r.mtrs
+                            processing_than=processing_than+r.than
+                        elif(r.state=='Ready to print'):
+                            ready_mtrs=ready_mtrs+r.mtrs
+                            ready_than=ready_than+r.than
+                        else:
+                            checked_mtrs=checked_mtrs+r.mtrs
+                            checked_than=checked_than+r.than
+                    send_list=[s,round(transit_than),round(transit_mtrs),round(godown_than),round(godown_mtrs),round(checked_than),round(checked_mtrs),round(processing_than),round(processing_mtrs),round(ready_than),round(ready_mtrs)]
+                    send_data.append(send_list)
+                return render(request,'reportparty.html',{'data':send_data})
             else:
                 rec= Record.objects.filter(state__in=selected_states)            
             
         else:
         
-            if(selected_parties!=[]):
-                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties) #bill_date__range=[start_date,end_date]
+            if(selected_parties!=[] and send_parties!=[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
+            elif(selected_parties!=[] and send_parties==[]):
+                rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties)
+            elif(selected_parties==[] and send_parties!=[]):
+                
+                
+                for s in send_parties:
+                    transit_than=0
+                    godown_than=0
+                    checked_than=0
+                    processing_than=0
+                    ready_than=0
+                    transit_mtrs=0
+                    godown_mtrs=0
+                    checked_mtrs=0
+                    processing_mtrs=0
+                    ready_mtrs=0
+                    send_list=[]
+                    rec = Record.objects.filter(lot_no=lot,party_name=s)
+                    for r in rec:
+                        if(r.state=='Transit'):
+                            transit_mtrs=transit_mtrs+r.mtrs
+                            transit_than=transit_than+r.than
+                        elif(r.state=='Godown'):
+                            godown_mtrs=godown_mtrs+r.mtrs
+                            godown_than=godown_than+r.than
+                        elif(r.state=='In Process'):
+                            processing_mtrs=processing_mtrs+r.mtrs
+                            processing_than=processing_than+r.than
+                        elif(r.state=='Ready to print'):
+                            ready_mtrs=ready_mtrs+r.mtrs
+                            ready_than=ready_than+r.than
+                        else:
+                            checked_mtrs=checked_mtrs+r.mtrs
+                            checked_than=checked_than+r.than
+                    send_list=[s,round(transit_than),round(transit_mtrs),round(godown_than),round(godown_mtrs),round(checked_than),round(checked_mtrs),round(processing_than),round(processing_mtrs),round(ready_than),round(ready_mtrs)]
+                    send_data.append(send_list)
+                return render(request,'reportparty.html',{'data':send_data})
             else:
                 rec= Record.objects.filter(lot_no=lot,state__in=selected_states)
         
         return render(request,'report.html',{'records':rec})
+
+
+
+        
 
 
 
