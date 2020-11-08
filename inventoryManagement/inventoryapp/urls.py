@@ -73,4 +73,20 @@ urlpatterns = [
     path('export/excelpage', views.export_page_xls, name='excel_page'),
     path('export/excelall', views.export_all_xls, name='excel_all'),
     path('export/excelfilter', views.export_filter_all_xls, name='excel_filter_all'),
+
+    #####################   COLOR    ###################################
+    path('addcolorsupplier',views.renderAddColorSupplier,name='addcolorsupplier'),
+    path('savesupplier',views.saveSupplier, name="savesupplier"),
+    path('deletesupplier/<int:id>',views.deleteSupplier,name="deletesupplier"),
+    path('editsupplier/<int:id>',views.renderEditSupplier,name="rendereditsupplier"),
+    path('editcolorsupplier/<int:id>',views.editSupplier,name="editcolorsupplier"),
+    path('addcolor',views.renderAddColor,name='addcolor'),
+    path('savecolor',views.saveColor, name="savecolor"),
+    path('deletecolor/<int:id>',views.deleteColor,name="deletecolor"),
+    path('editcolor/<int:id>',views.renderEditColor,name="rendereditcolor"),
+    path('editingcolor/<int:id>',views.editColor,name="editcolor"),
+
+    path('placeorder',views.placeOrder,name='placeorder'),
+    path('saveorder',views.saveOrder,name='saveorder'),
+    path('ordergeneration',views.orderGeneration,name='ordergeneration'),
 ]

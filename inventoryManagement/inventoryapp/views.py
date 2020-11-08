@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName,ArrivalLocation
+from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord
 from .resources import ItemResources
 from .filters import RecordFilter
 from django.contrib import messages
@@ -138,7 +138,14 @@ def upload(request):
                         qualities=data[6]
                         )
                     new_quality.save()
-
+                try:
+                    rec=get_object_or_404(ColorSupplier,
+                        supplier=data[1])
+                except:
+                    new_sup = ColorSupplier(
+                        supplier=data[1]
+                        )
+                    new_sup.save()
         if (counter > 0):
             messages.success(request,str(counter)+ " Records were Inserted")
         else:
@@ -588,7 +595,10 @@ def renderEditQuality(request,id):
 
 def editQuality(request,id):
     quality=get_object_or_404(Quality,id=id)
-    quality.qualities = request.POST.get("edit-quality")
+    p=request.POST.get("edit-quality")
+    p = p.upper()
+    p = p.strip()
+    quality.qualities = p
     quality.save()
     messages.success(request,"Grey Quality edited")
     return redirect('/addquality')
@@ -631,7 +641,10 @@ def renderEditLocation(request,id):
 
 def editArrivalLocation(request,id):
     party=get_object_or_404(ArrivalLocation,id=id)
-    party.location = request.POST.get("edit-location")
+    p=request.POST.get("edit-location")
+    p = p.upper()
+    p = p.strip()
+    party.location = p
     party.save()
     messages.success(request,"Arrival location edited")
     return redirect('/addarrivallocation')
@@ -676,7 +689,10 @@ def renderEditParty(request,id):
 
 def editProcessingParty(request,id):
     party=get_object_or_404(ProcessingPartyName,id=id)
-    party.processing_party = request.POST.get("edit-party")
+    p=request.POST.get("edit-party")
+    p = p.upper()
+    p = p.strip()
+    party.processing_party = p
     party.save()
     messages.success(request,"Processing House Party edited")
     return redirect('/addparty')
@@ -1256,58 +1272,6 @@ def generateReport(request):
 
 
 
-        
-
-
-
-
-#     begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
-#     end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
-#     selected_dates=[]
-#     selected_states=['In Process','Ready to print']
-#     selected_parties=[]
-#     # selected_qualities=[]
-#     next_day = begin
-#     while True:
-#         if next_day > end:
-#             break
-    
-        
-    
-#         selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
-#         next_day += datetime.timedelta(days=1)
-#     # print(selected_dates)
-# # hhhhh date filter end
-    
-#     # for i in range(2):
-#     #     name="state"+ str(i)
-#     #     if(request.POST.get(name)!=None):
-#     #         selected_states.append(request.POST.get(name))
-
-#     # for q in qualities:
-#     #     if(request.POST.get(q.qualities)!=None):
-#     #         selected_qualities.append(request.POST.get(q.qualities))
-    
-#     for p in parties:
-#         if(request.POST.get(p.processing_party)!=None):
-#             selected_parties.append(request.POST.get(p.processing_party))
-    
-
-#     if(lot==''):
-#         if(selected_parties!=[]):
-#             rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
-#         else:
-#             rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states)            
-            
-#     else:
-        
-#         if(selected_parties!=[]):
-#             rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates) #bill_date__range=[start_date,end_date]
-#         else:
-#             rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
-        
-#     return render(request,'report.html',{'records':rec})
-
 
 def showDefective(request):
     records_list=Record.objects.filter(state__in=['Defect- Transport defect','Defect- Manufacturing defect'])
@@ -1688,3 +1652,129 @@ def export_all_xls(request):
     return response
 
 
+
+
+###########################################     COLOR    #################################################
+def renderAddColorSupplier(request):
+    suppliers=ColorSupplier.objects.all().order_by('supplier')
+    paginator = Paginator(suppliers,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'./color/colorsupplier.html',{'suppliers':parties})
+
+
+
+def saveSupplier(request):
+    p = request.POST.get("supplier")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(ColorSupplier,supplier=p)
+        messages.error(request,"This Supplier Party already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addcolorsupplier')
+        new_Party = ColorSupplier(
+            supplier = p
+        )
+        new_Party.save()
+        messages.success(request,"Supplier Party added successfully")
+    return redirect('/addcolorsupplier')
+
+def deleteSupplier(request,id):
+    ColorSupplier.objects.filter(id=id).delete()
+    messages.success(request,"Supplier Party deleted")
+    return redirect('/addcolorsupplier')
+
+def renderEditSupplier(request,id):
+    party=get_object_or_404(ColorSupplier,id=id)
+    return render(request,'./color/editsupplier.html',{'id':id,'name':party.supplier})
+
+def editSupplier(request,id):
+    party=get_object_or_404(ColorSupplier,id=id)
+    p=request.POST.get("edit-party")
+    p = p.upper()
+    p = p.strip()
+    party.supplier = p
+    party.save()
+    messages.success(request,"Supplier Party edited")
+    return redirect('/addcolorsupplier')
+
+
+##Colormaster
+def renderAddColor(request):
+    suppliers=Color.objects.all().order_by('color')
+    paginator = Paginator(suppliers,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'./color/addcolor.html',{'suppliers':parties})
+
+
+
+def saveColor(request):
+    p = request.POST.get("color")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(Color,color=p)
+        messages.error(request,"This Color already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addcolor')
+        new_Party = Color(
+            color = p
+        )
+        new_Party.save()
+        messages.success(request,"Color added successfully")
+    return redirect('/addcolor')
+
+def deleteColor(request,id):
+    Color.objects.filter(id=id).delete()
+    messages.success(request,"Color deleted")
+    return redirect('/addcolor')
+
+def renderEditColor(request,id):
+    party=get_object_or_404(Color,id=id)
+    return render(request,'./color/editcolor.html',{'id':id,'name':party.color})
+
+def editColor(request,id):
+    party=get_object_or_404(Color,id=id)
+    p=request.POST.get("edit-party")
+    p = p.upper()
+    p = p.strip()
+    party.color = p
+    party.save()
+    messages.success(request,"Color edited")
+    return redirect('/addcolor')
+
+
+######colorrecord
+
+def placeOrder(request):
+    color=Color.objects.all().order_by("color")
+    suppliers=ColorSupplier.objects.all().order_by('supplier')
+    d=datetime.date.today()
+
+    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'date':d})
+
+def saveOrder(request):
+    new_order=ColorRecord(
+        color=request.POST.get('color'),
+        supplier=request.POST.get('supplier'),
+        order_no=request.POST.get('order_no'),
+        order_date=str(request.POST.get('order_date')),
+        rate=request.POST.get('rate'),
+        amount=request.POST.get('amount'),
+        quantity=request.POST.get('quantity')
+
+    )
+    new_order.save()
+    messages.success(request,'Order has been placed')
+    return redirect('/placeorder')
+
+def orderGeneration(request):
+    rec=ColorRecord.objects.all().order_by('order_no')
+
+    return render(request,'./color/ordergeneration.html',{'records':rec})

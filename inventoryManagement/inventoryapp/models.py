@@ -47,3 +47,19 @@ class ProcessingPartyName(models.Model):
 
 class ArrivalLocation(models.Model):
     location = models.CharField(max_length=50)
+
+######################################       COLOR      ##########################################
+class ColorSupplier(models.Model):
+    supplier = models.CharField(max_length=50)
+
+class Color(models.Model):
+    color = models.CharField(max_length=50)
+
+class ColorRecord(models.Model):
+    color = models.CharField(max_length=50)
+    supplier = models.CharField(max_length=50)
+    order_date = models.DateField(default=None)
+    order_no = models.IntegerField()
+    quantity = models.IntegerField()
+    rate = models.IntegerField()
+    amount = models.FloatField(default=None,max_length=15)
