@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord
 from .resources import ItemResources
-from .filters import RecordFilter
+from .filters import RecordFilter,ColorFilter
 from django.contrib import messages
 from tablib import Dataset
 from django.http import HttpResponseRedirect
@@ -1767,14 +1767,21 @@ def saveOrder(request):
         order_date=str(request.POST.get('order_date')),
         rate=request.POST.get('rate'),
         amount=request.POST.get('amount'),
-        quantity=request.POST.get('quantity')
-
+        quantity=request.POST.get('quantity'),
+        state="Ordered",
+        recieving_date=None
     )
     new_order.save()
     messages.success(request,'Order has been placed')
     return redirect('/placeorder')
 
 def orderGeneration(request):
-    rec=ColorRecord.objects.all().order_by('order_no')
+    rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
+    records_filter = ColorFilter(request.GET,queryset=rec)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
 
-    return render(request,'./color/ordergeneration.html',{'records':rec})
+    return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter})
