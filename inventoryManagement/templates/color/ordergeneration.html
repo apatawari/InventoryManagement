@@ -26,7 +26,7 @@
             <li class="nav-item">
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">HOME <!--<span class="sr-only">(current)</span>--></a>
                 <a class="nav-link {%if request.path == ordergeneration %} active {%elif request.path == placeorder %} active {%endif%}" href="{% url 'ordergeneration' %}">Order Generation</a>
-                <a class="nav-link" href="#">Goods Recieved</a>
+                <a class="nav-link" href="{% url 'goodsreceived' %}">Goods Recieved</a>
                 <a class="nav-link" href="#">Lease Stock</a>
                 <a class="nav-link" href="#">Daily Consumption</a>
                 <a class="nav-link" href="#">Closing Stock</a>

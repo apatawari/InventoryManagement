@@ -1756,8 +1756,10 @@ def placeOrder(request):
     color=Color.objects.all().order_by("color")
     suppliers=ColorSupplier.objects.all().order_by('supplier')
     d=datetime.date.today()
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    d=str(d)
 
-    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'date':d})
+    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'date':d,'maxdate':maxdate})
 
 def saveOrder(request):
     new_order=ColorRecord(
@@ -1769,7 +1771,8 @@ def saveOrder(request):
         amount=request.POST.get('amount'),
         quantity=request.POST.get('quantity'),
         state="Ordered",
-        recieving_date=None
+        recieving_date=None,
+        total_quantity = request.POST.get('quantity')
     )
     new_order.save()
     messages.success(request,'Order has been Placed')
@@ -1787,6 +1790,7 @@ def orderGeneration(request):
     return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter})
 
 ######color in godown
+
 def goodsReceived(request):
     rec = ColorRecord.objects.filter(state='Godown').order_by('order_no')
     records_filter = ColorFilter(request.GET,queryset=rec)
@@ -1798,20 +1802,77 @@ def goodsReceived(request):
 
     return render(request,'./color/goodsreceived.html',{'records':records,'filter':records_filter})
 
-def receiveOrder(request):
-    receive_order = ColorRecord (
-        supplier = request.POST.get('supplier'),
-        order_no = request.POST.get('order_no'),
-        order_date = str(request.POST.get('order_date')),
-        color = request.POST.get('color'),
-        quantityreceived = request.POST.get('quantityreceived'),
-        quantity = request.POST.get('quantity'),
-        rate = request.POST.get('rate'),
-        amount = request.POST.get('amount'),
-        state = "Godown",
-        godown = request.POST.get('godownnumber') 
-        recieving_date = request.POST.get('receivingdate')
-    )
-    receive_order.save()
-    messages.success(request,'Order has been Received')
-    return redirect('/placeorder')
+def goodsRequest(request):
+    rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
+    records_filter = ColorFilter(request.GET,queryset=rec)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request,'./color/goodsrequest.html',{'records':records,'filter':records_filter})
+
+def goods(request,id):
+    rec=get_object_or_404(ColorRecord, id=id)
+    mindate=str(rec.order_date)
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    d=datetime.date.today()
+    d=str(d)
+    orderdate=str(rec.order_date)
+    return render(request, './color/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate})
+
+
+def goodsApprove(request,id):
+    prevRec = get_object_or_404(ColorRecord,id=id)
+    quantity_recieved = int(request.POST.get("quantityreceived"))
+    godown = request.POST.get('godownnumber')
+    recieving_date = request.POST.get('receivingdate')
+    amount = prevRec.amount
+    if(prevRec.quantity == quantity_recieved):
+        prevRec.state="Godown"
+        prevRec.recieving_date=str(recieving_date)
+        prevRec.godown=godown
+        prevRec.save()
+        messages.success(request,"Data Updated Successfully")
+        return redirect('/goodsrequest')
+    elif(prevRec.quantity<quantity_recieved):
+        messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        quantity_remaining = prevRec.quantity - quantity_recieved
+        
+        amount_per_quant = prevRec.amount/prevRec.quantity
+        amount_recieved = amount_per_quant * quantity_recieved
+        amount_remain = prevRec.amount - amount_recieved
+
+
+        value = ColorRecord(
+            color=prevRec.color,
+            supplier=prevRec.supplier,
+            order_no=prevRec.order_no,
+            order_date=prevRec.order_date,
+            rate=prevRec.rate,
+            amount=amount_recieved,
+            quantity=quantity_recieved,
+            state="Godown",
+            recieving_date=str(recieving_date),
+            total_quantity = prevRec.total_quantity,
+            godown = godown
+            
+            )
+        if quantity_recieved == 0 :
+            messages.error(request,"Quantity Recieved cannot be Zero (0)")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            value.save()
+            prevRec.quantity = prevRec.quantity - quantity_recieved
+            prevRec.amount = amount_remain
+            prevRec.save()
+            messages.success(request,"Data Updated Successfully")
+
+
+        #print(than_in_transit,than_in_godown)
+        return redirect('/goodsrequest')
+
+    

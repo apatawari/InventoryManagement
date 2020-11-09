@@ -91,4 +91,7 @@ urlpatterns = [
     path('ordergeneration',views.orderGeneration,name='ordergeneration'),
 
     path('goodsreceived',views.goodsReceived,name='goodsreceived'),
+    path('goodsrequest',views.goodsRequest,name='goodsrequest'),
+    path('goodsapprove/<int:id>',views.goods,name='goodsapprove'),
+    path('goodsapproved/<int:id>',views.goodsApprove,name='approvegoods'),
 ]

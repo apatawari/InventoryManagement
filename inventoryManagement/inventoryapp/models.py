@@ -65,3 +65,6 @@ class ColorRecord(models.Model):
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)
     recieving_date = models.DateField(null=True,default=None)
+    total_quantity = models.IntegerField()
+    godown = models.CharField(max_length=50,default="-")
+    lease = models.CharField(max_length=50,default="-")

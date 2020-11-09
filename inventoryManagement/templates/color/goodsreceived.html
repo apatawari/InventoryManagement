@@ -26,7 +26,7 @@
             <li class="nav-item">
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">HOME <!--<span class="sr-only">(current)</span>--></a>
                 <a class="nav-link {%if request.path == ordergeneration %} active {%elif request.path == placeorder %} active {%endif%}" href="{% url 'ordergeneration' %}">Order Generation</a>
-                <a class="nav-link" href="#">Goods Recieved</a>
+                <a class="nav-link" href="{% url 'goodsreceived' %}">Goods Recieved</a>
                 <a class="nav-link" href="#">Lease Stock</a>
                 <a class="nav-link" href="#">Daily Consumption</a>
                 <a class="nav-link" href="#">Closing Stock</a>
@@ -34,7 +34,7 @@
           </ul>
           <!-- Approval Start -->
             
-            <a class ="btn-request float-right" href="{% url 'placeorder' %}">Receive Goods</a>
+            <a class ="btn-request float-right" href="{% url 'goodsrequest' %}">Receive Goods</a>
           <!-- Approval End-->
         </div>
       </nav>
@@ -73,9 +73,13 @@
               {{ filter.form.order_no.label_tag }}
               {% render_field filter.form.order_no class="form-control" %}
             </div>
-            <div class="form-group col-sm-4">
+            <div class="form-group col-sm-2">
               {{ filter.form.color.label_tag }}
               {% render_field filter.form.color class="form-control" %}
+            </div>
+            <div class="form-group col-sm-2">
+              {{ filter.form.godown.label_tag }}
+              {% render_field filter.form.godown class="form-control" %}
             </div>
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
@@ -124,7 +128,7 @@
             <td>{{record.order_date}}</td>
             <td class="td-text">{{record.color}}</td>
             <td>{{record.quantity}}</td>
-            <td>{{record.totalquantity}}</td>
+            <td>{{record.total_quantity}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.amount}}</td>
             <td>{{record.recieving_date}}</td>

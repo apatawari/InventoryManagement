@@ -4,80 +4,70 @@
 {% block content%}
       <!-- Diplay Record Start -->
         <div class="page-title">
-            <h3 class="title-text">COLOR - PLACE ORDER</h3>
+            <h3 class="title-text">Receive Colors</h3>
         </div>
 
-      <form class = "md-form view-file" method="POST" action="{% url 'saveorder' %}" enctype="multipart/form-data">
+      <form class = "md-form view-file" method="POST" action="{% url 'approvegoods' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="new-quality">Supplier Party</label>
-                <select class="form-control" name="supplier" required readonly>
+                <input type="text" class="form-control" name="supplier" value="{{ record.supplier}}" readonly>
 
-                    {% for party in suppliers %}
-                        
-                        <option value="{{ party.supplier }}">{{ party.supplier }}</option>
-                        
-                    {% endfor %}
-                </select>    
+                   
+                   
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Order No">Order No</label>
-                <input type="number" class="form-control" id="order_no" placeholder="Order No" name="order_no" required readonly>
+                <input type="number" class="form-control" id="order_no" placeholder="Order No" value="{{ record.order_no}}"  name="order_no" required readonly>
             </div>
             <div class="form-group col-md-4">
                 <label for="Order Date">Order Date</label>
-                <input type="date" class="form-control" id="Order Date" name="order_date" value="{{date}}" required readonly/>
+                <input type="date" class="form-control" id="Order Date" name="order_date" value="{{ orderdate }}" readonly/>
             </div>
             <div class="form-group col-md-4">
                 <label for="new-quality">Color</label>
-                <select class="form-control" name="color" required readonly>
-
-                    {% for party in color %}
-                        
-                        <option value="{{ party.color }}">{{ party.color }}</option>
-                        
-                    {% endfor %}
-                </select>    
+                <input type="text" class="form-control" value="{{record.color}}" name="color" readonly>
+ 
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Quantity">Quantity</label>
-                <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required readonly>
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.quantity}}" name="quantity" required readonly>
             </div>
             <div class="form-group col-md-4">
                 <label for="Rate">Rate</label>
-                <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required readonly>
+                <input type="float" class="form-control" id="rate" placeholder="Rate" value="{{ record.rate}}"  name="rate" required readonly>
             </div>
             <div class="form-group col-md-4">
                 <label for="Bill Amount">Bill Amount</label>
-                <input type="number" class="form-control" id="bill_amount" placeholder="Bill Amount" name="amount" required readonly>
+                <input type="number" class="form-control" id="bill_amount" placeholder="Bill Amount" value="{{ record.amount}}"  name="amount" required readonly>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Quantity">Quantity Received</label>
-                <input type="text" class="form-control" id="quantityreceived" placeholder="QuantityReceived" name="quantityreceived" required autofocus>
+                <input type="number" class="form-control" id="quantityreceived" placeholder="QuantityReceived" name="quantityreceived" required autofocus>
             </div>
             <div class="form-group col-md-4">
                 <label for="Quantity">Godown No.</label>
                 <select class="form-control" name="godownnumber" required>    
-                    <option value="godown1">1</option>
-                    <option value="godown2">2</option>
-                    <option value="godown3">3</option>
+                    <option value="godown1">Godown 1</option>
+                    <option value="godown2">Godown 2</option>
+                    <option value="godown3">Godown 3</option>
                 </select>   
             </div>
             <div class="form-group col-md-4">
                 <label for="Order Date">Receiving Date</label>
-                <input type="date" class="form-control" id="Receiving Date" name="receivingdate" value="{{date}}" required/>
+                <input type="date" class="form-control" id="Receiving Date" name="receivingdate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" required/>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
-                <button type="submit" class="btn btn-primary button">Place Order</button>
+                <button type="submit" class="btn btn-primary button">Approve Color</button>
             </div>
         </div>
       </form>

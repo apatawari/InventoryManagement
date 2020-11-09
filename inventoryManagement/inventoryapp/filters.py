@@ -1,6 +1,7 @@
 from .models import Record,ColorRecord
 import django_filters
 from django.db import models
+from django import forms
 
 class RecordFilter(django_filters.FilterSet):
     class Meta:
@@ -28,6 +29,7 @@ class ColorFilter(django_filters.FilterSet):
             'supplier': [ 'contains','exact'],
             'order_no': ['exact', 'contains'],
             'color': ['exact', 'contains'],
+            'godown': ['exact', 'contains']
             
         }
 
