@@ -89,4 +89,6 @@ urlpatterns = [
     path('placeorder',views.placeOrder,name='placeorder'),
     path('saveorder',views.saveOrder,name='saveorder'),
     path('ordergeneration',views.orderGeneration,name='ordergeneration'),
+
+    path('goodsreceived',views.goodsReceived,name='goodsreceived'),
 ]

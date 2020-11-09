@@ -1772,7 +1772,7 @@ def saveOrder(request):
         recieving_date=None
     )
     new_order.save()
-    messages.success(request,'Order has been placed')
+    messages.success(request,'Order has been Placed')
     return redirect('/placeorder')
 
 def orderGeneration(request):
@@ -1785,3 +1785,33 @@ def orderGeneration(request):
     records = paginator.get_page(page)
 
     return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter})
+
+######color in godown
+def goodsReceived(request):
+    rec = ColorRecord.objects.filter(state='Godown').order_by('order_no')
+    records_filter = ColorFilter(request.GET,queryset=rec)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request,'./color/goodsreceived.html',{'records':records,'filter':records_filter})
+
+def receiveOrder(request):
+    receive_order = ColorRecord (
+        supplier = request.POST.get('supplier'),
+        order_no = request.POST.get('order_no'),
+        order_date = str(request.POST.get('order_date')),
+        color = request.POST.get('color'),
+        quantityreceived = request.POST.get('quantityreceived'),
+        quantity = request.POST.get('quantity'),
+        rate = request.POST.get('rate'),
+        amount = request.POST.get('amount'),
+        state = "Godown",
+        godown = request.POST.get('godownnumber') 
+        recieving_date = request.POST.get('receivingdate')
+    )
+    receive_order.save()
+    messages.success(request,'Order has been Received')
+    return redirect('/placeorder')
