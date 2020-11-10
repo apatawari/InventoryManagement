@@ -98,4 +98,5 @@ urlpatterns = [
     path('goodslease',views.goodsLease,name='goodslease'),
     path('leaserequest',views.leaseRequest,name='leaserequest'),
     path('leaseapprove/<int:id>',views.viewGood,name='leaseapprove'),
+    path('leaseapproved/<int:id>',views.leaseApprove,name='leaseapproved'),
 ]

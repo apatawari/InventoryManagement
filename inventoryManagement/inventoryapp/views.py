@@ -1853,7 +1853,7 @@ def goodsApprove(request,id):
             order_no=prevRec.order_no,
             order_date=prevRec.order_date,
             rate=prevRec.rate,
-            amount=amount_recieved,
+            amount=round(amount_recieved,2),
             quantity=quantity_recieved,
             state="Godown",
             recieving_date=str(recieving_date),
@@ -1867,7 +1867,7 @@ def goodsApprove(request,id):
         else:
             value.save()
             prevRec.quantity = prevRec.quantity - quantity_recieved
-            prevRec.amount = amount_remain
+            prevRec.amount = round(amount_remain,2)
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
 
@@ -1905,5 +1905,57 @@ def viewGood(request,id):
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     d=datetime.date.today()
     d=str(d)
-    orderdate=str(rec.order_date)
-    return render(request, './color/leaseapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate})
+    recievedate=str(rec.recieving_date)
+    return render(request, './color/leaseapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'recievedate':recievedate})
+
+
+def leaseApprove(request,id):
+    prevRec = get_object_or_404(ColorRecord,id=id)
+    quantity_recieved = int(request.POST.get("quantitylease"))
+    recieving_date = request.POST.get('leasedate')
+    amount = prevRec.amount
+    if(prevRec.quantity == quantity_recieved):
+        prevRec.state="Lease"
+        prevRec.lease_date=str(recieving_date)
+        prevRec.save()
+        messages.success(request,"Data Updated Successfully")
+        return redirect('/leaserequest')
+    elif(prevRec.quantity<quantity_recieved):
+        messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        quantity_remaining = prevRec.quantity - quantity_recieved
+        
+        amount_per_quant = prevRec.amount/prevRec.quantity
+        amount_recieved = amount_per_quant * quantity_recieved
+        amount_remain = prevRec.amount - amount_recieved
+
+
+        value = ColorRecord(
+            color=prevRec.color,
+            supplier=prevRec.supplier,
+            order_no=prevRec.order_no,
+            order_date=prevRec.order_date,
+            rate=prevRec.rate,
+            amount=round(amount_recieved,2),
+            quantity=quantity_recieved,
+            state="Lease",
+            recieving_date=prevRec.recieving_date,
+            total_quantity = prevRec.total_quantity,
+            godown = prevRec.godown,
+            lease_date=str(recieving_date)
+            
+            )
+        if quantity_recieved == 0 :
+            messages.error(request,"Quantity Recieved cannot be Zero (0)")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            value.save()
+            prevRec.quantity = prevRec.quantity - quantity_recieved
+            prevRec.amount = round(amount_remain,2)
+            prevRec.save()
+            messages.success(request,"Data Updated Successfully")
+
+
+        #print(than_in_transit,than_in_godown)
+        return redirect('/leaserequest')
