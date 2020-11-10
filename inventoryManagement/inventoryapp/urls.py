@@ -94,4 +94,8 @@ urlpatterns = [
     path('goodsrequest',views.goodsRequest,name='goodsrequest'),
     path('goodsapprove/<int:id>',views.goods,name='goodsapprove'),
     path('goodsapproved/<int:id>',views.goodsApprove,name='approvegoods'),
+
+    path('goodslease',views.goodsLease,name='goodslease'),
+    path('leaserequest',views.leaseRequest,name='leaserequest'),
+    path('leaseapprove/<int:id>',views.viewGood,name='leaseapprove'),
 ]

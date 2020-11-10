@@ -1876,3 +1876,34 @@ def goodsApprove(request,id):
         return redirect('/goodsrequest')
 
     
+####lease
+def goodsLease(request):
+    rec = ColorRecord.objects.filter(state='Lease').order_by('order_no')
+    records_filter = ColorFilter(request.GET,queryset=rec)
+    # return render(request,'intransit.html',{'records':records_filter})
+
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request,'./color/lease.html',{'records':records,'filter':records_filter})
+
+def leaseRequest(request):
+    rec=ColorRecord.objects.filter(state='Godown').order_by('godown')
+    records_filter = ColorFilter(request.GET,queryset=rec)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request,'./color/leaserequest.html',{'records':records,'filter':records_filter})
+
+def viewGood(request,id):
+    rec=get_object_or_404(ColorRecord, id=id)
+    mindate=str(rec.recieving_date)
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    d=datetime.date.today()
+    d=str(d)
+    orderdate=str(rec.order_date)
+    return render(request, './color/leaseapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate})
