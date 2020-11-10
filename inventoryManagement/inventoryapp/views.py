@@ -1913,10 +1913,12 @@ def leaseApprove(request,id):
     prevRec = get_object_or_404(ColorRecord,id=id)
     quantity_recieved = int(request.POST.get("quantitylease"))
     recieving_date = request.POST.get('leasedate')
+    lease = request.POST.get('leasenumber')
     amount = prevRec.amount
     if(prevRec.quantity == quantity_recieved):
         prevRec.state="Lease"
         prevRec.lease_date=str(recieving_date)
+        prevRec.lease = lease
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/leaserequest')
@@ -1943,7 +1945,8 @@ def leaseApprove(request,id):
             recieving_date=prevRec.recieving_date,
             total_quantity = prevRec.total_quantity,
             godown = prevRec.godown,
-            lease_date=str(recieving_date)
+            lease_date=str(recieving_date),
+            lease = lease
             
             )
         if quantity_recieved == 0 :

@@ -82,8 +82,8 @@
               {% render_field filter.form.color class="form-control" %}
             </div>
             <div class="form-group col-sm-2">
-              {{ filter.form.godown.label_tag }}
-              {% render_field filter.form.godown class="form-control" %}
+              {{ filter.form.lease.label_tag }}
+              {% render_field filter.form.lease class="form-control" %}
             </div>
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
@@ -115,9 +115,11 @@
             <th scope="col">Rate</th>
             <th scope="col">Bill Amount</th>
             <th scope="col">Receiving Date</th>
+            <th scope="col">Godown No.</th>
             <th scope="col">Lease Date</th>
             <th scope="col">State</th>
-            <th scope="col">Godown No.</th>
+            <th scope="col">Lease No.</th>
+            
             
             
           </tr>
@@ -135,9 +137,10 @@
             <td>{{record.rate}}</td>
             <td>{{record.amount}}</td>
             <td>{{record.recieving_date}}</td>
+            <td>{{record.godown}}</td>
             <td>{{record.lease_date}}</td>
             <td>{{record.state}}</td>
-            <td>{{record.godown}}</td>
+            <td>{{record.lease}}</td>
 
           </tr>
         {% endfor %}

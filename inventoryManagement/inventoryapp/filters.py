@@ -29,8 +29,8 @@ class ColorFilter(django_filters.FilterSet):
             'supplier': [ 'contains','exact'],
             'order_no': ['exact', 'contains'],
             'color': ['exact', 'contains'],
-            'godown': ['exact', 'contains']
-            
+            'godown': ['exact', 'contains'],
+            'lease': ['exact', 'contains']
         }
 
         filter_overrides = {
