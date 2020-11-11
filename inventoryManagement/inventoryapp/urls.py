@@ -99,4 +99,7 @@ urlpatterns = [
     path('leaserequest',views.leaseRequest,name='leaserequest'),
     path('leaseapprove/<int:id>',views.viewGood,name='leaseapprove'),
     path('leaseapproved/<int:id>',views.leaseApprove,name='leaseapproved'),
+    
+    path('dailyconsumption',views.renderDailyConsumption,name='dailyconsumption'),
+    path('consume',views.consume,name='consume'),
 ]

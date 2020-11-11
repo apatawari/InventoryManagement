@@ -1,0 +1,110 @@
+{% extends './colornav.html' %}
+
+{% block title%} Add Quality {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Add Party Start-->
+      <form method="POST" action="{% url 'consume' %}" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Daily Consumption</h1>
+        </div>
+        <div class="upload-container">
+            
+            <select class="form-control" name="color" required>
+
+                {% for party in colors %}
+                    
+                    <option value="{{ party.color }}">{{ party.color }}</option>
+                    
+                {% endfor %}
+            </select> 
+            <br>
+            <input type="float" class="form-control" id="dailycolor" placeholder="Color Quantity" name="quantity" required>
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit">DEDUCT</button>
+        </div>
+      </form>
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">Sr-no</th>
+            <th scope="col">Color name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">date</th>
+            
+            
+            
+            
+          </tr>
+        </thead>
+        <tbody>
+        
+        {% for p in todays %}
+          <tr>
+            
+            <td scope="row">{{ forloop.counter }}</td>
+            <td class="td-text">{{p.color}}</td>
+            <td class="td-text">{{p.quantity}}</td>
+            <td class="td-text">{{p.con_date}}</td>
+            
+            
+            
+          </tr>
+          
+        {% endfor %}
+        </tbody>
+      </table>
+      <br>
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">Sr-no</th>
+            <th scope="col">Color name</th>
+            <th scope="col">Quantity</th>
+            
+            
+            
+            
+          </tr>
+        </thead>
+        <tbody>
+        
+        {% for p in colors %}
+          <tr>
+            
+            <td scope="row">{{ forloop.counter }}</td>
+            <td class="td-text">{{p.color}}</td>
+            <td class="td-text">{{p.quantity}}</td>
+            
+            
+            
+          </tr>
+          
+        {% endfor %}
+        </tbody>
+      </table>
+      <!-- Add Party End -->
+      <div class="pagination">
+        <div class="number-line">
+          {% if suppliers.has_previous %}
+          <a class="page-no-text" href="{% my_url suppliers.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% endif%}
+          {% for num in suppliers.paginator.page_range %}
+            {%if suppliers.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ suppliers.paginator.num_pages }}&nbsp
+            
+            {% endif %}
+          {%endfor%}
+          {% if suppliers.has_next %}
+            <a class="page-no-text" href="{% my_url suppliers.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% endif%}
+        </div>  
+      </div>
+
+
+{% endblock %}

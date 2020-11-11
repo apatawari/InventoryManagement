@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord
+from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter
 from django.contrib import messages
@@ -1919,6 +1919,9 @@ def leaseApprove(request,id):
         prevRec.state="Lease"
         prevRec.lease_date=str(recieving_date)
         prevRec.lease = lease
+        lease_color = get_object_or_404(Color,color=prevRec.color)
+        lease_color.quantity = lease_color.quantity + quantity_recieved
+        lease_color.save()
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/leaserequest')
@@ -1957,8 +1960,36 @@ def leaseApprove(request,id):
             prevRec.quantity = prevRec.quantity - quantity_recieved
             prevRec.amount = round(amount_remain,2)
             prevRec.save()
+            lease_color = get_object_or_404(Color,color=prevRec.color)
+            lease_color.quantity = lease_color.quantity + quantity_recieved
+            lease_color.save()
             messages.success(request,"Data Updated Successfully")
 
 
         #print(than_in_transit,than_in_godown)
         return redirect('/leaserequest')
+
+def renderDailyConsumption(request):
+    color = Color.objects.all().order_by('color')
+    todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
+    
+    return render(request,'./color/dailyconsumption.html',{'colors':color,'todays':todays})
+
+def consume(request):
+    color = request.POST.get('color')
+    quantity = int(request.POST.get('quantity'))
+    total_colorRec = get_object_or_404(Color,color=color)
+    if(total_colorRec.quantity < quantity):
+        messages.error(request,'Invalid Quantity')
+        return redirect('/dailyconsumption')
+    else:
+        total_colorRec.quantity = total_colorRec.quantity - quantity
+        daily_con = DailyConsumption(
+            con_date = datetime.date.today(),
+            color = total_colorRec.color,
+            quantity = quantity
+        )
+        daily_con.save()
+        total_colorRec.save()
+        messages.success(request,'done')
+        return redirect('/dailyconsumption')

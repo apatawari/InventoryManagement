@@ -54,6 +54,7 @@ class ColorSupplier(models.Model):
 
 class Color(models.Model):
     color = models.CharField(max_length=50)
+    quantity = models.FloatField(max_length=15,default=0.0)
 
 class ColorRecord(models.Model):
     color = models.CharField(max_length=50)
@@ -72,3 +73,8 @@ class ColorRecord(models.Model):
     a_date = models.DateField(null=True,default=None)
     b_date = models.DateField(null=True,default=None)
     a = models.CharField(max_length=50,default="-")
+
+class DailyConsumption(models.Model):
+    con_date = models.DateField(null=True,default=None)
+    color = models.CharField(max_length=50,default="-")
+    quantity = models.FloatField(max_length=15)
