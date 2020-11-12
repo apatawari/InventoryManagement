@@ -33,7 +33,7 @@
                 <a class="nav-link {%if request.path == goodsreceived %} active {%elif request.path == goodsrequest %} active {%endif%}" href="{% url 'goodsreceived' %}">Goods Recieved</a>
                 <a class="nav-link {%if request.path == goodslease %} active {%elif request.path == leaserequest %} active {%endif%}" href="{% url 'goodslease' %}">Lease Stock</a>
                 <a class="nav-link" href="{% url 'dailyconsumption' %}">Daily Consumption</a>
-                <a class="nav-link" href="#">Closing Stock</a>
+                <a class="nav-link" href="{% url 'closingstock' %}">Closing Stock</a>
             </li>
           </ul>
         </div>

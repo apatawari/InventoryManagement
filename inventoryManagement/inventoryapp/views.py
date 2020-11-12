@@ -1993,3 +1993,7 @@ def consume(request):
         total_colorRec.save()
         messages.success(request,'done')
         return redirect('/dailyconsumption')
+
+def renderClosingStock(request):
+    color = Color.objects.all().order_by('color')
+    return render(request,'./color/closingstock.html',{'colors':color})

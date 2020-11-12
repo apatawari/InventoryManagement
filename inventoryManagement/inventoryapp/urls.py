@@ -102,4 +102,5 @@ urlpatterns = [
     
     path('dailyconsumption',views.renderDailyConsumption,name='dailyconsumption'),
     path('consume',views.consume,name='consume'),
+    path('closingstock',views.renderClosingStock,name='closingstock'),
 ]
