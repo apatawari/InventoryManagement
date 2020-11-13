@@ -31,6 +31,8 @@
                 <label for="Order Date">Order Date</label>
                 <input type="date" class="form-control" id="Order Date" name="order_date" max="{{maxdate}}" value="{{date}}" required/>
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="new-quality">Color</label>
                 <select class="form-control" name="color" required>
@@ -42,8 +44,6 @@
                     {% endfor %}
                 </select>    
             </div>
-        </div>
-        <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Quantity">Quantity</label>
                 <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
@@ -52,16 +52,413 @@
                 <label for="Rate">Rate</label>
                 <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
             </div>
+            <!--
             <div class="form-group col-md-4">
                 <label for="Bill Amount">Bill Amount</label>
                 <input type="float" class="form-control" id="bill_amount" placeholder="Bill Amount" name="amount" required>
             </div>
+            -->
         </div>
+
+        <!-- 2nd Color -->
+        <div class="additional-color">
+            <div class="form-row">
+                <button class="btn-outline-dark button" onclick="color2()" id="button-2">Add Color</button>
+            </div>
+            <div class="form-row hide" id="color-2">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color3()" id="button-3">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3rd Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-3">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color4()" id="button-4">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4th Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-4">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color5()" id="button-5">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5th Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-5">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color6()" id="button-6">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6th Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-6">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color7()" id="button-7">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7th Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-7">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color8()" id="button-8">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8th Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-8">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color9()" id="button-9">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9th Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-9">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+                <div class="form-row">
+                    <button class="btn-outline-dark button" onclick="color10()" id="button-10">Add Color</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10th Color -->
+        <div class="additional-color">
+            <div class="form-row hide" id="color-10">
+                <div class="form-group col-md-4">
+                    <label for="new-quality">Color</label>
+                    <select class="form-control" name="color" required>
+    
+                        {% for party in color %}
+                            
+                            <option value="{{ party.color }}">{{ party.color }}</option>
+                            
+                        {% endfor %}
+                    </select>    
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Quantity">Quantity</label>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="Rate">Rate</label>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                </div>
+            </div>
+        </div>
+        
+
+        <!--Place Order Button-->
         <div class="form-row">
-            <div class="form-group col-md-6">
-                <button type="submit" class="btn btn-primary button">Place Order</button>
+            <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary button float-right">Place Order</button>
             </div>
         </div>
       </form>
       <!-- Display Record End -->
+
+
+<script>
+    function color2() {
+        var x = document.getElementById("color-2");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-2");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color3() {
+        var x = document.getElementById("color-3");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-3");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color4() {
+        var x = document.getElementById("color-4");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-4");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color5() {
+        var x = document.getElementById("color-5");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-5");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color6() {
+        var x = document.getElementById("color-6");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-6");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color7() {
+        var x = document.getElementById("color-7");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-7");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color8() {
+        var x = document.getElementById("color-8");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-8");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color9() {
+        var x = document.getElementById("color-9");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-9");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+
+    function color10() {
+        var x = document.getElementById("color-10");
+        if (x.style.display === "none") {
+            x.style.display = "flex";
+        } else {
+            x.style.display = "none";
+        }
+        var x = document.getElementById("button-10");
+        if (x.style.display === "inline-block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "inline-block";
+        }
+    }
+</script>
+
+
 {% endblock %}
