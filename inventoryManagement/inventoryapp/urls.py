@@ -89,6 +89,8 @@ urlpatterns = [
     path('placeorder',views.placeOrder,name='placeorder'),
     path('saveorder',views.saveOrder,name='saveorder'),
     path('ordergeneration',views.orderGeneration,name='ordergeneration'),
+    path('orderedit/<int:id>',views.orderEdit,name="orderedit"),
+    path('ordereditsave/<int:id>',views.orderEditSave,name="ordereditsave"),
 
     path('goodsreceived',views.goodsReceived,name='goodsreceived'),
     path('goodsrequest',views.goodsRequest,name='goodsrequest'),

@@ -116,7 +116,7 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{record.supplier}}</td>
+            <td class="td-text"><a href="{% url 'orderedit' record.id %}">{{record.supplier}}</a></td>
             <td>{{record.order_no}}</td>
             <td>{{record.order_date}}</td>
             <td class="td-text">{{record.color}}</td>

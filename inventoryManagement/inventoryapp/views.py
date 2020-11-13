@@ -2099,6 +2099,43 @@ def orderGeneration(request):
 
     return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter})
 
+
+def orderEdit(request,id):
+    rec=get_object_or_404(AllOrders, id=id)
+    orderdate=str(rec.order_date)
+    color = Color.objects.all().order_by('color')
+    return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color})
+
+def orderEditSave(request,id):
+    rec_order=get_object_or_404(AllOrders, id=id)
+    q=int(request.POST.get('quantity'))
+    r=float(request.POST.get('rate'))
+    a=q*r
+    orderno=rec_order.order_no
+    color = rec_order.color
+    unit=rec_order.unit
+    rate=rec_order.rate
+    try:
+        rec=get_object_or_404(ColorRecord, rate=rate,order_no=orderno,color=color,unit=unit,state="Ordered")
+        rec.supplier=request.POST.get('supplier')
+        rec.color=request.POST.get('color')
+        rec.order_date=str(request.POST.get('order_date'))                  
+        rec.rate=request.POST.get('rate')                               
+        rec.amount=a                              
+        rec.quantity=request.POST.get('quantity')                   
+        rec.total_quantity = request.POST.get('quantity') 
+        rec.unit = request.POST.get('unit')         
+        rec.save()
+    finally:
+        rec_order.supplier=request.POST.get('supplier')
+        rec_order.color=request.POST.get('color')
+        rec_order.order_date=str(request.POST.get('order_date'))                  
+        rec_order.rate=request.POST.get('rate')                               
+        rec_order.amount=a                              
+        rec_order.quantity=request.POST.get('quantity')        
+        rec_order.unit = request.POST.get('unit')         
+        rec_order.save()
+    return redirect('/ordergeneration')
 ######color in godown
 
 def goodsReceived(request):
