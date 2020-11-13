@@ -62,6 +62,7 @@ class ColorRecord(models.Model):
     order_date = models.DateField(default=None)
     order_no = models.IntegerField()
     quantity = models.IntegerField()
+    unit = models.CharField(null=True,max_length=50)
     rate = models.FloatField()
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)
@@ -78,3 +79,15 @@ class DailyConsumption(models.Model):
     con_date = models.DateField(null=True,default=None)
     color = models.CharField(max_length=50,default="-")
     quantity = models.FloatField(max_length=15)
+
+class AllOrders(models.Model):
+    color = models.CharField(max_length=50)
+    supplier = models.CharField(max_length=50)
+    order_date = models.DateField(default=None)
+    order_no = models.IntegerField()
+    quantity = models.IntegerField()
+    rate = models.FloatField()
+    amount = models.FloatField(max_length=15)
+    state = models.CharField(max_length=50)
+    unit = models.CharField(null=True,max_length=50)
+    

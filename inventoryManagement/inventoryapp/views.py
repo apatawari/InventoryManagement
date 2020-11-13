@@ -2,9 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption
+from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders
 from .resources import ItemResources
-from .filters import RecordFilter,ColorFilter
+from .filters import RecordFilter,ColorFilter,ColorOrderFilter
 from django.contrib import messages
 from tablib import Dataset
 from django.http import HttpResponseRedirect
@@ -1758,29 +1758,339 @@ def placeOrder(request):
     d=datetime.date.today()
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     d=str(d)
-
-    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'date':d,'maxdate':maxdate})
+    try:
+        rec = ColorRecord.objects.all().order_by('-order_no')[0]
+        order_no=rec.order_no + 1
+    except:
+        order_no = 1
+    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'date':d,'maxdate':maxdate,'orderno':order_no})
 
 def saveOrder(request):
+    
+    q=int(request.POST.get('quantity'))
+    r=float(request.POST.get('rate'))
+    a=round(q*r,2)
     new_order=ColorRecord(
         color=request.POST.get('color'),
         supplier=request.POST.get('supplier'),
         order_no=request.POST.get('order_no'),
         order_date=str(request.POST.get('order_date')),
         rate=request.POST.get('rate'),
-        amount=request.POST.get('amount'),
+        amount=a,
         quantity=request.POST.get('quantity'),
         state="Ordered",
         recieving_date=None,
-        total_quantity = request.POST.get('quantity')
+        total_quantity = request.POST.get('quantity'),
+        unit = request.POST.get('unit')
     )
     new_order.save()
+
+    new_order=AllOrders(
+        color=request.POST.get('color'),
+        supplier=request.POST.get('supplier'),
+        order_no=request.POST.get('order_no'),
+        order_date=str(request.POST.get('order_date')),
+        rate=request.POST.get('rate'),
+        amount=a,
+        quantity=request.POST.get('quantity'),
+        state="Ordered",
+        unit = request.POST.get('unit')
+    )
+    new_order.save()
+    
+    if(request.POST.get('rate2')!='' and request.POST.get('quantity2')!='' and request.POST.get('color2')!=''):
+        q=int(request.POST.get('quantity2'))
+        r=float(request.POST.get('rate2'))
+        a=round(q*r,2)
+        new_order=ColorRecord(
+            color=request.POST.get('color2'),
+            supplier=request.POST.get('supplier'),
+            order_no=request.POST.get('order_no'),
+            order_date=str(request.POST.get('order_date')),
+            rate=request.POST.get('rate2'),
+            amount=a,
+            quantity=request.POST.get('quantity2'),
+            state="Ordered",
+            recieving_date=None,
+            total_quantity = request.POST.get('quantity2'),
+            unit = request.POST.get('unit2')
+        )
+        new_order.save()
+
+        new_order=AllOrders(
+            color=request.POST.get('color2'),
+            supplier=request.POST.get('supplier'),
+            order_no=request.POST.get('order_no'),
+            order_date=str(request.POST.get('order_date')),
+            rate=request.POST.get('rate2'),
+            amount=a,
+            quantity=request.POST.get('quantity2'),
+            state="Ordered",
+            unit = request.POST.get('unit2')
+        )
+        new_order.save()
+        if(request.POST.get('rate3')!='' and request.POST.get('quantity3')!='' and request.POST.get('color3')!=''):
+            q=int(request.POST.get('quantity3'))
+            r=float(request.POST.get('rate3'))
+            a=round(q*r,2)
+            new_order=ColorRecord(
+                color=request.POST.get('color3'),
+                supplier=request.POST.get('supplier'),
+                order_no=request.POST.get('order_no'),
+                order_date=str(request.POST.get('order_date')),
+                rate=request.POST.get('rate3'),
+                amount=a,
+                quantity=request.POST.get('quantity3'),
+                state="Ordered",
+                recieving_date=None,
+                total_quantity = request.POST.get('quantity3'),
+                unit = request.POST.get('unit3')
+            )
+            new_order.save()
+
+            new_order=AllOrders(
+                color=request.POST.get('color3'),
+                supplier=request.POST.get('supplier'),
+                order_no=request.POST.get('order_no'),
+                order_date=str(request.POST.get('order_date')),
+                rate=request.POST.get('rate3'),
+                amount=a,
+                quantity=request.POST.get('quantity3'),
+                state="Ordered",
+                unit = request.POST.get('unit3')
+            )
+            new_order.save()
+
+            if(request.POST.get('rate4')!='' and request.POST.get('quantity4')!='' and request.POST.get('color4')!=''):
+                q=int(request.POST.get('quantity4'))
+                r=float(request.POST.get('rate4'))
+                a=round(q*r,2)
+                new_order=ColorRecord(
+                    color=request.POST.get('color4'),
+                    supplier=request.POST.get('supplier'),
+                    order_no=request.POST.get('order_no'),
+                    order_date=str(request.POST.get('order_date')),
+                    rate=request.POST.get('rate4'),
+                    amount=a,
+                    quantity=request.POST.get('quantity4'),
+                    state="Ordered",
+                    recieving_date=None,
+                    total_quantity = request.POST.get('quantity4'),
+                    unit = request.POST.get('unit4')
+                )
+                new_order.save()
+
+                new_order=AllOrders(
+                    color=request.POST.get('color4'),
+                    supplier=request.POST.get('supplier'),
+                    order_no=request.POST.get('order_no'),
+                    order_date=str(request.POST.get('order_date')),
+                    rate=request.POST.get('rate4'),
+                    amount=a,
+                    quantity=request.POST.get('quantity4'),
+                    state="Ordered",
+                    unit = request.POST.get('unit4')
+                )
+                new_order.save()
+    
+                if(request.POST.get('rate5')!='' and request.POST.get('quantity5')!='' and request.POST.get('color5')!=''):
+                    q=int(request.POST.get('quantity5'))
+                    r=float(request.POST.get('rate5'))
+                    a=round(q*r,2)
+                    new_order=ColorRecord(
+                        color=request.POST.get('color5'),
+                        supplier=request.POST.get('supplier'),
+                        order_no=request.POST.get('order_no'),
+                        order_date=str(request.POST.get('order_date')),
+                        rate=request.POST.get('rate5'),
+                        amount=a,
+                        quantity=request.POST.get('quantity5'),
+                        state="Ordered",
+                        recieving_date=None,
+                        total_quantity = request.POST.get('quantity5'),
+                        unit = request.POST.get('unit5')
+                    )
+                    new_order.save()
+
+                    new_order=AllOrders(
+                        color=request.POST.get('color5'),
+                        supplier=request.POST.get('supplier'),
+                        order_no=request.POST.get('order_no'),
+                        order_date=str(request.POST.get('order_date')),
+                        rate=request.POST.get('rate5'),
+                        amount=a,
+                        quantity=request.POST.get('quantity5'),
+                        state="Ordered",
+                        unit = request.POST.get('unit5')
+                    )
+                    new_order.save()
+
+                    if(request.POST.get('rate6')!='' and request.POST.get('quantity6')!='' and request.POST.get('color6')!=''):
+                        q=int(request.POST.get('quantity6'))
+                        r=float(request.POST.get('rate6'))
+                        a=round(q*r,2)
+                        new_order=ColorRecord(
+                            color=request.POST.get('color6'),
+                            supplier=request.POST.get('supplier'),
+                            order_no=request.POST.get('order_no'),
+                            order_date=str(request.POST.get('order_date')),
+                            rate=request.POST.get('rate6'),
+                            amount=a,
+                            quantity=request.POST.get('quantity6'),
+                            state="Ordered",
+                            recieving_date=None,
+                            total_quantity = request.POST.get('quantity6'),
+                            unit = request.POST.get('unit6')
+                        )
+                        new_order.save()
+
+                        new_order=AllOrders(
+                            color=request.POST.get('color6'),
+                            supplier=request.POST.get('supplier'),
+                            order_no=request.POST.get('order_no'),
+                            order_date=str(request.POST.get('order_date')),
+                            rate=request.POST.get('rate6'),
+                            amount=a,
+                            quantity=request.POST.get('quantity6'),
+                            state="Ordered",
+                            unit = request.POST.get('unit6')
+                        )
+                        new_order.save()
+
+                        if(request.POST.get('rate7')!='' and request.POST.get('quantity7')!='' and request.POST.get('color7')!=''):
+                            q=int(request.POST.get('quantity7'))
+                            r=float(request.POST.get('rate7'))
+                            a=round(q*r,2)
+                            new_order=ColorRecord(
+                                color=request.POST.get('color7'),
+                                supplier=request.POST.get('supplier'),
+                                order_no=request.POST.get('order_no'),
+                                order_date=str(request.POST.get('order_date')),
+                                rate=request.POST.get('rate7'),
+                                amount=a,
+                                quantity=request.POST.get('quantity7'),
+                                state="Ordered",
+                                recieving_date=None,
+                                total_quantity = request.POST.get('quantity7'),
+                                unit = request.POST.get('unit7')
+                            )
+                            new_order.save()
+
+                            new_order=AllOrders(
+                                color=request.POST.get('color7'),
+                                supplier=request.POST.get('supplier'),
+                                order_no=request.POST.get('order_no'),
+                                order_date=str(request.POST.get('order_date')),
+                                rate=request.POST.get('rate7'),
+                                amount=a,
+                                quantity=request.POST.get('quantity7'),
+                                state="Ordered",
+                                unit = request.POST.get('unit7')
+                            )
+                            new_order.save()
+
+                            if(request.POST.get('rate8')!='' and request.POST.get('quantity8')!='' and request.POST.get('color8')!=''):
+                                q=int(request.POST.get('quantity8'))
+                                r=float(request.POST.get('rate8'))
+                                a=round(q*r,2)
+                                new_order=ColorRecord(
+                                    color=request.POST.get('color8'),
+                                    supplier=request.POST.get('supplier'),
+                                    order_no=request.POST.get('order_no'),
+                                    order_date=str(request.POST.get('order_date')),
+                                    rate=request.POST.get('rate8'),
+                                    amount=a,
+                                    quantity=request.POST.get('quantity8'),
+                                    state="Ordered",
+                                    recieving_date=None,
+                                    total_quantity = request.POST.get('quantity8'),
+                                    unit = request.POST.get('unit8')
+                                )
+                                new_order.save()
+
+                                new_order=AllOrders(
+                                    color=request.POST.get('color8'),
+                                    supplier=request.POST.get('supplier'),
+                                    order_no=request.POST.get('order_no'),
+                                    order_date=str(request.POST.get('order_date')),
+                                    rate=request.POST.get('rate8'),
+                                    amount=a,
+                                    quantity=request.POST.get('quantity8'),
+                                    state="Ordered",
+                                    unit = request.POST.get('unit8')
+                                )
+                                new_order.save()
+
+                                if(request.POST.get('rate9')!='' and request.POST.get('quantity9')!='' and request.POST.get('color9')!=''):
+                                    q=int(request.POST.get('quantity9'))
+                                    r=float(request.POST.get('rate9'))
+                                    a=round(q*r,2)
+                                    new_order=ColorRecord(
+                                        color=request.POST.get('color9'),
+                                        supplier=request.POST.get('supplier'),
+                                        order_no=request.POST.get('order_no'),
+                                        order_date=str(request.POST.get('order_date')),
+                                        rate=request.POST.get('rate9'),
+                                        amount=a,
+                                        quantity=request.POST.get('quantity9'),
+                                        state="Ordered",
+                                        recieving_date=None,
+                                        total_quantity = request.POST.get('quantity9'),
+                                        unit = request.POST.get('unit9')
+                                    )
+                                    new_order.save()
+
+                                    new_order=AllOrders(
+                                        color=request.POST.get('color9'),
+                                        supplier=request.POST.get('supplier'),
+                                        order_no=request.POST.get('order_no'),
+                                        order_date=str(request.POST.get('order_date')),
+                                        rate=request.POST.get('rate9'),
+                                        amount=a,
+                                        quantity=request.POST.get('quantity9'),
+                                        state="Ordered",
+                                        unit = request.POST.get('unit9')
+                                    )
+                                    new_order.save()
+
+                                    if(request.POST.get('rate10')!='' and request.POST.get('quantity10')!='' and request.POST.get('color10')!=''):
+                                        q=int(request.POST.get('quantity10'))
+                                        r=float(request.POST.get('rate10'))
+                                        a=round(q*r,2)
+                                        new_order=ColorRecord(
+                                            color=request.POST.get('color10'),
+                                            supplier=request.POST.get('supplier'),
+                                            order_no=request.POST.get('order_no'),
+                                            order_date=str(request.POST.get('order_date')),
+                                            rate=request.POST.get('rate10'),
+                                            amount=a,
+                                            quantity=request.POST.get('quantity10'),
+                                            state="Ordered",
+                                            recieving_date=None,
+                                            total_quantity = request.POST.get('quantity10'),
+                                            unit = request.POST.get('unit10')
+                                        )
+                                        new_order.save()
+
+                                        new_order=AllOrders(
+                                            color=request.POST.get('color10'),
+                                            supplier=request.POST.get('supplier'),
+                                            order_no=request.POST.get('order_no'),
+                                            order_date=str(request.POST.get('order_date')),
+                                            rate=request.POST.get('rate10'),
+                                            amount=a,
+                                            quantity=request.POST.get('quantity10'),
+                                            state="Ordered",
+                                            unit = request.POST.get('unit10')
+                                        )
+                                        new_order.save()
     messages.success(request,'Order has been Placed')
     return redirect('/placeorder')
 
+
 def orderGeneration(request):
-    rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
-    records_filter = ColorFilter(request.GET,queryset=rec)
+    rec=AllOrders.objects.filter(state='Ordered').order_by('order_no')
+    records_filter = ColorOrderFilter(request.GET,queryset=rec)
     # return render(request,'intransit.html',{'records':records_filter})
     
     paginator = Paginator(records_filter.qs,20)

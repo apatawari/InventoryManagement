@@ -25,7 +25,7 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Order No">Order No</label>
-                <input type="number" class="form-control" id="order_no" placeholder="Order No" name="order_no" required>
+                <input type="number" class="form-control" id="order_no" placeholder="Order No" value="{{orderno}}" name="order_no" required>
             </div>
             <div class="form-group col-md-4">
                 <label for="Order Date">Order Date</label>
@@ -33,9 +33,9 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="new-quality">Color</label>
-                <select class="form-control" name="color" required>
+                <select class="form-control" name="color">
 
                     {% for party in color %}
                         
@@ -44,13 +44,21 @@
                     {% endfor %}
                 </select>    
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="Quantity">Quantity</label>
-                <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity">
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
+                <label for="Unit">Unit</label>
+                <select class="form-control" name="unit" required>    
+                    <option value="Kgs">Kgs</option>
+                    <option value="Ltrs">Ltrs</option>
+                    <option value="Bags">Bags</option>
+                </select>   
+            </div>
+            <div class="form-group col-md-3">
                 <label for="Rate">Rate</label>
-                <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate">
             </div>
             <!--
             <div class="form-group col-md-4">
@@ -63,12 +71,12 @@
         <!-- 2nd Color -->
         <div class="additional-color">
             <div class="form-row">
-                <button class="btn-outline-dark button" onclick="color2()" id="button-2">Add Color</button>
+                <button class="btn-outline-dark button" formaction="javascript:color2()" id="button-2">Add Color</button>
             </div>
             <div class="form-row hide" id="color-2">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color2">
     
                         {% for party in color %}
                             
@@ -77,16 +85,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity2">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate2">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color3()" id="button-3">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color3()" id="button-3">Add Color</button>
                 </div>
             </div>
         </div>
@@ -94,9 +110,9 @@
         <!-- 3rd Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-3">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color3">
     
                         {% for party in color %}
                             
@@ -105,16 +121,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity3">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate3">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color4()" id="button-4">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color4()" id="button-4">Add Color</button>
                 </div>
             </div>
         </div>
@@ -122,9 +146,9 @@
         <!-- 4th Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-4">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color4">
     
                         {% for party in color %}
                             
@@ -133,16 +157,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity4">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate4">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color5()" id="button-5">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color5()" id="button-5">Add Color</button>
                 </div>
             </div>
         </div>
@@ -150,9 +182,9 @@
         <!-- 5th Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-5">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color5">
     
                         {% for party in color %}
                             
@@ -161,16 +193,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity5">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate5">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color6()" id="button-6">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color6()" id="button-6">Add Color</button>
                 </div>
             </div>
         </div>
@@ -178,9 +218,9 @@
         <!-- 6th Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-6">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color6">
     
                         {% for party in color %}
                             
@@ -189,16 +229,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity6">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate6">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color7()" id="button-7">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color7()" id="button-7">Add Color</button>
                 </div>
             </div>
         </div>
@@ -206,9 +254,9 @@
         <!-- 7th Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-7">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color7">
     
                         {% for party in color %}
                             
@@ -217,16 +265,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity7">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate7">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color8()" id="button-8">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color8()" id="button-8">Add Color</button>
                 </div>
             </div>
         </div>
@@ -234,9 +290,9 @@
         <!-- 8th Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-8">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color8">
     
                         {% for party in color %}
                             
@@ -245,16 +301,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity8">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate8">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color9()" id="button-9">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color9()" id="button-9">Add Color</button>
                 </div>
             </div>
         </div>
@@ -262,9 +326,9 @@
         <!-- 9th Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-9">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color9">
     
                         {% for party in color %}
                             
@@ -273,16 +337,24 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity9">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate9">
                 </div>
                 <div class="form-row">
-                    <button class="btn-outline-dark button" onclick="color10()" id="button-10">Add Color</button>
+                    <button class="btn-outline-dark button" formaction="javascript:color10()" id="button-10">Add Color</button>
                 </div>
             </div>
         </div>
@@ -290,9 +362,9 @@
         <!-- 10th Color -->
         <div class="additional-color">
             <div class="form-row hide" id="color-10">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="new-quality">Color</label>
-                    <select class="form-control" name="color" required>
+                    <select class="form-control" name="color10">
     
                         {% for party in color %}
                             
@@ -301,13 +373,21 @@
                         {% endfor %}
                     </select>    
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="Quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity" required>
+                    <input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity10">
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
+                    <label for="Unit">Unit</label>
+                    <select class="form-control" name="unit" required>    
+                        <option value="Kgs">Kgs</option>
+                        <option value="Ltrs">Ltrs</option>
+                        <option value="Bags">Bags</option>
+                    </select>   
+                </div>
+                <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
-                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+                    <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate10">
                 </div>
             </div>
         </div>
