@@ -13,8 +13,13 @@
 </head>
 <body>
   {% url 'index' as index %}
+  {% url 'colorhome' as colorhome %}
   {% url 'ordergeneration' as ordergeneration %}
   {% url 'placeorder' as placeorder %}
+  {% url 'goodsreceived' as goodsreceived %}
+  {% url 'goodsrequest' as goodsrequest %}
+  {% url 'goodslease' as goodslease %}
+  {% url 'leaserequest' as leaserequest %}
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,12 +29,13 @@
         <div class="collapse navbar-collapse" id="navbarColor03">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">HOME <!--<span class="sr-only">(current)</span>--></a>
-                <a class="nav-link {%if request.path == ordergeneration %} active {%elif request.path == placeorder %} active {%endif%}" href="{% url 'ordergeneration' %}">Order Generation</a>
-                <a class="nav-link" href="{% url 'goodsreceived' %}">Goods Recieved</a>
-                <a class="nav-link" href="{% url 'goodslease' %}">Lease Stock</a>
-                <a class="nav-link" href="#">Daily Consumption</a>
-                <a class="nav-link" href="#">Closing Stock</a>
+              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
+              <a class="nav-link {%if request.path == colorhome %} active {%endif%}" href="{% url 'colorhome' %}">Color - Home</a>
+              <a class="nav-link {%if request.path == ordergeneration %} active {%elif request.path == placeorder %} active {%endif%}" href="{% url 'ordergeneration' %}">Order Generation</a>
+              <a class="nav-link {%if request.path == goodsreceived %} active {%elif request.path == goodsrequest %} active {%endif%}" href="{% url 'goodsreceived' %}">Goods Recieved</a>
+              <a class="nav-link {%if request.path == goodslease %} active {%elif request.path == leaserequest %} active {%endif%}" href="{% url 'goodslease' %}">Loose Stock</a>
+              <a class="nav-link {%if request.path == dailyconsumption %} active {%endif%}" href="{% url 'dailyconsumption' %}">Daily Consumption</a>
+              <a class="nav-link {%if request.path == closingstock %} active {%endif%}" href="{% url 'closingstock' %}">Closing Stock</a>
             </li>
           </ul>
           <!-- Approval Start -->

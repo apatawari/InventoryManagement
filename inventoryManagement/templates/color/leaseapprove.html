@@ -4,7 +4,7 @@
 {% block content%}
       <!-- Diplay Record Start -->
         <div class="page-title">
-            <h3 class="title-text">Move Color Orders to Lease</h3>
+            <h3 class="title-text">Move Color Orders to Loose</h3>
         </div>
 
       <form class = "md-form view-file" method="POST" action="{% url 'leaseapproved' record.id %}" enctype="multipart/form-data">
@@ -49,7 +49,7 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label for="Quantity">Quantity Lease</label>
+                <label for="Quantity">Quantity Loose</label>
                 <input type="number" class="form-control" id="quantityreceived" placeholder="Quantity Lease" value="{{ record.quantity }}" name="quantitylease" required autofocus>
             </div>
             <div class="form-group col-md-4">
@@ -57,17 +57,17 @@
                 <input type="text" class="form-control" id="godown" name="godown" value="{{record.godown}}" required readonly/>
             </div>
             <div class="form-group col-md-4">
-                <label for="Order Date">Lease Date</label>
+                <label for="Order Date">Loose Date</label>
                 <input type="date" class="form-control" id="lease Date" name="leasedate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" required/>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label for="Lease">Lease No.</label>
+                <label for="Lease">Loose No.</label>
                 <select class="form-control" name="leasenumber" required>    
-                    <option value="Lease 1">Lease 1</option>
-                    <option value="Lease 2">Lease 2</option>
-                    <option value="Lease 3">Lease 3</option>
+                    <option value="Loose 1">Loose 1</option>
+                    <option value="Loose 2">Loose 2</option>
+                    <option value="Loose 3">Loose 3</option>
                 </select>   
             </div>
         </div>

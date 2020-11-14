@@ -1,10 +1,10 @@
 {% extends './colornav.html' %}
 
-{% block title%} Good Request {% endblock %}
+{% block title%} Loose Stock Request {% endblock %}
 {% block content%}
 
     <div class="page-title">
-        <h3 class="title-text">LEASE - REQUEST</h3>
+        <h3 class="title-text">LOOSE STOCK - REQUEST</h3>
     </div>
     
     {% load widget_tweaks %}
@@ -68,7 +68,7 @@
             <td>{{record.amount}}</td>
             <td>{{record.state}}</td>
             <td>{{record.godown}}</td>
-            <td><a class ="anchor-button button-small-text" href="{% url 'leaseapprove' record.id %}">Move To Lease</a></td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'leaseapprove' record.id %}">Move To Loose</a></td>
             
           </tr>
         {% endfor %}

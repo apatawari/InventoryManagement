@@ -83,12 +83,12 @@
                 {% endif %}
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="nav-link dropdown-item" href="#">Color - Home</a>
+                <a class="nav-link dropdown-item" href="{% url 'colorhome' %}">Color - Home</a>
                 <a class="nav-link dropdown-item" href="{% url 'ordergeneration' %}">Order Generation</a>
                 <a class="nav-link dropdown-item" href="{% url 'goodsreceived' %}">Goods Recieved</a>
-                <a class="nav-link dropdown-item" href="{% url 'goodslease' %}">Lease Stock</a>
-                <a class="nav-link dropdown-item" href="{% url 'goodsreceived' %}">Daily Consumption</a>
-                <a class="nav-link dropdown-item" href="{% url 'goodsreceived' %}">Closing Stock</a>
+                <a class="nav-link dropdown-item" href="{% url 'goodslease' %}">Loose Stock</a>
+                <a class="nav-link dropdown-item" href="{% url 'dailyconsumption' %}">Daily Consumption</a>
+                <a class="nav-link dropdown-item" href="{% url 'closingstock' %}">Closing Stock</a>
               </div>
             </li>
           </ul>

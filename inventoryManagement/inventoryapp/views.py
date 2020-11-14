@@ -1663,7 +1663,8 @@ def renderAddColorSupplier(request):
     parties = paginator.get_page(page)
     return render(request,'./color/colorsupplier.html',{'suppliers':parties})
 
-
+def colorhome(request):
+    return render(request, './color/colorhome.html')
 
 def saveSupplier(request):
     p = request.POST.get("supplier")
@@ -2141,15 +2142,36 @@ def orderEditSave(request,id):
 ######color in godown
 
 def goodsReceived(request):
-    rec = ColorRecord.objects.filter(state='Godown').order_by('order_no')
-    records_filter = ColorFilter(request.GET,queryset=rec)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
-    paginator = Paginator(records_filter.qs,20)
-    page = request.GET.get('page')
-    records = paginator.get_page(page)
+    datalist=[]
+    colors = Color.objects.all()
+    godowns=['Godown 1','Godown 2','Godown 3']
+    units = ['Kgs','Ltrs','Bags']
+    for color in colors:
 
-    return render(request,'./color/goodsreceived.html',{'records':records,'filter':records_filter})
+
+        for g in godowns:
+
+            for u in units:
+                rec = ColorRecord.objects.filter(state='Godown',color=color.color,godown=g,unit=u)
+                if(rec.count()>0):
+                    c=rec.count()
+                    l=[color.color]
+                    quant1=0
+                    rate=0
+                    for i in rec:
+                        rate=rate+float(i.rate)
+                        quant1=quant1+int(i.quantity)
+                    l.append(quant1)
+                    rate=rate/c
+                    l.append(round(rate,2))
+                    a=rate*quant1
+                    l.append(round(a,2))
+                    l.append(g)
+                    l.append(u)
+                    datalist.append(l)
+
+
+    return render(request,'./color/goodsreceived.html',{'data':datalist})
 
 def goodsRequest(request):
     rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
@@ -2204,6 +2226,7 @@ def goodsApprove(request,id):
             rate=prevRec.rate,
             amount=round(amount_recieved,2),
             quantity=quantity_recieved,
+            unit = prevRec.unit,
             state="Godown",
             recieving_date=str(recieving_date),
             total_quantity = prevRec.total_quantity,
@@ -2227,7 +2250,7 @@ def goodsApprove(request,id):
     
 ####lease
 def goodsLease(request):
-    rec = ColorRecord.objects.filter(state='Lease').order_by('order_no')
+    rec = ColorRecord.objects.filter(state='Loose').order_by('order_no')
     records_filter = ColorFilter(request.GET,queryset=rec)
     # return render(request,'intransit.html',{'records':records_filter})
 
@@ -2265,7 +2288,7 @@ def leaseApprove(request,id):
     lease = request.POST.get('leasenumber')
     amount = prevRec.amount
     if(prevRec.quantity == quantity_recieved):
-        prevRec.state="Lease"
+        prevRec.state="Loose"
         prevRec.lease_date=str(recieving_date)
         prevRec.lease = lease
         lease_color = get_object_or_404(Color,color=prevRec.color)
@@ -2293,7 +2316,8 @@ def leaseApprove(request,id):
             rate=prevRec.rate,
             amount=round(amount_recieved,2),
             quantity=quantity_recieved,
-            state="Lease",
+            unit = prevRec.unit,
+            state="Loose",
             recieving_date=prevRec.recieving_date,
             total_quantity = prevRec.total_quantity,
             godown = prevRec.godown,

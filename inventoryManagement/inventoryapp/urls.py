@@ -87,6 +87,8 @@ urlpatterns = [
     path('editcolor/<int:id>',views.renderEditColor,name="rendereditcolor"),
     path('editingcolor/<int:id>',views.editColor,name="editcolor"),
 
+    path('colorhome', views.colorhome,name='colorhome'),
+
     path('placeorder',views.placeOrder,name='placeorder'),
     path('saveorder',views.saveOrder,name='saveorder'),
     path('ordergeneration',views.orderGeneration,name='ordergeneration'),

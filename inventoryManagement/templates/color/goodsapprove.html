@@ -1,10 +1,10 @@
 {% extends './colornav.html' %}
 
-{% block title%} Place Order {% endblock %}
+{% block title%} Goods Approve {% endblock %}
 {% block content%}
       <!-- Diplay Record Start -->
         <div class="page-title">
-            <h3 class="title-text">Receive Colors</h3>
+            <h3 class="title-text">Receive Colors & Chemicals</h3>
         </div>
 
       <form class = "md-form view-file" method="POST" action="{% url 'approvegoods' record.id %}" enctype="multipart/form-data">
@@ -48,11 +48,15 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="Quantity">Quantity Received</label>
                 <input type="number" class="form-control" id="quantityreceived" placeholder="QuantityReceived" name="quantityreceived" required autofocus>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
+                <label for="Quantity">Unit</label>
+                <input type="text" class="form-control" id="Unit" value="{{record.unit}}" name="Unit" readonly>
+            </div>
+            <div class="form-group col-md-3">
                 <label for="Quantity">Godown No.</label>
                 <select class="form-control" name="godownnumber" required>    
                     <option value="Godown 1">Godown 1</option>
@@ -60,7 +64,7 @@
                     <option value="Godown 3">Godown 3</option>
                 </select>   
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="Order Date">Receiving Date</label>
                 <input type="date" class="form-control" id="Receiving Date" name="receivingdate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" required/>
             </div>

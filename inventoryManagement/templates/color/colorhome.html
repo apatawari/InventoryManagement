@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Inventory Management</title>
+    <title>Home</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -12,16 +12,16 @@
 
 </head>
 <body>
-  {% url 'index' as index %}
-  {% url 'colorhome' as colorhome %}
-  {% url 'ordergeneration' as ordergeneration %}
-  {% url 'placeorder' as placeorder %}
-  {% url 'goodsreceived' as goodsreceived %}
-  {% url 'goodsrequest' as goodsrequest %}
-  {% url 'goodslease' as goodslease %}
-  {% url 'leaserequest' as leaserequest %}
-  {% url 'dailyconsumption' as dailyconsumption %}
-  {% url 'closingstock' as closingstock %}
+    {% url 'index' as index %}
+    {% url 'colorhome' as colorhome %}
+    {% url 'ordergeneration' as ordergeneration %}
+    {% url 'placeorder' as placeorder %}
+    {% url 'goodsreceived' as goodsreceived %}
+    {% url 'goodsrequest' as goodsrequest %}
+    {% url 'goodslease' as goodslease %}
+    {% url 'leaserequest' as leaserequest %}
+    {% url 'dailyconsumption' as dailyconsumption %}
+    {% url 'closingstock' as closingstock %}
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,9 +63,13 @@
     {% endfor %}
     <!-- Messages End -->
 
-    {% block content %}
-    {% endblock %}
-
+      <!-- Color Master -->
+      <div class="upload-file">
+        <div class="upload-header">
+          <h1>Color & Chemicals Report</h1>
+        </div>
+        <a class ="btn-add" href="#">Generate Report</a>
+      </div>
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
