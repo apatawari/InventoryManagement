@@ -44,10 +44,11 @@ def server_error(request):
 
     return response
 
-
-# Create your views here.
 def index(request):
     return render(request, 'index.html')
+
+def greyhome(request):
+    return render(request, 'greyhome.html')
 
 def back1(request):
     return redirect('/intransit')
@@ -94,7 +95,7 @@ def upload(request):
             # print(imported_data)
         except:
             messages.error(request, "Please Select Proper File")
-            return redirect('/index')
+            return redirect('/greyhome')
             
         for data in imported_data:
             try:
@@ -152,7 +153,7 @@ def upload(request):
             messages.error(request, "These records already exist")
 
 
-    return redirect('/index')
+    return redirect('/greyhome')
 
 def showIntransit(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')

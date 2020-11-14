@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Inventory Management</title>
+    <title>GreyHome</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -41,6 +41,9 @@
                 <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
             </li>
           </ul>
+          
+          <a class ="btn-request float-right" href="{% url 'reportfilter' %}">Ledger</a>
+          <a class ="btn-request float-right" href="{% url 'qualityreportfilter' %}">Report</a>
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -64,9 +67,21 @@
     {% endfor %}
     <!-- Messages End -->
 
-    {% block content %}
-    {% endblock %}
+      <!-- File Upload Start-->
+      <form method="POST" class="md-form upload-file" action="/insert" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Choose File</h1>
+        </div>
+        <div class="upload-container">
+            <input class= "button" type="file" name="myfile">
 
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit">Upload</button>
+        </div>
+      </form>
+      <!-- File Upload End -->
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

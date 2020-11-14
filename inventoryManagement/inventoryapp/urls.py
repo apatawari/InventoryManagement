@@ -17,6 +17,7 @@ handler500 = 'inventoryapp.views.server_error'
 
 urlpatterns = [
     path('index', views.index,name='index'),
+    path('greyhome', views.greyhome,name='greyhome'),
     path('insert', views.upload,name='insert'),
     path('intransit',views.showIntransit, name='intransit'),
     path('record/<int:id>',views.record, name='record'),

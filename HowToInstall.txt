@@ -1,0 +1,36 @@
+*Download and Install Python First*
+
+1) git clone https://github.com/Devdoot-Maji/InventoryManagement.git
+
+2) Setting Up MySQL
+   - Download and Install MySQL
+   - Open MySQL Workbench
+   - Open Local Instance
+   - In Navbar -> Click on Server -> Users and Previleges
+   - A new Window will Open -> Add Account (Keep Username - admin)
+   - Click on Schema Previleges -> Grant all Previleges
+
+3) Now open MySQL Client
+   - Type Command: create database inter;
+
+4) Change directories: InventoryManagement
+5) You will see "requirements.txt" file over here
+6) Open Cmd in this directory
+7) pip install requirements.txt
+8) pip install mysqlclient
+
+9) Change directories: InventoryManagement -> inventoryManagement 
+10) You will see "manage.py" file over here
+11) Open Cmd in this directory
+12) python manage.py makemigrations inventoryapp
+13) python manage.py migrate
+14) python manage.py runserver
+15)Now go to 127.0.0.1:8000/index
+
+
+// After First Time Setup //
+1) Change directories: InventoryManagement -> inventoryManagement 
+2) You will see "manage.py" file over here
+3) Open Cmd in this directory
+4) python manage.py runserver
+5)Now go to 127.0.0.1:8000/index
