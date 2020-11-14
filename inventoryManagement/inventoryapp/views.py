@@ -2104,10 +2104,18 @@ def orderGeneration(request):
 
 def orderEdit(request,id):
     rec=get_object_or_404(AllOrders, id=id)
-    orderdate=str(rec.order_date)
-    color = Color.objects.all().order_by('color')
-    supplier = ColorSupplier.objects.all().order_by('supplier')
-    return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier})
+    try:
+        rec2=get_list_or_404(ColorRecord,rate=rec.rate,order_no=rec.order_no,color=rec.color,unit=rec.unit,state="Ordered")
+    
+        orderdate=str(rec.order_date)
+        color = Color.objects.all().order_by('color')
+        supplier = ColorSupplier.objects.all().order_by('supplier')
+    
+        return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier})
+    except:
+        messages.error(request,"This order has been recieved")
+        return redirect('/ordergeneration')
+
 
 def orderEditSave(request,id):
     rec_order=get_object_or_404(AllOrders, id=id)
