@@ -2104,7 +2104,8 @@ def orderEdit(request,id):
     rec=get_object_or_404(AllOrders, id=id)
     orderdate=str(rec.order_date)
     color = Color.objects.all().order_by('color')
-    return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color})
+    supplier = ColorSupplier.objects.all().order_by('supplier')
+    return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier})
 
 def orderEditSave(request,id):
     rec_order=get_object_or_404(AllOrders, id=id)

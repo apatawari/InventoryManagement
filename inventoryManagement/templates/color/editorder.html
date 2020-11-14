@@ -12,7 +12,16 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="new-quality">Supplier Party</label>
-                <input type="text" class="form-control" name="supplier" value="{{ record.supplier}}" >
+                <select class="form-control" name="supplier" >
+
+                    {% for s in suppliers %}
+                        {% if s.supplier == record.supplier %}
+                        <option value="{{ s.supplier }}" selected>{{ s.supplier }}</option>
+                        {% else %}
+                        <option value="{{ s.supplier }}" >{{ s.supplier }}</option>
+                        {% endif %}                       
+                    {% endfor %}
+                </select>
 
                    
                    
@@ -29,7 +38,17 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="new-quality">Color</label>
-                <input type="text" class="form-control" value="{{record.color}}" name="color" >
+                
+                <select class="form-control" name="color" >
+
+                    {% for party in color %}
+                        {% if party.color == record.color %}
+                        <option value="{{ party.color }}" selected>{{ party.color }}</option>
+                        {% else %}
+                        <option value="{{ party.color }}" >{{ party.color }}</option>
+                        {% endif %}                       
+                    {% endfor %}
+                </select>
  
             </div>
         </div>
