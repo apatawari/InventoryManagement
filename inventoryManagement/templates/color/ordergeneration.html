@@ -104,6 +104,7 @@
             <th scope="col">Order Date</th>
             <th scope="col">Color</th>
             <th scope="col">Quantity</th>
+            <th scope="col">Unit</th>
             <th scope="col">Rate</th>
             <th scope="col">Bill Amount</th>
             <th scope="col">State</th>
@@ -116,11 +117,12 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{record.supplier}}</td>
+            <td class="td-text"><a href="{% url 'orderedit' record.id %}">{{record.supplier}}</a></td>
             <td>{{record.order_no}}</td>
             <td>{{record.order_date}}</td>
             <td class="td-text">{{record.color}}</td>
             <td>{{record.quantity}}</td>
+            <td>{{record.unit}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.amount}}</td>
             <td>{{record.state}}</td>

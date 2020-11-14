@@ -1,4 +1,4 @@
-from .models import Record,ColorRecord
+from .models import Record,ColorRecord,AllOrders
 import django_filters
 from django.db import models
 from django import forms
@@ -31,6 +31,24 @@ class ColorFilter(django_filters.FilterSet):
             'color': ['exact', 'contains'],
             'godown': ['exact', 'contains'],
             'lease': ['exact', 'contains']
+        }
+
+        filter_overrides = {
+            models.CharField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'icontains',
+                },
+            }
+        }
+
+class ColorOrderFilter(django_filters.FilterSet):
+    class Meta:
+        model=AllOrders
+        fields = {
+            'supplier': [ 'contains','exact'],
+            'order_no': ['exact', 'contains'],
+            'color': ['exact', 'contains']
         }
 
         filter_overrides = {
