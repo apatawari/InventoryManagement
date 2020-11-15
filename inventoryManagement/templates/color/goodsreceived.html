@@ -74,21 +74,14 @@
       <form method="GET">
           <div class="form-row filter-form">
             <div class="form-group col-sm-4">
-              {{ filter.form.supplier.label_tag }}
-              {% render_field filter.form.supplier class="form-control" %}
-            </div>
-            <div class="form-group col-sm-2">
-              {{ filter.form.order_no.label_tag }}
-              {% render_field filter.form.order_no class="form-control" %}
-            </div>
-            <div class="form-group col-sm-2">
               {{ filter.form.color.label_tag }}
               {% render_field filter.form.color class="form-control" %}
             </div>
             <div class="form-group col-sm-2">
-              {{ filter.form.godown.label_tag }}
-              {% render_field filter.form.godown class="form-control" %}
+              {{ filter.form.state.label_tag }}
+              {% render_field filter.form.state class="form-control" %}
             </div>
+            
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
             </div>
@@ -115,7 +108,6 @@
             <th scope="col">Quantity Recieved</th>
             <th scope="col">Unit</th>
             <th scope="col">Rate</th>
-            <th scope="col">Bill Amount</th>
             <th scope="col">State</th>
             <th scope="col">Godown No.</th>
 
@@ -123,17 +115,16 @@
           </tr>
         </thead>
         <tbody>
-        {% for record in data %}
+        {% for record in colors %}
         <tr>
 
           <td scope="row">{{ forloop.counter }}</td>
-          <td class="td-text">{{record.0}}</td>
-          <td>{{record.1}}</td>
-          <td>{{record.5}}</td>
-          <td>{{record.2}}</td>
-          <td>{{record.3}}</td>
+          <td class="td-text">{{record.color}}</td>
+          <td>{{record.quantity}}</td>
+          <td>{{record.unit}}</td>
+          <td>{{record.rate}}</td>
           <td>Godown</td>
-          <td>{{record.4}}</td>
+          <td>{{record.state}}</td>
 
         </tr>
         {% endfor %}
@@ -146,17 +137,17 @@
 
       <div class="pagination">
         <div class="number-line">
-          {% if records.has_previous %}
-          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% if colors.has_previous %}
+          <a class="page-no-text" href="{% my_url colors.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
           {% endif%}
-          {% for num in records.paginator.page_range %}
-            {%if records.number == num%}
-              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+          {% for num in colors.paginator.page_range %}
+            {%if colors.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ colors.paginator.num_pages }}&nbsp
             
             {% endif %}
           {%endfor%}
-          {% if records.has_next %}
-            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% if colors.has_next %}
+            <a class="page-no-text" href="{% my_url colors.next_page_number 'page' request.GET.urlencode %}">Next page</a>
           {% endif%}
         </div>  
       </div>

@@ -91,3 +91,10 @@ class AllOrders(models.Model):
     state = models.CharField(max_length=50)
     unit = models.CharField(null=True,max_length=50)
     
+
+class GodownLeaseColors(models.Model):
+    color = models.CharField(max_length=50)
+    quantity = models.IntegerField()
+    rate = models.FloatField()
+    unit = models.CharField(null=True,max_length=50)
+    state = models.CharField(max_length=50)

@@ -2,9 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders
+from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors
 from .resources import ItemResources
-from .filters import RecordFilter,ColorFilter,ColorOrderFilter
+from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
 from tablib import Dataset
 from django.http import HttpResponseRedirect
@@ -2150,36 +2150,49 @@ def orderEditSave(request,id):
 ######color in godown
 
 def goodsReceived(request):
-    datalist=[]
-    colors = Color.objects.all()
-    godowns=['Godown 1','Godown 2','Godown 3']
-    units = ['Kgs','Ltrs','Bags']
-    for color in colors:
+
+    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3'])
+    # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
+    records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    records = paginator.get_page(page)
+
+    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing"})
 
 
-        for g in godowns:
-
-            for u in units:
-                rec = ColorRecord.objects.filter(state='Godown',color=color.color,godown=g,unit=u)
-                if(rec.count()>0):
-                    c=rec.count()
-                    l=[color.color]
-                    quant1=0
-                    rate=0
-                    for i in rec:
-                        rate=rate+float(i.rate)
-                        quant1=quant1+int(i.quantity)
-                    l.append(quant1)
-                    rate=rate/c
-                    l.append(round(rate,2))
-                    a=rate*quant1
-                    l.append(round(a,2))
-                    l.append(g)
-                    l.append(u)
-                    datalist.append(l)
+    # datalist=[]
+    # colors = Color.objects.all()
+    # godowns=['Godown 1','Godown 2','Godown 3']
+    # units = ['Kgs','Ltrs','Bags']
+    # for color in colors:
 
 
-    return render(request,'./color/goodsreceived.html',{'data':datalist})
+    #     for g in godowns:
+
+    #         for u in units:
+    #             rec = ColorRecord.objects.filter(state='Godown',color=color.color,godown=g,unit=u)
+    #             if(rec.count()>0):
+    #                 c=rec.count()
+    #                 l=[color.color]
+    #                 quant1=0
+    #                 rate=0
+    #                 for i in rec:
+    #                     rate=rate+float(i.rate)
+    #                     quant1=quant1+int(i.quantity)
+    #                 l.append(quant1)
+    #                 rate=rate/c
+    #                 l.append(round(rate,2))
+    #                 a=rate*quant1
+    #                 l.append(round(a,2))
+    #                 l.append(g)
+    #                 l.append(u)
+    #                 datalist.append(l)
+
+
+    # return render(request,'./color/goodsreceived.html',{'data':datalist})
 
 def goodsRequest(request):
     rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
@@ -2213,6 +2226,20 @@ def goodsApprove(request,id):
         prevRec.recieving_date=str(recieving_date)
         prevRec.godown=godown
         prevRec.save()
+        try:
+            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
+            godown_color.quantity = godown_color.quantity + quantity_recieved
+            godown_color.rate = (godown_color.rate + prevRec.rate)/2
+            godown_color.save()
+        except:
+            godown_color = GodownLeaseColors(
+                color = prevRec.color,
+                quantity = quantity_recieved,
+                unit = prevRec.unit,
+                rate = prevRec.rate,
+                state = godown
+            )
+            godown_color.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/goodsrequest')
     elif(prevRec.quantity<quantity_recieved):
@@ -2249,6 +2276,21 @@ def goodsApprove(request,id):
             prevRec.quantity = prevRec.quantity - quantity_recieved
             prevRec.amount = round(amount_remain,2)
             prevRec.save()
+            try:
+                godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
+                godown_color.quantity = godown_color.quantity + quantity_recieved
+                godown_color.rate = (godown_color.rate + prevRec.rate)/2
+                godown_color.save()
+            except:
+                godown_color = GodownLeaseColors(
+                    color = prevRec.color,
+                    quantity = quantity_recieved,
+                    unit = prevRec.unit,
+                    rate = prevRec.rate,
+                    state = godown
+                )
+            godown_color.save()
+
             messages.success(request,"Data Updated Successfully")
 
 
@@ -2269,15 +2311,16 @@ def goodsLease(request):
     return render(request,'./color/lease.html',{'records':records,'filter':records_filter})
 
 def leaseRequest(request):
-    rec=ColorRecord.objects.filter(state='Godown').order_by('godown')
-    records_filter = ColorFilter(request.GET,queryset=rec)
+    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3'])
+    # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
+    records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
     
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request,'./color/leaserequest.html',{'records':records,'filter':records_filter})
+    return render(request,'./color/leaserequest.html',{'filter':records_filter,'colors':records})
 
 def viewGood(request,id):
     rec=get_object_or_404(ColorRecord, id=id)

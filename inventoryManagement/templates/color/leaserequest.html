@@ -14,17 +14,14 @@
       <form method="GET">
           <div class="form-row filter-form">
             <div class="form-group col-sm-4">
-              {{ filter.form.supplier.label_tag }}
-              {% render_field filter.form.supplier class="form-control" %}
-            </div>
-            <div class="form-group col-sm-2">
-              {{ filter.form.order_no.label_tag }}
-              {% render_field filter.form.order_no class="form-control" %}
-            </div>
-            <div class="form-group col-sm-4">
               {{ filter.form.color.label_tag }}
               {% render_field filter.form.color class="form-control" %}
             </div>
+            <div class="form-group col-sm-2">
+              {{ filter.form.state.label_tag }}
+              {% render_field filter.form.state class="form-control" %}
+            </div>
+            
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
             </div>
@@ -34,64 +31,59 @@
 
       <!-- Display Table Start-->
       <div id="datatable">
-      <table class="table">
-        <thead class="thead-dark">
-          <tr>
+
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              
+              <th scope="col">Sr. No</th>
+              <th scope="col">Godown No.</th>
+              <th scope="col">Color</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Unit</th>
+              <th scope="col">Rate</th>
+              <th scope="col"></th>
+              
+              
+              
+            </tr>
+          </thead>
+          <tbody>
+          {% for record in colors %}
+            <tr>
+              
+              <td scope="row">{{ forloop.counter }}</td>
+              <td>{{record.state}}</td>
+              <td class="td-text">{{record.color}}</td>
+              <td>{{record.quantity}}</td>
+              <td>{{record.unit}}</td>
+              <td>{{record.rate}}</td>
+              <td><a class ="anchor-button button-small-text" href="{% url 'leaseapprove' record.id %}">Move To Loose</a></td>
+              
+            </tr>
+          {% endfor %}
             
-            <th scope="col">Sr. No</th>
-            <th scope="col">Party Name</th>
-            <th scope="col">Order No</th>
-            <th scope="col">Order Date</th>
-            <th scope="col">Color</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Rate</th>
-            <th scope="col">Bill Amount</th>
-            <th scope="col">State</th>
-            <th scope="col">Godown No.</th>
-            <th scope="col"></th>
             
-            
-            
-          </tr>
-        </thead>
-        <tbody>
-        {% for record in records %}
-          <tr>
-            
-            <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{record.supplier}}</td>
-            <td>{{record.order_no}}</td>
-            <td>{{record.order_date}}</td>
-            <td class="td-text">{{record.color}}</td>
-            <td>{{record.quantity}}</td>
-            <td>{{record.rate}}</td>
-            <td>{{record.amount}}</td>
-            <td>{{record.state}}</td>
-            <td>{{record.godown}}</td>
-            <td><a class ="anchor-button button-small-text" href="{% url 'leaseapprove' record.id %}">Move To Loose</a></td>
-            
-          </tr>
-        {% endfor %}
-          
-          
-        </tbody>
-      </table>
+          </tbody>
+        </table>  
+
+      
       </div>
       <!-- Display Table End -->
 
       <div class="pagination">
         <div class="number-line">
-          {% if records.has_previous %}
-          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% if colors.has_previous %}
+          <a class="page-no-text" href="{% my_url colors.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
           {% endif%}
-          {% for num in records.paginator.page_range %}
-            {%if records.number == num%}
-              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+          {% for num in colors.paginator.page_range %}
+            {%if colors.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ colors.paginator.num_pages }}&nbsp
             
             {% endif %}
           {%endfor%}
-          {% if records.has_next %}
-            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% if colors.has_next %}
+            <a class="page-no-text" href="{% my_url colors.next_page_number 'page' request.GET.urlencode %}">Next page</a>
           {% endif%}
         </div>  
       </div>
