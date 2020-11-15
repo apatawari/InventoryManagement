@@ -2300,15 +2300,16 @@ def goodsApprove(request,id):
     
 ####lease
 def goodsLease(request):
-    rec = ColorRecord.objects.filter(state='Loose').order_by('order_no')
-    records_filter = ColorFilter(request.GET,queryset=rec)
+    godown_colors = GodownLeaseColors.objects.filter(state__in=['Loose 1','Loose 2','Loose 3'])
+    # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
+    records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
-
+    
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request,'./color/lease.html',{'records':records,'filter':records_filter})
+    return render(request,'./color/lease.html',{'filter':records_filter,'colors':records})
 
 def leaseRequest(request):
     godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3'])
@@ -2323,28 +2324,37 @@ def leaseRequest(request):
     return render(request,'./color/leaserequest.html',{'filter':records_filter,'colors':records})
 
 def viewGood(request,id):
-    rec=get_object_or_404(ColorRecord, id=id)
-    mindate=str(rec.recieving_date)
-    maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    d=datetime.date.today()
-    d=str(d)
-    recievedate=str(rec.recieving_date)
-    return render(request, './color/leaseapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'recievedate':recievedate})
+    rec=get_object_or_404(GodownLeaseColors, id=id)
+    # mindate=str(rec.recieving_date)
+    # maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    # d=datetime.date.today()
+    # d=str(d)
+    # recievedate=str(rec.recieving_date)
+    return render(request, './color/leaseapprove.html', {'record':rec})
 
 
 def leaseApprove(request,id):
-    prevRec = get_object_or_404(ColorRecord,id=id)
+    prevRec = get_object_or_404(GodownLeaseColors,id=id)
     quantity_recieved = int(request.POST.get("quantitylease"))
-    recieving_date = request.POST.get('leasedate')
     lease = request.POST.get('leasenumber')
-    amount = prevRec.amount
+    
     if(prevRec.quantity == quantity_recieved):
-        prevRec.state="Loose"
-        prevRec.lease_date=str(recieving_date)
-        prevRec.lease = lease
-        lease_color = get_object_or_404(Color,color=prevRec.color)
-        lease_color.quantity = lease_color.quantity + quantity_recieved
-        lease_color.save()
+        
+        try:
+            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=lease)
+            godown_color.quantity = godown_color.quantity + quantity_recieved
+            godown_color.rate = (godown_color.rate + prevRec.rate)/2
+            godown_color.save()
+        except:
+            godown_color = GodownLeaseColors(
+                color = prevRec.color,
+                quantity = quantity_recieved,
+                unit = prevRec.unit,
+                rate = prevRec.rate,
+                state = lease
+            )
+            godown_color.save()
+        prevRec.quantity=0
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/leaserequest')
@@ -2353,45 +2363,91 @@ def leaseApprove(request,id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         quantity_remaining = prevRec.quantity - quantity_recieved
-        
-        amount_per_quant = prevRec.amount/prevRec.quantity
-        amount_recieved = amount_per_quant * quantity_recieved
-        amount_remain = prevRec.amount - amount_recieved
-
-
-        value = ColorRecord(
-            color=prevRec.color,
-            supplier=prevRec.supplier,
-            order_no=prevRec.order_no,
-            order_date=prevRec.order_date,
-            rate=prevRec.rate,
-            amount=round(amount_recieved,2),
-            quantity=quantity_recieved,
-            unit = prevRec.unit,
-            state="Loose",
-            recieving_date=prevRec.recieving_date,
-            total_quantity = prevRec.total_quantity,
-            godown = prevRec.godown,
-            lease_date=str(recieving_date),
-            lease = lease
+        try:
+            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=lease)
+            godown_color.quantity = godown_color.quantity + quantity_recieved
+            godown_color.rate = (godown_color.rate + prevRec.rate)/2
             
+        except:
+            godown_color = GodownLeaseColors(
+                color = prevRec.color,
+                quantity = quantity_recieved,
+                unit = prevRec.unit,
+                rate = prevRec.rate,
+                state = lease
             )
+
         if quantity_recieved == 0 :
             messages.error(request,"Quantity Recieved cannot be Zero (0)")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
-            value.save()
-            prevRec.quantity = prevRec.quantity - quantity_recieved
-            prevRec.amount = round(amount_remain,2)
+            prevRec.quantity=quantity_remaining
             prevRec.save()
-            lease_color = get_object_or_404(Color,color=prevRec.color)
-            lease_color.quantity = lease_color.quantity + quantity_recieved
-            lease_color.save()
+            godown_color.save()
             messages.success(request,"Data Updated Successfully")
+            
+            
+    return redirect('/leaserequest')
+
+    # prevRec = get_object_or_404(ColorRecord,id=id)
+    # quantity_recieved = int(request.POST.get("quantitylease"))
+    # recieving_date = request.POST.get('leasedate')
+    # lease = request.POST.get('leasenumber')
+    # amount = prevRec.amount
+    # if(prevRec.quantity == quantity_recieved):
+    #     prevRec.state="Loose"
+    #     prevRec.lease_date=str(recieving_date)
+    #     prevRec.lease = lease
+    #     lease_color = get_object_or_404(Color,color=prevRec.color)
+    #     lease_color.quantity = lease_color.quantity + quantity_recieved
+    #     lease_color.save()
+    #     prevRec.save()
+    #     messages.success(request,"Data Updated Successfully")
+    #     return redirect('/leaserequest')
+    # elif(prevRec.quantity<quantity_recieved):
+    #     messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
+    #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    # else:
+    #     quantity_remaining = prevRec.quantity - quantity_recieved
+        
+    #     amount_per_quant = prevRec.amount/prevRec.quantity
+    #     amount_recieved = amount_per_quant * quantity_recieved
+    #     amount_remain = prevRec.amount - amount_recieved
 
 
-        #print(than_in_transit,than_in_godown)
-        return redirect('/leaserequest')
+    #     value = ColorRecord(
+    #         color=prevRec.color,
+    #         supplier=prevRec.supplier,
+    #         order_no=prevRec.order_no,
+    #         order_date=prevRec.order_date,
+    #         rate=prevRec.rate,
+    #         amount=round(amount_recieved,2),
+    #         quantity=quantity_recieved,
+    #         unit = prevRec.unit,
+    #         state="Loose",
+    #         recieving_date=prevRec.recieving_date,
+    #         total_quantity = prevRec.total_quantity,
+    #         godown = prevRec.godown,
+    #         lease_date=str(recieving_date),
+    #         lease = lease
+            
+    #         )
+    #     if quantity_recieved == 0 :
+    #         messages.error(request,"Quantity Recieved cannot be Zero (0)")
+    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    #     else:
+    #         value.save()
+    #         prevRec.quantity = prevRec.quantity - quantity_recieved
+    #         prevRec.amount = round(amount_remain,2)
+    #         prevRec.save()
+    #         lease_color = get_object_or_404(Color,color=prevRec.color)
+    #         lease_color.quantity = lease_color.quantity + quantity_recieved
+    #         lease_color.save()
+    #         messages.success(request,"Data Updated Successfully")
+
+
+    #     #print(than_in_transit,than_in_godown)
+        # return redirect('/leaserequest')
 
 def renderDailyConsumption(request):
     color = Color.objects.all().order_by('color')

@@ -9,59 +9,34 @@
 
       <form class = "md-form view-file" method="POST" action="{% url 'leaseapproved' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
+        
+        
         <div class="form-row">
-            <div class="form-group col-md-12">
-                <label for="new-quality">Supplier Party</label>
-                <input type="text" class="form-control" name="supplier" value="{{ record.supplier}}" readonly>
-
-                   
-                   
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4">
-                <label for="Order No">Order No</label>
-                <input type="number" class="form-control" id="order_no" placeholder="Order No" value="{{ record.order_no}}"  name="order_no" required readonly>
-            </div>
-            <div class="form-group col-md-4">
-                <label for="Order Date">Receiving Date</label>
-                <input type="date" class="form-control" id="Order Date" name="recieving_date" value="{{ recievedate }}" readonly/>
-            </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="new-quality">Color</label>
                 <input type="text" class="form-control" value="{{record.color}}" name="color" readonly>
  
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
+                <label for="new-quality">Unit</label>
+                <input type="text" class="form-control" value="{{record.unit}}" name="color" readonly>
+ 
+            </div>
+            <div class="form-group col-md-3">
                 <label for="Quantity">Quantity</label>
                 <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.quantity}}" name="quantity" required readonly>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="Rate">Rate</label>
                 <input type="float" class="form-control" id="rate" placeholder="Rate" value="{{ record.rate}}"  name="rate" required readonly>
             </div>
-            <div class="form-group col-md-4">
-                <label for="Bill Amount">Bill Amount</label>
-                <input type="number" class="form-control" id="bill_amount" placeholder="Bill Amount" value="{{ record.amount}}"  name="amount" required readonly>
-            </div>
+            
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Quantity">Quantity Loose</label>
                 <input type="number" class="form-control" id="quantityreceived" placeholder="Quantity Lease" value="{{ record.quantity }}" name="quantitylease" required autofocus>
             </div>
-            <div class="form-group col-md-4">
-                <label for="Quantity">Godown No.</label>
-                <input type="text" class="form-control" id="godown" name="godown" value="{{record.godown}}" required readonly/>
-            </div>
-            <div class="form-group col-md-4">
-                <label for="Order Date">Loose Date</label>
-                <input type="date" class="form-control" id="lease Date" name="leasedate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" required/>
-            </div>
-        </div>
-        <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Lease">Loose No.</label>
                 <select class="form-control" name="leasenumber" required>    
@@ -70,7 +45,13 @@
                     <option value="Loose 3">Loose 3</option>
                 </select>   
             </div>
+            <div class="form-group col-md-4">
+                <label for="Quantity">Godown No.</label>
+                <input type="text" class="form-control" id="godown" name="godown" value="{{record.state}}" required readonly/>
+            </div>
+            
         </div>
+        
         <div class="form-row">
             <div class="form-group col-md-6">
                 <button type="submit" class="btn btn-primary button">Approve Color</button>
