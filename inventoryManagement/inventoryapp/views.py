@@ -12,6 +12,8 @@ import pandas
 import numpy as np
 import datetime
 import xlwt
+import html2text
+from django.template.loader import render_to_string
 
 #from django.shortcuts import render_to_response
 
@@ -2151,7 +2153,7 @@ def orderEditSave(request,id):
 
 def goodsReceived(request):
 
-    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3'])
+    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3']).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -2299,6 +2301,13 @@ def goodsApprove(request,id):
 
     
 ####lease
+
+def htmltoText(html):
+    h=html2text.HTML2Text()
+    h.ignore_links=True
+    return h.handle(html)
+
+
 def goodsLease(request):
     godown_colors = GodownLeaseColors.objects.filter(state__in=['Loose 1','Loose 2','Loose 3'])
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
@@ -2308,11 +2317,13 @@ def goodsLease(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
-
+    # html = render_to_string('./color/lease.html',{'filter':records_filter,'colors':records})
+    # text = htmltoText(html)
+    # print(text) 
     return render(request,'./color/lease.html',{'filter':records_filter,'colors':records})
 
 def leaseRequest(request):
-    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3'])
+    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3']).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
