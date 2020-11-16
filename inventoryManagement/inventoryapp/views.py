@@ -12,7 +12,7 @@ import pandas
 import numpy as np
 import datetime
 import xlwt
-import html2text
+#import html2text
 from django.template.loader import render_to_string
 
 #from django.shortcuts import render_to_response
