@@ -5,21 +5,27 @@
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Party Start-->
- 
-      <div class="page-title">
-        <h3 class="title-text">Closing Stock</h3>
-      </div>
-      <table class="table mt-3">
+      <form method="POST" action="{% url 'savelease' %}" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Add Loose name</h1>
+        </div>
+        <div class="upload-container">
+            <input type="text" class="form-control" id="addparty" placeholder="Color name" name="lease" required>
+
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit">Add</button>
+        </div>
+      </form>
+
+      <table class="table">
         <thead class="thead-dark">
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th class="td-text" scope="col">Color name</th>
-            <th scope="col">Unit</th>
-            <th scope="col">Loose Quantity</th>
-            <th scope="col">Godown Quantity</th>
-            <th scope="col">Total Quantity</th>
-            
+            <th scope="col">Color name</th>
+            <th></th>
             
             
             
@@ -27,15 +33,15 @@
         </thead>
         <tbody>
         
-        {% for p in colors %}
+        {% for p in suppliers %}
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{p.0}}</td>
-            <td>{{p.1}}</td>
-            <td>{{p.2}}</td>
-            <td>{{p.3}}</td>
-            <td>{{p.4}}</td>
+            <td class="td-text">{{p.lease}}</td>
+            <td>
+              <a class ="anchor-button float-right danger" href="{% url 'deletelease' p.id %}">Delete</a>
+              <a class ="anchor-button float-right space" href="{% url 'rendereditlease' p.id %}">Edit</a>
+            </td>
             
             
           </tr>

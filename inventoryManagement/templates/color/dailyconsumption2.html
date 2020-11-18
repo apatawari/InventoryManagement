@@ -5,33 +5,16 @@
 {% load widget_tweaks %}
 {% load my_tags %}
 
-  
-  {% url 'dailyconsumption' as dailyconsumption1 %}
-  {% url 'dailyconsumption2' as dailyconsumption2 %}
-      <h2>{{name}}</h2>
       <!-- loose Button Start-->
       <div class="download mt-4 mb-4">
-        <a class="download-button {%if request.path == dailyconsumption1 %} active-button {%endif%}" href="{% url 'dailyconsumption' %}">Loose 1</a>
-        <a class="download-button {%if request.path == dailyconsumption2 %} active-button {%endif%}" href="{% url 'dailyconsumption2' %}">Loose 2</a>
-        
+        <a class="download-button" href="{% url 'dailyconsumption' %}" >Loose 1</a>
+        <a class="download-button" href="{% url 'dailyconsumption2' %}" style="color: #ffffff; background-color: #6a3093;">Loose 2</a>
+        <a class="download-button" href="{% url 'dailyconsumption3' %}">Loose 3</a>
       </div>
       <!-- Loose Button End-->
-      <div>
-        <form method="POST" action="{% url 'dailyconsumption2' %}" class="md-form" enctype="multipart/form-data">
-          {% csrf_token %}
-          <label for="lease">Loose name</label>
-                <select class="form-control" name="lease" required>    
-                    {% for s in lease %}
-                        
-                        <option value="{{ s.lease }}" >{{ s.lease }}</option>
-                                               
-                    {% endfor %}
-                </select> 
-          <button class="download-button">Go</button>
-        </form>
-      </div>
+
       <!-- Daily consumption Start-->
-      <form method="POST" action="#" class="md-form" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'consume' %}" class="md-form" enctype="multipart/form-data">
         {% csrf_token %}
         <div id="datatable">
           <table class="table">

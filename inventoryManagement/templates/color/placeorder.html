@@ -50,11 +50,15 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="Unit">Unit</label>
-                <select class="form-control" name="unit" required>    
-                    <option value="Kgs">Kgs</option>
-                    <option value="Ltrs">Ltrs</option>
-                    <option value="Bags">Bags</option>
-                </select>   
+                 
+                <select class="form-control" name="unit">
+
+                    {% for u in units %}
+                        
+                        <option value="{{ u.unit }}">{{ u.unit }}</option>
+                        
+                    {% endfor %}
+                </select>     
             </div>
             <div class="form-group col-md-3">
                 <label for="Rate">Rate</label>
@@ -91,11 +95,14 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit2" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
-                    </select>   
+                    <select class="form-control" name="unit2">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
+                    </select>  
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
@@ -127,11 +134,14 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit3" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
-                    </select>   
+                    <select class="form-control" name="unit3">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
+                    </select>  
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
@@ -163,10 +173,13 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit4" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
+                    <select class="form-control" name="unit4">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
                     </select>   
                 </div>
                 <div class="form-group col-md-3">
@@ -199,11 +212,14 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit5" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
-                    </select>   
+                    <select class="form-control" name="unit5">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
+                    </select>  
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
@@ -235,10 +251,13 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit6" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
+                    <select class="form-control" name="unit6">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
                     </select>   
                 </div>
                 <div class="form-group col-md-3">
@@ -271,11 +290,14 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit7" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
-                    </select>   
+                    <select class="form-control" name="unit7">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
+                    </select>  
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
@@ -307,11 +329,14 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit8" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
-                    </select>   
+                    <select class="form-control" name="unit8">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
+                    </select>  
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
@@ -343,11 +368,14 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit9" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
-                    </select>   
+                    <select class="form-control" name="unit9">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
+                    </select>  
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
@@ -379,11 +407,14 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Unit">Unit</label>
-                    <select class="form-control" name="unit10" required>    
-                        <option value="Kgs">Kgs</option>
-                        <option value="Ltrs">Ltrs</option>
-                        <option value="Bags">Bags</option>
-                    </select>   
+                    <select class="form-control" name="unit10">
+
+                        {% for u in units %}
+                            
+                            <option value="{{ u.unit }}">{{ u.unit }}</option>
+                            
+                        {% endfor %}
+                    </select>  
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Rate">Rate</label>
