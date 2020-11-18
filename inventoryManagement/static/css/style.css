@@ -495,8 +495,6 @@ hr {
 .hide {
   display: none;
 }
-
-.anchor-button{
-  color: #ffffff; 
-  background-color: #6a3093;
+.loose-list {
+  width: 20%;
 }

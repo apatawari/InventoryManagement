@@ -12,7 +12,6 @@ import pandas
 import numpy as np
 import datetime
 import xlwt
-import html2text
 from django.template.loader import render_to_string
 
 #from django.shortcuts import render_to_response
@@ -2551,12 +2550,13 @@ def renderDailyConsumptionLease2(request):
 
 
 def consume(request,name):
-    colors = GodownLeaseColors.objects.filter(state=name)
-    
+    colors = GodownLeaseColors.objects.filter(state=name).exclude(quantity=0).order_by('color')
+    flag = 0
     for c in colors:
-        if(request.POST.get(str(c.id))>c.quantity):
-            messages.error(request,"Quantity entered exceeded loose quantity")
-            return redirect('/dailyconsumption1')
+        if(int(request.POST.get(str(c.id)))>c.quantity):
+            flag = flag + 1
+            continue
+
         c.quantity=c.quantity - int(request.POST.get(str(c.id)))
         c.save()
         # daily = DailyConsumption(
@@ -2581,20 +2581,32 @@ def consume(request,name):
     #     daily_con.save()
     #     total_colorRec.save()
     #     messages.success(request,'done')
-        return redirect('/dailyconsumption1')
+    if (flag != 0):
+        messages.error(request,"%s Quantity entered exceeded the quantities available in Loose" %(flag))
+    return redirect('/dailyconsumption1')
 
 def renderClosingStock(request):
+    godowns=Godowns.objects.all()
+    godowns_list=[]
+    for g in godowns:
+        godowns_list.append(g.godown)
+
+    lease=Lease.objects.all()
+    lease_list=[]
+    for l in lease:
+        lease_list.append(l.lease)
+
     datalist=[]
     colors = GodownLeaseColors.objects.all()
     for i in colors:
-        if(i.state=='Loose 1' or i.state=='Loose 2' or i.state=='Loose 3'):
+        if(i.state in lease_list):
 
             l=[]
             l.append(i.color)
             l.append(i.unit)
             l.append(i.quantity)
             try:
-                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in=['Godown 1','Godown 2','Godown 3'])
+                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in = godown_list)
                 l.append(ob.quantity)
                 l.append(i.quantity+ob.quantity)
             except:
@@ -2603,7 +2615,7 @@ def renderClosingStock(request):
             datalist.append(l)
         else:
             try:
-                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in=['Loose 1','Loose 2','Loose 3'])
+                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in = lease_list)
             except:
                 l=[]
                 l.append(i.color)

@@ -104,7 +104,8 @@
           <tr>
             
             <th scope="col">Sr. No</th>
-            <th scope="col">Color</th>
+            <th scope="col" class="td-text">Color</th>
+            <th scope="col">Unit</th>
             <th scope="col">Quantity Recieved</th>
             <th scope="col">Rate</th>
             <th scope="col">State</th>
@@ -120,6 +121,7 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{record.color}}</td>
+            <td>{{record.unit}}</td>
             <td>{{record.quantity}}</td>
             <td>{{record.rate}}</td>
             <td>Loose</td>
