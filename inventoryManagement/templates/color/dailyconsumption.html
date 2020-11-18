@@ -31,7 +31,7 @@
         </form>
       </div>
       <!-- Daily consumption Start-->
-      <form method="POST" action="#" class="md-form" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'consume' name %}" class="md-form" enctype="multipart/form-data">
         {% csrf_token %}
         <div id="datatable">
           <table class="table">
@@ -60,10 +60,10 @@
                 <td>{{record.unit}}</td>
                 <td>{{record.quantity}}</td>
                 <td>{{record.rate}}</td>
-                <td>Loose</td>
+                <td>{{record.lease}}</td>
                 <td>{{record.state}}</td>
                 <td>
-                  <input type="float" class="form-control" id="quantityconsume" value=0 placeholder="Enter Quantity" name="quantityconsume" autofocus>
+                  <input type="float" class="form-control" id="quantityconsume" value=0 placeholder="Enter Quantity" name="{{record.id}}" autofocus>
                 </td>
               </tr>
             {% endfor %}

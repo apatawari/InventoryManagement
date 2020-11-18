@@ -2534,7 +2534,7 @@ def leaseApprove(request,id):
 
 def renderDailyConsumptionLease1(request):
     lease = Lease.objects.all().order_by('lease')
-    first_lease = Lease.objects.all().first()
+    first_lease = Lease.objects.all().order_by('lease').first()
     color = GodownLeaseColors.objects.filter(state=first_lease.lease).order_by('color')
     todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     
@@ -2550,8 +2550,21 @@ def renderDailyConsumptionLease2(request):
 
 
 
-# def consume1(request):
-    # colors = GodownLeaseColors.objects.filter(state=)
+def consume(request,name):
+    colors = GodownLeaseColors.objects.filter(state=name)
+    
+    for c in colors:
+        if(request.POST.get(str(c.id))>c.quantity):
+            messages.error(request,"Quantity entered exceeded loose quantity")
+            return redirect('/dailyconsumption1')
+        c.quantity=c.quantity - int(request.POST.get(str(c.id)))
+        c.save()
+        # daily = DailyConsumption(
+        #     con_date = datetime.date.today(),
+        #     color = c.color,
+        #     quantity = int(request.POST.get(str(c.id))
+        # )
+        # daily.save()
     # color = request.POST.get('color')
     # quantity = int(request.POST.get('quantity'))
     # total_colorRec = get_object_or_404(Color,color=color)
@@ -2568,7 +2581,7 @@ def renderDailyConsumptionLease2(request):
     #     daily_con.save()
     #     total_colorRec.save()
     #     messages.success(request,'done')
-    #     return redirect('/dailyconsumption')
+        return redirect('/dailyconsumption1')
 
 def renderClosingStock(request):
     datalist=[]
