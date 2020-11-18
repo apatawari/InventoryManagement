@@ -56,6 +56,15 @@ class Color(models.Model):
     color = models.CharField(max_length=50)
     quantity = models.FloatField(max_length=15,default=0.0)
 
+class Godowns(models.Model):
+    godown = models.CharField(max_length=50)
+
+class Lease(models.Model):
+    lease = models.CharField(max_length=50)
+
+class Units(models.Model):
+    unit = models.CharField(max_length=50)
+
 class ColorRecord(models.Model):
     color = models.CharField(max_length=50)
     supplier = models.CharField(max_length=50)

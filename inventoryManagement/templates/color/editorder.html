@@ -59,24 +59,16 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="Unit">Unit</label>
-                <select class="form-control" name="unit" required>
-                    {% if "Kgs" == record.unit %}
-                    <option value="Kgs" selected>Kgs</option>
-                    <option value="Ltrs">Ltrs</option>
-                    <option value="Bags">Bags</option>
-                    {% elif "Ltrs" == record.unit %}
-                    <option value="Kgs">Kgs</option>
-                    <option value="Ltrs" selected>Ltrs</option>
-                    <option value="Bags">Bags</option>
-                    {% else %}     
-                    <option value="Kgs">Kgs</option>
-                    <option value="Ltrs">Ltrs</option>
-                    <option value="Bags" selected>Bags</option>
+                
+                <select class="form-control" name="unit" >
 
-                    {% endif %}
-                   
-                    
-                    
+                    {% for s in units %}
+                        {% if s.unit == record.unit %}
+                        <option value="{{ s.unit }}" selected>{{ s.unit }}</option>
+                        {% else %}
+                        <option value="{{ s.unit }}" >{{ s.unit }}</option>
+                        {% endif %}                       
+                    {% endfor %}
                 </select>   
             </div>
             <div class="form-group col-md-3">

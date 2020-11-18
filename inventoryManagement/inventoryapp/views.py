@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors
+from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -1753,12 +1753,156 @@ def editColor(request,id):
     messages.success(request,"Color edited")
     return redirect('/addcolor')
 
+###########add Godown
+def renderAddGodown(request):
+    suppliers=Godowns.objects.all().order_by('godown')
+    paginator = Paginator(suppliers,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'./color/addgodown.html',{'suppliers':parties})
+
+
+
+def saveGodown(request):
+    p = request.POST.get("godown")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(Godowns,godown=p)
+        messages.error(request,"This Godown already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addgodown')
+        new_Party = Godowns(
+            godown = p
+        )
+        new_Party.save()
+        messages.success(request,"Godown added successfully")
+    return redirect('/addgodown')
+
+def deleteGodown(request,id):
+    Godowns.objects.filter(id=id).delete()
+    messages.success(request,"Godown deleted")
+    return redirect('/addgodown')
+
+def renderEditGodown(request,id):
+    party=get_object_or_404(Godowns,id=id)
+    return render(request,'./color/editgodown.html',{'id':id,'name':party.godown})
+
+def editGodown(request,id):
+    party=get_object_or_404(Godowns,id=id)
+    p=request.POST.get("edit-party")
+    p = p.upper()
+    p = p.strip()
+    party.godown = p
+    party.save()
+    messages.success(request,"Godown edited")
+    return redirect('/addgodown')
+
+#############add loose
+
+def renderAddLease(request):
+    suppliers=Lease.objects.all().order_by('lease')
+    paginator = Paginator(suppliers,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'./color/addlease.html',{'suppliers':parties})
+
+
+
+def saveLease(request):
+    p = request.POST.get("lease")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(Lease,lease=p)
+        messages.error(request,"This Loose already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addlease')
+        new_Party = Lease(
+            lease = p
+        )
+        new_Party.save()
+        messages.success(request,"Lease added successfully")
+    return redirect('/addlease')
+
+def deleteLease(request,id):
+    Lease.objects.filter(id=id).delete()
+    messages.success(request,"Lease deleted")
+    return redirect('/addlease')
+
+def renderEditLease(request,id):
+    party=get_object_or_404(Lease,id=id)
+    return render(request,'./color/editlease.html',{'id':id,'name':party.lease})
+
+def editLease(request,id):
+    party=get_object_or_404(Lease,id=id)
+    p=request.POST.get("edit-party")
+    p = p.upper()
+    p = p.strip()
+    party.lease = p
+    party.save()
+    messages.success(request,"Loose edited")
+    return redirect('/addlease')
+
+
+#######unit master
+def renderAddUnit(request):
+    suppliers=Units.objects.all().order_by('unit')
+    paginator = Paginator(suppliers,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'./color/addunit.html',{'suppliers':parties})
+
+
+
+def saveUnit(request):
+    p = request.POST.get("unit")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(Units,unit=p)
+        messages.error(request,"This Unit already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addunit')
+        new_Party = Units(
+            unit = p
+        )
+        new_Party.save()
+        messages.success(request,"Unit added successfully")
+    return redirect('/addunit')
+
+def deleteUnit(request,id):
+    Units.objects.filter(id=id).delete()
+    messages.success(request,"Unit deleted")
+    return redirect('/addunit')
+
+def renderEditUnit(request,id):
+    party=get_object_or_404(Units,id=id)
+    return render(request,'./color/editunit.html',{'id':id,'name':party.unit})
+
+def editUnit(request,id):
+    party=get_object_or_404(Units,id=id)
+    p=request.POST.get("edit-party")
+    p = p.upper()
+    p = p.strip()
+    party.unit = p
+    party.save()
+    messages.success(request,"Unit edited")
+    return redirect('/addunit')
 
 ######colorrecord
 
 def placeOrder(request):
     color=Color.objects.all().order_by("color")
     suppliers=ColorSupplier.objects.all().order_by('supplier')
+    units=Units.objects.all().order_by('unit')
+    
     d=datetime.date.today()
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     d=str(d)
@@ -1767,7 +1911,7 @@ def placeOrder(request):
         order_no=rec.order_no + 1
     except:
         order_no = 1
-    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'date':d,'maxdate':maxdate,'orderno':order_no})
+    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'units':units,'date':d,'maxdate':maxdate,'orderno':order_no})
 
 def saveOrder(request):
     
@@ -2112,8 +2256,8 @@ def orderEdit(request,id):
         orderdate=str(rec.order_date)
         color = Color.objects.all().order_by('color')
         supplier = ColorSupplier.objects.all().order_by('supplier')
-    
-        return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier})
+        unit = Units.objects.all().order_by('unit')
+        return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier,'units':unit})
     except:
         messages.error(request,"This order has been recieved")
         return redirect('/ordergeneration')
@@ -2149,11 +2293,16 @@ def orderEditSave(request,id):
         rec_order.unit = request.POST.get('unit')         
         rec_order.save()
     return redirect('/ordergeneration')
+
+
 ######color in godown
 
 def goodsReceived(request):
-
-    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3']).exclude(quantity=0)
+    godowns=Godowns.objects.all()
+    godowns_list=[]
+    for g in godowns:
+        godowns_list.append(g.godown)
+    godown_colors = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -2165,36 +2314,7 @@ def goodsReceived(request):
     return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing"})
 
 
-    # datalist=[]
-    # colors = Color.objects.all()
-    # godowns=['Godown 1','Godown 2','Godown 3']
-    # units = ['Kgs','Ltrs','Bags']
-    # for color in colors:
-
-
-    #     for g in godowns:
-
-    #         for u in units:
-    #             rec = ColorRecord.objects.filter(state='Godown',color=color.color,godown=g,unit=u)
-    #             if(rec.count()>0):
-    #                 c=rec.count()
-    #                 l=[color.color]
-    #                 quant1=0
-    #                 rate=0
-    #                 for i in rec:
-    #                     rate=rate+float(i.rate)
-    #                     quant1=quant1+int(i.quantity)
-    #                 l.append(quant1)
-    #                 rate=rate/c
-    #                 l.append(round(rate,2))
-    #                 a=rate*quant1
-    #                 l.append(round(a,2))
-    #                 l.append(g)
-    #                 l.append(u)
-    #                 datalist.append(l)
-
-
-    # return render(request,'./color/goodsreceived.html',{'data':datalist})
+    
 
 def goodsRequest(request):
     rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
@@ -2214,7 +2334,8 @@ def goods(request,id):
     d=datetime.date.today()
     d=str(d)
     orderdate=str(rec.order_date)
-    return render(request, './color/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate})
+    godowns = Godowns.objects.all().order_by('godown')
+    return render(request, './color/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
 
 
 def goodsApprove(request,id):
@@ -2309,7 +2430,11 @@ def htmltoText(html):
 
 
 def goodsLease(request):
-    godown_colors = GodownLeaseColors.objects.filter(state__in=['Loose 1','Loose 2','Loose 3'])
+    lease=Lease.objects.all()
+    lease_list=[]
+    for g in lease:
+        lease_list.append(g.lease)
+    godown_colors = GodownLeaseColors.objects.filter(state__in=lease_list).order_by('color')
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -2323,7 +2448,11 @@ def goodsLease(request):
     return render(request,'./color/lease.html',{'filter':records_filter,'colors':records})
 
 def leaseRequest(request):
-    godown_colors = GodownLeaseColors.objects.filter(state__in=['Godown 1','Godown 2','Godown 3']).exclude(quantity=0)
+    godowns=Godowns.objects.all()
+    godowns_list=[]
+    for g in godowns:
+        godowns_list.append(g.godown)
+    godown_colors = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -2341,7 +2470,8 @@ def viewGood(request,id):
     # d=datetime.date.today()
     # d=str(d)
     # recievedate=str(rec.recieving_date)
-    return render(request, './color/leaseapprove.html', {'record':rec})
+    lease = Lease.objects.all().order_by('lease')
+    return render(request, './color/leaseapprove.html', {'record':rec,'lease':lease})
 
 
 def leaseApprove(request,id):
@@ -2400,91 +2530,74 @@ def leaseApprove(request,id):
             
     return redirect('/leaserequest')
 
-    # prevRec = get_object_or_404(ColorRecord,id=id)
-    # quantity_recieved = int(request.POST.get("quantitylease"))
-    # recieving_date = request.POST.get('leasedate')
-    # lease = request.POST.get('leasenumber')
-    # amount = prevRec.amount
-    # if(prevRec.quantity == quantity_recieved):
-    #     prevRec.state="Loose"
-    #     prevRec.lease_date=str(recieving_date)
-    #     prevRec.lease = lease
-    #     lease_color = get_object_or_404(Color,color=prevRec.color)
-    #     lease_color.quantity = lease_color.quantity + quantity_recieved
-    #     lease_color.save()
-    #     prevRec.save()
-    #     messages.success(request,"Data Updated Successfully")
-    #     return redirect('/leaserequest')
-    # elif(prevRec.quantity<quantity_recieved):
-    #     messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
-    #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    # else:
-    #     quantity_remaining = prevRec.quantity - quantity_recieved
-        
-    #     amount_per_quant = prevRec.amount/prevRec.quantity
-    #     amount_recieved = amount_per_quant * quantity_recieved
-    #     amount_remain = prevRec.amount - amount_recieved
+    
 
-
-    #     value = ColorRecord(
-    #         color=prevRec.color,
-    #         supplier=prevRec.supplier,
-    #         order_no=prevRec.order_no,
-    #         order_date=prevRec.order_date,
-    #         rate=prevRec.rate,
-    #         amount=round(amount_recieved,2),
-    #         quantity=quantity_recieved,
-    #         unit = prevRec.unit,
-    #         state="Loose",
-    #         recieving_date=prevRec.recieving_date,
-    #         total_quantity = prevRec.total_quantity,
-    #         godown = prevRec.godown,
-    #         lease_date=str(recieving_date),
-    #         lease = lease
-            
-    #         )
-    #     if quantity_recieved == 0 :
-    #         messages.error(request,"Quantity Recieved cannot be Zero (0)")
-    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    #     else:
-    #         value.save()
-    #         prevRec.quantity = prevRec.quantity - quantity_recieved
-    #         prevRec.amount = round(amount_remain,2)
-    #         prevRec.save()
-    #         lease_color = get_object_or_404(Color,color=prevRec.color)
-    #         lease_color.quantity = lease_color.quantity + quantity_recieved
-    #         lease_color.save()
-    #         messages.success(request,"Data Updated Successfully")
-
-
-    #     #print(than_in_transit,than_in_godown)
-        # return redirect('/leaserequest')
-
-def renderDailyConsumption(request):
-    color = Color.objects.all().order_by('color')
+def renderDailyConsumptionLease1(request):
+    lease = Lease.objects.all().order_by('lease')
+    first_lease = Lease.objects.all().first()
+    color = GodownLeaseColors.objects.filter(state=first_lease.lease).order_by('color')
     todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     
-    return render(request,'./color/dailyconsumption.html',{'colors':color,'todays':todays})
+    return render(request,'./color/dailyconsumption.html',{'colors':color,'todays':todays,'lease':lease,'name':first_lease.lease})
 
-def consume(request):
-    color = request.POST.get('color')
-    quantity = int(request.POST.get('quantity'))
-    total_colorRec = get_object_or_404(Color,color=color)
-    if(total_colorRec.quantity < quantity):
-        messages.error(request,'Invalid Quantity')
-        return redirect('/dailyconsumption')
-    else:
-        total_colorRec.quantity = total_colorRec.quantity - quantity
-        daily_con = DailyConsumption(
-            con_date = datetime.date.today(),
-            color = total_colorRec.color,
-            quantity = quantity
-        )
-        daily_con.save()
-        total_colorRec.save()
-        messages.success(request,'done')
-        return redirect('/dailyconsumption')
+def renderDailyConsumptionLease2(request):
+    lease = request.POST.get('lease')
+    leases = Lease.objects.all().order_by('lease')
+    color = GodownLeaseColors.objects.filter(state=lease).order_by('color')
+    todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
+    
+    return render(request,'./color/dailyconsumption.html',{'colors':color,'todays':todays,'lease':leases,'name':lease})
+
+
+
+# def consume1(request):
+    # colors = GodownLeaseColors.objects.filter(state=)
+    # color = request.POST.get('color')
+    # quantity = int(request.POST.get('quantity'))
+    # total_colorRec = get_object_or_404(Color,color=color)
+    # if(total_colorRec.quantity < quantity):
+    #     messages.error(request,'Invalid Quantity')
+    #     return redirect('/dailyconsumption')
+    # else:
+    #     total_colorRec.quantity = total_colorRec.quantity - quantity
+    #     daily_con = DailyConsumption(
+    #         con_date = datetime.date.today(),
+    #         color = total_colorRec.color,
+    #         quantity = quantity
+    #     )
+    #     daily_con.save()
+    #     total_colorRec.save()
+    #     messages.success(request,'done')
+    #     return redirect('/dailyconsumption')
 
 def renderClosingStock(request):
-    color = Color.objects.all().order_by('color')
-    return render(request,'./color/closingstock.html',{'colors':color})
+    datalist=[]
+    colors = GodownLeaseColors.objects.all()
+    for i in colors:
+        if(i.state=='Loose 1' or i.state=='Loose 2' or i.state=='Loose 3'):
+
+            l=[]
+            l.append(i.color)
+            l.append(i.unit)
+            l.append(i.quantity)
+            try:
+                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in=['Godown 1','Godown 2','Godown 3'])
+                l.append(ob.quantity)
+                l.append(i.quantity+ob.quantity)
+            except:
+                l.append(0)
+                l.append(i.quantity)
+            datalist.append(l)
+        else:
+            try:
+                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in=['Loose 1','Loose 2','Loose 3'])
+            except:
+                l=[]
+                l.append(i.color)
+                l.append(i.unit)
+                l.append(0)
+                l.append(i.quantity)
+                l.append(i.quantity)
+                datalist.append(l)
+
+    return render(request,'./color/closingstock.html',{'colors':datalist})

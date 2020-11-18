@@ -87,6 +87,24 @@ urlpatterns = [
     path('editcolor/<int:id>',views.renderEditColor,name="rendereditcolor"),
     path('editingcolor/<int:id>',views.editColor,name="editcolor"),
 
+    path('addgodown',views.renderAddGodown,name='addgodown'),
+    path('savegodown',views.saveGodown, name="savegodown"),
+    path('deletegodown/<int:id>',views.deleteGodown,name="deletegodown"),
+    path('editgodown/<int:id>',views.renderEditGodown,name="rendereditgodown"),
+    path('editinggodown/<int:id>',views.editGodown,name="editgodown"),
+
+    path('addlease',views.renderAddLease,name='addlease'),
+    path('savelease',views.saveLease, name="savelease"),
+    path('deletelease/<int:id>',views.deleteLease,name="deletelease"),
+    path('editlease/<int:id>',views.renderEditLease,name="rendereditlease"),
+    path('editinglease/<int:id>',views.editLease,name="editlease"),
+
+    path('addunit',views.renderAddUnit,name='addunit'),
+    path('saveunit',views.saveUnit, name="saveunit"),
+    path('deleteunit/<int:id>',views.deleteUnit,name="deleteunit"),
+    path('editunit/<int:id>',views.renderEditUnit,name="rendereditunit"),
+    path('editingunit/<int:id>',views.editUnit,name="editunit"),
+
     path('colorhome', views.colorhome,name='colorhome'),
 
     path('placeorder',views.placeOrder,name='placeorder'),
@@ -105,7 +123,8 @@ urlpatterns = [
     path('leaseapprove/<int:id>',views.viewGood,name='leaseapprove'),
     path('leaseapproved/<int:id>',views.leaseApprove,name='leaseapproved'),
     
-    path('dailyconsumption',views.renderDailyConsumption,name='dailyconsumption'),
-    path('consume',views.consume,name='consume'),
+    path('dailyconsumption1',views.renderDailyConsumptionLease1,name='dailyconsumption'),
+    path('dailyconsumption2',views.renderDailyConsumptionLease2,name='dailyconsumption2'),
+    # path('consume',views.consume,name='consume'),
     path('closingstock',views.renderClosingStock,name='closingstock'),
 ]
