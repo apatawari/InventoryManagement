@@ -2722,6 +2722,73 @@ def renderClosingStock(request):
 def renderColorReportFilter(request):
     return render(request,'./color/reportfilter.html')
 
+# def colorReport(request):
+#     begin = request.POST.get("start_date")
+#     end = request.POST.get("end_date")
+#     if(begin!="" or end!=""):
+        
+#         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+#         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+#         selected_dates=[]
+        
+#     # selected_qualities=[]
+#         next_day = begin
+#         while True:
+#             if next_day > end:
+#                 break
+    
+        
+    
+#             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+#             next_day += datetime.timedelta(days=1)
+#     datalist=[]
+#     colors= Color.objects.all()
+#     units= Units.objects.all()
+#     for c in colors:
+#         for u in units:
+#             try:
+#                 records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c.color,unit=u.unit)
+#                 l=[]
+#                 quantity = 0
+#                 for rec in records:
+#                     quantity = quantity+rec.quantity
+#                 l.append(c.color)
+#                 l.append(u.unit)
+               
+#                 try:
+#                     first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+#                 except:
+#                     first_record = ClosingStock.objects.filter(color = c.color,unit = u.unit).order_by('-dailydate').first()
+#                 try:
+#                     last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
+#                 except:
+#                     last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
+#                 l.append(first_record.quantity)
+#                 l.append(quantity)
+#                 l.append(last_record.quantity)
+#                 datalist.append(l)
+#                 print(first_record.quantity,first_record.con_date)
+#             except:
+#                 l=[]
+#                 l.append(c.color)
+#                 l.append(u.unit)
+               
+#                 try:
+#                     first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+#                 except:
+#                     first_record = ClosingStock.objects.filter(color = c.color,unit = u.unit).order_by('-dailydate').first()
+#                 try:
+#                     last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
+#                 except:
+#                     last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
+#                 l.append(0)
+#                 l.append(0)
+#                 l.append(0)
+#                 datalist.append(l)
+        
+#     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
+
+
 def colorReport(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
@@ -2747,28 +2814,36 @@ def colorReport(request):
     for c in colors:
         for u in units:
             try:
-                records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c.color,unit=u.unit)
                 l=[]
-                quantity = 0
-                for rec in records:
-                    quantity = quantity+rec.quantity
-                l.append(c.color)
-                l.append(u.unit)
-               
                 try:
                     first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                    l.append(c.color)
+                    l.append(u.unit)
+                    l.append(first_record.quantity)
                 except:
-                    first_record = ClosingStock.objects.filter(color = c.color,unit = u.unit).order_by('-dailydate').first()
+
+                    l.append(0)
                 try:
                     last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
                 except:
                     last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
-                l.append(first_record.quantity)
-                l.append(quantity)
+                
+                
+                try:
+                    records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c.color,unit=u.unit)
+                    
+                    
+                    quantity = 0
+                    for rec in records:
+                        quantity = quantity+rec.quantity
+                
+                    l.append(quantity)
+                except:
+                    l.append(0)
                 l.append(last_record.quantity)
                 datalist.append(l)
                 print(first_record.quantity,first_record.con_date)
             except:
-                print("error")
+                print("ee")
         
     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
