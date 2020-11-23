@@ -114,9 +114,10 @@
             <th scope="col">Rate</th>
             <th scope="col">Bill Amount</th>
             <th scope="col">State</th>
+            <th scope="col">Recieving Date</th>
             <th scope="col"></th>
-            
-            
+            <th scope="col"></th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -125,7 +126,7 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{record.supplier}}</td>
-            <td>{{record.order_no}}</td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'vieworder' record.id %}">{{record.order_no}}</a></td>
             <td>{{record.order_date}}</td>
             <td class="td-text">{{record.color}}</td>
             <td>{{record.quantity}}</td>
@@ -133,7 +134,16 @@
             <td>{{record.rate}}</td>
             <td>{{record.amount}}</td>
             <td>{{record.state}}</td>
-            <td><a class ="anchor-button" href="{% url 'orderedit' record.id %}">Edit</a></td>
+            <td>{{record.recieving_date}}</td>
+            
+            <td>
+              {% if record.state == "Ordered" %}
+              <a class ="anchor-button button-small-text" href="{% url 'orderedit' record.id %}">Edit</a>
+              {% endif %}
+            </td> 
+            <td>{% if record.state == "Ordered" %}<a class ="anchor-button button-small-text" href="{% url 'goodsapprove' record.id %}">Move To Godown</a>{% endif %}</td>
+            <td>{% if record.bill_no == null %}<a class ="anchor-button button-small-text" href="{% url 'validateorder' record.id %}">Validate</a>{% endif %}</td>
+
           </tr>
         {% endfor %}
           

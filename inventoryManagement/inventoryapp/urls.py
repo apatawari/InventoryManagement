@@ -116,6 +116,9 @@ urlpatterns = [
     path('goodsreceived',views.goodsReceived,name='goodsreceived'),
     path('goodsrequest',views.goodsRequest,name='goodsrequest'),
     path('goodsapprove/<int:id>',views.goods,name='goodsapprove'),
+    path('viewgoodorder/<int:id>',views.viewOrder,name='vieworder'),
+    path('validateorder/<int:id>',views.renderValidate,name='validateorder'),
+    path('validate/<int:id>',views.validate,name='validate'),
     path('goodsapproved/<int:id>',views.goodsApprove,name='approvegoods'),
 
     path('goodslease',views.goodsLease,name='goodslease'),
@@ -127,4 +130,7 @@ urlpatterns = [
     path('dailyconsumption2',views.renderDailyConsumptionLease2,name='dailyconsumption2'),
     path('consume/<str:name>',views.consume,name='consume'),
     path('closingstock',views.renderClosingStock,name='closingstock'),
+
+    path('colorreportfilter',views.renderColorReportFilter,name='colorreportfilter'),
+    path('colorreport',views.colorReport,name='colorreport'),
 ]

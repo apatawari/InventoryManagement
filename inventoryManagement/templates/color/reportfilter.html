@@ -1,0 +1,69 @@
+{% extends './colornav.html' %}
+
+{% block title%} Add Quality {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+
+
+
+    <div class="page-title">
+      <h3 class="title-text">Report filter</h3>
+    </div>
+      <!-- Record Filter Start-->
+      <form class = "md-form view-report" method="POST" action="{% url 'colorreport' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--First Section -->
+        <div class="form-row form-group">
+          <div class="form-group col-md-4">
+            <label for="firstdate">Start Date</label>
+            <input type="date" class="form-control" id="firstdate" name="start_date" placeholder="mm-dd-yyyy"/>
+            <label for="firstdate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" />
+          </div>
+        <!-- First Section End -->
+        <!--<div class="form-group col-md-4">
+          <label class="form-check-label pl-4" for="processing_party"><b>SELECT SENDING PARTY NAME</b></label>
+          <div class="form-group form-check ">
+            <hr class="small">
+            <input class="form-check-input-2" type="checkbox" onClick="togglesendingparty(this)" />
+            <label class="form-check-label-2">SELECT ALL</label>
+            <hr class="small">
+          </div>
+          <div class="form-group form-check scroll">
+              
+            {% for p in sendingparty %}
+            <input class="form-check-input-2" type="checkbox" value="{{p}}" name="{{p}}" id="partyname">
+            <label class="form-check-label-2">
+                {{p}}
+            </label>
+          {% endfor %}
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+            <label class="form-check-label pl-4" for="processing_party"><b>SELECT PROCESSING PARTY</b></label>
+            <div class="form-group form-check ">
+              <hr class="small">
+              <input class="form-check-input" type="checkbox" onClick="toggleprocessingparty(this)" />
+              <label class="form-check-label">SELECT ALL</label>
+              <hr class="small">
+            </div>
+            <div class="form-group form-check scroll">
+                
+                {% for p in parties %}
+                <input class="form-check-input" type="checkbox" value="{{p.processing_party}}" name="{{p.processing_party}}" id="partyname">
+                <label class="form-check-label">
+                    {{p.processing_party}}
+                </label>
+                {% endfor %}
+            </div>
+        </div>-->
+            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+            <div class="form-group form-check col-md-4">
+                <button type="submit" class="btn btn-primary button float-right mt-4">Generate Report</button>
+            </div>
+        </div>
+        <!-- Record Filter End-->
+
+        {% endblock %}

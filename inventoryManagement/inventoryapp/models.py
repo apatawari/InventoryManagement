@@ -79,7 +79,9 @@ class ColorRecord(models.Model):
     total_quantity = models.IntegerField()
     godown = models.CharField(max_length=50,default="-")
     lease = models.CharField(max_length=50,default="-")
-    lease_date = models.DateField(null=True,default=None)
+    bill_no = models.IntegerField(null=True)
+    bill_date = models.DateField(null=True,default=None)
+    chalan_no = models.IntegerField(null=True)
     a_date = models.DateField(null=True,default=None)
     b_date = models.DateField(null=True,default=None)
     a = models.CharField(max_length=50,default="-")
@@ -87,7 +89,9 @@ class ColorRecord(models.Model):
 class DailyConsumption(models.Model):
     con_date = models.DateField(null=True,default=None)
     color = models.CharField(max_length=50,default="-")
+    unit = models.CharField(null=True,max_length=50)
     quantity = models.FloatField(max_length=15)
+    quantity_remaining = models.FloatField(max_length=15)
 
 class AllOrders(models.Model):
     color = models.CharField(max_length=50)
@@ -107,3 +111,10 @@ class GodownLeaseColors(models.Model):
     rate = models.FloatField()
     unit = models.CharField(null=True,max_length=50)
     state = models.CharField(max_length=50)
+
+class ClosingStock(models.Model):
+    color = models.CharField(max_length=50)
+    quantity = models.IntegerField()
+    rate = models.FloatField()
+    unit = models.CharField(null=True,max_length=50)
+    dailydate = models.DateField(null=True,default=None)

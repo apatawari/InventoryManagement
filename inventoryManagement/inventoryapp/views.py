@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units
+from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -13,6 +13,8 @@ import numpy as np
 import datetime
 import xlwt
 from django.template.loader import render_to_string
+
+
 
 #from django.shortcuts import render_to_response
 
@@ -2236,7 +2238,7 @@ def saveOrder(request):
 
 
 def orderGeneration(request):
-    rec=AllOrders.objects.filter(state='Ordered').order_by('order_no')
+    rec=ColorRecord.objects.filter(state__in=['Ordered','Godown']).order_by('order_no')
     records_filter = ColorOrderFilter(request.GET,queryset=rec)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -2248,9 +2250,9 @@ def orderGeneration(request):
 
 
 def orderEdit(request,id):
-    rec=get_object_or_404(AllOrders, id=id)
+    rec=get_object_or_404(ColorRecord, id=id)
     try:
-        rec2=get_list_or_404(ColorRecord,rate=rec.rate,order_no=rec.order_no,color=rec.color,unit=rec.unit,state="Ordered")
+        # rec2=get_list_or_404(ColorRecord,rate=rec.rate,order_no=rec.order_no,color=rec.color,unit=rec.unit,state="Ordered")
     
         orderdate=str(rec.order_date)
         color = Color.objects.all().order_by('color')
@@ -2336,6 +2338,39 @@ def goods(request,id):
     godowns = Godowns.objects.all().order_by('godown')
     return render(request, './color/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
 
+def viewOrder(request,id):
+    rec=get_object_or_404(ColorRecord, id=id)
+    mindate=str(rec.order_date)
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    d=rec.recieving_date
+    d=str(d)
+    orderdate=str(rec.order_date)
+    billdate=str(rec.bill_date)
+    godowns = Godowns.objects.all().order_by('godown')
+    print(billdate)
+    return render(request, './color/vieworder.html', {'billdate':billdate,'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
+
+def renderValidate(request,id):
+    rec=get_object_or_404(ColorRecord, id=id)
+    mindate=str(rec.order_date)
+    maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    d=rec.recieving_date
+    d=str(d)
+    orderdate=str(rec.order_date)
+    godowns = Godowns.objects.all().order_by('godown')
+    return render(request, './color/validateorder.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
+
+def validate(request,id):
+    rec = get_object_or_404(ColorRecord,id=id)
+    recs = get_list_or_404(ColorRecord,order_no=rec.order_no, state="Godown")
+    for r in recs:
+        r.chalan_no=int(request.POST.get('chalan'))
+        r.bill_no=int(request.POST.get('billno'))
+        r.bill_date = request.POST.get('billdate')
+        r.save()
+    messages.success(request,"Order Validated")
+    return redirect('/ordergeneration')
+
 
 def goodsApprove(request,id):
     prevRec = get_object_or_404(ColorRecord,id=id)
@@ -2353,6 +2388,19 @@ def goodsApprove(request,id):
             godown_color.quantity = godown_color.quantity + quantity_recieved
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             godown_color.save()
+            try:
+                closing_stock = get_object_or_404(ClosingStock,color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today())
+                closing_stock.quantity=closing_stock.quantity + quantity_recieved
+                closing_stock.save()
+            except:
+                closing_stock= ClosingStock(
+                    color = prevRec.color,
+                    quantity = quantity_recieved,
+                    unit = prevRec.unit,
+                    rate = prevRec.rate,
+                    dailydate = datetime.date.today()
+                )
+                closing_stock.save()
         except:
             godown_color = GodownLeaseColors(
                 color = prevRec.color,
@@ -2362,8 +2410,16 @@ def goodsApprove(request,id):
                 state = godown
             )
             godown_color.save()
+            closing_stock= ClosingStock(
+                color = prevRec.color,
+                quantity = quantity_recieved,
+                unit = prevRec.unit,
+                rate = prevRec.rate,
+                dailydate = datetime.date.today()
+            )
+            closing_stock.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/goodsrequest')
+        return redirect('/ordergeneration')
     elif(prevRec.quantity<quantity_recieved):
         messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -2403,6 +2459,20 @@ def goodsApprove(request,id):
                 godown_color.quantity = godown_color.quantity + quantity_recieved
                 godown_color.rate = (godown_color.rate + prevRec.rate)/2
                 godown_color.save()
+                try:
+                    closing_stock = get_object_or_404(ClosingStock,color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today())
+                    closing_stock.quantity=closing_stock.quantity + quantity_recieved
+                    closing_stock.save()
+                except:
+                    closing_stock= ClosingStock(
+                        color = prevRec.color,
+                        quantity = quantity_recieved,
+                        unit = prevRec.unit,
+                        rate = prevRec.rate,
+                        dailydate = datetime.date.today()
+                    )
+                    closing_stock.save()
+
             except:
                 godown_color = GodownLeaseColors(
                     color = prevRec.color,
@@ -2412,12 +2482,20 @@ def goodsApprove(request,id):
                     state = godown
                 )
             godown_color.save()
+            closing_stock= ClosingStock(
+                color = prevRec.color,
+                quantity = quantity_recieved,
+                unit = prevRec.unit,
+                rate = prevRec.rate,
+                dailydate = datetime.date.today()
+            )
+            closing_stock.save()
 
             messages.success(request,"Data Updated Successfully")
 
 
         #print(than_in_transit,than_in_godown)
-        return redirect('/goodsrequest')
+        return redirect('/ordergeneration')
 
     
 ####lease
@@ -2531,10 +2609,15 @@ def leaseApprove(request,id):
 
     
 
-def renderDailyConsumptionLease1(request):
+def renderDailyConsumptionLease1(request):                                                      ####repair required 
     lease = Lease.objects.all().order_by('lease')
     first_lease = Lease.objects.all().order_by('lease').first()
-    color = GodownLeaseColors.objects.filter(state=first_lease.lease).order_by('color')
+    try:
+        color = GodownLeaseColors.objects.filter(state=first_lease.lease).order_by('color')
+    except:
+        new_value = Lease(lease="Loose Godown 1")
+        new_value.save()
+        color = GodownLeaseColors.objects.filter(state="Loose Godown 1").order_by('color')
     todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     
     return render(request,'./color/dailyconsumption.html',{'colors':color,'todays':todays,'lease':lease,'name':first_lease.lease})
@@ -2556,34 +2639,43 @@ def consume(request,name):
         if(int(request.POST.get(str(c.id)))>c.quantity):
             flag = flag + 1
             continue
-
+        try:
+            closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit).order_by('-dailydate').first()
+            if(closing_stock.dailydate != datetime.date.today()):
+                new_cs = ClosingStock(
+                    color=c.color,
+                    unit=c.unit,
+                    quantity=closing_stock.quantity - int(request.POST.get(str(c.id))),
+                    dailydate=datetime.date.today(),
+                    rate=c.rate
+                )
+                new_cs.save()
+            else:
+                closing_stock.quantity=closing_stock.quantity - int(request.POST.get(str(c.id)))
+                closing_stock.save()
+        except:
+            pass
         c.quantity=c.quantity - int(request.POST.get(str(c.id)))
         c.save()
-        # daily = DailyConsumption(
-        #     con_date = datetime.date.today(),
-        #     color = c.color,
-        #     quantity = int(request.POST.get(str(c.id))
-        # )
-        # daily.save()
-    # color = request.POST.get('color')
-    # quantity = int(request.POST.get('quantity'))
-    # total_colorRec = get_object_or_404(Color,color=color)
-    # if(total_colorRec.quantity < quantity):
-    #     messages.error(request,'Invalid Quantity')
-    #     return redirect('/dailyconsumption')
-    # else:
-    #     total_colorRec.quantity = total_colorRec.quantity - quantity
-    #     daily_con = DailyConsumption(
-    #         con_date = datetime.date.today(),
-    #         color = total_colorRec.color,
-    #         quantity = quantity
-    #     )
-    #     daily_con.save()
-    #     total_colorRec.save()
-    #     messages.success(request,'done')
+        stored_color = GodownLeaseColors.objects.filter(color=c.color,unit=c.unit)
+        q=0
+        for sc in stored_color:
+            q=q+sc.quantity
+
+        daily_consump = DailyConsumption(
+            con_date = datetime.date.today(),
+            color = c.color,
+            unit = c.unit,
+            quantity = int(request.POST.get(str(c.id))),
+            quantity_remaining = q
+        )
+        daily_consump.save()
+   
     if (flag != 0):
         messages.error(request,"%s Quantity entered exceeded the quantities available in Loose" %(flag))
     return redirect('/dailyconsumption1')
+
+
 
 def renderClosingStock(request):
     godowns=Godowns.objects.all()
@@ -2626,3 +2718,57 @@ def renderClosingStock(request):
                 datalist.append(l)
 
     return render(request,'./color/closingstock.html',{'colors':datalist})
+
+def renderColorReportFilter(request):
+    return render(request,'./color/reportfilter.html')
+
+def colorReport(request):
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+    if(begin!="" or end!=""):
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
+    # selected_qualities=[]
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+    
+        
+    
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+    datalist=[]
+    colors= Color.objects.all()
+    units= Units.objects.all()
+    for c in colors:
+        for u in units:
+            try:
+                records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c.color,unit=u.unit)
+                l=[]
+                quantity = 0
+                for rec in records:
+                    quantity = quantity+rec.quantity
+                l.append(c.color)
+                l.append(u.unit)
+               
+                try:
+                    first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                except:
+                    first_record = ClosingStock.objects.filter(color = c.color,unit = u.unit).order_by('-dailydate').first()
+                try:
+                    last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
+                except:
+                    last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                l.append(first_record.quantity)
+                l.append(quantity)
+                l.append(last_record.quantity)
+                datalist.append(l)
+                print(first_record.quantity,first_record.con_date)
+            except:
+                print("error")
+        
+    return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})

@@ -1,0 +1,96 @@
+{% extends './colornav.html' %}
+
+{% block title%} Goods Approve {% endblock %}
+{% block content%}
+      <!-- Diplay Record Start -->
+        <div class="page-title">
+            <h3 class="title-text">Receive Colors & Chemicals</h3>
+        </div>
+
+      <form class = "md-form view-file" method="POST" action="{% url 'validate' record.id%}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="new-quality">Supplier Party</label>
+                <input type="text" class="form-control" name="supplier" value="{{ record.supplier}}" readonly>
+
+                   
+                   
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="Order No">Order No</label>
+                <input type="number" class="form-control" id="order_no" placeholder="Order No" value="{{ record.order_no}}"  name="order_no" required readonly>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Order Date">Order Date</label>
+                <input type="date" class="form-control" id="Order Date" name="order_date" value="{{ orderdate }}" readonly/>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="new-quality">Color</label>
+                <input type="text" class="form-control" value="{{record.color}}" name="color" readonly>
+ 
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="Quantity">Quantity</label>
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.quantity}}" name="quantity" required readonly>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Quantity">Unit</label>
+                <input type="text" class="form-control" id="Unit" value="{{record.unit}}" name="Unit" readonly>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Rate">Rate</label>
+                <input type="float" class="form-control" id="rate" placeholder="Rate" value="{{ record.rate}}"  name="rate" required readonly>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Bill Amount">Bill Amount</label>
+                <input type="number" class="form-control" id="bill_amount" placeholder="Bill Amount" value="{{ record.amount}}"  name="amount" required readonly>
+            </div>
+        </div>
+        <div class="form-row">
+            
+            
+            {% if record.state == "Godown" %}
+            <div class="form-group col-md-3">
+                <label for="Quantity">Godown No.</label>
+                <input type="text" class="form-control" id="Receiving Date" value="{{record.godown}}" readonly required/>
+   
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Order Date">Receiving Date</label>
+                <input type="date" class="form-control" id="Receiving Date" name="receivingdate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" readonly required/>
+            </div>
+            
+            {% else %}
+            <div class="form-group col-md-3">
+                <label for="state">State</label>
+                <input type="text" class="form-control" id="Receiving Date" value="{{record.state}}" readonly required/>
+            </div>  
+            {% endif %}
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="Bill no">Bill No</label>
+                <input type="number" class="form-control" id="bill no" name="billno" placeholder="bill no"  required/>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Bill Date">Bill Date</label>
+                <input type="date" class="form-control" id="Bill Date" name="billdate" value="{{bill_date}}"  required/>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Bill no">Chalan No</label>
+                <input type="number" class="form-control" id="chalan no" name="chalan" placeholder="chalan no"  required/>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <button type="submit" class="btn btn-primary button">Validate Orer</button>
+            </div>
+        </div>
+      </form>
+      <!-- Display Record End -->
+{% endblock %}

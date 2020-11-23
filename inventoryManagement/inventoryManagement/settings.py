@@ -29,6 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'import_export',
     'django_filters',
     'widget_tweaks',
+    
 ]
 
 MIDDLEWARE = [
@@ -56,6 +58,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'inventoryManagement.urls'
+
+
 
 TEMPLATES = [
     {

@@ -1,0 +1,57 @@
+{% extends './colornav.html' %}
+
+{% block title%} Add Quality {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+
+
+
+
+
+
+    <div class="page-title">
+      <h3 class="title-text">Report - from {{begin}} to {{end}}</h3>
+    </div>
+      <br>
+      <!-- Filter End -->
+
+      <!-- Display Table Start-->
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">Sr-no</th>
+            <th scope="col" class="td-text">Color</th>
+            <th scope="col" class="td-text">Unit</th>
+            <th scope="col">Opening Stock on {{begin}}</th>
+            <th scope="col">Quantity Consumed</th>
+            <th scope="col">Closing Stock on {{end}}</th>
+            
+            
+            
+          </tr>
+        </thead>
+        <tbody>
+        {% for d in data %}
+          <tr>
+            
+            <td scope="row">{{ forloop.counter }}</td>
+            <td class="td-text">{{d.0}}</td>
+            <td class="td-text">{{d.1}}</td>
+            <td>{{d.2}}</td>
+            <td>{{d.3}}</td>
+            <td>{{d.4}}</td>
+            
+            
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <!-- Display Table End -->
+
+      
+
+      <br>
+
+      {% endblock %}
