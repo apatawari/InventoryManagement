@@ -103,6 +103,7 @@ class AllOrders(models.Model):
     order_date = models.DateField(default=None)
     order_no = models.IntegerField()
     quantity = models.IntegerField()
+    rem_quantity = models.IntegerField(null=True)
     rate = models.FloatField()
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)

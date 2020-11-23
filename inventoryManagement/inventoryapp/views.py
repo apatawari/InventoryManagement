@@ -1958,7 +1958,8 @@ def saveOrder(request):
         amount=a,
         quantity=request.POST.get('quantity'),
         state="Ordered",
-        unit = request.POST.get('unit')
+        unit = request.POST.get('unit'),
+        rem_quantity=request.POST.get('quantity')
     )
     new_order.save()
     
@@ -1990,7 +1991,8 @@ def saveOrder(request):
             amount=a,
             quantity=request.POST.get('quantity2'),
             state="Ordered",
-            unit = request.POST.get('unit2')
+            unit = request.POST.get('unit2'),
+            rem_quantity=request.POST.get('quantity2')
         )
         new_order.save()
         if(request.POST.get('rate3')!='' and request.POST.get('quantity3')!='' and request.POST.get('color3')!=''):
@@ -2021,7 +2023,8 @@ def saveOrder(request):
                 amount=a,
                 quantity=request.POST.get('quantity3'),
                 state="Ordered",
-                unit = request.POST.get('unit3')
+                unit = request.POST.get('unit3'),
+                rem_quantity=request.POST.get('quantity3')
             )
             new_order.save()
 
@@ -2053,7 +2056,8 @@ def saveOrder(request):
                     amount=a,
                     quantity=request.POST.get('quantity4'),
                     state="Ordered",
-                    unit = request.POST.get('unit4')
+                    unit = request.POST.get('unit4'),
+                    rem_quantity=request.POST.get('quantity4')
                 )
                 new_order.save()
     
@@ -2085,7 +2089,8 @@ def saveOrder(request):
                         amount=a,
                         quantity=request.POST.get('quantity5'),
                         state="Ordered",
-                        unit = request.POST.get('unit5')
+                        unit = request.POST.get('unit5'),
+                        rem_quantity=request.POST.get('quantity5')
                     )
                     new_order.save()
 
@@ -2117,7 +2122,8 @@ def saveOrder(request):
                             amount=a,
                             quantity=request.POST.get('quantity6'),
                             state="Ordered",
-                            unit = request.POST.get('unit6')
+                            unit = request.POST.get('unit6'),
+                            rem_quantity=request.POST.get('quantity6')
                         )
                         new_order.save()
 
@@ -2149,7 +2155,9 @@ def saveOrder(request):
                                 amount=a,
                                 quantity=request.POST.get('quantity7'),
                                 state="Ordered",
-                                unit = request.POST.get('unit7')
+                                unit = request.POST.get('unit7'),
+                                rem_quantity=request.POST.get('quantity7')
+                        
                             )
                             new_order.save()
 
@@ -2181,7 +2189,8 @@ def saveOrder(request):
                                     amount=a,
                                     quantity=request.POST.get('quantity8'),
                                     state="Ordered",
-                                    unit = request.POST.get('unit8')
+                                    unit = request.POST.get('unit8'),
+                                    rem_quantity=request.POST.get('quantity8')
                                 )
                                 new_order.save()
 
@@ -2213,7 +2222,8 @@ def saveOrder(request):
                                         amount=a,
                                         quantity=request.POST.get('quantity9'),
                                         state="Ordered",
-                                        unit = request.POST.get('unit9')
+                                        unit = request.POST.get('unit9'),
+                                        rem_quantity=request.POST.get('quantity9')
                                     )
                                     new_order.save()
 
@@ -2245,7 +2255,8 @@ def saveOrder(request):
                                             amount=a,
                                             quantity=request.POST.get('quantity10'),
                                             state="Ordered",
-                                            unit = request.POST.get('unit10')
+                                            unit = request.POST.get('unit10'),
+                                            rem_quantity=request.POST.get('quantity10')
                                         )
                                         new_order.save()
     messages.success(request,'Order has been Placed')
@@ -2416,6 +2427,7 @@ def goodsApprove(request,id):
         prevRec.save()
         ogorder = get_object_or_404(AllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
         ogorder.state="Godown"
+        ogorder.rem_quantity = 0
         ogorder.chalan_no=int(request.POST.get('chalan'))
         ogorder.save()
         try:
@@ -2492,6 +2504,7 @@ def goodsApprove(request,id):
             prevRec.save()
             ogorder = get_object_or_404(AllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
             ogorder.state="In Transit"
+            ogorder.rem_quantity= ogorder.rem_quantity - quantity_recieved
             ogorder.save()
             try:
                 godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
