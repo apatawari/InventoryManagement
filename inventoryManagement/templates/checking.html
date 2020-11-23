@@ -119,6 +119,7 @@
             <th scope="col">Checking Date</th>
             <th scope="col">State</th>
             <th scope="col"></th>
+            <th scope="col"></th>
             
           </tr>
         </thead>
@@ -141,6 +142,8 @@
             <td>{{record.checking_date}}</td>
             <td class="td-text">{{record.state}}</td>
             <td><a class ="anchor-button" href="{% url 'editchecked' record.id %}">Edit</a></td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'processingapprove' record.id %}">Send For Processing</a></td>
+
           </tr>
         {% endfor %}
 

@@ -55,6 +55,7 @@
             <th scope="col">Order No</th>
             <th scope="col">State</th>
             <th scope="col"></th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -76,6 +77,9 @@
             <td>{{record.order_no}}</td>
             <td class="td-text">{{record.state}}</td>
             <td><a class ="anchor-button" href="{% url 'record' record.id %}">Edit</a></td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'godownapprove' record.id %}">Move To Godown</a></td>
+
+         
           </tr>
         {% endfor %}
         <tr>

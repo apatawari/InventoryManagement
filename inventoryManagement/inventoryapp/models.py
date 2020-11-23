@@ -36,6 +36,8 @@ class Record(models.Model):
     total_thans = models.IntegerField()
     total_mtrs = models.FloatField()
     tally = models.BooleanField(default=False)
+    gate_pass = models.IntegerField(null=True)
+    chalan_no = models.IntegerField(null=True)
     
     # def __str__(self):
     #     return self.sr_no +" " +self.party_name

@@ -123,6 +123,7 @@
             <th scope="col">Order No</th>
             <th scope="col">Recieving Date</th>
             <th scope="col">State</th>
+            <th scope="col"></th>
             
             
           </tr>
@@ -147,7 +148,8 @@
             <td>{{record.order_no}}</td>
             <td>{{record.recieving_date}}</td>
             <td class="td-text">{{record.state}}</td>
-            
+            <td><a class ="anchor-button button-small-text" href="{% url 'checkingapprove' record.id %}">Complete Checking</a></td>
+
           </tr>
         {% endfor %}
           

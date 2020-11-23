@@ -106,8 +106,6 @@
             
             <th scope="col">Sr.No</th>
             <th scope="col">Party Name</th>
-            <th scope="col">Bill No</th>
-            <th scope="col">Bill Amt</th>
             <th scope="col">Lot No</th>
             <th scope="col">Quality</th>
             <th scope="col">Than</th>
@@ -119,6 +117,8 @@
             <th scope="col">Arrival location</th>
             <th scope="col">State</th>
             <th scope="col">Tally</th>
+            <th scope="col">Gate Pass No</th>
+            <th scope="col">Chalan No</th>
             
             
           </tr>
@@ -129,8 +129,7 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{record.party_name}}</td>
-            <td>{{record.bill_no}}</td>
-            <td>{{record.bill_amount}}</td>
+            
             <td>{{record.lot_no}}</td>
             <td class="td-text">{{record.quality}}</td>
             <td>{{record.than}}</td>
@@ -142,6 +141,8 @@
             <td class="td-text">{{record.arrival_location}}</td>
             <td class="td-text">{{record.state}}</td>
             <td>{{record.tally}}</td>
+            <td>{{record.gate_pass}}</td>
+            <td>{{record.chalan_no}}</td>
             
           </tr>
         {% endfor %}

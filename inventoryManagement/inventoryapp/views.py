@@ -755,7 +755,8 @@ def sendInProcess(request,id):
         prevRec.state="In Process"
         prevRec.processing_party_name=request.POST.get("processing-party")
         prevRec.sent_to_processing_date=str(request.POST["sending_date"])
-        prevRec.processing_type = process_type 
+        prevRec.processing_type = process_type
+        prevRec.gate_pass = int(request.POST.get('gatepass'))
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
         return redirect('/processingrequest')
@@ -798,7 +799,8 @@ def sendInProcess(request,id):
             checking_date = prevRec.checking_date,
             sent_to_processing_date=str(request.POST["sending_date"]),
             total_thans=prevRec.total_thans,
-            total_mtrs=prevRec.total_mtrs
+            total_mtrs=prevRec.total_mtrs,
+            gate_pass = int(request.POST.get('gatepass'))
             
             )
         if than_recieved == 0 :
@@ -872,6 +874,7 @@ def readyToPrint(request,id):
         prevRec.state="Ready to print"
         prevRec.recieve_processed_date=str(request.POST.get("processing_date"))
         prevRec.arrival_location = location
+        prevRec.chalan_no = int(request.POST.get('chalan'))
         prevRec.save()
         tally_records = Record.objects.filter(state="Ready to print",lot_no=tally_lot_no)
         tally_thans=0
@@ -923,7 +926,9 @@ def readyToPrint(request,id):
             total_mtrs=prevRec.total_mtrs,
             total_thans=prevRec.total_thans,
             arrival_location=location,
-            processing_type=prevRec.processing_type
+            processing_type=prevRec.processing_type,
+            gate_pass=prevRec.gate_pass,
+            chalan_no = int(request.POST.get('chalan'))
             
             )
         if than_recieved == 0 :
