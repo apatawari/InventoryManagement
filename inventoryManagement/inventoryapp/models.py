@@ -51,6 +51,8 @@ class ArrivalLocation(models.Model):
 ######################################       COLOR      ##########################################
 class ColorSupplier(models.Model):
     supplier = models.CharField(max_length=50)
+    address = models.CharField(null=True,max_length=100)
+    city = models.CharField(null=True,max_length=20)
 
 class Color(models.Model):
     color = models.CharField(max_length=50)
@@ -103,7 +105,10 @@ class AllOrders(models.Model):
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)
     unit = models.CharField(null=True,max_length=50)
-    
+    bill_no = models.IntegerField(null=True)
+    bill_date = models.DateField(null=True,default=None)
+    validation = models.CharField(null=True,max_length=50)
+    chalan_no = models.IntegerField(null=True)
 
 class GodownLeaseColors(models.Model):
     color = models.CharField(max_length=50)

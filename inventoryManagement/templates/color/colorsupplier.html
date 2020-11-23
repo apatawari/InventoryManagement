@@ -12,6 +12,10 @@
         </div>
         <div class="upload-container">
             <input type="text" class="form-control" id="addparty" placeholder="Color & Chemical Party" name="supplier" autofocus required>
+            <br>
+            <input type="text" class="form-control" id="city" placeholder="City" name="city" >
+            <br>
+            <input type="text" class="form-control" id="address" placeholder="Address" name="address">
 
             <br>
 
@@ -24,7 +28,9 @@
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th scope="col">Supplier Party name</th>
+            <th scope="col" class="td-text">Supplier Party name</th>
+            <th scope="col" class="td-text">City</th>
+            <th scope="col" class="td-text">Address</th>
             <th></th>
             
             
@@ -38,6 +44,8 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{p.supplier}}</td>
+            <td class="td-text">{{p.city}}</td>
+            <td class="td-text">{{p.address}}</td>
             <td>
               <a class ="anchor-button float-right danger" href="{% url 'deletesupplier' p.id %}">Delete</a>
               <a class ="anchor-button float-right space" href="{% url 'rendereditsupplier' p.id %}">Edit</a>

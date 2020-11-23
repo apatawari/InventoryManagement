@@ -1673,15 +1673,25 @@ def saveSupplier(request):
     p = request.POST.get("supplier")
     p = p.upper()
     p = p.strip()
+
+    c = request.POST.get("city")
+    c = c.upper()
+    c = c.strip()
+
+    a = request.POST.get("address")
+    a = a.upper()
+    a = a.strip()
     try:
-        existing_party=get_object_or_404(ColorSupplier,supplier=p)
+        existing_party=get_object_or_404(ColorSupplier,supplier=p,city=c,address=a)
         messages.error(request,"This Supplier Party already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addcolorsupplier')
         new_Party = ColorSupplier(
-            supplier = p
+            supplier = p,
+            address=a,
+            city=c
         )
         new_Party.save()
         messages.success(request,"Supplier Party added successfully")
@@ -2238,7 +2248,7 @@ def saveOrder(request):
 
 
 def orderGeneration(request):
-    rec=ColorRecord.objects.filter(state__in=['Ordered','Godown']).order_by('order_no')
+    rec=AllOrders.objects.all().order_by('order_no')
     records_filter = ColorOrderFilter(request.GET,queryset=rec)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -2250,9 +2260,9 @@ def orderGeneration(request):
 
 
 def orderEdit(request,id):
-    rec=get_object_or_404(ColorRecord, id=id)
+    rec=get_object_or_404(AllOrders, id=id)
     try:
-        # rec2=get_list_or_404(ColorRecord,rate=rec.rate,order_no=rec.order_no,color=rec.color,unit=rec.unit,state="Ordered")
+        #rec2=get_object_or_404(ColorRecord,rate=rec.rate,order_no=rec.order_no,color=rec.color,unit=rec.unit,state="Ordered")
     
         orderdate=str(rec.order_date)
         color = Color.objects.all().order_by('color')
@@ -2329,7 +2339,9 @@ def goodsRequest(request):
     return render(request,'./color/goodsrequest.html',{'records':records,'filter':records_filter})
 
 def goods(request,id):
-    rec=get_object_or_404(ColorRecord, id=id)
+    ogorder=get_object_or_404(AllOrders, id=id)
+    rec=get_object_or_404(ColorRecord, order_no=ogorder.order_no,state="Ordered",color = ogorder.color, unit = ogorder.unit)
+
     mindate=str(rec.order_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     d=datetime.date.today()
@@ -2339,35 +2351,48 @@ def goods(request,id):
     return render(request, './color/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
 
 def viewOrder(request,id):
-    rec=get_object_or_404(ColorRecord, id=id)
-    mindate=str(rec.order_date)
-    maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    d=rec.recieving_date
-    d=str(d)
-    orderdate=str(rec.order_date)
-    billdate=str(rec.bill_date)
+    ogorder = get_object_or_404(AllOrders, id=id)
+    try:
+        recieved_recs=get_list_or_404(ColorRecord, order_no=ogorder.order_no,state="Godown",color = ogorder.color, unit = ogorder.unit)
+    except:
+        recieved_recs=[]
+    # mindate=str(rec.order_date)
+    # maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    # d=.recieving_date
+    # d=str(d)
+    orderdate=str(ogorder.order_date)
+    billdate=str(ogorder.bill_date)
     godowns = Godowns.objects.all().order_by('godown')
     print(billdate)
-    return render(request, './color/vieworder.html', {'billdate':billdate,'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
+    remaining_order = 0
+    for r in recieved_recs:
+        
+        remaining_order = remaining_order + r.quantity
+    remaining_order = ogorder.quantity - remaining_order
+    return render(request, './color/vieworder.html', {'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
 
 def renderValidate(request,id):
-    rec=get_object_or_404(ColorRecord, id=id)
+    rec=get_object_or_404(AllOrders, id=id)
     mindate=str(rec.order_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    d=rec.recieving_date
-    d=str(d)
-    orderdate=str(rec.order_date)
-    godowns = Godowns.objects.all().order_by('godown')
-    return render(request, './color/validateorder.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
+    
+
+    return render(request, './color/validateorder.html', {'record':rec,'mindate':mindate,'maxdate':maxdate})
 
 def validate(request,id):
-    rec = get_object_or_404(ColorRecord,id=id)
-    recs = get_list_or_404(ColorRecord,order_no=rec.order_no, state="Godown")
-    for r in recs:
-        r.chalan_no=int(request.POST.get('chalan'))
-        r.bill_no=int(request.POST.get('billno'))
-        r.bill_date = request.POST.get('billdate')
-        r.save()
+    rec = get_object_or_404(AllOrders,id=id)
+    try:
+        recs = get_list_or_404(ColorRecord,order_no=rec.order_no, state="Godown",color=rec.color,unit=rec.unit)
+        for r in recs:
+            r.bill_no=int(request.POST.get('billno'))
+            r.bill_date = request.POST.get('billdate') 
+            r.save()
+    except:
+        pass
+    rec.bill_no=int(request.POST.get('billno'))
+    rec.bill_date=request.POST.get('billdate')
+    rec.validation="Yes"
+    rec.save()
     messages.success(request,"Order Validated")
     return redirect('/ordergeneration')
 
@@ -2382,7 +2407,12 @@ def goodsApprove(request,id):
         prevRec.state="Godown"
         prevRec.recieving_date=str(recieving_date)
         prevRec.godown=godown
+        prevRec.chalan_no=int(request.POST.get('chalan'))
         prevRec.save()
+        ogorder = get_object_or_404(AllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
+        ogorder.state="Godown"
+        ogorder.chalan_no=int(request.POST.get('chalan'))
+        ogorder.save()
         try:
             godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
             godown_color.quantity = godown_color.quantity + quantity_recieved
@@ -2443,7 +2473,8 @@ def goodsApprove(request,id):
             state="Godown",
             recieving_date=str(recieving_date),
             total_quantity = prevRec.total_quantity,
-            godown = godown
+            godown = godown,
+            chalan_no=int(request.POST.get('chalan'))
             
             )
         if quantity_recieved == 0 :
@@ -2454,6 +2485,9 @@ def goodsApprove(request,id):
             prevRec.quantity = prevRec.quantity - quantity_recieved
             prevRec.amount = round(amount_remain,2)
             prevRec.save()
+            ogorder = get_object_or_404(AllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
+            ogorder.state="In Transit"
+            ogorder.save()
             try:
                 godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
                 godown_color.quantity = godown_color.quantity + quantity_recieved
@@ -2840,7 +2874,11 @@ def colorReport(request):
                     l.append(quantity)
                 except:
                     l.append(0)
+                
                 l.append(last_record.quantity)
+                new_stock=(l[4]-l[3])
+                if(new_stock>0):
+                    l.append(new_stock)
                 datalist.append(l)
                 print(first_record.quantity,first_record.con_date)
             except:

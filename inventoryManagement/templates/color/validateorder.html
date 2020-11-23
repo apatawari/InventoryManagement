@@ -53,24 +53,10 @@
         </div>
         <div class="form-row">
             
-            
-            {% if record.state == "Godown" %}
-            <div class="form-group col-md-3">
-                <label for="Quantity">Godown No.</label>
-                <input type="text" class="form-control" id="Receiving Date" value="{{record.godown}}" readonly required/>
-   
-            </div>
-            <div class="form-group col-md-3">
-                <label for="Order Date">Receiving Date</label>
-                <input type="date" class="form-control" id="Receiving Date" name="receivingdate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" readonly required/>
-            </div>
-            
-            {% else %}
             <div class="form-group col-md-3">
                 <label for="state">State</label>
                 <input type="text" class="form-control" id="Receiving Date" value="{{record.state}}" readonly required/>
             </div>  
-            {% endif %}
         </div>
         <div class="form-row">
             <div class="form-group col-md-3">
@@ -79,12 +65,9 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="Bill Date">Bill Date</label>
-                <input type="date" class="form-control" id="Bill Date" name="billdate" value="{{bill_date}}"  required/>
+                <input type="date" class="form-control" id="Bill Date" name="billdate" min="{{mindate}}" max="{{maxdate}}" value="{{maxdate}}"  required/>
             </div>
-            <div class="form-group col-md-3">
-                <label for="Bill no">Chalan No</label>
-                <input type="number" class="form-control" id="chalan no" name="chalan" placeholder="chalan no"  required/>
-            </div>
+            
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">

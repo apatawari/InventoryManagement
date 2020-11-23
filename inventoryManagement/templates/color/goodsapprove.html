@@ -34,15 +34,19 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="Quantity">Quantity</label>
                 <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.quantity}}" name="quantity" required readonly>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
+                <label for="Quantity">Unit</label>
+                <input type="text" class="form-control" id="Unit" value="{{record.unit}}" name="Unit" readonly>
+            </div>
+            <div class="form-group col-md-">
                 <label for="Rate">Rate</label>
                 <input type="float" class="form-control" id="rate" placeholder="Rate" value="{{ record.rate}}"  name="rate" required readonly>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="Bill Amount">Bill Amount</label>
                 <input type="number" class="form-control" id="bill_amount" placeholder="Bill Amount" value="{{ record.amount}}"  name="amount" required readonly>
             </div>
@@ -52,10 +56,7 @@
                 <label for="Quantity">Quantity Received</label>
                 <input type="number" class="form-control" id="quantityreceived" placeholder="QuantityReceived" name="quantityreceived" required autofocus>
             </div>
-            <div class="form-group col-md-3">
-                <label for="Quantity">Unit</label>
-                <input type="text" class="form-control" id="Unit" value="{{record.unit}}" name="Unit" readonly>
-            </div>
+            
             <div class="form-group col-md-3">
                 <label for="Quantity">Godown No.</label>
                 <select class="form-control" name="godownnumber" required>    
@@ -69,6 +70,10 @@
             <div class="form-group col-md-3">
                 <label for="Order Date">Receiving Date</label>
                 <input type="date" class="form-control" id="Receiving Date" name="receivingdate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" required/>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Chalan">Chalan No</label>
+                <input type="number" class="form-control" id="chalan" name="chalan" required>
             </div>
         </div>
         <div class="form-row">

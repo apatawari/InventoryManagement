@@ -53,24 +53,15 @@
         </div>
         <div class="form-row">
             
-            
-            {% if record.state == "Godown" %}
-            <div class="form-group col-md-3">
-                <label for="Quantity">Godown No.</label>
-                <input type="text" class="form-control" id="Receiving Date" value="{{record.godown}}" readonly required/>
-   
-            </div>
-            <div class="form-group col-md-3">
-                <label for="Order Date">Receiving Date</label>
-                <input type="date" class="form-control" id="Receiving Date" name="receivingdate" min="{{ mindate }}" max="{{ maxdate }}" value="{{date}}" readonly required/>
-            </div>
-            
-            {% else %}
             <div class="form-group col-md-3">
                 <label for="state">State</label>
                 <input type="text" class="form-control" id="Receiving Date" value="{{record.state}}" readonly required/>
             </div>  
-            {% endif %}
+            <div class="form-group col-md-3">
+                <label for="state">Quantity Remaining</label>
+                <input type="number" class="form-control" id="Receiving Date" value="{{remaining}}" readonly required/>
+            </div> 
+            
         </div>
         <div class="form-row">
             {% if record.state == "Godown" %}
@@ -82,12 +73,28 @@
                 <label for="Bill Date">Bill Date</label>
                 <input type="date" class="form-control" id="Bill Date" name="billdate" value="{{billdate}}" readonly required/>
             </div>
-            <div class="form-group col-md-3">
-                <label for="Bill no">Chalan No</label>
-                <input type="number" class="form-control" id="chalan no" name="chalan" placeholder="chalan no" value="{{record.chalan_no}}" readonly required/>
-            </div>
+            
             {% endif %}
         </div>
+        <br>
+        {% for r in recieved_recs %}
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="Bill Date">Recieving Date</label>
+                <input type="text" class="form-control" id="Bill Date" name="billdate" value="{{r.recieving_date}}" readonly required/>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Bill no">Quantity</label>
+                <input type="number" class="form-control" id="bill no" name="billno" value="{{r.quantity}}" readonly required/>
+            </div>
+            
+            <div class="form-group col-md-3">
+                <label for="Bill no">Chalan No</label>
+                <input type="number" class="form-control" id="chalan no" name="chalan" placeholder="chalan no" value="{{r.chalan_no}}" readonly required/>
+            </div>
+            
+        </div>
+        {% endfor %}
       </form>
       <!-- Display Record End -->
 {% endblock %}
