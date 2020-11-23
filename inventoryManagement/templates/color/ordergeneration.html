@@ -32,8 +32,8 @@
               <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
               <a class="nav-link {%if request.path == colorhome %} active {%endif%}" href="{% url 'colorhome' %}">Color - Home</a>
               <a class="nav-link {%if request.path == ordergeneration %} active {%elif request.path == placeorder %} active {%endif%}" href="{% url 'ordergeneration' %}">Order Generation</a>
-              <a class="nav-link {%if request.path == goodsreceived %} active {%elif request.path == goodsrequest %} active {%endif%}" href="{% url 'goodsreceived' %}">Goods Recieved</a>
-              <a class="nav-link {%if request.path == goodslease %} active {%elif request.path == leaserequest %} active {%endif%}" href="{% url 'goodslease' %}">Loose Stock</a>
+              <a class="nav-link {%if request.path == goodsreceived %} active {%elif request.path == goodsrequest %} active {%endif%}" href="{% url 'goodsreceived' %}">Goodown Stock</a>
+                <a class="nav-link {%if request.path == goodslease %} active {%elif request.path == leaserequest %} active {%endif%}" href="{% url 'goodslease' %}">Loose Godown Stock</a>
               <a class="nav-link {%if request.path == dailyconsumption %} active {%endif%}" href="{% url 'dailyconsumption' %}">Daily Consumption</a>
               <a class="nav-link {%if request.path == closingstock %} active {%endif%}" href="{% url 'closingstock' %}">Closing Stock</a>
             </li>
@@ -67,6 +67,10 @@
     
     {% load widget_tweaks %}
     {% load my_tags %}
+
+    <div class="page-title">
+      <h3 class="title-text">Order Generation</h3>
+    </div>
 
       <!-- Filter Start -->
       <form method="GET">
@@ -114,7 +118,7 @@
             <th scope="col">Unit</th>
             <th scope="col">Rate</th>
             <th scope="col">Bill Amount</th>
-            <th scope="col">State</th>
+            <!--<th scope="col">State</th>-->
             <th scope="col">Validation</th>
             <th scope="col"></th>
             <th scope="col"></th>
@@ -127,7 +131,7 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{record.supplier}}</td>
-            <td><a class ="anchor-button button-small-text" href="{% url 'vieworder' record.id %}">{{record.order_no}}</a></td>
+            <td><a href="{% url 'vieworder' record.id %}">{{record.order_no}}</a></td>
             <td>{{record.order_date}}</td>
             <td class="td-text">{{record.color}}</td>
             <td>{{record.quantity}}</td>
@@ -135,16 +139,18 @@
             <td>{{record.unit}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.amount}}</td>
-            <td>{{record.state}}</td>
+            <!--<td>{{record.state}}</td>-->
             <td>{{record.validation}}</td>
             
             <td>
               {% if record.state == "Ordered" %}
-              <a class ="anchor-button button-small-text" href="{% url 'orderedit' record.id %}">Edit</a>
+                <a class ="anchor-button button-small-text" href="{% url 'orderedit' record.id %}">Edit</a>
+              {% else %}
+                <a class ="disabled" href="#">Edit</a>
               {% endif %}
             </td> 
             <td>{% ifnotequal record.state "Godown" %}<a class ="anchor-button button-small-text" href="{% url 'goodsapprove' record.id %}">Move To Godown</a>{% endifnotequal %}</td>
-            <td>{% if record.state == "Godown" %}{% ifnotequal record.validation "Yes" %}<a class ="anchor-button button-small-text" href="{% url 'validateorder' record.id %}">Validate</a>{% endifnotequal %}{% endif %}</td>
+            <!--<td>{% if record.state == "Godown" %}{% ifnotequal record.validation "Yes" %}<a class ="anchor-button button-small-text" href="{% url 'validateorder' record.id %}">Validate</a>{% endifnotequal %}{% endif %}</td>-->
 
           </tr>
         {% endfor %}
