@@ -2399,8 +2399,8 @@ def validate(request,id):
     rec = get_object_or_404(ColorRecord,id=id)
     rec.bill_no=int(request.POST.get('billno'+str(rec.id)))
     rec.bill_date = request.POST.get('billdate'+str(rec.id)) 
-    rec.save()
     
+    rec.save()
     messages.success(request,"Order Validated")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 

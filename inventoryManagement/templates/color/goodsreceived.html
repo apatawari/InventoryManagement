@@ -34,16 +34,16 @@
               <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
               <a class="nav-link {%if request.path == colorhome %} active {%endif%}" href="{% url 'colorhome' %}">Color - Home</a>
               <a class="nav-link {%if request.path == ordergeneration %} active {%elif request.path == placeorder %} active {%endif%}" href="{% url 'ordergeneration' %}">Order Generation</a>
-              <a class="nav-link {%if request.path == goodsreceived %} active {%elif request.path == goodsrequest %} active {%endif%}" href="{% url 'goodsreceived' %}">Goodown Stock</a>
+              <a class="nav-link {%if request.path == goodsreceived %} active {%elif request.path == goodsrequest %} active {%endif%}" href="{% url 'goodsreceived' %}">Godown Stock</a>
                 <a class="nav-link {%if request.path == goodslease %} active {%elif request.path == leaserequest %} active {%endif%}" href="{% url 'goodslease' %}">Loose Godown Stock</a>
               <a class="nav-link {%if request.path == dailyconsumption %} active {%endif%}" href="{% url 'dailyconsumption' %}">Daily Consumption</a>
               <a class="nav-link {%if request.path == closingstock %} active {%endif%}" href="{% url 'closingstock' %}">Closing Stock</a>
             </li>
           </ul>
-          <!-- Approval Start -->
+          <!-- Approval Start 
             
             <a class ="btn-request float-right" href="{% url 'goodsrequest' %}">Receive Goods</a>
-          <!-- Approval End-->
+           Approval End-->
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -107,7 +107,7 @@
           <tr>
 
             <th scope="col">Sr. No</th>
-            <th scope="col">Color</th>
+            <th scope="col">Chemicals</th>
             <th scope="col">Quantity Recieved</th>
             <th scope="col">Unit</th>
             <th scope="col">Rate</th>
