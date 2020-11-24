@@ -543,3 +543,12 @@ hr {
   border-left: 2px solid #a044ff;
   height: 500px;
 }
+
+.aadhar-button {
+  font-size: 1rem;
+  display: inline-block;
+  text-transform: uppercase;
+  overflow: hidden;
+  padding: 0.4rem;
+  transition: all 0.25s ease-out 0s;
+}

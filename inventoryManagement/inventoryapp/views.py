@@ -2898,12 +2898,26 @@ def colorReport(request):
                     l.append(0)
                 
                 l.append(last_record.quantity)
-                new_stock=(l[4]-l[3])
-                if(new_stock>0):
-                    l.append(new_stock)
+                # new_stock=(l[4]-l[3])
+                # if(new_stock>0):
+                #     l.append(new_stock)
+                new_stock=0
+                try:
+                    neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c.color,unit=u.unit)
+                    for i in neworders:
+                        new_stock=new_stock+i.quantity
+                except:
+                    pass
+
+                l.append(new_stock)
                 datalist.append(l)
                 print(first_record.quantity,first_record.con_date)
             except:
                 print("ee")
         
     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
+
+
+##################################### Module 3 - Employee ######################################
+def employeehome(request):
+    return render(request, './employee/employeehome.html')

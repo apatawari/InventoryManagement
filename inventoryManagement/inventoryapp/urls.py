@@ -133,4 +133,7 @@ urlpatterns = [
 
     path('colorreportfilter',views.renderColorReportFilter,name='colorreportfilter'),
     path('colorreport',views.colorReport,name='colorreport'),
+
+    ############################################# Module 3 - Employee ################################################
+    path('employeehome', views.employeehome,name='employeehome'),
 ]

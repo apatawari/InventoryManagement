@@ -23,6 +23,13 @@
   {% url 'processingrequest' as processingrequest %}
   {% url 'readytoprint' as readytoprint %}
   {% url 'readytoprintrequest' as readytoprintrequest %}
+
+  {% url 'ordergeneration' as ordergeneration %}
+  {% url 'goodsreceived' as goodsreceived %}
+  {% url 'goodslease' as goodslease %}
+  {% url 'dailyconsumption' as dailyconsumption %}
+  {% url 'closingstock' as closingstock %}
+  
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,10 +81,19 @@
                 <a class="dropdown-item" href="{% url 'readytoprint' %}">Processed Grey</a>
               </div>
             </li>
+
             <li class="nav-item dropdown {%if request.path == intransit %}active {%elif request.path == godown %} active {%endif%}">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {%if request.path == intransit %}
-                  Transit
+                {%if request.path == ordergeneration %}
+                  Order Generation
+                {%elif request.path == goodsreceived %}
+                  Godown Stock
+                {%elif request.path == goodslease %}
+                  Loose Godown Stock
+                {%elif request.path == dailyconsumption %}
+                  Daily Consumption
+                {%elif request.path == closingstock %}
+                  Closing Stock
                 {% else %}
                   Colors & Chemicals
                 {% endif %}
@@ -89,6 +105,24 @@
                 <a class="nav-link dropdown-item" href="{% url 'goodslease' %}">Loose Godown Stock</a>
                 <a class="nav-link dropdown-item" href="{% url 'dailyconsumption' %}">Daily Consumption</a>
                 <a class="nav-link dropdown-item" href="{% url 'closingstock' %}">Closing Stock</a>
+              </div>
+            </li>
+
+            <li class="nav-item dropdown {%if request.path == intransit %}active {%elif request.path == godown %} active {%endif%}">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {%if request.path == ordergeneration %}
+                  Order Generation
+                {%elif request.path == goodsreceived %}
+                  Godown Stock
+                {%elif request.path == goodslease %}
+                  Loose Godown Stock
+                {% else %}
+                  Employee Details
+                {% endif %}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="nav-link dropdown-item" href="{% url 'employeehome' %}">Employee - Home</a>
+                <a class="nav-link dropdown-item" href="#">Employee Details</a>
               </div>
             </li>
           </ul>
