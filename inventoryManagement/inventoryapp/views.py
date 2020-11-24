@@ -2373,9 +2373,9 @@ def viewOrder(request,id):
     except:
         recieved_recs=[]
     # mindate=str(rec.order_date)
-    # maxdate=datetime.date.today().strftime('%Y-%m-%d')
+    d=datetime.date.today().strftime('%Y-%m-%d')
     # d=.recieving_date
-    # d=str(d)
+    d=str(d)
     orderdate=str(ogorder.order_date)
     billdate=str(ogorder.bill_date)
     godowns = Godowns.objects.all().order_by('godown')
@@ -2385,7 +2385,7 @@ def viewOrder(request,id):
         
         remaining_order = remaining_order + r.quantity
     remaining_order = ogorder.quantity - remaining_order
-    return render(request, './color/vieworder.html', {'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
+    return render(request, './color/vieworder.html', {'d':d,'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
 
 def renderValidate(request,id):
     rec=get_object_or_404(AllOrders, id=id)
@@ -2396,21 +2396,13 @@ def renderValidate(request,id):
     return render(request, './color/validateorder.html', {'record':rec,'mindate':mindate,'maxdate':maxdate})
 
 def validate(request,id):
-    rec = get_object_or_404(AllOrders,id=id)
-    try:
-        recs = get_list_or_404(ColorRecord,order_no=rec.order_no, state="Godown",color=rec.color,unit=rec.unit)
-        for r in recs:
-            r.bill_no=int(request.POST.get('billno'))
-            r.bill_date = request.POST.get('billdate') 
-            r.save()
-    except:
-        pass
-    rec.bill_no=int(request.POST.get('billno'))
-    rec.bill_date=request.POST.get('billdate')
-    rec.validation="Yes"
+    rec = get_object_or_404(ColorRecord,id=id)
+    rec.bill_no=int(request.POST.get('billno'+str(rec.id)))
+    rec.bill_date = request.POST.get('billdate'+str(rec.id)) 
     rec.save()
+    
     messages.success(request,"Order Validated")
-    return redirect('/ordergeneration')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def goodsApprove(request,id):
@@ -2596,11 +2588,11 @@ def viewGood(request,id):
     rec=get_object_or_404(GodownLeaseColors, id=id)
     # mindate=str(rec.recieving_date)
     # maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    # d=datetime.date.today()
-    # d=str(d)
+    d=datetime.date.today()
+    d=str(d)
     # recievedate=str(rec.recieving_date)
     lease = Lease.objects.all().order_by('lease')
-    return render(request, './color/leaseapprove.html', {'record':rec,'lease':lease})
+    return render(request, './color/leaseapprove.html', {'d':d,'record':rec,'lease':lease})
 
 
 def leaseApprove(request,id):
@@ -2741,33 +2733,45 @@ def renderClosingStock(request):
         lease_list.append(l.lease)
 
     datalist=[]
-    colors = GodownLeaseColors.objects.all()
-    for i in colors:
-        if(i.state in lease_list):
-
-            l=[]
-            l.append(i.color)
-            l.append(i.unit)
-            l.append(i.quantity)
+    colors=Color.objects.all()
+    units=Units.objects.all()
+    for c in colors:
+        for u in units:
             try:
-                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in = godown_list)
-                l.append(ob.quantity)
-                l.append(i.quantity+ob.quantity)
-            except:
-                l.append(0)
-                l.append(i.quantity)
-            datalist.append(l)
-        else:
-            try:
-                ob = get_object_or_404(GodownLeaseColors,color=i.color,unit=i.unit,state__in = lease_list)
-            except:
+                lq=0
+                recsl=get_list_or_404(GodownLeaseColors,color=c.color,unit=u.unit,state__in=lease_list)
+                for i in recsl:
+                    lq=lq+i.quantity
+                
+                recsg=get_list_or_404(GodownLeaseColors,color=c.color,unit=u.unit,state__in=godowns_list)
+                lg=0
+                for i in recsg:
+                    lg=lg+i.quantity
                 l=[]
-                l.append(i.color)
-                l.append(i.unit)
-                l.append(0)
-                l.append(i.quantity)
-                l.append(i.quantity)
+                l.append(c.color)
+                l.append(u.unit)
+                l.append(lq)
+                l.append(lg)
+                l.append(lq+lg)
                 datalist.append(l)
+            except:
+                try:
+                    recsg=get_list_or_404(GodownLeaseColors,color=c.color,unit=u.unit,state__in=godowns_list)
+   
+                    lg=0
+                    for i in recsg:
+                        lg=lg+i.quantity
+                    l=[]
+                    l.append(c.color)
+                    l.append(u.unit)
+                    l.append(0)
+                    l.append(lg)
+                    l.append(lg)
+                    datalist.append(l)
+
+                except:
+                    pass
+    
 
     return render(request,'./color/closingstock.html',{'colors':datalist})
 
