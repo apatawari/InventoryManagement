@@ -50,6 +50,9 @@ class ProcessingPartyName(models.Model):
 class ArrivalLocation(models.Model):
     location = models.CharField(max_length=50)
 
+class Checker(models.Model):
+    checker = models.CharField(max_length=50)
+
 ######################################       COLOR      ##########################################
 class ColorSupplier(models.Model):
     supplier = models.CharField(max_length=50)

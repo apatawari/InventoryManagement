@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
+from .models import Record,Quality,Checker,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -561,7 +561,43 @@ def checkedEdit(request,id):
         #print(record.bill_date)
         return redirect('/checking')
 
-#Quality and Processing part master
+#Checker and Quality and Processing party master
+def renderAddChecker(request):
+    all_checker = Checker.objects.all().order_by('checker')
+    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+
+    return render(request,'addchecker.html',{'records':checkers})
+
+def saveChecker(request):
+    q=request.POST.get("add_checker")
+    q = q.strip()
+    try:
+        existing_quality=get_object_or_404(Checker,checker=q.upper())
+        messages.error(request,"This checker already exists")
+    except:
+        if q.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addchecker')
+        new_quality = Checker(
+            checker=q.upper()
+        )
+        new_quality.save()
+        messages.success(request,"Checker added")
+    return redirect('/addchecker')
+
+
+def deleteChecker(request,id):
+    Checker.objects.filter(id=id).delete()
+    messages.success(request,"Checker deleted")
+    return redirect('/addchecker')
+
+
+#########
+
+
 def renderAddQuality(request):
     all_qualities = Quality.objects.all().order_by('qualities')
     #return render(request,'addquality.html',{'allqualities':all_qualities})
@@ -607,6 +643,7 @@ def editQuality(request,id):
     messages.success(request,"Grey Quality edited")
     return redirect('/addquality')
 
+#######
 def renderAddLocation(request):
     location_all = ArrivalLocation.objects.all().order_by('location')
     #return render(request,'addparty.html',{'parties':parties_all})

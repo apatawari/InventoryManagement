@@ -43,6 +43,10 @@ urlpatterns = [
     path('processingapprove/<int:id>',views.processingApprove, name='processingapprove'),
     path('sendinprocess/<int:id>',views.sendInProcess, name="sendinprocess"),
 
+    path('addchecker',views.renderAddChecker, name="addchecker"),
+    path('saveChecker',views.saveChecker, name="savechecker"),
+    path('deleteChecker/<int:id>',views.deleteChecker, name="deletechecker"),
+
     path('addarrivallocation',views.renderAddLocation, name="addarrivallocation"),
     path('savelocation',views.saveLocation, name="savelocation"),
 
@@ -75,7 +79,7 @@ urlpatterns = [
     path('export/excelall', views.export_all_xls, name='excel_all'),
     path('export/excelfilter', views.export_filter_all_xls, name='excel_filter_all'),
 
-    #####################   COLOR    ###################################
+    #####################   COLOR    #############################################################
     path('addcolorsupplier',views.renderAddColorSupplier,name='addcolorsupplier'),
     path('savesupplier',views.saveSupplier, name="savesupplier"),
     path('deletesupplier/<int:id>',views.deleteSupplier,name="deletesupplier"),

@@ -5,7 +5,7 @@
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Quality Start-->
-      <form method="POST" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" class="md-form upload-file" action="{% url 'savechecker' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
             <h1>Add Checker Name</h1>
@@ -37,9 +37,9 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{q.qualities}}</td>
+            <td class="td-text">{{q.checker}}</td>
             <td>
-              <a class ="anchor-button float-right danger" href="#">Delete</a>
+              <a class ="anchor-button float-right danger" href="{% url 'deletechecker' q.id%}">Delete</a>
               <a class ="anchor-button float-right space" href="#">Edit</a>
             </td>
             
