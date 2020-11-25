@@ -4,7 +4,7 @@
 {% block content%}
       <!-- Diplay Record Start -->
         <div class="page-title">
-            <h3 class="title-text">Move Color Orders to Loose</h3>
+            <h3 class="title-text">Move Color & Chemicals Order to Loose</h3>
         </div>
 
       <form class = "md-form view-file" method="POST" action="{% url 'leaseapproved' record.id %}" enctype="multipart/form-data">
@@ -13,7 +13,7 @@
         
         <div class="form-row">
             <div class="form-group col-md-3">
-                <label for="new-quality">Color</label>
+                <label for="new-quality">Chemical Name</label>
                 <input type="text" class="form-control" value="{{record.color}}" name="color" readonly>
  
             </div>
@@ -27,7 +27,7 @@
                 <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.quantity}}" name="quantity" required readonly>
             </div>
             <div class="form-group col-md-3">
-                <label for="Rate">Rate</label>
+                <label for="Rate">Average Rate</label>
                 <input type="float" class="form-control" id="rate" placeholder="Rate" value="{{ record.rate}}"  name="rate" required readonly>
             </div>
             
@@ -38,7 +38,7 @@
                 <input type="number" class="form-control" id="quantityreceived" placeholder="Quantity Lease" value="{{ record.quantity }}" name="quantitylease" required autofocus>
             </div>
             <div class="form-group col-md-4">
-                <label for="Lease">Loose No.</label>
+                <label for="Lease">Loose Godown Name</label>
                 <select class="form-control" name="leasenumber" required>                      
                     {% for l in lease %}
                         <option value="{{l.lease}}">{{l.lease}}</option>
@@ -46,7 +46,7 @@
                 </select>   
             </div>
             <div class="form-group col-md-4">
-                <label for="Quantity">Godown No.</label>
+                <label for="Quantity">Godown Name</label>
                 <input type="text" class="form-control" id="godown" name="godown" value="{{record.state}}" required readonly/>
             </div>
             

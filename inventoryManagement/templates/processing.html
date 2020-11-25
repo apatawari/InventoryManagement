@@ -72,7 +72,7 @@
     {% load widget_tweaks %}
     {% load my_tags %}
     <div class="page-title">
-      <h3 class="title-text">Processing</h3>
+      <h3 class="title-text">In Process Stock</h3>
     </div>
       <!-- Filter Start -->
       <form method="GET">
@@ -111,19 +111,19 @@
           <tr>
             
             <th scope="col">Sr.No</th>
-            <th scope="col">Party Name</th>
+            <th class="td-text" scope="col">Party Name</th>
             <!--<th scope="col">Bill No</th>
             <th scope="col">Bill Date</th>-->
             <th scope="col">Bill Amt</th>
             <th scope="col">Lot No</th>
-            <th scope="col">Quality</th>
+            <th class="td-text" scope="col">Quality</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
             <th scope="col">Rate</th>
-            <th scope="col">Sent to Processing Date</th>
-            <th scope="col">State</th>
-            <th scope="col">Processing Type</th>
-            <th scope="col">Processing Party</th>
+            <th scope="col">Sending Date</th>
+            <!--<th scope="col">State</th>-->
+            <th class="td-text" scope="col">Processing Type</th>
+            <th class="td-text" scope="col">Processing Party</th>
             <th scope="col">Gate Pass</th>
             <th scope="col"></th>
             
@@ -145,10 +145,10 @@
             <td>{{record.mtrs}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.sent_to_processing_date}}</td>
-            <td class="td-text">{{record.state}}</td>
+            <!--<td class="td-text">{{record.state}}</td>-->
             <td class="td-text">{{record.processing_type}}</td>
             <td class="td-text">{{record.processing_party_name}}</td>
-            <td class="td-text">{{record.gate_pass}}</td>
+            <td>{{record.gate_pass}}</td>
             <td><a class ="anchor-button button-small-text" href="{% url 'readyapprove' record.id %}">Recieve Processed Grey</a></td>
 
             
@@ -168,8 +168,8 @@
           <td>-</td>
           <td>-</td>
           <td>-</td>
-          <td>-</td>
-          <td>-</td>
+          <!--<td>-</td>
+          <td>-</td>-->
           
         
         </tr>

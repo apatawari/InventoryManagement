@@ -54,11 +54,11 @@
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="Quantity">Quantity Received</label>
-                <input type="number" class="form-control" id="quantityreceived" placeholder="QuantityReceived" name="quantityreceived" required autofocus>
+                <input type="number" class="form-control" id="quantityreceived" placeholder="0" name="quantityreceived" required autofocus>
             </div>
             
             <div class="form-group col-md-3">
-                <label for="Quantity">Godown No.</label>
+                <label for="Quantity">Godown Name</label>
                 <select class="form-control" name="godownnumber" required>    
                     {% for s in godowns %}
                         
@@ -73,7 +73,7 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="Chalan">Chalan No</label>
-                <input type="number" class="form-control" id="chalan" name="chalan" required>
+                <input type="number" class="form-control" placeholder="0" id="chalan" name="chalan" required>
             </div>
         </div>
         <div class="form-row">

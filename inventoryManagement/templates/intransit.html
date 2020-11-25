@@ -45,19 +45,19 @@
           <tr>
             
             <th scope="col">Sr.No</th>
-            <th scope="col">Party Name</th>
+            <th class="td-text" scope="col">Party Name</th>
             <th scope="col">Bill No</th>
             <th scope="col">Bill Date</th>
             <th scope="col">Bill Amt</th>
             <th scope="col">Lot No</th>
-            <th scope="col">Quality</th>
+            <th class="td-text" scope="col">Quality</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
             <th scope="col">Bale</th>
             <th scope="col">Rate</th>
             <th scope="col">LR No</th>
             <th scope="col">Order No</th>
-            <th scope="col">State</th>
+            <!--<th scope="col">State</th>-->
             <th scope="col"></th>
             <th scope="col"></th>
           </tr>
@@ -79,8 +79,8 @@
             <td>{{record.rate}}</td>
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
-            <td class="td-text">{{record.state}}</td>
-            <td><a class ="anchor-button" href="{% url 'record' record.id %}">Edit</a></td>
+            <!--<td class="td-text">{{record.state}}</td>-->
+            <td><a class ="anchor-button button-small-text" href="{% url 'record' record.id %}">Edit</a></td>
             <td><a class ="anchor-button button-small-text" href="{% url 'godownapprove' record.id %}">Move To Godown</a></td>
 
          
@@ -101,8 +101,8 @@
           <td>-</td>
           <td>-</td>
           <td>-</td>
-          <td>-</td>
-          <td>-</td>
+          <!--<td>-</td>
+          <td>-</td>-->
         
         </tr>
         </tbody>

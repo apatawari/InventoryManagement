@@ -11,7 +11,7 @@
       <div>
         <form method="POST" action="{% url 'dailyconsumption2' %}" class="md-form" enctype="multipart/form-data">
           {% csrf_token %}
-          <label class="ml-3" for="lease">Choose Loose No.</label>
+          <label class="ml-3" for="lease">Choose Loose Godown</label>
             <div class="form-row mb-5 ml-3">
               <select class="form-control loose-list" name="lease" required>    
                 {% for s in lease %}
@@ -35,11 +35,11 @@
               <tr>
 
                 <th scope="col">Sr. No</th>
-                <th scope="col" class="td-text">Chemicals</th>
+                <th scope="col" class="td-text">Chemical Name</th>
                 <th scope="col">Unit</th>
-                <th scope="col">Quantity Recieved</th>
-                <th scope="col">Rate</th>
-                <th scope="col">Loose Godown.</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Average Rate</th>
+                <th scope="col">Loose Godown</th>
                 <th scope="col">Quantity to Consume</th>
 
 
@@ -68,7 +68,7 @@
           </div>
 
           <br>
-          <button class="btn-add float-right mr-2" type="submit" style="width: 29.5%;">CONSUME</button>
+          <button class="btn-add float-right mr-2" type="submit" style="width: 15%;">CONSUME</button>
         </div>
       </form>
       <!-- Add Party End -->
