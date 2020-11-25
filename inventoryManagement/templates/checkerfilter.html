@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Report</title>
+    <title>Report Filter</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -41,9 +41,6 @@
               <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
           </li>
           </ul>
-          <!-- Approval Start -->
-            
-          <!-- Approval End-->
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -69,53 +66,42 @@
     
     {% load widget_tweaks %}
     {% load my_tags %}
-      <br>
-      <!-- Filter End -->
 
-      <!-- Display Table Start-->
-      <table class="table">
-        <thead class="thead-dark">
-          <tr>
-            
-            <th scope="col">Sr-no</th>
-            <th scope="col">Lot No</th>
-            <th scope="col">Quality</th>
-            <th scope="col">Than</th>
-            <th scope="col">Mtrs</th>
-            <th scope="col">Rate</th>
-            <th scope="col">Sent in processing date</th>
-            <th scope="col">Recieve from processing date</th>
-            <th scope="col">Processing Party</th>
-            <th scope="col">State</th>
-            
-            
-          </tr>
-        </thead>
-        <tbody>
-        {% for record in records %}
-          <tr>
-            
-            <td scope="row">{{ forloop.counter }}</td>
-            <td>{{record.lot_no}}</td>
-            <td class="td-text">{{record.quality}}</td>
-            <td>{{record.than}}</td>
-            <td>{{record.mtrs}}</td>
-            <td>{{record.rate}}</td>
-            <td>{{record.sent_to_processing_date}}</td>
-            <td>{{record.recieve_processed_date}}</td>
-            <td class="td-text">{{record.processing_party_name}}</td>
-            <td class="td-text">{{record.state}}</td>
-            
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      <!-- Display Table End -->
+    <div class="page-title">
+      <h3 class="title-text">LEDGER</h3>
+    </div>
+      <!-- Record Filter Start-->
+      <form class = "md-form view-report" method="POST" action="{% url 'generatereport' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--First Section -->
+        <div class="form-row form-group">
+          <div class="form-group col-md-4">
+            <label for="firstdate">Start Date</label>
+            <input type="date" class="form-control" id="firstdate" name="start_date" placeholder="mm-dd-yyyy"/>
+            <label for="firstdate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" />
+          </div>
+        <!-- First Section End -->
+        <div class="form-group col-md-4">
+          <label class="form-check-label pl-4" for="processing_party"><b>SELECT Checker NAME</b></label>
+          <div class="form-group form-check scroll">
+              
+            {% for p in sendingparty %}
+            <input class="form-check-input-2" type="checkbox" value="{{p}}" name="{{p}}" id="checkername">
+            <label class="form-check-label-2">
+                {{p}}
+            </label>
+          {% endfor %}
+          </div>
+        </div>
 
-      
-
-      <br>
-
+        <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+        <div class="form-group form-check col-md-4">
+            <button type="submit" class="btn btn-primary button float-right mt-4">Generate Report</button>
+        </div>
+    </div>
+    </form>
+    <!-- Record Filter End-->
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

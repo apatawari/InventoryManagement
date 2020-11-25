@@ -1,20 +1,22 @@
 {% extends 'nav.html' %}
 
-{% block title%} Add Quality {% endblock %}
+{% block title%} Add Checker {% endblock %}
 {% block content%}
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Quality Start-->
-      <form method="POST" action="{% url 'savequality' %}" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Grey Quality</h1>
+            <h1>Add Rate for Mtrs</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="addquality" placeholder="Grey Quality" name="newer_quality" autofocus required>
-
+            <input type="number" class="form-control" id="range1" placeholder="Starting Range" name="range_1" autofocus required>
             <br>
-
+            <input type="number" class="form-control" id="range2" placeholder="Ending Range" name="range_2" required>
+            <br>
+            <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+            <br>
             <button class="upload-btn btn-primary" type="submit">Add</button>
         </div>
       </form>
@@ -25,7 +27,7 @@
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th class="td-text" scope="col">Grey Quality</th>
+            <th class="td-text" scope="col">Checekr Name</th>
             <th></th>
             
             
@@ -39,8 +41,8 @@
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{q.qualities}}</td>
             <td>
-              <a class ="anchor-button float-right danger" href="{% url 'deletequality' q.id %}">Delete</a>
-              <a class ="anchor-button float-right space" href="{% url 'rendereditquality' q.id %}">Edit</a>
+              <a class ="anchor-button float-right danger" href="#">Delete</a>
+              <a class ="anchor-button float-right space" href="#">Edit</a>
             </td>
             
             

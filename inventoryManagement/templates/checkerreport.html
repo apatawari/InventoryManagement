@@ -1,0 +1,59 @@
+{% extends 'nav.html' %}
+
+{% block title%} Checker Report {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+
+
+
+
+
+
+    <div class="page-title">
+      <h3 class="title-text">Checker Report - from {{begin}} to {{end}}</h3>
+    </div>
+      <br>
+      <!-- Filter End -->
+
+      <!-- Display Table Start-->
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            
+            <th scope="col">Sr. No</th>
+            <th scope="col" class="td-text">Quality</th>
+            <th scope="col">Thans Checked</th>
+            <th scope="col">Checking Date</th>
+            <th scope="col">Mtrs/Than</th>
+            <th scope="col">Checking Amount/Than</th>
+            <th scope="col">Total</th>
+            
+            
+            
+          </tr>
+        </thead>
+        <tbody>
+        {% for d in data %}
+          <tr>
+            
+            <td scope="row">{{ forloop.counter }}</td>
+            <td class="td-text">{{d.0}}</td>
+            <td class="td-text">{{d.1}}</td>
+            <td>{{d.2}}</td>
+            <td>{{d.3}}</td>
+            <td>{{d.5}}</td>
+            <td>{{d.4}}</td>
+            
+            
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <!-- Display Table End -->
+
+      
+
+      <br>
+
+      {% endblock %}

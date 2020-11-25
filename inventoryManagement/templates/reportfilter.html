@@ -31,48 +31,14 @@
       
         <div class="collapse navbar-collapse" id="navbarColor03">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item {%if request.path == index %} active {%endif%}">
-              <a class="nav-link" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
-          </li>
-          <li class="nav-item dropdown {%if request.path == intransit %}active {%elif request.path == godown %} active
-          {%elif request.path == godownrequest %} active {%elif request.path == checking %} active
-          {%elif request.path == checkingrequest %} active {%elif request.path == inprocess %} active
-          {%elif request.path == processingrequest %} active {%elif request.path == readytoprint %} active
-          {%elif request.path == readytoprintrequest %} active
-          {%endif%}">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {%if request.path == intransit %}
-                Transit
-              {%elif request.path == greyhome %}
-                Grey - Home
-              {%elif request.path == godown %}
-                Godown
-              {%elif request.path == godownrequest %}
-                Godown
-              {%elif request.path == checking %}
-                Checking
-              {%elif request.path == checkingrequest %}
-                Checking
-              {%elif request.path == inprocess %}
-                Process
-              {%elif request.path == processingrequest %}
-                Process
-              {%elif request.path == readytoprint %}
-                Ready To Print
-              {%elif request.path == readytoprintrequest %}
-                Ready To Print
-              {% else %}
-                Grey
-              {% endif %}
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'greyhome' %}">Grey - Home</a>
-              <a class="dropdown-item" href="{% url 'intransit' %}">Transit</a>
-              <a class="dropdown-item" href="{% url 'godown' %}">Godown</a>
-              <a class="dropdown-item" href="{% url 'checking' %}">Checking</a>
-              <a class="dropdown-item" href="{% url 'inprocess' %}">Processing</a>
-              <a class="dropdown-item" href="{% url 'readytoprint' %}">Processed Grey</a>
-            </div>
+            <li class="nav-item">
+              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
+              <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
+              <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
+              <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
+              <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
+              <a class="nav-link {%if request.path == inprocess %} active {%elif request.path == processingrequest %} active {%endif%}" href="{% url 'inprocess' %}">Processing</a>
+              <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
           </li>
           </ul>
         </div>
