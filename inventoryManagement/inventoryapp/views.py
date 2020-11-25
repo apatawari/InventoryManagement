@@ -2423,18 +2423,23 @@ def goodsApprove(request,id):
         ogorder.chalan_no=int(request.POST.get('chalan'))
         ogorder.save()
         try:
+
             godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
             godown_color.quantity = godown_color.quantity + quantity_recieved
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             godown_color.save()
             try:
-                closing_stock = get_object_or_404(ClosingStock,color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today())
+                #closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
+                closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()    ####loophole
                 closing_stock.quantity=closing_stock.quantity + quantity_recieved
                 closing_stock.save()
+                print("same")
             except:
+                closing_stock_prev = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
+ 
                 closing_stock= ClosingStock(
                     color = prevRec.color,
-                    quantity = quantity_recieved,
+                    quantity = closing_stock_prev.quantity + quantity_recieved,
                     unit = prevRec.unit,
                     rate = prevRec.rate,
                     dailydate = datetime.date.today()
@@ -2503,19 +2508,24 @@ def goodsApprove(request,id):
                 godown_color.quantity = godown_color.quantity + quantity_recieved
                 godown_color.rate = (godown_color.rate + prevRec.rate)/2
                 godown_color.save()
+                print("godown")
                 try:
-                    closing_stock = get_object_or_404(ClosingStock,color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today())
+                    closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()
                     closing_stock.quantity=closing_stock.quantity + quantity_recieved
                     closing_stock.save()
+                    print("same rec",closing_stock.quantity)
                 except:
+                    closing_stock_prev = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
+ 
                     closing_stock= ClosingStock(
                         color = prevRec.color,
-                        quantity = quantity_recieved,
+                        quantity = closing_stock_prev.quantity + quantity_recieved,
                         unit = prevRec.unit,
                         rate = prevRec.rate,
                         dailydate = datetime.date.today()
                     )
                     closing_stock.save()
+                    print("exc")
 
             except:
                 godown_color = GodownLeaseColors(
@@ -2525,15 +2535,15 @@ def goodsApprove(request,id):
                     rate = prevRec.rate,
                     state = godown
                 )
-            godown_color.save()
-            closing_stock= ClosingStock(
-                color = prevRec.color,
-                quantity = quantity_recieved,
-                unit = prevRec.unit,
-                rate = prevRec.rate,
-                dailydate = datetime.date.today()
-            )
-            closing_stock.save()
+                godown_color.save()
+                closing_stock= ClosingStock(
+                    color = prevRec.color,
+                    quantity = quantity_recieved,
+                    unit = prevRec.unit,
+                    rate = prevRec.rate,
+                    dailydate = datetime.date.today()
+                )
+                closing_stock.save()
 
             messages.success(request,"Data Updated Successfully")
 
@@ -2684,6 +2694,7 @@ def consume(request,name):
             flag = flag + 1
             continue
         try:
+            
             closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit).order_by('-dailydate').first()
             if(closing_stock.dailydate != datetime.date.today()):
                 new_cs = ClosingStock(
@@ -2694,11 +2705,16 @@ def consume(request,name):
                     rate=c.rate
                 )
                 new_cs.save()
+            
             else:
                 closing_stock.quantity=closing_stock.quantity - int(request.POST.get(str(c.id)))
                 closing_stock.save()
+
         except:
             pass
+            
+            
+            
         c.quantity=c.quantity - int(request.POST.get(str(c.id)))
         c.save()
         stored_color = GodownLeaseColors.objects.filter(color=c.color,unit=c.unit)
