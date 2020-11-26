@@ -1427,7 +1427,7 @@ def checkerReport(request):
             l.append(r.mtrs)
             mt=round((r.mtrs/r.than),2)
             l.append(mt)
-            range=ThanRange.objects.filter(range1__lte=mt,range2__gte=mt).first()
+            range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
             l.append(range.rate)
             l.append(mt*range.rate)
 
@@ -1446,10 +1446,10 @@ def checkerReport(request):
             l.append(mt)
             try:
                 mt=float(mt)
-                range=get_list_or_404(ThanRange,range1__lt=mt,range2__gt=mt).first()
+                range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
                 l.append(range.rate)
                 l.append(mt*range.rate)
-                print("try")
+                
             except:
                 messages.error(request,"rate for this range not defined ")
             datalist.append(l)
