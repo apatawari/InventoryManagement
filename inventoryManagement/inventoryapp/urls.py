@@ -46,6 +46,14 @@ urlpatterns = [
     path('addchecker',views.renderAddChecker, name="addchecker"),
     path('saveChecker',views.saveChecker, name="savechecker"),
     path('deleteChecker/<int:id>',views.deleteChecker, name="deletechecker"),
+    path('editchecker/<int:id>',views.renderEditChecker,name="rendereditchecker"),
+    path('editgreychecker/<int:id>',views.editChecker,name="editchecker"),
+
+    path('addrate',views.renderAddRange, name="addrange"),
+    path('saverate',views.saveRange, name="saverange"),
+    path('deleterate/<int:id>',views.deleteRange, name="deleterange"),
+    # path('editchecker/<int:id>',views.renderEditChecker,name="rendereditchecker"),
+    # path('editgreychecker/<int:id>',views.editChecker,name="editchecker"),
 
     path('addarrivallocation',views.renderAddLocation, name="addarrivallocation"),
     path('savelocation',views.saveLocation, name="savelocation"),
@@ -74,6 +82,9 @@ urlpatterns = [
 
     path('qualityreportfilter',views.qualityReportFilter, name='qualityreportfilter'),
     path('qualityreport',views.qualityReport,name='qualityreport'),
+
+    path('checkerreportfilter',views.checkerReportFilter,name="checkerreportfilter"),
+    path('checkerreport',views.checkerReport,name='checkerreport'),
 
     path('export/excelpage', views.export_page_xls, name='excel_page'),
     path('export/excelall', views.export_all_xls, name='excel_all'),

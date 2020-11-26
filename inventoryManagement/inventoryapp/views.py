@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,Quality,Checker,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
+from .models import Record,Quality,Checker,ThanRange,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -379,9 +379,10 @@ def checkingApprove(request,id):
     mindate=str(rec.recieving_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities_all = Quality.objects.all().order_by('qualities')
+    checkers=Checker.objects.all().order_by('checker')
     d=datetime.date.today()
     d=str(d)
-    return render(request, 'checkingapprove.html', {'date':d,'record':rec,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    return render(request, 'checkingapprove.html', {'date':d,'record':rec,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -389,7 +390,7 @@ def approveCheck(request,id):
     than_recieved = int(than_recieved)
     defect=request.POST.get("defect")
     mtrs_edit=request.POST.get("mtrs-checked")
-    
+    checker=request.POST.get("checker")
     
     total_amount=prevRec.bill_amount
     totalthan=prevRec.than
@@ -401,6 +402,7 @@ def approveCheck(request,id):
             prevRec.state="Checked"
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
+            prevRec.checker=checker
             if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
@@ -447,7 +449,8 @@ def approveCheck(request,id):
                 total_bale=prevRec.total_bale,
                 total_mtrs=prevRec.total_mtrs,
                 total_thans=prevRec.total_thans,
-                checking_date=str(request.POST["checking_date"])
+                checking_date=str(request.POST["checking_date"]),
+                checker=checker
             
                 )
             if than_recieved == 0 :
@@ -467,6 +470,7 @@ def approveCheck(request,id):
             prevRec.state=request.POST.get("defect")
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
+            prevRec.checker=checker
             if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
@@ -515,7 +519,8 @@ def approveCheck(request,id):
                 total_bale=prevRec.total_bale,
                 total_mtrs=prevRec.total_mtrs,
                 total_thans=prevRec.total_thans,
-                checking_date=str(request.POST["checking_date"])
+                checking_date=str(request.POST["checking_date"]),
+                checker=checker
             
                 )
             if than_recieved == 0 :
@@ -594,9 +599,63 @@ def deleteChecker(request,id):
     messages.success(request,"Checker deleted")
     return redirect('/addchecker')
 
+def renderEditChecker(request,id):
+    quality=get_object_or_404(Checker,id=id)
+    return render(request,'editchecker.html',{'id':id,'name':quality.checker})
+
+def editChecker(request,id):
+    quality=get_object_or_404(Checker,id=id)
+    p=request.POST.get("edit-checker")
+    p = p.upper()
+    p = p.strip()
+    quality.checker = p
+    quality.save()
+    messages.success(request,"Checker edited")
+    return redirect('/addchecker')
 
 #########
 
+def renderAddRange(request):
+    all_checker = ThanRange.objects.all().order_by('range1')
+    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+
+    return render(request,'addrate.html',{'records':checkers})
+
+
+def saveRange(request):
+    r1=float(request.POST.get("range_1"))
+    r2=float(request.POST.get("range_2"))
+    existingrange=ThanRange.objects.all()
+    flag=0
+    for i in existingrange:
+        
+        if i.range1<r1<i.range2 or i.range1<r2<i.range2:
+            flag=flag+1
+            break
+    if flag==0:
+        print("if")
+        newR=ThanRange(
+            range1=r1,
+            range2=r2,
+            rate=float(request.POST.get('rate'))
+        )
+        newR.save()
+        messages.success(request,'Range added')
+        return redirect('/addrate')
+
+    else:
+        print("else")
+        messages.error(request,'Range collided')
+        return redirect('/addrate')
+    
+def deleteRange(request,id):
+    ThanRange.objects.filter(id=id).delete()
+    messages.success(request,"Range deleted")
+    return redirect('/addrate')
+############
 
 def renderAddQuality(request):
     all_qualities = Quality.objects.all().order_by('qualities')
@@ -1329,6 +1388,74 @@ def showDefective(request):
 
 
 # Ledger
+def checkerReportFilter(request):
+    checkers=Checker.objects.all().order_by('checker')
+    return render(request,'checkerfilter.html',{'checkers':checkers})
+
+def checkerReport(request):
+    checker=request.POST.get('checker')
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+    if(begin!="" or end!=""):
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
+    # selected_qualities=[]
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+
+        # qualities = Quality.objects.all()
+        datalist=[]
+        # for q in qualities:
+        #     recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates,quality=q.qualities)
+        #     than=0
+        #     mtrs=0
+        
+            
+        recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates)
+        for r in recs:
+            l=[]
+            l.append(r.quality)
+            l.append(r.checking_date)
+            l.append(r.than)
+            l.append(r.mtrs)
+            mt=round((r.mtrs/r.than),2)
+            l.append(mt)
+            range=ThanRange.objects.filter(range1__lte=mt,range2__gte=mt).first()
+            l.append(range.rate)
+            l.append(mt*range.rate)
+
+            datalist.append(l)
+        return render(request,'checkerreport.html',{'records':datalist})
+    else:
+        datalist=[]
+        recs=Record.objects.filter(checker=checker)
+        for r in recs:
+            l=[]
+            l.append(r.quality)
+            l.append(r.checking_date)
+            l.append(r.than)
+            l.append(r.mtrs)
+            mt=round((r.mtrs/r.than),2)
+            l.append(mt)
+            try:
+                mt=float(mt)
+                range=get_list_or_404(ThanRange,range1__lt=mt,range2__gt=mt).first()
+                l.append(range.rate)
+                l.append(mt*range.rate)
+                print("try")
+            except:
+                messages.error(request,"rate for this range not defined ")
+            datalist.append(l)
+        return render(request,'checkerreport.html',{'records':datalist})
+
+##########
 def qualityReportFilter(request):
     qualities= Quality.objects.all().order_by('qualities')
     return render(request,'qualityreportfilter.html',{'qualities':qualities})

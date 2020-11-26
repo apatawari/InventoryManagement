@@ -40,7 +40,7 @@
             <td class="td-text">{{q.checker}}</td>
             <td>
               <a class ="anchor-button float-right danger" href="{% url 'deletechecker' q.id%}">Delete</a>
-              <a class ="anchor-button float-right space" href="#">Edit</a>
+              <a class ="anchor-button float-right space" href="{% url 'rendereditchecker' q.id %}">Edit</a>
             </td>
             
             

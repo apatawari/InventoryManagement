@@ -122,6 +122,7 @@
             <th scope="col">LR No</th>
             <th scope="col">Order No</th>
             <th scope="col">Checking Date</th>
+            <th scope="col">Checker name</th>
             <!--<th scope="col">State</th>-->
             <th scope="col"></th>
             <th scope="col"></th>
@@ -145,6 +146,7 @@
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td>{{record.checking_date}}</td>
+            <td>{{record.checker}}</td>
             <!--<td class="td-text">{{record.state}}</td>-->
             <td><a class ="anchor-button button-small-text" href="{% url 'editchecked' record.id %}">Edit</a></td>
             <td><a class ="anchor-button button-small-text" href="{% url 'processingapprove' record.id %}">Send For Processing</a></td>

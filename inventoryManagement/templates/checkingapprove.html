@@ -110,6 +110,19 @@
                 <label for="Mtrs checked">Mtrs Change</label>
                 <input type="float" class="form-control" id="mtrs" placeholder="Enter Data ONLY IF Mtrs Changes" name="mtrs-checked" >
             </div>
+            <div class="form-group col-md-4">
+                <label for="checker">Checker Name</label>
+                <select class="form-control" name="checker">
+
+                    {% for q in checkers %}
+                        <option value="{{ q.checker }}">{{ q.checker }}</option>
+                        
+                        
+                    {% endfor %}
+                </select>
+
+                
+            </div>
 
         </div>
         <div class="form-row">

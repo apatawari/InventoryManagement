@@ -71,7 +71,7 @@
       <h3 class="title-text">LEDGER</h3>
     </div>
       <!-- Record Filter Start-->
-      <form class = "md-form view-report" method="POST" action="{% url 'generatereport' %}" enctype="multipart/form-data">
+      <form class = "md-form view-report" method="POST" action="{% url 'checkerreport' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <!--First Section -->
         <div class="form-row form-group">
@@ -83,15 +83,18 @@
           </div>
         <!-- First Section End -->
         <div class="form-group col-md-4">
-          <label class="form-check-label pl-4" for="processing_party"><b>SELECT Checker NAME</b></label>
           <div class="form-group form-check scroll">
-              
-            {% for p in sendingparty %}
-            <input class="form-check-input-2" type="checkbox" value="{{p}}" name="{{p}}" id="checkername">
-            <label class="form-check-label-2">
-                {{p}}
-            </label>
-          {% endfor %}
+            
+            <label for="checker">Checker Name</label>
+                <select class="form-control" name="checker">
+
+                    {% for q in checkers %}
+                        <option value="{{ q.checker }}"]>{{ q.checker }}</option>
+                        
+                        
+                    {% endfor %}
+                </select>
+          
           </div>
         </div>
 

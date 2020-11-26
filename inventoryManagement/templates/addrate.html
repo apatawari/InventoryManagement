@@ -5,15 +5,15 @@
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Quality Start-->
-      <form method="POST" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" class="md-form upload-file" action="{% url 'saverange' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
             <h1>Add Rate for Mtrs</h1>
         </div>
         <div class="upload-container">
-            <input type="number" class="form-control" id="range1" placeholder="Starting Range" name="range_1" autofocus required>
+            <input type="float" class="form-control" id="range1" placeholder="Starting Range" name="range_1" autofocus required>
             <br>
-            <input type="number" class="form-control" id="range2" placeholder="Ending Range" name="range_2" required>
+            <input type="float" class="form-control" id="range2" placeholder="Ending Range" name="range_2" required>
             <br>
             <input type="float" class="form-control" id="rate" placeholder="Rate" name="rate" required>
             <br>
@@ -27,7 +27,9 @@
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th class="td-text" scope="col">Checekr Name</th>
+            <th class="td-text" scope="col">Range1</th>
+            <th class="td-text" scope="col">Range2</th>
+            <th class="td-text" scope="col">Rate</th>
             <th></th>
             
             
@@ -39,10 +41,12 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{q.qualities}}</td>
+            <td class="td-text">{{q.range1}}</td>
+            <td class="td-text">{{q.range2}}</td>
+            <td class="td-text">{{q.rate}}</td>
             <td>
-              <a class ="anchor-button float-right danger" href="#">Delete</a>
-              <a class ="anchor-button float-right space" href="#">Edit</a>
+              <a class ="anchor-button float-right danger" href="{% url 'deleterange' q.id%}">Delete</a>
+              <!--<a class ="anchor-button float-right space" href="">Edit</a>-->
             </td>
             
             
