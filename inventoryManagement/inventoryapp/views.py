@@ -2565,6 +2565,15 @@ def validate(request,id):
     rec.bill_date = request.POST.get('billdate'+str(rec.id)) 
     
     rec.save()
+    all_recs = ColorRecord.objects.filter(order_no=rec.order_no,color=rec.color,unit=rec.unit).exclude(bill_date=None)
+    q=0
+    for i in all_recs:
+        q=q+i.quantity
+    ogorder=AllOrders.objects.filter(order_no=rec.order_no,color=rec.color,unit=rec.unit).first()
+    if(q==ogorder.quantity):
+        ogorder.validation="Yes"
+        ogorder.save()
+    
     messages.success(request,"Order Validated")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 

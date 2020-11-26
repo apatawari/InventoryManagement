@@ -119,7 +119,7 @@ class AllOrders(models.Model):
     unit = models.CharField(null=True,max_length=50)
     bill_no = models.IntegerField(null=True)
     bill_date = models.DateField(null=True,default=None)
-    validation = models.CharField(null=True,max_length=50)
+    validation = models.CharField(null=True,max_length=50,default="No")
     chalan_no = models.IntegerField(null=True)
 
 class GodownLeaseColors(models.Model):
