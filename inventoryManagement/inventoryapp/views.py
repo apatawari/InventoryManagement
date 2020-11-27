@@ -1389,8 +1389,9 @@ def showDefective(request):
 
 # Ledger
 def checkerReportFilter(request):
+    d=str(datetime.date.today().strftime('%Y-%m-%d'))
     checkers=Checker.objects.all().order_by('checker')
-    return render(request,'checkerfilter.html',{'checkers':checkers})
+    return render(request,'checkerfilter.html',{'d':d,'checkers':checkers})
 
 def checkerReport(request):
     checker=request.POST.get('checker')
@@ -1429,10 +1430,11 @@ def checkerReport(request):
             l.append(mt)
             range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
             l.append(range.rate)
-            l.append(mt*range.rate)
+            
+            l.append(round((mt*range.rate),2))
 
             datalist.append(l)
-        return render(request,'checkerreport.html',{'records':datalist})
+        return render(request,'checkerreport.html',{'records':datalist,'checker':checker,'begin':begin,'end':end})
     else:
         datalist=[]
         recs=Record.objects.filter(checker=checker)
@@ -1453,7 +1455,7 @@ def checkerReport(request):
             except:
                 messages.error(request,"rate for this range not defined ")
             datalist.append(l)
-        return render(request,'checkerreport.html',{'records':datalist})
+        return render(request,'checkerreport.html',{'records':datalist,'checker':checker,'begin':begin,'end':end})
 
 ##########
 def qualityReportFilter(request):
@@ -2545,6 +2547,7 @@ def viewOrder(request,id):
     godowns = Godowns.objects.all().order_by('godown')
     print(billdate)
     remaining_order = 0
+    
     for r in recieved_recs:
         
         remaining_order = remaining_order + r.quantity
@@ -2584,11 +2587,13 @@ def goodsApprove(request,id):
     godown = request.POST.get('godownnumber')
     recieving_date = request.POST.get('receivingdate')
     amount = prevRec.amount
+    print(str(recieving_date))
     if(prevRec.quantity == quantity_recieved):
         prevRec.state="Godown"
         prevRec.recieving_date=str(recieving_date)
         prevRec.godown=godown
         prevRec.chalan_no=int(request.POST.get('chalan'))
+        prevRec.recieving_date_string=str(recieving_date)
         prevRec.save()
         ogorder = get_object_or_404(AllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
         ogorder.state="Godown"
@@ -2661,7 +2666,8 @@ def goodsApprove(request,id):
             recieving_date=str(recieving_date),
             total_quantity = prevRec.total_quantity,
             godown = godown,
-            chalan_no=int(request.POST.get('chalan'))
+            chalan_no=int(request.POST.get('chalan')),
+            recieving_date_string=str(recieving_date)
             
             )
         if quantity_recieved == 0 :

@@ -107,12 +107,12 @@
                 {% csrf_token %}
                 <div class="form-group col-md-3">
                     <label for="Bill no">Bill No</label>
-                    <input type="number" class="form-control" id="bill no" name="billno{{r.id}}" required/>
+                    <input type="number" class="form-control" id="bill no" placeholder="0" name="billno{{r.id}}" required/>
                 </div>
             
                 <div class="form-group col-md-3">
                     <label for="Bill Date">Bill Date</label>
-                    <input type="date" class="form-control" id="Bill Date" name="billdate{{r.id}}" required />
+                    <input type="date" class="form-control" id="Bill Date" min="{{r.recieving_date_string}}" max="{{d}}" name="billdate{{r.id}}" required />
                 </div>
                 
                 <div class="form-group col-md-12">
@@ -127,7 +127,7 @@
                 </div>
             
                 <div class="form-group col-md-3">
-                    <label for="Bill Date">Recieving Date</label>
+                    <label for="Bill Date">Bill Date</label>
                     <input type="text" class="form-control" id="Bill Date" name="billdate" value="{{r.bill_date}}" readonly required/>
                 </div>
                 

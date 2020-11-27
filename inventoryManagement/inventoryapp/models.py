@@ -95,7 +95,7 @@ class ColorRecord(models.Model):
     bill_no = models.IntegerField(null=True)
     bill_date = models.DateField(null=True,default=None)
     chalan_no = models.IntegerField(null=True)
-    a_date = models.DateField(null=True,default=None)
+    recieving_date_string = models.CharField(null=True,default=None,max_length=20)
     b_date = models.DateField(null=True,default=None)
     a = models.CharField(max_length=50,default="-")
 

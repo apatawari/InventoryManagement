@@ -12,6 +12,7 @@
 
     <div class="page-title">
       <h3 class="title-text">Checker Report - from {{begin}} to {{end}}</h3>
+      <h3 class="title-text">Checker Name - {{checker}}</h3>
     </div>
       <br>
       <!-- Filter End -->
@@ -26,8 +27,8 @@
             <th scope="col">Checking Date</th>
             <th scope="col">Thans Checked</th>
             
-            <th scope="col">Mtrs/Than</th>
-            <th scope="col">Checking Amount/Than</th>
+            <th scope="col">Average Cut</th>
+            <th scope="col">Rate(Rs)</th>
             <th scope="col">Total</th>
             
             
@@ -41,7 +42,7 @@
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{d.0}}</td>
             <td>{{d.1}}</td>
-            <td class="td-text">{{d.2}}</td>
+            <td >{{d.2}}</td>
             <td>{{d.4}}</td>
             <td>{{d.5}}</td>
             <td>{{d.6}}</td>
