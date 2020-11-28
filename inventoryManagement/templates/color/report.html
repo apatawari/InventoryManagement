@@ -15,7 +15,14 @@
     </div>
       <br>
       <!-- Filter End -->
-
+      <div class="download">
+        <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="date" name="start_date" value="{{begin}}" hidden>
+          <input type="date" name="end_date" value="{{end}}" hidden>
+          <button class="download-button">Print</button>
+        </form>
+      </div>
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">

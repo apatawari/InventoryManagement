@@ -9,9 +9,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+    <!-- <script src="jquery.table2excel.js"></script> -->
+    <!-- <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script> -->
 </head>
 <body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="static/scripts/table2excel.js"></script>
   {% url 'index' as index %}
   {% url 'greyhome' as greyhome %}
   {% url 'intransit' as intransit %}
@@ -71,9 +75,16 @@
     {% load my_tags %}
       <br>
       <!-- Filter End -->
-
+      
+      <div class="download">
+        <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="text" name="qualities" value="{{select}}" hidden>
+          <button class="download-button">Print</button>
+        </form>
+      </div>
       <!-- Display Table Start-->
-      <table class="table table-bordered">
+      <table class="table table-bordered" id="quality-report">
         <thead class="thead-dark">
           <tr>
 
@@ -134,6 +145,7 @@
       
 
       <br>
+      
 
 </body>
 {% load static %}

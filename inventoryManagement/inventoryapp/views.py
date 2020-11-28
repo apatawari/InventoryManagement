@@ -12,6 +12,7 @@ import pandas
 import numpy as np
 import datetime
 import xlwt
+import ast
 from django.template.loader import render_to_string
 
 
@@ -67,13 +68,29 @@ def back2checking(request):
 def back(request,state):
     print(state)
     if state == "Transit":
-        return redirect('/godownrequest')
+        return redirect('/intransit')
     elif state == "Godown":
-        return redirect('/checkingrequest')
+        return redirect('/godown')
     elif state == "Checked":
-        return redirect('/processingrequest')
+        return redirect('/checking')
     elif state == "In Process":
-        return redirect('/readytoprintrequest')
+        return redirect('/inprocess')
+    elif state == "Ordered" or state == "In Transit":
+        return redirect('/ordergeneration')
+    
+
+def backtoorders(request,state):
+    godowns=Godowns.objects.all()
+    
+    g_list=[]
+    
+    for g in godowns:
+        g_list.append(g.godown)
+    
+    if state == "Ordered" or state == "In Transit" or state == "Godown":
+        return redirect('/ordergeneration')
+    elif state in g_list:
+        return redirect('/goodsreceived')
     
 
 def upload(request):
@@ -896,7 +913,8 @@ def sendInProcess(request,id):
             sent_to_processing_date=str(request.POST["sending_date"]),
             total_thans=prevRec.total_thans,
             total_mtrs=prevRec.total_mtrs,
-            gate_pass = int(request.POST.get('gatepass'))
+            gate_pass = int(request.POST.get('gatepass')),
+            checker=prevRec.checker
             
             )
         if than_recieved == 0 :
@@ -1024,7 +1042,8 @@ def readyToPrint(request,id):
             arrival_location=location,
             processing_type=prevRec.processing_type,
             gate_pass=prevRec.gate_pass,
-            chalan_no = int(request.POST.get('chalan'))
+            chalan_no = int(request.POST.get('chalan')),
+            checker=prevRec.checker
             
             )
         if than_recieved == 0 :
@@ -1417,10 +1436,13 @@ def checkerReport(request):
         #     recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates,quality=q.qualities)
         #     than=0
         #     mtrs=0
-        
-            
-        recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates)
+        total=[]
+        totalthans=0    
+        totaltotal=0
+        recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates).order_by('quality','checking_date')
         for r in recs:
+            totalthans=totalthans+r.than
+
             l=[]
             l.append(r.quality)
             l.append(r.checking_date)
@@ -1432,30 +1454,15 @@ def checkerReport(request):
             l.append(range.rate)
             
             l.append(round((mt*range.rate),2))
+            totaltotal=totaltotal+round((mt*range.rate),2)
 
             datalist.append(l)
-        return render(request,'checkerreport.html',{'records':datalist,'checker':checker,'begin':begin,'end':end})
-    else:
-        datalist=[]
-        recs=Record.objects.filter(checker=checker)
-        for r in recs:
-            l=[]
-            l.append(r.quality)
-            l.append(r.checking_date)
-            l.append(r.than)
-            l.append(r.mtrs)
-            mt=round((r.mtrs/r.than),2)
-            l.append(mt)
-            try:
-                mt=float(mt)
-                range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
-                l.append(range.rate)
-                l.append(mt*range.rate)
-                
-            except:
-                messages.error(request,"rate for this range not defined ")
-            datalist.append(l)
-        return render(request,'checkerreport.html',{'records':datalist,'checker':checker,'begin':begin,'end':end})
+        total.append(totalthans)
+        total.append(totaltotal)
+        begin=str(begin)
+        end=str(end)
+        return render(request,'checkerreport.html',{'records':datalist,'total':total,'checker':checker,'begin':begin,'end':end})
+    
 
 ##########
 def qualityReportFilter(request):
@@ -1526,7 +1533,7 @@ def qualityReport(request):
             final_qs.append(d1)
             
             # d=[d1,[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
-    return render(request,'qualityreport.html',{'data':final_qs})
+    return render(request,'qualityreport.html',{'data':final_qs,'select':selected_qualities})
 
 #Download Excel Files
 
@@ -1554,11 +1561,34 @@ def export_page_xls(request):
         file_name="InProcess"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
         records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
-    else:
+    elif (stateur=="readytoprint"):
         file_name="ProcessedGrey"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
         records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+######color
+    elif(stateur=="goodsreceived"):
+        file_name="Godown Stock"
+        columns=['chemical','quantity','unit','average rate(Rs)','godown name']
+        godowns=Godowns.objects.all()
+        godowns_list=[]
+        for g in godowns:
+            godowns_list.append(g.godown)
+        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
+    elif(stateur=="goodslease"):
+        file_name="Loose Godown Stock"
+        columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
+        lease=Lease.objects.all()
+        lease_list=[]
+        for g in lease:
+            lease_list.append(g.lease)
+        records_list = GodownLeaseColors.objects.filter(state__in=lease_list).values_list('color','quantity','unit','rate','state')
+    else:
+        file_name="Color Orders"
+        columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
+        records_list=AllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+
+
 
     # ur=request.META.get('HTTP_REFERER')
     
@@ -1641,7 +1671,7 @@ def export_page_xls(request):
         row_num += 1
         for col_num in range(len(row)):
             
-            ws.write(row_num, col_num, row[col_num], font_style)
+            ws.write(row_num, col_num, str(row[col_num]), font_style)
 
     wb.save(response)
     
@@ -1672,11 +1702,33 @@ def export_filter_all_xls(request):
         file_name="InProcess-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
         records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
-    else:
+    elif (stateur=="readytoprint"):
         file_name="ProcessedGrey-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
         records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+    ######color
+    elif(stateur=="goodsreceived"):
+        file_name="Godown Stock"
+        columns=['chemical','quantity','unit','average rate(Rs)','godown name']
+        godowns=Godowns.objects.all()
+        godowns_list=[]
+        for g in godowns:
+            godowns_list.append(g.godown)
+        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
+    elif(stateur=="goodslease"):
+        file_name="Loose Godown Stock"
+        columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
+        lease=Lease.objects.all()
+        lease_list=[]
+        for g in lease:
+            lease_list.append(g.lease)
+        records_list = GodownLeaseColors.objects.filter(state__in=lease_list).values_list('color','quantity','unit','rate','state')
+    else:
+        file_name="Color Orders"
+        columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
+        records_list=AllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+
 
 
     response = HttpResponse(content_type='application/ms-excel')
@@ -1753,7 +1805,7 @@ def export_filter_all_xls(request):
         row_num += 1
         for col_num in range(len(row)):
             
-            ws.write(row_num, col_num, row[col_num], font_style)
+            ws.write(row_num, col_num, str(row[col_num]), font_style)
 
     wb.save(response)
     
@@ -1785,11 +1837,33 @@ def export_all_xls(request):
         file_name="InProcess-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
         records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
-    else:
+    elif(stateur=="readytoprint"):
         file_name="ProcessedGrey-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
         records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+######color
+    elif(stateur=="goodsreceived"):
+        file_name="Godown Stock"
+        columns=['chemical','quantity','unit','average rate(Rs)','godown name']
+        godowns=Godowns.objects.all()
+        godowns_list=[]
+        for g in godowns:
+            godowns_list.append(g.godown)
+        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
+    elif(stateur=="goodslease"):
+        file_name="Loose Godown Stock"
+        columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
+        lease=Lease.objects.all()
+        lease_list=[]
+        for g in lease:
+            lease_list.append(g.lease)
+        records_list = GodownLeaseColors.objects.filter(state__in=lease_list).values_list('color','quantity','unit','rate','state')
+    else:
+        file_name="Color Orders"
+        columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
+        records_list=AllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+
     
     
     response = HttpResponse(content_type='application/ms-excel')
@@ -1820,12 +1894,239 @@ def export_all_xls(request):
         row_num += 1
         for col_num in range(len(row)):
             
-            ws.write(row_num, col_num, row[col_num], font_style)
+            ws.write(row_num, col_num, str(row[col_num]), font_style)
 
     wb.save(response)
     
     return response
 
+
+#############################report print
+def export_report_xls(request):
+    ur=request.META.get('HTTP_REFERER')
+    ur=ur.split('?')
+    stateur=ur[0]
+    stateur=stateur.split('/')
+    stateur=stateur[-1]
+    if(stateur=="checkerreport"):
+        file_name="Checker-Report"
+        columns = ['Quality', 'Checking Date', 'Thans Checked', 'Average cut', 'Rate(Rs)', 'Total']
+        #records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+        checker=request.POST.get('checker')
+        begin = request.POST.get("start_date")
+        end = request.POST.get("end_date")
+        if(begin!="" or end!=""):
+            
+            begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+            end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+            selected_dates=[]
+            
+        # selected_qualities=[]
+            next_day = begin
+            while True:
+                if next_day > end:
+                    break
+                selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+                next_day += datetime.timedelta(days=1)
+
+            # qualities = Quality.objects.all()
+            datalist=[]
+            # for q in qualities:
+            #     recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates,quality=q.qualities)
+            #     than=0
+            #     mtrs=0
+            total=[]
+            totalthans=0    
+            totaltotal=0
+            recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates).order_by('quality','checking_date')
+            for r in recs:
+                totalthans=totalthans+r.than
+
+                l=[]
+                l.append(r.quality)
+                print(r.checking_date)
+                l.append(str(r.checking_date))
+                l.append(r.than)
+                mt=round((r.mtrs/r.than),2)
+                l.append(mt)
+                rangerate=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                
+                
+                
+                l.append(rangerate.rate)
+                
+                l.append(round((mt*rangerate.rate),2))
+                totaltotal=totaltotal+round((mt*rangerate.rate),2)
+
+                datalist.append(l)
+    elif (stateur=="qualityreport"):
+        file_name="Quality-Report"
+        columns = ['Quality', 'Intransit Than', 'Intransit mtrs', 'Godown than', 'Godown mtrs', 'checked than','checked mtrs','In process than','In process mtrs','processed than','processed mtrs','total than','total mtrs']
+
+        qual=(request.POST.get('qualities'))
+        qualities=ast.literal_eval(qual)
+        datalist=[]
+        for q in qualities:
+        
+        # if(request.POST.get(q.qualities)!=None):
+        #     selected_qualities.append(request.POST.get(q.qualities))
+            rec_transit=Record.objects.filter(state="Transit",quality=q)
+            tally_than=0
+            tally_mtrs=0
+            total_than_in_transit=0
+            total_mtrs_in_transit=0
+            
+            for r in rec_transit:
+                total_than_in_transit=total_than_in_transit+r.than
+                total_mtrs_in_transit=total_mtrs_in_transit+r.mtrs
+
+            rec_godown=Record.objects.filter(state="Godown",quality=q)
+            total_than_in_godown=0
+            total_mtrs_in_godown=0
+            for r in rec_godown:
+                total_than_in_godown=total_than_in_godown+r.than
+                total_mtrs_in_godown=total_mtrs_in_godown+r.mtrs
+            
+            
+            rec_checked=Record.objects.filter(state="Checked",quality=q)
+            total_than_in_checked=0
+            total_mtrs_in_checked=0
+            for r in rec_checked:
+                total_than_in_checked=total_than_in_checked+r.than
+                total_mtrs_in_checked=total_mtrs_in_checked+r.mtrs
+
+            rec_process=Record.objects.filter(state="In Process",quality=q)
+            total_than_in_process=0
+            total_mtrs_in_process=0
+            for r in rec_process:
+                total_than_in_process=total_than_in_process+r.than
+                total_mtrs_in_process=total_mtrs_in_process+r.mtrs
+
+            rec_ready=Record.objects.filter(state="Ready to print",quality=q)
+            total_than_in_ready=0
+            total_mtrs_in_ready=0
+            for r in rec_ready:
+                total_than_in_ready=total_than_in_ready+r.than
+                total_mtrs_in_ready=total_mtrs_in_ready+r.mtrs
+
+            tally_mtrs=total_mtrs_in_transit+total_mtrs_in_godown+total_mtrs_in_checked+total_mtrs_in_process+total_mtrs_in_ready
+            tally_than=total_than_in_transit+total_than_in_godown+total_than_in_checked+total_than_in_process+total_than_in_ready
+            
+            d1=[q,
+            total_than_in_transit,round(total_mtrs_in_transit,2),
+            total_than_in_godown,round(total_mtrs_in_godown,2),
+            total_than_in_checked,round(total_mtrs_in_checked,2),
+            total_than_in_process,round(total_mtrs_in_process,2),
+            total_than_in_ready,round(total_mtrs_in_ready,2),
+            tally_than,round(tally_mtrs,2)
+            ]
+            
+            datalist.append(d1)
+    
+    elif (stateur=="colorreport"):
+        file_name="Color-Report"
+        begin=request.POST.get('start_date')
+        end=request.POST.get('end_date')
+        columns = ['Color', 'unit', 'opening stock on %s'%str(begin), 'stock purchased', 'total stock', 'quantity consumed','closing stock on %s'%str(end)]
+
+        
+        
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
+    # selected_qualities=[]
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+    
+        
+    
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+        datalist=[]
+        colors= Color.objects.all()
+        units= Units.objects.all()
+        for c in colors:
+            for u in units:
+                try:
+                    l=[]
+                    try:
+                        first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                        l.append(c.color)
+                        l.append(u.unit)
+                        l.append(first_record.quantity)
+                    except:
+
+                        l.append(0)
+                    
+                    new_stock=0
+                    try:
+                        neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c.color,unit=u.unit)
+                        for i in neworders:
+                            new_stock=new_stock+i.quantity
+                    except:
+                        pass
+
+                    l.append(new_stock)
+                    l.append(new_stock+l[-1])
+                    try:
+                        last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
+                    except:
+                        last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                    
+                    
+                    try:
+                        records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c.color,unit=u.unit)
+                        
+                        
+                        quantity = 0
+                        for rec in records:
+                            quantity = quantity+rec.quantity
+                    
+                        l.append(quantity)
+                    except:
+                        l.append(0)
+                    
+                    l.append(last_record.quantity)
+                    # new_stock=(l[4]-l[3])
+                    # if(new_stock>0):
+                    #     l.append(new_stock)
+                    
+                    datalist.append(l)
+                    # print(first_record.quantity,first_record.con_date)
+                except:
+                    pass
+        
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=%s.xls'%file_name   #"Intransit-all.xls"
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('report') # this will make a sheet named Users Data
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    for row in datalist:
+        row_num += 1
+        for col_num in range(len(row)):
+            
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    
+    return response
 
 
 
@@ -3106,10 +3407,11 @@ def colorReport(request):
 
                 l.append(new_stock)
                 datalist.append(l)
-                print(first_record.quantity,first_record.con_date)
+                # print(first_record.quantity,first_record.con_date)
             except:
-                print("ee")
-        
+                pass
+    begin=str(begin)
+    end=str(end)
     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
 
 

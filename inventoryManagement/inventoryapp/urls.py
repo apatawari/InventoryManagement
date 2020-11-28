@@ -65,6 +65,7 @@ urlpatterns = [
     path('back',views.back1,name="back1"),
     path('back2',views.back2checking,name="back2checking"),
     path('back/<str:state>',views.back,name="back"),
+    path('backtoorders/<str:state>',views.backtoorders,name="backtoorders"),
 
     path('deleteparty/<int:id>',views.deleteProcessingParty,name="deleteprocessingparty"),
     path('editparty/<int:id>',views.renderEditParty,name="rendereditparty"),
@@ -89,6 +90,8 @@ urlpatterns = [
     path('export/excelpage', views.export_page_xls, name='excel_page'),
     path('export/excelall', views.export_all_xls, name='excel_all'),
     path('export/excelfilter', views.export_filter_all_xls, name='excel_filter_all'),
+
+    path('export/report',views.export_report_xls,name='export_report_xls'),
 
     #####################   COLOR    #############################################################
     path('addcolorsupplier',views.renderAddColorSupplier,name='addcolorsupplier'),

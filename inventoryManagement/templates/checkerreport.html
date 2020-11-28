@@ -16,7 +16,16 @@
     </div>
       <br>
       <!-- Filter End -->
-
+      <div class="download">
+        <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="text" name="checker" value="{{checker}}" hidden>
+          <input type="date" name="start_date" value="{{begin}}" hidden/>
+          <input type="date" name="end_date" value="{{end}}" hidden/>
+          <button class="download-button">Print</button>
+        </form>
+        
+      </div>
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">
@@ -37,19 +46,32 @@
         </thead>
         <tbody>
         {% for d in records %}
-          <tr>
-            
-            <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{d.0}}</td>
-            <td>{{d.1}}</td>
-            <td >{{d.2}}</td>
-            <td>{{d.4}}</td>
-            <td>{{d.5}}</td>
-            <td>{{d.6}}</td>
+            <tr>
             
             
-          </tr>
+              <td scope="row">{{ forloop.counter }}</td>
+              <td class="td-text">{{d.0}}</td>
+              <td>{{d.1}}</td>
+              <td >{{d.2}}</td>
+              <td>{{d.4}}</td>
+              <td>{{d.5}}</td>
+              <td>{{d.6}}</td>
+              
+              
+            </tr>
+            
         {% endfor %}
+        <tr>
+          <td scope="row"><strong>Total</strong></td>
+          <td class="td-text">-</td>
+          <td>-</td>
+          <td ><strong>{{total.0}}</strong></td>
+          <td>-</td>
+          <td>-</td>
+          <td><strong>{{total.1}}</strong></td>
+          
+          
+        </tr>
         </tbody>
       </table>
       <!-- Display Table End -->

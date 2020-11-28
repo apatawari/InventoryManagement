@@ -44,6 +44,7 @@
                     <label for="Rate">Rate</label>
                     <input type="float" class="form-control" id="rate" placeholder="Rate" value="{{ record.rate}}"  name="rate" required readonly>
                 </div>
+
             </div>
             <div class="form-row">
                 <!--
@@ -75,6 +76,12 @@
                 
                 {% endif %}
             </div>-->
+            <div class="form-row">
+                <div class="form-group col-md-3 next-previous">
+                    <a class ="anchor-button float-right" href="{% url 'backtoorders' record.state %}">Back</a>
+                    
+                </div>
+            </div>
         </div>
 
         <div class="container-2">
