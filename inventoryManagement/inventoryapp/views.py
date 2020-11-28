@@ -1263,7 +1263,7 @@ def generateReport(request):
                     return render(request, 'reportlot.html',{'data':send_data})
 
         
-        return render(request,'report.html',{'records':rec})
+        return render(request,'report.html',{'records':rec,'send_parties':send_parties })
 
     else:
         if(lot==''):
@@ -1392,7 +1392,7 @@ def generateReport(request):
                     send_data = [send_list]
                     return render(request, 'reportlot.html',{'data':send_data})
         
-        return render(request,'report.html',{'records':rec})
+        return render(request,'report.html',{'records':rec,'send_parties':send_parties})
 
 
 

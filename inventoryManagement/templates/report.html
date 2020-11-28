@@ -66,7 +66,9 @@
     </div>
     {% endfor %}
     <!-- Messages End -->
-    
+    <div class="page-title">
+      <h3 class="title-text">Ledger</h3>
+    </div>
     {% load widget_tweaks %}
     {% load my_tags %}
       <br>
@@ -81,13 +83,15 @@
             
             <th scope="col">Sr-no</th>
             <th scope="col">Lot No</th>
+            <th scope="col">Gate Pass No</th>
             <th scope="col">Quality</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
             <th scope="col">Rate</th>
             <th scope="col">Sent in processing date</th>
             <th scope="col">Recieve from processing date</th>
-            <th scope="col">Processing Party</th>
+            <th scope="col">Processing party</th>
+            <th scope="col">Chalan No</th>
             <th scope="col">State</th>
             
             
@@ -99,13 +103,15 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td>{{record.lot_no}}</td>
+            <td>{{record.gate_pass}}</td>
             <td class="td-text">{{record.quality}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.sent_to_processing_date}}</td>
             <td>{{record.recieve_processed_date}}</td>
-            <td class="td-text">{{record.processing_party_name}}</td>
+            <td>{{record.processing_party_name}}</td>
+            <td>{{record.chalan_no}}</td>
             <td class="td-text">{{record.state}}</td>
             
           </tr>
