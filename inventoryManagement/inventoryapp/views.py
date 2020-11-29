@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 import pandas
 import numpy as np
 import datetime
+import dateutil.parser
 import xlwt
 import ast
 from django.template.loader import render_to_string
@@ -86,11 +87,19 @@ def backtoorders(request,state):
     
     for g in godowns:
         g_list.append(g.godown)
+    lease=Lease.objects.all()
+    
+    l_list=[]
+    
+    for g in lease:
+        l_list.append(g.lease)
     
     if state == "Ordered" or state == "In Transit" or state == "Godown":
         return redirect('/ordergeneration')
     elif state in g_list:
         return redirect('/goodsreceived')
+    elif state in l_list:
+        return redirect('/goodslease')
     
 
 def upload(request):
@@ -159,14 +168,14 @@ def upload(request):
                         qualities=data[6]
                         )
                     new_quality.save()
-                try:
-                    rec=get_object_or_404(ColorSupplier,
-                        supplier=data[1])
-                except:
-                    new_sup = ColorSupplier(
-                        supplier=data[1]
-                        )
-                    new_sup.save()
+                # try:
+                #     rec=get_object_or_404(ColorSupplier,
+                #         supplier=data[1])
+                # except:
+                #     new_sup = ColorSupplier(
+                #         supplier=data[1]
+                #         )
+                #     new_sup.save()
         if (counter > 0):
             messages.success(request,str(counter)+ " Records were Inserted")
         else:
@@ -305,7 +314,7 @@ def approveBale(request,id):
         prevRec.recieving_date=str(request.POST["recieving_date"])
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/godownrequest')
+        return redirect('/intransit')
     elif(prevRec.bale<bale_recieved):
         messages.error(request,"Bale Recieved cannot be more than Original Amount of Bale")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -356,7 +365,7 @@ def approveBale(request,id):
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
         #print(than_in_transit,than_in_godown)
-        return redirect('/godownrequest')
+        return redirect('/intransit')
 
 #quality2 = request.POST.get("quality2")
 
@@ -425,7 +434,7 @@ def approveCheck(request,id):
             prevRec.mtrs=mtrs_edit
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
-            return redirect('/checkingrequest')
+            return redirect('/godown')
         elif(prevRec.than<than_recieved):
             messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -494,7 +503,7 @@ def approveCheck(request,id):
             prevRec.save()
             messages.success(request,"Data updated to defective state")
 
-            return redirect('/checkingrequest')
+            return redirect('/godown')
         elif(prevRec.than<than_recieved):
             messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -552,7 +561,7 @@ def approveCheck(request,id):
                 prevRec.save()
                 messages.success(request,"Data updated to defective state")
 
-    return redirect('/checkingrequest')
+    return redirect('/godown')
 
 def editChecked(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -872,7 +881,7 @@ def sendInProcess(request,id):
         prevRec.gate_pass = int(request.POST.get('gatepass'))
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/processingrequest')
+        return redirect('/checking')
     elif(prevRec.than<than_recieved):
         messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -929,7 +938,7 @@ def sendInProcess(request,id):
             prevRec.save()
             messages.success(request,"Data Updated Successfully")
         #print(than_in_transit,than_in_godown)
-        return redirect('/processingrequest')
+        return redirect('/checking')
 
 
 #ready to print-----
@@ -999,7 +1008,7 @@ def readyToPrint(request,id):
                 tr.tally=True
                 tr.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/readytoprintrequest')
+        return redirect('/inprocess')
     elif(prevRec.than<than_recieved):
         messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -1060,7 +1069,7 @@ def readyToPrint(request,id):
 
 
         #print(than_in_transit,than_in_godown)
-        return redirect('/readytoprintrequest')
+        return redirect('/inprocess')
 
 def reportFilter(request):
     processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
@@ -3109,7 +3118,7 @@ def leaseApprove(request,id):
         prevRec.quantity=0
         prevRec.save()
         messages.success(request,"Data Updated Successfully")
-        return redirect('/leaserequest')
+        return redirect('/goodsreceived')
     elif(prevRec.quantity<quantity_recieved):
         messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -3139,9 +3148,41 @@ def leaseApprove(request,id):
             messages.success(request,"Data Updated Successfully")
             
             
-    return redirect('/leaserequest')
+    return redirect('/goodsreceived')
 
+
+
+def leaseedit(request,id):
+    leasestock = get_object_or_404(GodownLeaseColors,id=id)
+    color = Color.objects.all().order_by('color')
+    units=Units.objects.all().order_by('unit')
+    godowns=Godowns.objects.all()
+    return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'godowns':godowns})   
+
+def savelease(request,id):
+    godownname=request.POST.get('godownname')
+    act_quantity=int(request.POST.get('act-quantity'))
     
+    stock=get_object_or_404(GodownLeaseColors,id=id)
+    
+    old_quantity=stock.quantity
+    diff=old_quantity-act_quantity
+    if(diff<0):
+        messages.error(request,"Please move extra quantity from godown section")
+        return redirect('/goodsreceived')
+    else:
+        try:
+            stockgodown=get_object_or_404(GodownLeaseColors,color=stock.color,unit=stock.unit,state=godownname)
+        except:
+            messages.error(request,"Selected Godown never consisted this chemical")
+            return redirect('/goodslease')
+        stock.quantity=act_quantity
+        stock.save()
+        stockgodown.quantity=stockgodown.quantity+diff
+        stockgodown.save()
+        messages.success(request,"Loose Godown quantity edited")
+        return redirect('/goodslease')
+
 
 def renderDailyConsumptionLease1(request):                                                      ####repair required 
     lease = Lease.objects.all().order_by('lease')
@@ -3153,44 +3194,121 @@ def renderDailyConsumptionLease1(request):                                      
         new_value.save()
         color = GodownLeaseColors.objects.filter(state="Loose Godown 1").order_by('color')
     todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
-    
-    return render(request,'./color/dailyconsumption.html',{'colors':color,'todays':todays,'lease':lease,'name':first_lease.lease})
+    todaydate=str(datetime.date.today())
+    return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':lease,'name':first_lease.lease})
 
 def renderDailyConsumptionLease2(request):
     lease = request.POST.get('lease')
     leases = Lease.objects.all().order_by('lease')
     color = GodownLeaseColors.objects.filter(state=lease).order_by('color')
     todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
-    
-    return render(request,'./color/dailyconsumption.html',{'colors':color,'todays':todays,'lease':leases,'name':lease})
+    todaydate=str(datetime.date.today())
+    return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':lease})
+
+# def consume(request,name):
+#     colors = GodownLeaseColors.objects.filter(state=name).exclude(quantity=0).order_by('color')
+#     flag = 0
+#     for c in colors:
+#         if(int(request.POST.get(str(c.id)))>c.quantity):
+#             flag = flag + 1
+#             continue
+#         try:
+
+#             closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit).order_by('-dailydate').first()
+#             if(closing_stock.dailydate != datetime.date.today()):
+#                 new_cs = ClosingStock(
+#                     color=c.color,
+#                     unit=c.unit,
+#                     quantity=closing_stock.quantity - int(request.POST.get(str(c.id))),
+#                     dailydate=datetime.date.today(),
+#                     rate=c.rate
+#                 )
+#                 new_cs.save()
+
+#             else:
+#                 closing_stock.quantity=closing_stock.quantity - int(request.POST.get(str(c.id)))
+#                 closing_stock.save()
+
+#         except:
+#             pass
 
 
+
+#         c.quantity=c.quantity - int(request.POST.get(str(c.id)))
+#         c.save()
+#         stored_color = GodownLeaseColors.objects.filter(color=c.color,unit=c.unit)
+#         q=0
+#         for sc in stored_color:
+#             q=q+sc.quantity
+
+#         daily_consump = DailyConsumption(
+#             con_date = datetime.date.today(),
+#             color = c.color,
+#             unit = c.unit,
+#             quantity = int(request.POST.get(str(c.id))),
+#             quantity_remaining = q
+#         )
+#         daily_consump.save()
+
+#     if (flag != 0):
+#         messages.error(request,"%s Quantity entered exceeded the quantities available in Loose" %(flag))
+#     return redirect('/dailyconsumption1')
 
 def consume(request,name):
     colors = GodownLeaseColors.objects.filter(state=name).exclude(quantity=0).order_by('color')
     flag = 0
+    consumingdate=request.POST.get('consumingdate')
+    # print(consumingdate)
+    # print(str(consumingdate))
+    begin=datetime.datetime.strptime(consumingdate,"%Y-%m-%d").date()
+    end=datetime.date.today()
+    selected_dates=[]
+        
+    # selected_qualities=[]
+    next_day = begin
+    while True:
+        if next_day > end:
+            break
+        selected_dates.append((datetime.datetime.strptime(str(next_day), '%Y-%m-%d')))#.strftime('%b %d,%Y'))
+        next_day += datetime.timedelta(days=1)
+
+    print(selected_dates)
     for c in colors:
         if(int(request.POST.get(str(c.id)))>c.quantity):
             flag = flag + 1
             continue
         try:
-            
-            closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit).order_by('-dailydate').first()
-            if(closing_stock.dailydate != datetime.date.today()):
+            closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__lte=str(consumingdate)).order_by('-dailydate').first()
+            print(str(closing_stock.dailydate),closing_stock.quantity,type(closing_stock.dailydate))
+            print(type(consumingdate))
+            #closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit).order_by('-dailydate').first()
+            if(str(closing_stock.dailydate) != consumingdate):
+                print("done4")
                 new_cs = ClosingStock(
                     color=c.color,
                     unit=c.unit,
                     quantity=closing_stock.quantity - int(request.POST.get(str(c.id))),
-                    dailydate=datetime.date.today(),
+                    dailydate=str(consumingdate),
                     rate=c.rate
                 )
                 new_cs.save()
-            
             else:
                 closing_stock.quantity=closing_stock.quantity - int(request.POST.get(str(c.id)))
                 closing_stock.save()
-
+                print("done")
+            new_dates=selected_dates[1:]
+            
+            
+            all_closingstocks = ClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__in=new_dates)
+            print("got all")
+            print(new_dates)
+            for a in all_closingstocks:
+                print(a.color)
+                print(a.dailydate)
+                a.quantity=a.quantity-int(request.POST.get(str(c.id)))
+                a.save()
         except:
+            print("ec")
             pass
             
             
@@ -3203,7 +3321,7 @@ def consume(request,name):
             q=q+sc.quantity
 
         daily_consump = DailyConsumption(
-            con_date = datetime.date.today(),
+            con_date = str(consumingdate),
             color = c.color,
             unit = c.unit,
             quantity = int(request.POST.get(str(c.id))),

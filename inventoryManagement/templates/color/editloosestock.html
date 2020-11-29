@@ -1,0 +1,66 @@
+{% extends './colornav.html' %}
+
+{% block title%} Place Order {% endblock %}
+{% block content%}
+      <!-- Diplay Record Start -->
+        <div class="page-title">
+            <h3 class="title-text">Edit Loose Godown Stock</h3>
+        </div>
+
+      <form class = "md-form view-file" method="POST" action="{% url 'savelease' record.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="new-quality">Color</label>
+                
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.color}}" name="quantity" readonly >
+            
+ 
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Quantity">Quantity</label>
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.quantity}}" name="quantity" readonly >
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Unit">Unit</label>
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.unit}}" name="quantity" readonly >
+            
+                 
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="Unit">Actual Total Quantity</label>
+                <input type="number" class="form-control" id="quantity" placeholder="Quantity" name="act-quantity" value="{{ record.quantity}}" name="quantity" required autofocus>
+            
+                 
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Quantity">Godown Name</label>
+                <select class="form-control" name="godownname" required>    
+                    {% for s in godowns %}
+                        
+                        <option value="{{ s.godown }}" >{{ s.godown }}</option>
+                                               
+                    {% endfor %}
+                </select>   
+            </div>
+            
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <button type="submit" class="btn btn-primary button">Save</button>
+            </div>
+            
+            <div class="form-group col-md-6 next-previous">
+                <a class ="anchor-button float-right" href="{% url 'backtoorders' record.state %}">Back</a>
+                    
+            </div>
+            
+        </div>
+      </form>
+      <!-- Display Record End -->
+{% endblock %}

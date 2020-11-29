@@ -29,6 +29,12 @@
       <!-- Daily consumption Start-->
       <form method="POST" action="{% url 'consume' name %}" class="md-form" enctype="multipart/form-data">
         {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group ml-3 col-md-3">
+            <label for="Order Date">Consumption Date</label>
+            <input type="date" class="form-control" id="consuming Date" name="consumingdate" min="{{ mindate }}" max="{{ today }}" value="{{today}}"  required/>
+          </div>
+        </div>
         <div id="datatable">
           <table class="table">
             <thead class="thead-dark">

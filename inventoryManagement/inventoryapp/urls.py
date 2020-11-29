@@ -143,7 +143,9 @@ urlpatterns = [
     path('leaserequest',views.leaseRequest,name='leaserequest'),
     path('leaseapprove/<int:id>',views.viewGood,name='leaseapprove'),
     path('leaseapproved/<int:id>',views.leaseApprove,name='leaseapproved'),
-    
+    path('leaseedit/<int:id>',views.leaseedit,name='leaseedit'),
+    path('saveleaseedit/<int:id>',views.savelease,name='savelease'),
+
     path('dailyconsumption1',views.renderDailyConsumptionLease1,name='dailyconsumption'),
     path('dailyconsumption2',views.renderDailyConsumptionLease2,name='dailyconsumption2'),
     path('consume/<str:name>',views.consume,name='consume'),
