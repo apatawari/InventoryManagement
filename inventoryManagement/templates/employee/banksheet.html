@@ -1,0 +1,101 @@
+{% extends './employeenav.html' %}
+
+{% block title%} Pay Employee {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+    <!-- Bank Sheet Start-->
+
+    <div class="page-title">
+      <h3 class="title-text">Bank Sheet</h3>
+    </div>
+    <div>
+        <form method="POST" class="md-form" action="{% url 'banksheet2' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label class="ml-3" for="lease">Choose Month</label>
+            <div class="form-row mb-5 ml-3">
+              <label for="firstdate">Start Date</label>
+              <input type="date" class="form-control" id="firstdate" name="start_date" placeholder="mm-dd-yyyy"/>
+              <label for="firstdate">End Date</label>
+              <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" />
+
+              <button class="download-button ml-4" style="width: 10%;">Go</button>
+            </div>
+        </form>
+    </div>
+
+      <form method="POST" class="md-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div id="datatable">
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+
+                <th scope="col">Ref No.</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Value Date</th>
+                <th scope="col">Branch Code</th>
+                <th scope="col">Sender Account Type</th>
+                <th scope="col">Remitter Account No</th>
+                <th scope="col">Remitter Name</th>
+                <th scope="col">IFSC Code</th>
+                <th scope="col">Debit Account</th>
+                <th scope="col">Beneficiary Account Type</th>
+                <th scope="col">Bank Account No</th>
+                <th scope="col">Beneficiary Name</th>
+                <th scope="col">Remittance Details</th>
+                <th scope="col">Debit Account System</th>
+                <th scope="col">Originator of Remmittance</th>
+                <th scope="col">Mobile No.</th>
+
+              </tr>
+            </thead>
+            <tbody>
+            {% for p in payments %}
+              <tr>
+                  <td></td>
+                  <td>{{p.amount}}</td>
+                  <td>{{p.payment_date}}</td>
+                  <td>{{p.company_account.bank_name}}</td>
+                  <td>{{p.company_account.bank_name}}</td>
+                  <td>{{p.company_account.company_account}}</td>
+                  <td>{{p.company_account.account_name}}</td>
+                  <td>{{p.company_account.ifsc}}</td>
+                  <td>-</td>
+                  <td>{{p.employee.account_type}}</td>
+                  <td>{{p.employee.account_no}}</td>
+                  <td>{{p.employee.name}}</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>{{e.phone_no}}</td>
+                  
+              </tr>
+            {% endfor %}
+
+
+            </tbody>
+          </table>
+        </div>
+      </form>
+      <!-- Bank Sheet End -->
+
+      <div class="pagination">
+        <div class="number-line">
+          {% if suppliers.has_previous %}
+          <a class="page-no-text" href="{% my_url suppliers.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% endif%}
+          {% for num in suppliers.paginator.page_range %}
+            {%if suppliers.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ suppliers.paginator.num_pages }}&nbsp
+
+            {% endif %}
+          {%endfor%}
+          {% if suppliers.has_next %}
+            <a class="page-no-text" href="{% my_url suppliers.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% endif%}
+        </div>
+      </div>
+
+
+{% endblock %}

@@ -5,10 +5,10 @@
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Party Start-->
-      <form method="POST" action="#" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'bankedit' record.id %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Bank Account</h1>
+            <h1>Edit Bank Account</h1>
         </div>
         <div class="upload-container">
             <input type="text" class="form-control" id="addquality" placeholder="Bank Name" value="{{record.bank_name}}" name="bank_name" autofocus required>

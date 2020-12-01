@@ -1,0 +1,78 @@
+{% extends './employeenav.html' %}
+
+{% block title%} Pay Employee {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+    <!-- Pay Employee Start-->
+
+    <div class="page-title">
+      <h3 class="title-text">Pay Employee</h3>
+    </div>
+
+      <form method="POST" class="md-form" action="{% url 'makepayment' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" id="salaryamount" value="{{idlist}}" name="selected-emp-id" hidden>
+        <input type="text" id="salaryamount" value="{{bank.id}}" name="bankid" hidden>
+        <input type="text" id="salaryamount" value="{{d}}" name="paydate" hidden>
+        <div id="datatable">
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+
+                <th scope="col">Ref No.</th>
+                <th scope="col">Branch Code</th>
+                <th scope="col">Sender Account Type</th>
+                <th scope="col">Remitter Account No</th>
+                <th scope="col">Remitter Name</th>
+                <th scope="col">IFSC Code</th>
+                <th scope="col">Debit Account</th>
+                <th scope="col">Beneficiary Account Type</th>
+                <th scope="col">Bank Account No</th>
+                <th scope="col">Beneficiary Name</th>
+                <th scope="col">Remittance Details</th>
+                <th scope="col">Debit Account System</th>
+                <th scope="col">Originator of Remmittance</th>
+                <th scope="col">Mobile No.</th>
+                <th scope="col">Value Date</th>
+                
+                <th scope="col">Amount</th>
+
+              </tr>
+            </thead>
+            <tbody>
+            {% for e in employee %}
+              <tr>
+                  <td>-</td>
+                  
+                  <td>{{bank.bank_name}}</td>
+                  <td>{{bank.bank_name}}</td>
+                  <td>{{bank.company_account}}</td>
+                  <td>{{bank.account_name}}</td>
+                  <td>{{bank.ifsc}}</td>
+                  <td>-</td>
+                  <td>{{e.account_type}}</td>
+                  <td>{{e.account_no}}</td>
+                  <td>{{e.name}}</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>{{e.phone_no}}</td>
+                  <td>{{d}}</td>
+                  <td>
+                    <input type="float" class="form-control" id="salaryamount" value="0" placeholder="Enter Amount" name="{{e.aadhar_no}}" autofocus>
+                  </td>
+              </tr>
+            {% endfor %}
+
+
+            </tbody>
+          </table>
+        </div>
+        <br>
+          <button class="btn-add float-right mr-2" type="submit" style="width: 15%;">Transfer</button>
+      </form>
+      <!-- Pay Employee End -->
+
+
+{% endblock %}

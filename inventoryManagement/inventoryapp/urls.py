@@ -162,4 +162,14 @@ urlpatterns = [
     path('savebank', views.saveBank,name='savebank'),
     path('deletebank', views.deleteBank,name='deletebank'),
     path('editbank/<int:id>', views.renderEditBank,name='editbank'),
+    path('bankedit/<int:id>', views.editBank,name='bankedit'),
+
+    path('paymentgenerationform', views.renderGeneratorForm,name='generatorform'),
+    path('generatepayment', views.generatePayment,name='generatepayment'),
+    path('makepayment', views.makePayment,name='makepayment'),
+
+    path('banksheet', views.bankSheet,name='banksheet'),
+    path('banksheetfiltered', views.bankSheet2,name='banksheet2'),
+    path('salarysheet', views.salarySheet,name='salarysheet'),
+    path('salarysheetfiltered', views.salarySheet2,name='salarysheet2'),
 ]

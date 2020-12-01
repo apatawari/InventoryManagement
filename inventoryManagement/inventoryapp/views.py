@@ -3624,12 +3624,141 @@ def renderEditBank(request,id):
     quality=get_object_or_404(CompanyAccounts,id=id)
     return render(request,'./employee/editbank.html',{'id':id,'record':quality})
 
-# def editChecker(request,id):
-#     quality=get_object_or_404(Checker,id=id)
-#     p=request.POST.get("edit-checker")
-#     p = p.upper()
-#     p = p.strip()
-#     quality.checker = p
-#     quality.save()
-#     messages.success(request,"Checker edited")
-#     return redirect('/addchecker')
+def editBank(request,id):
+    quality=get_object_or_404(CompanyAccounts,id=id)
+    q=request.POST.get("bank_name")
+    q = q.strip()
+    l=int(request.POST.get("account_no"))
+    
+    m=request.POST.get("ifsc")
+    m = m.strip()
+    n=request.POST.get("account_name")
+    n = n.strip()
+
+    if q.strip()=="" or m=="" or n=="":
+        messages.error(request,"please enter valid input")
+        return redirect('/addbank')
+    quality.bank_name = q.upper()
+    quality.company_account = l
+    quality.ifsc = m.upper()
+    quality.account_name = n.upper()
+    quality.save()
+    messages.success(request,"Account edited")
+    return redirect('/addbank')
+
+
+
+def renderGeneratorForm(request):
+    emps = Employee.objects.all().order_by('name')
+    banks = CompanyAccounts.objects.all().order_by('bank_name')
+    d=str(datetime.date.today())
+
+
+    # pay=MonthlyPayment.objects.all()
+    # for p in pay:
+    #     print(p.employee.name,p.company_account.bank_name)
+    return render(request,'./employee/generatorform.html',{'emps':emps,'banks':banks,'d':d})
+
+def generatePayment(request):
+    payment_date = str(request.POST.get('payment_date'))
+    bank_id = int(request.POST.get('bank'))
+    bank = get_object_or_404(CompanyAccounts,id=bank_id)
+    emps = Employee.objects.all().order_by('name')
+    selected_emps=[]
+    for e in emps:
+        if(request.POST.get(str(e.aadhar_no))!=None):
+            selected_emps.append(int(request.POST.get(str(e.aadhar_no))))
+    print(selected_emps,bank.bank_name,payment_date)
+
+    selected_employee = Employee.objects.filter(id__in=selected_emps).order_by('name')
+
+    # for e_id in selected_emps:
+    #     emp=get_object_or_404(Employee,id=e_id)
+    #     try:
+    #         last_pay = MonthlyPayment.objects.filter(employee,aadhar_no=emp.aadhar_no).order_by('-payment_date').first()
+    #         last_pay_date = last_pay.payment_date
+    #     except:
+    #         last_pay_date = str(datetime.date.today())
+    #     new_payment = MonthlyPayment(
+    #         employee=emp,
+    #         company_account = bank,
+    #         payment_date = payment_date,
+    #         amount=0,
+    #         last_payment_date=last_pay_date
+    #     )
+    #     new_payment.save()
+    return render(request,'./employee/payemployee.html',{'idlist':selected_emps,'employee':selected_employee,'bank':bank,'d':payment_date})
+
+
+def makePayment(request):
+    selected_emp=request.POST.get("selected-emp-id")
+    selected_emp = ast.literal_eval(selected_emp)
+    bankid = int(request.POST.get('bankid'))
+    bank=get_object_or_404(CompanyAccounts,id=bankid)
+    payment_date = request.POST.get("paydate")
+    print(selected_emp,payment_date,bank.bank_name)
+
+    for e_id in selected_emp:
+        emp=get_object_or_404(Employee,id=int(e_id))
+        try:
+            last_pay = MonthlyPayment.objects.filter(employee=emp).order_by('-payment_date').first()
+            last_pay_date = last_pay.payment_date
+        except:
+            last_pay_date = payment_date
+        new_payment = MonthlyPayment(
+            employee=emp,
+            company_account = bank,
+            payment_date = payment_date,
+            amount=float(request.POST.get(str(emp.aadhar_no))),
+            last_payment_date=last_pay_date
+        )
+        new_payment.save()
+    return redirect('/banksheet')
+
+def bankSheet(request):
+    payments=MonthlyPayment.objects.all()
+    return render(request,'./employee/banksheet.html',{'payments':payments})
+
+def bankSheet2(request):
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+    if(begin!="" or end!=""):
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+
+        
+        payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates)
+        return render(request,'./employee/banksheet.html',{'payments':payments})
+
+def salarySheet(request):
+    payments=MonthlyPayment.objects.all()
+    return render(request,'./employee/salarysheet.html',{'payments':payments})
+
+def salarySheet2(request):
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+    if(begin!="" or end!=""):
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+
+        
+        payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates)
+        return render(request,'./employee/salarysheet.html',{'payments':payments})

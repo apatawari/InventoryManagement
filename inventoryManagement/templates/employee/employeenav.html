@@ -27,6 +27,9 @@
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
                 <a class="nav-link {%if request.path == employeehome %} active {%endif%}" href="{% url 'employeehome' %}">Employee - Home</a>
                 <a class="nav-link" href="{% url 'employeedetails' %}">Employee Details</a>
+                <a class="nav-link" href="{% url 'generatorform' %}">Pay Employee</a>
+                <a class="nav-link" href="{% url 'banksheet' %}">Bank Sheet</a>
+                <a class="nav-link" href="{% url 'salarysheet' %}">Salary Sheet</a>
             </li>
           </ul>
         </div>

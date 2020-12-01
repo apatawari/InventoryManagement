@@ -150,15 +150,18 @@ class Employee(models.Model):
     phone_no = models.IntegerField()
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
-
-class MonthlyPayment(models.Model):
-    employee = models.ForeignKey(Employee,default=1,on_delete=models.CASCADE)
-    payment_date = models.DateField(null=True,default=None)
-    company_account = models.IntegerField()
-    amount = models.IntegerField()
-
+    
+    
 class CompanyAccounts(models.Model):
     company_account = models.IntegerField()
     account_name = models.CharField(max_length=50)
     ifsc = models.CharField(null=True,max_length=50)
     bank_name = models.CharField(null=True,max_length=50)
+
+class MonthlyPayment(models.Model):
+    employee = models.ForeignKey(Employee,default=1,on_delete=models.CASCADE)
+    payment_date = models.DateField(null=True,default=None)
+    company_account = models.ForeignKey(CompanyAccounts,default=1,on_delete=models.CASCADE)
+    amount = models.IntegerField()
+    last_payment_date = models.DateField(null=True,default=None)
+
