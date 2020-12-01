@@ -135,3 +135,30 @@ class ClosingStock(models.Model):
     rate = models.FloatField()
     unit = models.CharField(null=True,max_length=50)
     dailydate = models.DateField(null=True,default=None)
+
+
+################################Employeee###############
+class Employee(models.Model):
+    name = models.CharField(max_length=50)
+    father_name = models.CharField(max_length=50)
+    bank_name = models.CharField(max_length=50)
+    account_no = models.IntegerField()
+    ifsc = models.CharField(max_length=50)
+    account_type =models.CharField(max_length=50)
+    aadhar_no = models.IntegerField()
+    contractor_name = models.CharField(max_length=50)
+    phone_no = models.IntegerField()
+    address = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+
+class MonthlyPayment(models.Model):
+    employee = models.ForeignKey(Employee,default=1,on_delete=models.CASCADE)
+    payment_date = models.DateField(null=True,default=None)
+    company_account = models.IntegerField()
+    amount = models.IntegerField()
+
+class CompanyAccounts(models.Model):
+    company_account = models.IntegerField()
+    account_name = models.CharField(max_length=50)
+    ifsc = models.CharField(null=True,max_length=50)
+    bank_name = models.CharField(null=True,max_length=50)

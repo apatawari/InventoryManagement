@@ -156,4 +156,10 @@ urlpatterns = [
 
     ############################################# Module 3 - Employee ################################################
     path('employeehome', views.employeehome,name='employeehome'),
+    path('saveemployee', views.saveEmployee,name='saveemployee'),
+    path('employeedetails', views.employeedetails,name='employeedetails'),
+    path('addbank', views.renderAddBankAc,name='addbank'),
+    path('savebank', views.saveBank,name='savebank'),
+    path('deletebank', views.deleteBank,name='deletebank'),
+    path('editbank/<int:id>', views.renderEditBank,name='editbank'),
 ]

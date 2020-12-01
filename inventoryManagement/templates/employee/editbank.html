@@ -1,0 +1,40 @@
+{% extends './employeenav.html' %}
+
+{% block title%} Add Quality {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Add Party Start-->
+      <form method="POST" action="#" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Add Bank Account</h1>
+        </div>
+        <div class="upload-container">
+            <input type="text" class="form-control" id="addquality" placeholder="Bank Name" value="{{record.bank_name}}" name="bank_name" autofocus required>
+
+            <br>
+            <input type="number" class="form-control" id="addquality" placeholder="Account No" value="{{record.company_account}}" name="account_no" autofocus required>
+
+            <br>
+            <input type="text" class="form-control" id="addquality" placeholder="IFSC code" value="{{record.ifsc}}" name="ifsc" autofocus required>
+
+            <br>
+            <input type="text" class="form-control" id="addquality" placeholder="Account holder name" value="{{record.account_name}}" name="account_name" autofocus required>
+
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit">Edit</button>
+        </div>
+        
+      </form>
+
+      
+        
+        
+        
+      <!-- Add Party End -->
+      
+
+
+{% endblock %}

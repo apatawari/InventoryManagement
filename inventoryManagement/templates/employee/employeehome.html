@@ -10,7 +10,7 @@
         <h3 class="title-text">Employee Form</h3>
     </div>
 
-    <form class = "md-form view-file" method="POST" enctype="multipart/form-data">
+    <form class = "md-form view-file" method="POST" action="{% url 'saveemployee' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
           <div class="form-group col-md-6">

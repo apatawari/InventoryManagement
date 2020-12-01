@@ -26,7 +26,7 @@
             <li class="nav-item">
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
                 <a class="nav-link {%if request.path == employeehome %} active {%endif%}" href="{% url 'employeehome' %}">Employee - Home</a>
-                <a class="nav-link" href="#">Employee Details</a>
+                <a class="nav-link" href="{% url 'employeedetails' %}">Employee Details</a>
             </li>
           </ul>
         </div>

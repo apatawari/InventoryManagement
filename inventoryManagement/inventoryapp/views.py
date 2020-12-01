@@ -3,6 +3,7 @@ from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record,Quality,Checker,ThanRange,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
+from .models import Employee,CompanyAccounts,MonthlyPayment
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -3536,3 +3537,99 @@ def colorReport(request):
 ##################################### Module 3 - Employee ######################################
 def employeehome(request):
     return render(request, './employee/employeehome.html')
+
+def saveEmployee(request):
+    try:
+        emp=get_object_or_404(Employee,
+            name = request.POST.get('name'),
+            father_name = request.POST.get('father_name'),
+            bank_name = request.POST.get('bank_name'),
+            account_no = int(request.POST.get('account_no')),
+            ifsc = request.POST.get('ifsc_code'),
+            account_type = request.POST.get('account_type'),
+            aadhar_no = int(request.POST.get('aadhar_no')),
+            contractor_name = request.POST.get('contractor_name'),
+            phone_no = int(request.POST.get('phone_no')),
+            address = request.POST.get('address'),
+            city = request.POST.get('city')
+        )
+        messages.error(request,"This Employee Already Exists")
+        return render(request,'./employee/employeehome.html')
+    except:
+        pass
+    new_emp = Employee(
+        name = request.POST.get('name'),
+        father_name = request.POST.get('father_name'),
+        bank_name = request.POST.get('bank_name'),
+        account_no = int(request.POST.get('account_no')),
+        ifsc = request.POST.get('ifsc_code'),
+        account_type = request.POST.get('account_type'),
+        aadhar_no = int(request.POST.get('aadhar_no')),
+        contractor_name = request.POST.get('contractor_name'),
+        phone_no = int(request.POST.get('phone_no')),
+        address = request.POST.get('address'),
+        city = request.POST.get('city')
+        )
+    new_emp.save()
+    messages.success(request,"Employee Added")
+    return render(request,'./employee/employeehome.html')
+
+def employeedetails(request):
+    emps = Employee.objects.all().order_by('name')
+    return render(request, './employee/employeedetails.html',{'records':emps})
+
+
+def renderAddBankAc(request):
+    all_checker = CompanyAccounts.objects.all().order_by('bank_name')
+    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+
+    return render(request,'./employee/addbank.html',{'records':checkers})
+
+def saveBank(request):
+    q=request.POST.get("bank_name")
+    q = q.strip()
+    l=int(request.POST.get("account_no"))
+    
+    m=request.POST.get("ifsc")
+    m = m.strip()
+    n=request.POST.get("account_name")
+    n = n.strip()
+    try:
+        existing_quality=get_object_or_404(CompanyAccounts,bank_name=q.upper(),account_no=l,ifsc=m.upper())
+        messages.error(request,"This checker already exists")
+    except:
+        if q.strip()=="" or m=="" or n=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addbank')
+        new_quality = CompanyAccounts(
+            company_account = l,
+            account_name = n.upper(),
+            ifsc = m.upper(),
+            bank_name = q.upper()
+        )
+        new_quality.save()
+        messages.success(request,"Bank account added")
+    return redirect('/addbank')
+
+
+def deleteBank(request,id):
+    CompanyAccounts.objects.filter(id=id).delete()
+    messages.success(request,"Bank deleted")
+    return redirect('/addbank')
+
+def renderEditBank(request,id):
+    quality=get_object_or_404(CompanyAccounts,id=id)
+    return render(request,'./employee/editbank.html',{'id':id,'record':quality})
+
+# def editChecker(request,id):
+#     quality=get_object_or_404(Checker,id=id)
+#     p=request.POST.get("edit-checker")
+#     p = p.upper()
+#     p = p.strip()
+#     quality.checker = p
+#     quality.save()
+#     messages.success(request,"Checker edited")
+#     return redirect('/addchecker')
