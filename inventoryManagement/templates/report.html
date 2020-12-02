@@ -93,7 +93,7 @@
             <th scope="col">Processing party</th>
             <th scope="col">Chalan No</th>
             <th scope="col">State</th>
-            
+            <th scope="col">Than Pending</th>
             
           </tr>
         </thead>
@@ -113,6 +113,11 @@
             <td>{{record.processing_party_name}}</td>
             <td>{{record.chalan_no}}</td>
             <td class="td-text">{{record.state}}</td>
+            {% if record.state == "In Process" %}
+              <td>{{record.than}}</td>
+            {% else %}
+              <td >0</td>
+            {% endif %}
             
           </tr>
         {% endfor %}
