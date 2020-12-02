@@ -1467,8 +1467,8 @@ def checkerReport(request):
             totaltotal=totaltotal+round((mt*range.rate),2)
 
             datalist.append(l)
-        total.append(totalthans)
-        total.append(totaltotal)
+        total.append(round(totalthans,2))
+        total.append(round(totaltotal,2))
         begin=str(begin)
         end=str(end)
         return render(request,'checkerreport.html',{'records':datalist,'total':total,'checker':checker,'begin':begin,'end':end})
@@ -3529,8 +3529,8 @@ def colorReport(request):
                 # print(first_record.quantity,first_record.con_date)
             except:
                 pass
-    begin=str(begin)
-    end=str(end)
+    begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+    end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
 
 
@@ -3597,18 +3597,24 @@ def saveBank(request):
     m = m.strip()
     n=request.POST.get("account_name")
     n = n.strip()
+    o=request.POST.get("branch_code")
+    o = o.strip()
+    p=request.POST.get("account_type")
+    p = p.strip()
     try:
         existing_quality=get_object_or_404(CompanyAccounts,bank_name=q.upper(),account_no=l,ifsc=m.upper())
         messages.error(request,"This checker already exists")
     except:
-        if q.strip()=="" or m=="" or n=="":
+        if q.strip()=="" or m=="" or n=="" or o=="" or p=="":
             messages.error(request,"please enter valid input")
             return redirect('/addbank')
         new_quality = CompanyAccounts(
             company_account = l,
             account_name = n.upper(),
             ifsc = m.upper(),
-            bank_name = q.upper()
+            bank_name = q.upper(),
+            account_type=p.upper(),
+            branch_code=o.upper()
         )
         new_quality.save()
         messages.success(request,"Bank account added")

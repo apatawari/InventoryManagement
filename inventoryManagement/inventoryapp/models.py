@@ -151,12 +151,14 @@ class Employee(models.Model):
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     
-    
+
 class CompanyAccounts(models.Model):
     company_account = models.IntegerField()
     account_name = models.CharField(max_length=50)
     ifsc = models.CharField(null=True,max_length=50)
     bank_name = models.CharField(null=True,max_length=50)
+    branch_code = models.CharField(max_length=50,default="")
+    account_type = models.CharField(max_length=50,default="Savings")
 
 class MonthlyPayment(models.Model):
     employee = models.ForeignKey(Employee,default=1,on_delete=models.CASCADE)
