@@ -1095,6 +1095,11 @@ def generateReport(request):
     parties= ProcessingPartyName.objects.all()
     # qualities= Quality.objects.all()
     lot=request.POST.get("lot_no")
+    if lot == "":
+        lot=None
+    else:
+        lot=int(lot)
+    print(lot)
     # start_date=request.POST.get("start_date")
     # start_date=datetime.datetime.strptime(str(start_date), '%Y-%m-%d').strftime('%b %d,%Y')
     # end_date=request.POST.get("end_date")
@@ -1112,10 +1117,14 @@ def generateReport(request):
     for p in partyname:
         if(request.POST.get(p)!=None):
             send_parties.append(request.POST.get(p))
-    for p in parties:
-        if(request.POST.get(p.processing_party)!=None):
-            selected_parties.append(request.POST.get(p.processing_party))
     
+    # for p in parties:
+    #     if(request.POST.get(p.processing_party)!=None):
+    #         selected_parties.append(request.POST.get(p.processing_party))
+    s = request.POST.get("checkbox")
+    if s!=None:
+        selected_parties.append(s)
+    print(selected_parties)
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
@@ -1146,12 +1155,12 @@ def generateReport(request):
     #     if(request.POST.get(q.qualities)!=None):
     #         selected_qualities.append(request.POST.get(q.qualities))
     
-        if(lot==''):
+        if(lot==None):
             if(selected_parties!=[] and send_parties!=[]):
-                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates)
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no')
                 
             elif(selected_parties!=[] and send_parties==[]):
-                rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no')
             elif(selected_parties==[] and send_parties!=[]):
                 
                 
@@ -1167,7 +1176,7 @@ def generateReport(request):
                     processing_mtrs=0
                     ready_mtrs=0
                     send_list=[]
-                    rec = Record.objects.filter(party_name=s)
+                    rec = Record.objects.filter(party_name=s).order_by('lot_no')
                     for r in rec:
                         if(r.state=='Transit'):
                             transit_mtrs=transit_mtrs+r.mtrs
@@ -1190,7 +1199,7 @@ def generateReport(request):
                     send_data.append(send_list)
                 return render(request,'reportparty.html',{'data':send_data})
             else:
-                rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states)            
+                rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('lot_no')          
             
         else:
         
@@ -1276,12 +1285,14 @@ def generateReport(request):
         return render(request,'report.html',{'records':rec,'send_parties':send_parties })
 
     else:
-        if(lot==''):
+        print("no date")
+        if(lot==None):
+            print("lot none")
             if(selected_parties!=[] and send_parties!=[]):
-                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties)
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties).order_by('lot_no')
                 return render(request,'reportall.html',{'records':rec})
             elif(selected_parties!=[] and send_parties==[]):
-                rec = Record.objects.filter(processing_party_name__in=selected_parties)
+                rec = Record.objects.filter(processing_party_name__in=selected_parties).order_by('lot_no')
             elif(selected_parties==[] and send_parties!=[]):
                 
                 
@@ -1297,7 +1308,7 @@ def generateReport(request):
                     processing_mtrs=0
                     ready_mtrs=0
                     send_list=[]
-                    rec = Record.objects.filter(party_name=s)
+                    rec = Record.objects.filter(party_name=s).order_by('lot_no')
                     for r in rec:
                         if(r.state=='Transit'):
                             transit_mtrs=transit_mtrs+r.mtrs
@@ -1320,10 +1331,10 @@ def generateReport(request):
                     send_data.append(send_list)
                 return render(request,'reportparty.html',{'data':send_data})
             else:
-                rec= Record.objects.filter(state__in=selected_states)            
+                rec= Record.objects.filter(state__in=selected_states).order_by('lot_no')         
             
         else:
-        
+            print("got lot")
             if(selected_parties!=[] and send_parties!=[]):
                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
             elif(selected_parties!=[] and send_parties==[]):
@@ -1367,6 +1378,7 @@ def generateReport(request):
                 return render(request,'reportparty.html',{'data':send_data})
             else:
                 rec= Record.objects.filter(lot_no=lot,state__in=selected_states)
+                print("got here")
                 if(len(rec) == 0):
                     rec = Record.objects.filter(lot_no=lot)
                     transit_than=0
