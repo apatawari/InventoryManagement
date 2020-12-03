@@ -2909,7 +2909,7 @@ def orderEdit(request,id):
 
 def orderEditSave(request,id):
     rec_order=get_object_or_404(AllOrders, id=id)
-    q=int(request.POST.get('quantity'))
+    q=float(request.POST.get('quantity'))
     r=float(request.POST.get('rate'))
     a=q*r
     orderno=rec_order.order_no
@@ -2923,7 +2923,7 @@ def orderEditSave(request,id):
         rec.order_date=str(request.POST.get('order_date'))                  
         rec.rate=request.POST.get('rate')                               
         rec.amount=a                              
-        rec.quantity=request.POST.get('quantity')                   
+        rec.quantity=request.POST.get('quantity')               
         rec.total_quantity = request.POST.get('quantity') 
         rec.unit = request.POST.get('unit')         
         rec.save()
@@ -2933,7 +2933,8 @@ def orderEditSave(request,id):
         rec_order.order_date=str(request.POST.get('order_date'))                  
         rec_order.rate=request.POST.get('rate')                               
         rec_order.amount=a                              
-        rec_order.quantity=request.POST.get('quantity')        
+        rec_order.quantity=request.POST.get('quantity')
+        rec_order.rem_quantity=request.POST.get('quantity')      
         rec_order.unit = request.POST.get('unit')         
         rec_order.save()
     return redirect('/ordergeneration')
@@ -3034,7 +3035,7 @@ def validate(request,id):
 
 def goodsApprove(request,id):
     prevRec = get_object_or_404(ColorRecord,id=id)
-    quantity_recieved = int(request.POST.get("quantityreceived"))
+    quantity_recieved = float(request.POST.get("quantityreceived"))
     godown = request.POST.get('godownnumber')
     recieving_date = request.POST.get('receivingdate')
     amount = prevRec.amount
@@ -3237,7 +3238,7 @@ def viewGood(request,id):
 
 def leaseApprove(request,id):
     prevRec = get_object_or_404(GodownLeaseColors,id=id)
-    quantity_recieved = int(request.POST.get("quantitylease"))
+    quantity_recieved = float(request.POST.get("quantitylease"))
     lease = request.POST.get('leasenumber')
     
     if(prevRec.quantity == quantity_recieved):
@@ -3302,7 +3303,7 @@ def leaseedit(request,id):
 
 def savelease(request,id):
     godownname=request.POST.get('godownname')
-    act_quantity=int(request.POST.get('act-quantity'))
+    act_quantity=float(request.POST.get('act-quantity'))
     
     stock=get_object_or_404(GodownLeaseColors,id=id)
     
@@ -3415,7 +3416,7 @@ def consume(request,name):
 
     print(selected_dates)
     for c in colors:
-        if(int(request.POST.get(str(c.id)))>c.quantity):
+        if(float(request.POST.get(str(c.id)))>c.quantity):
             flag = flag + 1
             continue
         try:
@@ -3428,33 +3429,33 @@ def consume(request,name):
                 new_cs = ClosingStock(
                     color=c.color,
                     unit=c.unit,
-                    quantity=closing_stock.quantity - int(request.POST.get(str(c.id))),
+                    quantity=closing_stock.quantity - float(request.POST.get(str(c.id))),
                     dailydate=str(consumingdate),
                     rate=c.rate
                 )
                 new_cs.save()
             else:
-                closing_stock.quantity=closing_stock.quantity - int(request.POST.get(str(c.id)))
+                closing_stock.quantity=closing_stock.quantity - float(request.POST.get(str(c.id)))
                 closing_stock.save()
                 print("done")
             new_dates=selected_dates[1:]
             
             
             all_closingstocks = ClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__in=new_dates)
-            print("got all")
-            print(new_dates)
+            #print("got all")
+            #print(new_dates)
             for a in all_closingstocks:
                 print(a.color)
                 print(a.dailydate)
-                a.quantity=a.quantity-int(request.POST.get(str(c.id)))
+                a.quantity=a.quantity-float(request.POST.get(str(c.id)))
                 a.save()
         except:
-            print("ec")
+            #print("ec")
             pass
             
             
             
-        c.quantity=c.quantity - int(request.POST.get(str(c.id)))
+        c.quantity=c.quantity - float(request.POST.get(str(c.id)))
         c.save()
         stored_color = GodownLeaseColors.objects.filter(color=c.color,unit=c.unit)
         q=0
@@ -3465,7 +3466,7 @@ def consume(request,name):
             con_date = str(consumingdate),
             color = c.color,
             unit = c.unit,
-            quantity = int(request.POST.get(str(c.id))),
+            quantity = float(request.POST.get(str(c.id))),
             quantity_remaining = q
         )
         daily_consump.save()
@@ -3669,9 +3670,9 @@ def colorReport(request):
                 # print(first_record.quantity,first_record.con_date)
             except:
                 pass
-    begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-    end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-    return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
+    display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+    display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+    return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
 
 
 ##################################### Module 3 - Employee ######################################
