@@ -29,6 +29,8 @@ class Record(models.Model):
     processing_party_name = models.CharField(max_length=50,default="-")
     total_bale = models.IntegerField()
     checker=models.CharField(max_length=50,default="-")
+    transport=models.CharField(max_length=50,default="-")
+    transport_rate=models.FloatField(max_length=10,default=0)
     checking_date = models.DateField(null=True, default=None)
     processing_type = models.CharField(max_length=50,default="-")           #new
     sent_to_processing_date = models.DateField(null=True, default=None)
@@ -57,6 +59,10 @@ class Checker(models.Model):
 class ThanRange(models.Model):
     range1 = models.FloatField(max_length=10)
     range2 = models.FloatField(max_length=10)
+    rate = models.FloatField(max_length=10)
+
+class Transport(models.Model):
+    transport = models.CharField(max_length=50)
     rate = models.FloatField(max_length=10)
 
 ######################################       COLOR      ##########################################

@@ -67,7 +67,8 @@
     {% endfor %}
     <!-- Messages End -->
     <div class="page-title">
-      <h3 class="title-text">Ledger</h3>
+      <h3 class="title-text">Ledger for {{party}}</h3>
+      <h3 class="title-text">{{begin}} to {{end}}</h3>
     </div>
     {% load widget_tweaks %}
     {% load my_tags %}
@@ -81,22 +82,23 @@
         <thead class="thead-dark">
           <tr>
             <th colspan="8" scope="colgroup" >Outward</th>
-            <th colspan="5" scope="colgroup" class="thead-inward">Inward</th>
+            <th colspan="4" scope="colgroup" class="thead-inward">Inward</th>
           </tr>
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th scope="col">Lot No</th>
+            <th scope="col">Sent in processing date</th>
             <th scope="col">Gate Pass No</th>
-            <th scope="col">Quality</th>
+            <th scope="col">Lot No</th>
+            <th class="td-text" scope="col">Quality</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
             <th scope="col">Rate</th>
-            <th scope="col">Sent in processing date</th>
             <th scope="col">Recieve from processing date</th>
-            <th scope="col">Processing party</th>
             <th scope="col">Chalan No</th>
-            <th scope="col">State</th>
+            <th scope="col">Than Recieved</th>
+            <!-- <th scope="col">Processing party</th> -->
+            <!-- <th scope="col">State</th> -->
             <th scope="col">Than Pending</th>
             
           </tr>
@@ -106,17 +108,22 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td>{{record.lot_no}}</td>
+            <td>{{record.sent_to_processing_date}}</td>
             <td>{{record.gate_pass}}</td>
+            <td>{{record.lot_no}}</td>
             <td class="td-text">{{record.quality}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.rate}}</td>
-            <td>{{record.sent_to_processing_date}}</td>
             <td>{{record.recieve_processed_date}}</td>
-            <td>{{record.processing_party_name}}</td>
             <td>{{record.chalan_no}}</td>
-            <td class="td-text">{{record.state}}</td>
+            {% if record.state == "Ready to print" %}
+              <td>{{record.than}}</td>
+            {% else %}
+              <td >0</td>
+            {% endif %}
+            <!-- <td>{{record.processing_party_name}}</td> -->
+            <!-- <td class="td-text">{{record.state}}</td> -->
             {% if record.state == "In Process" %}
               <td>{{record.than}}</td>
             {% else %}

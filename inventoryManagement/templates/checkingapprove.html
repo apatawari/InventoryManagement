@@ -126,6 +126,21 @@
 
         </div>
         <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="checker">Transport Agency Name</label>
+                <select class="form-control" name="transport" required>
+
+                    {% for q in transport %}
+                        <option value="{{ q.transport }}">{{ q.transport }}</option>
+                        
+                        
+                    {% endfor %}
+                </select>
+
+                
+            </div>
+        </div>
+        <div class="form-row">
             <div class="form-group col-md-9">
                 <button type="submit" class="btn btn-success button">Complete Checking</button>
             </div>

@@ -28,6 +28,20 @@ a {
   background-color: transparent;
 }
 
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: #6c757d;
+  background-color: #fff;
+  padding: 0.5rem 1.3rem;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 5px;
+  overflow: hidden;
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
 a:hover {
   color: #6a3093;
   text-decoration: none;
@@ -137,6 +151,20 @@ hr {
 }
 
 /* Index */
+
+.upload-master {
+  display: flex;
+}
+
+@media (min-width: 576px) {
+  .upload-master {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+  }
+}
+
 .upload-file {
   width: 360px;
   background: #e6e6e6;
@@ -495,8 +523,49 @@ hr {
 .hide {
   display: none;
 }
-
-.anchor-button{
-  color: #ffffff; 
-  background-color: #6a3093;
+.loose-list {
+  width: 20%;
 }
+
+.container-1 {
+  flex: 40%;
+  padding-right: 10px;
+}
+
+.container-2 {
+  flex: 1%;
+}
+
+.container-3 {
+  flex: 69%;
+  padding-left: 10px;
+}
+
+.container {
+  display: flex;
+  width: 80%;
+  background: #e6e6e6;
+  position: relative;
+  margin: 50px auto 100px;
+  padding: 50px 40px;
+  border-radius: 10px;
+  z-index: 1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.vl {
+  border-left: 2px solid #a044ff;
+  height: 500px;
+}
+
+.aadhar-button {
+  font-size: 1rem;
+  display: inline-block;
+  text-transform: uppercase;
+  overflow: hidden;
+  padding: 0.4rem;
+  transition: all 0.25s ease-out 0s;
+}
+
+
+

@@ -49,6 +49,12 @@ urlpatterns = [
     path('editchecker/<int:id>',views.renderEditChecker,name="rendereditchecker"),
     path('editgreychecker/<int:id>',views.editChecker,name="editchecker"),
 
+    path('addtransport',views.renderAddTransport, name="addtransport"),
+    path('savetransport',views.saveTransport, name="savetransport"),
+    path('deletetransport/<int:id>',views.deleteTransport, name="deletetransport"),
+    path('edittransport/<int:id>',views.renderEditTransport,name="renderedittransport"),
+    path('editgreytransport/<int:id>',views.editTransport,name="edittransport"),
+
     path('addrate',views.renderAddRange, name="addrange"),
     path('saverate',views.saveRange, name="saverange"),
     path('deleterate/<int:id>',views.deleteRange, name="deleterange"),

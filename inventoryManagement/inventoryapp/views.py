@@ -3,7 +3,7 @@ from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record,Quality,Checker,ThanRange,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
-from .models import Employee,CompanyAccounts,MonthlyPayment
+from .models import Employee,CompanyAccounts,MonthlyPayment,Transport
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -407,9 +407,10 @@ def checkingApprove(request,id):
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities_all = Quality.objects.all().order_by('qualities')
     checkers=Checker.objects.all().order_by('checker')
+    transports=Transport.objects.all().order_by('transport')
     d=datetime.date.today()
     d=str(d)
-    return render(request, 'checkingapprove.html', {'date':d,'record':rec,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    return render(request, 'checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -418,7 +419,10 @@ def approveCheck(request,id):
     defect=request.POST.get("defect")
     mtrs_edit=request.POST.get("mtrs-checked")
     checker=request.POST.get("checker")
-    
+    t=request.POST.get("transport")
+    transport=get_object_or_404(Transport,transport=t)
+
+
     total_amount=prevRec.bill_amount
     totalthan=prevRec.than
     cost_per_than=total_amount/totalthan
@@ -430,6 +434,8 @@ def approveCheck(request,id):
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
             prevRec.checker=checker
+            prevRec.transport=transport.transport
+            prevRec.transport_rate=transport.rate
             if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
@@ -477,7 +483,9 @@ def approveCheck(request,id):
                 total_mtrs=prevRec.total_mtrs,
                 total_thans=prevRec.total_thans,
                 checking_date=str(request.POST["checking_date"]),
-                checker=checker
+                checker=checker,
+                transport=transport.transport,
+                transport_rate=transport.rate
             
                 )
             if than_recieved == 0 :
@@ -498,6 +506,8 @@ def approveCheck(request,id):
             prevRec.quality=request.POST.get("new-quality")
             prevRec.checking_date=str(request.POST["checking_date"])
             prevRec.checker=checker
+            prevRec.transport=transport.transport
+            prevRec.transport_rate=transport.rate
             if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
@@ -547,7 +557,9 @@ def approveCheck(request,id):
                 total_mtrs=prevRec.total_mtrs,
                 total_thans=prevRec.total_thans,
                 checking_date=str(request.POST["checking_date"]),
-                checker=checker
+                checker=checker,
+                transport=transport.transport,
+                transport_rate=transport.rate
             
                 )
             if than_recieved == 0 :
@@ -824,6 +836,65 @@ def editProcessingParty(request,id):
     messages.success(request,"Processing House Party edited")
     return redirect('/addparty')
 
+
+##########Transport master
+
+
+def renderAddTransport(request):
+    parties_all = Transport.objects.all().order_by('transport')
+    #return render(request,'addparty.html',{'parties':parties_all})
+
+    paginator = Paginator(parties_all,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'addtransport.html',{'records':parties})
+
+def saveTransport(request):
+    p = request.POST.get("transport")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(Transport,transport=p)
+        messages.error(request,"This Transport Party already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addtransport')
+        new_Party = Transport(
+            transport= p,
+            rate=float(request.POST.get('rate'))
+        )
+        new_Party.save()
+        messages.success(request,"Transport Party added successfully")
+    return redirect('/addtransport')
+
+def deleteTransport(request,id):
+    Transport.objects.filter(id=id).delete()
+    messages.success(request,"Transport Party deleted")
+    return redirect('/addtransport')
+
+def renderEditTransport(request,id):
+    party=get_object_or_404(Transport,id=id)
+    return render(request,'edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
+
+def editTransport(request,id):
+    party=get_object_or_404(Transport,id=id)
+    p=request.POST.get("edit-transport")
+    p = p.upper()
+    p = p.strip()
+    party.transport = p
+    party.rate = float(request.POST.get('rate'))
+    party.save()
+    messages.success(request,"Transport Party edited")
+    return redirect('/addtransport')
+
+
+
+
+
+
+
+
 #processing-----
 def showProcessing(request):
     records_list=Record.objects.filter(state="In Process").order_by('lot_no')
@@ -924,7 +995,9 @@ def sendInProcess(request,id):
             total_thans=prevRec.total_thans,
             total_mtrs=prevRec.total_mtrs,
             gate_pass = int(request.POST.get('gatepass')),
-            checker=prevRec.checker
+            checker=prevRec.checker,
+            transport=prevRec.transport,
+            transport_rate=prevRec.rate
             
             )
         if than_recieved == 0 :
@@ -1053,7 +1126,9 @@ def readyToPrint(request,id):
             processing_type=prevRec.processing_type,
             gate_pass=prevRec.gate_pass,
             chalan_no = int(request.POST.get('chalan')),
-            checker=prevRec.checker
+            checker=prevRec.checker,
+            transport=prevRec.transport,
+            transport_rate=prevRec.rate
             
             )
         if than_recieved == 0 :
@@ -1143,18 +1218,11 @@ def generateReport(request):
     
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
-    # print(selected_dates)
-# hhhhh date filter end
-    
-    # for i in range(2):
-    #     name="state"+ str(i)
-    #     if(request.POST.get(name)!=None):
-    #         selected_states.append(request.POST.get(name))
 
-    # for q in qualities:
-    #     if(request.POST.get(q.qualities)!=None):
-    #         selected_qualities.append(request.POST.get(q.qualities))
-    
+            
+        
+        begin=begin.strftime("%d/%m/%Y")
+        end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         if(lot==None):
             if(selected_parties!=[] and send_parties!=[]):
                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','')
@@ -1197,7 +1265,7 @@ def generateReport(request):
                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
                     send_data.append(send_list)
-                return render(request,'reportparty.html',{'data':send_data})
+                return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
             else:
                 rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('lot_no')          
             
@@ -1243,7 +1311,7 @@ def generateReport(request):
                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
                     send_data.append(send_list)
-                return render(request,'reportparty.html',{'data':send_data})
+                return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
             else:
                 rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
                 if(len(rec) == 0):
@@ -1279,21 +1347,28 @@ def generateReport(request):
                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
                     send_data = [send_list]
-                    return render(request, 'reportlot.html',{'data':send_data})
+                    return render(request, 'reportlot.html',{'data':send_data,'begin':begin,'end':end})
 
-        
-        return render(request,'report.html',{'records':rec,'send_parties':send_parties })
-
+        try:
+            return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0],'begin':begin,'end':end })
+        except:
+            if lot!=None:
+                return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot),'begin':begin,'end':end })
+            else:
+                return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':"Date",'begin':begin,'end':end })
+            
+            
     else:
         print("no date")
         if(lot==None):
             print("lot none")
             if(selected_parties!=[] and send_parties!=[]):
                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties).order_by('lot_no')
-                return render(request,'reportall.html',{'records':rec})
+                return render(request,'reportall.html',{'records':rec,'party':selected_parties[0]})
             elif(selected_parties!=[] and send_parties==[]):
-                
                 rec = Record.objects.filter(processing_party_name__in=selected_parties).order_by('lot_no')
+                return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+            
             elif(selected_parties==[] and send_parties!=[]):
                 
                 
@@ -1330,7 +1405,7 @@ def generateReport(request):
                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
                     send_data.append(send_list)
-                return render(request,'reportparty.html',{'data':send_data})
+                return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0]})
             else:
                 rec= Record.objects.filter(state__in=selected_states).order_by('lot_no')         
             
@@ -1340,6 +1415,8 @@ def generateReport(request):
                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
             elif(selected_parties!=[] and send_parties==[]):
                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties)
+                return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+            
             elif(selected_parties==[] and send_parties!=[]):
                 
                 
@@ -1376,7 +1453,7 @@ def generateReport(request):
                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
                     send_data.append(send_list)
-                return render(request,'reportparty.html',{'data':send_data})
+                return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0]})
             else:
                 rec= Record.objects.filter(lot_no=lot,state__in=selected_states)
                 print("got here")
@@ -1413,9 +1490,16 @@ def generateReport(request):
                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
                     send_data = [send_list]
-                    return render(request, 'reportlot.html',{'data':send_data})
-        
-        return render(request,'report.html',{'records':rec,'send_parties':send_parties})
+                    return render(request, 'reportlot.html',{'data':send_data,'party':selected_parties[0]})
+        try:
+            return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+        except:
+            if lot!=None:
+                return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot)})
+            else:
+                return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Date" })
+            
+        #return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
 
 
 

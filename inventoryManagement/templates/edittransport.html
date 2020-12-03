@@ -1,0 +1,32 @@
+{% extends 'nav.html' %}
+
+{% block title%} Add Quality {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Add Party Start-->
+      <form method="POST" action="{% url 'edittransport' id %}" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Edit Transport Agency name</h1>
+        </div>
+        <div class="upload-container">
+            <input type="text" class="form-control" id="addquality" placeholder="Transport Agency name" value="{{name}}" name="edit-transport" required>
+
+            <br>
+            <input type="float" class="form-control" id="addquality" placeholder="Rate" value="{{rate}}" name="rate" required>
+
+            <br>
+            <button class="upload-btn btn-primary" type="submit">Edit</button>
+        </div>
+      </form>
+
+      
+        
+        
+        
+      <!-- Add Party End -->
+      
+
+
+{% endblock %}
