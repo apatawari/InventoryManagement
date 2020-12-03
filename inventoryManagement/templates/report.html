@@ -77,8 +77,12 @@
         <a class="download-button" href="{% url 'excel_page' %}">Print</a>
       </div>
       <!-- Display Table Start-->
-      <table class="table">
+      <table class="table table-bordered">
         <thead class="thead-dark">
+          <tr>
+            <th colspan="8" scope="colgroup" >Outward</th>
+            <th colspan="5" scope="colgroup" class="thead-inward">Inward</th>
+          </tr>
           <tr>
             
             <th scope="col">Sr-no</th>

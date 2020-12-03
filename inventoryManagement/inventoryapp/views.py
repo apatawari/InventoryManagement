@@ -1157,7 +1157,7 @@ def generateReport(request):
     
         if(lot==None):
             if(selected_parties!=[] and send_parties!=[]):
-                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no')
+                rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','')
                 
             elif(selected_parties!=[] and send_parties==[]):
                 rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no')
@@ -1292,6 +1292,7 @@ def generateReport(request):
                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties).order_by('lot_no')
                 return render(request,'reportall.html',{'records':rec})
             elif(selected_parties!=[] and send_parties==[]):
+                
                 rec = Record.objects.filter(processing_party_name__in=selected_parties).order_by('lot_no')
             elif(selected_parties==[] and send_parties!=[]):
                 
@@ -1472,11 +1473,15 @@ def checkerReport(request):
             l.append(r.mtrs)
             mt=round((r.mtrs/r.than),2)
             l.append(mt)
-            range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
-            l.append(range.rate)
+            try:
+                range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                l.append(range.rate)
             
-            l.append(round((mt*range.rate),2))
-            totaltotal=totaltotal+round((mt*range.rate),2)
+                l.append(round((mt*range.rate),2))
+                totaltotal=totaltotal+round((mt*range.rate),2)
+            except:
+                l.append("rate not defined")
+                l.append("rate not defined")
 
             datalist.append(l)
         total.append(round(totalthans,2))
@@ -1494,7 +1499,19 @@ def qualityReportFilter(request):
 def qualityReport(request):
     # qualities=[]
     final_qs=[]
-    
+    total_all=[]
+    trthan=0
+    trmtrs=0
+    gothan=0
+    gomtrs=0
+    chthan=0
+    chmtrs=0
+    prthan=0
+    prmtrs=0
+    rethan=0
+    remtrs=0
+    tothan=0
+    tomtrs=0
     qualities= Quality.objects.all()
     selected_qualities=[]
     for q in qualities:
@@ -1510,6 +1527,8 @@ def qualityReport(request):
             for r in rec_transit:
                 total_than_in_transit=total_than_in_transit+r.than
                 total_mtrs_in_transit=total_mtrs_in_transit+r.mtrs
+            trthan=trthan+total_than_in_transit
+            trmtrs=trmtrs+total_mtrs_in_transit
 
             rec_godown=Record.objects.filter(state="Godown",quality=request.POST.get(q.qualities))
             total_than_in_godown=0
@@ -1517,7 +1536,8 @@ def qualityReport(request):
             for r in rec_godown:
                 total_than_in_godown=total_than_in_godown+r.than
                 total_mtrs_in_godown=total_mtrs_in_godown+r.mtrs
-            
+            gothan=gothan+total_than_in_godown
+            gomtrs=gomtrs+total_mtrs_in_godown
             
             rec_checked=Record.objects.filter(state="Checked",quality=request.POST.get(q.qualities))
             total_than_in_checked=0
@@ -1525,6 +1545,8 @@ def qualityReport(request):
             for r in rec_checked:
                 total_than_in_checked=total_than_in_checked+r.than
                 total_mtrs_in_checked=total_mtrs_in_checked+r.mtrs
+            chthan=chthan+total_than_in_checked
+            chmtrs=chmtrs+total_mtrs_in_checked
 
             rec_process=Record.objects.filter(state="In Process",quality=request.POST.get(q.qualities))
             total_than_in_process=0
@@ -1532,6 +1554,8 @@ def qualityReport(request):
             for r in rec_process:
                 total_than_in_process=total_than_in_process+r.than
                 total_mtrs_in_process=total_mtrs_in_process+r.mtrs
+            prthan=prthan+total_than_in_process
+            prmtrs=prmtrs+total_mtrs_in_process
 
             rec_ready=Record.objects.filter(state="Ready to print",quality=request.POST.get(q.qualities))
             total_than_in_ready=0
@@ -1539,10 +1563,15 @@ def qualityReport(request):
             for r in rec_ready:
                 total_than_in_ready=total_than_in_ready+r.than
                 total_mtrs_in_ready=total_mtrs_in_ready+r.mtrs
+            rethan=rethan+total_than_in_ready
+            remtrs=remtrs+total_mtrs_in_ready
 
             tally_mtrs=total_mtrs_in_transit+total_mtrs_in_godown+total_mtrs_in_checked+total_mtrs_in_process+total_mtrs_in_ready
             tally_than=total_than_in_transit+total_than_in_godown+total_than_in_checked+total_than_in_process+total_than_in_ready
             
+            tothan=tothan+tally_than
+            tomtrs=tomtrs+tally_mtrs
+
             d1=[q.qualities,
             total_than_in_transit,round(total_mtrs_in_transit,2),
             total_than_in_godown,round(total_mtrs_in_godown,2),
@@ -1553,9 +1582,15 @@ def qualityReport(request):
             ]
             
             final_qs.append(d1)
-            
+    total_all=[round(trthan,2),round(trmtrs,2),
+            round(gothan,2),round(gomtrs,2),
+            round(chthan,2),round(chmtrs,2),
+            round(prthan,2),round(prmtrs,2),
+            round(rethan,2),round(remtrs,2),
+            round(tothan,2),round(tomtrs,2),
+    ]
             # d=[d1,[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
-    return render(request,'qualityreport.html',{'data':final_qs,'select':selected_qualities})
+    return render(request,'qualityreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities})
 
 #Download Excel Files
 

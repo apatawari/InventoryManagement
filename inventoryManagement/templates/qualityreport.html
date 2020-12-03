@@ -75,7 +75,9 @@
     {% load my_tags %}
       <br>
       <!-- Filter End -->
-      
+      <div class="page-title">
+        <h3 class="title-text">Quality wise report</h3>
+      </div>
       <div class="download">
         <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
           {% csrf_token %}
@@ -138,6 +140,24 @@
             <td>{{d.12}}</td>
           </tr>
         {% endfor %}
+
+        <tr>
+            
+          <td scope="row"></td>
+          <td class="td-text"><strong>Total</strong></td>
+          <td><strong>{{total.0}}</strong></td>
+          <td><strong>{{total.1}}</strong></td>
+          <td><strong>{{total.2}}</strong></td>
+          <td><strong>{{total.3}}</strong></td>
+          <td><strong>{{total.4}}</strong></td>
+          <td><strong>{{total.5}}</strong></td>
+          <td><strong>{{total.6}}</strong></td>
+          <td><strong>{{total.7}}</strong></td>
+          <td><strong>{{total.8}}</strong></td>
+          <td><strong>{{total.9}}</strong></td>
+          <td><strong>{{total.10}}</strong></td>
+          <td><strong>{{total.11}}</strong></td>
+        </tr>
         </tbody>
       </table>
       <!-- Display Table End -->
