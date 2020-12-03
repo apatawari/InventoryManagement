@@ -119,7 +119,7 @@ def upload(request):
             empty_cols = [col for col in excel_data_df.columns if excel_data_df[col].isnull().all()]
             # Drop these columns from the dataframe
             excel_data_df.drop(empty_cols,axis=1,inplace=True)
-
+            excel_data_df['quality'] = excel_data_df['quality'].apply(lambda x: x.replace('"', 'inch'))
             imported_data = dataset.load(excel_data_df)
             # result = item_resource.import_data(dataset, dry_run=True)
             # print(imported_data)
@@ -708,6 +708,7 @@ def renderAddQuality(request):
 def saveQuality(request):
     q=request.POST.get("newer_quality")
     q = q.strip()
+    q=q.replace('"','inch')
     try:
         existing_quality=get_object_or_404(Quality,qualities=q.upper())
         messages.error(request,"This quality already exists")
@@ -1573,7 +1574,15 @@ def checkerReport(request):
         begin=str(begin)
         end=str(end)
         return render(request,'checkerreport.html',{'records':datalist,'total':total,'checker':checker,'begin':begin,'end':end})
-    
+
+###########transport report
+
+
+def transportReportFilter(request):
+    d=str(datetime.date.today().strftime('%Y-%m-%d'))
+    transport=Transport.objects.all().order_by('transport')
+    return render(request,'transportfilter.html',{'d':d,'checkers':transport})
+
 
 ##########
 def qualityReportFilter(request):

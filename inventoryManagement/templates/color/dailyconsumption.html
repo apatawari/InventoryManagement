@@ -61,7 +61,7 @@
                 <td>{{record.rate}}</td>
                 <td>{{record.state}}</td>
                 <td>
-                  <input type="float" class="form-control" id="quantityconsume" value=0 placeholder="Enter Quantity" name="{{record.id}}" autofocus>
+                  <input type="number" step="0.01"  class="form-control" id="quantityconsume" value=0 placeholder="Enter Quantity" name="{{record.id}}" autofocus>
                 </td>
               </tr>
             {% endfor %}

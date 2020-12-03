@@ -27,7 +27,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="Bill Amount">Bill Amount</label>
-                <input type="number" class="form-control" id="bill_amount" placeholder="Bill Amount" value="{{record.bill_amount}}" name="bill_amount">
+                <input type="number" step="0.01"  class="form-control" id="bill_amount" placeholder="Bill Amount" value="{{record.bill_amount}}" name="bill_amount">
             </div>
         </div>
         <div class="form-row">
@@ -47,7 +47,7 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="Mtrs">Mtrs</label>
-                <input type="float" class="form-control" id="mtrs" placeholder="Mtrs" value="{{record.mtrs}}" name="mtrs">
+                <input type="number" step="0.01"  class="form-control" id="mtrs" placeholder="Mtrs" value="{{record.mtrs}}" name="mtrs">
             </div>
             <div class="form-group col-md-4">
                 <label for="Bale">Bale</label>
@@ -55,7 +55,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="Rate">Rate</label>
-                <input type="float" class="form-control" id="rate" placeholder="Rate" value="{{record.rate}}" name="rate">
+                <input type="number" step="0.01"  class="form-control" id="rate" placeholder="Rate" value="{{record.rate}}" name="rate">
             </div>
         </div>
         <div class="form-row">
