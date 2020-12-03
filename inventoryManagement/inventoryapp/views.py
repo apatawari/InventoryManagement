@@ -1571,9 +1571,12 @@ def checkerReport(request):
             datalist.append(l)
         total.append(round(totalthans,2))
         total.append(round(totaltotal,2))
-        begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'checkerreport.html',{'records':datalist,'total':total,'checker':checker,'begin':begin,'end':end})
+
+        begin = str(begin)
+        end= str(end)
+        display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+        display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+        return render(request,'checkerreport.html',{'records':datalist,'total':total,'checker':checker,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 ###########transport report
 
@@ -2099,15 +2102,15 @@ def export_report_xls(request):
                 l.append(r.than)
                 mt=round((r.mtrs/r.than),2)
                 l.append(mt)
-                rangerate=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
-                
-                
-                
-                l.append(rangerate.rate)
-                
-                l.append(round((mt*rangerate.rate),2))
-                totaltotal=totaltotal+round((mt*rangerate.rate),2)
-
+                try:
+                    trange=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                    l.append(trange.rate)
+            
+                    l.append(round((mt*trange.rate),2))
+                    totaltotal=totaltotal+round((mt*trange.rate),2)
+                except:
+                    l.append("rate not defined")
+                    l.append("rate not defined")
                 datalist.append(l)
     elif (stateur=="qualityreport"):
         file_name="Quality-Report"
@@ -2116,6 +2119,19 @@ def export_report_xls(request):
         qual=(request.POST.get('qualities'))
         qualities=ast.literal_eval(qual)
         datalist=[]
+        total_all=[]
+        trthan=0
+        trmtrs=0
+        gothan=0
+        gomtrs=0
+        chthan=0
+        chmtrs=0
+        prthan=0
+        prmtrs=0
+        rethan=0
+        remtrs=0
+        tothan=0
+        tomtrs=0
         for q in qualities:
         
         # if(request.POST.get(q.qualities)!=None):
@@ -2129,6 +2145,8 @@ def export_report_xls(request):
             for r in rec_transit:
                 total_than_in_transit=total_than_in_transit+r.than
                 total_mtrs_in_transit=total_mtrs_in_transit+r.mtrs
+            trthan=trthan+total_than_in_transit
+            trmtrs=trmtrs+total_mtrs_in_transit
 
             rec_godown=Record.objects.filter(state="Godown",quality=q)
             total_than_in_godown=0
@@ -2136,7 +2154,8 @@ def export_report_xls(request):
             for r in rec_godown:
                 total_than_in_godown=total_than_in_godown+r.than
                 total_mtrs_in_godown=total_mtrs_in_godown+r.mtrs
-            
+            gothan=gothan+total_than_in_godown
+            gomtrs=gomtrs+total_mtrs_in_godown
             
             rec_checked=Record.objects.filter(state="Checked",quality=q)
             total_than_in_checked=0
@@ -2144,6 +2163,8 @@ def export_report_xls(request):
             for r in rec_checked:
                 total_than_in_checked=total_than_in_checked+r.than
                 total_mtrs_in_checked=total_mtrs_in_checked+r.mtrs
+            chthan=chthan+total_than_in_checked
+            chmtrs=chmtrs+total_mtrs_in_checked
 
             rec_process=Record.objects.filter(state="In Process",quality=q)
             total_than_in_process=0
@@ -2151,6 +2172,8 @@ def export_report_xls(request):
             for r in rec_process:
                 total_than_in_process=total_than_in_process+r.than
                 total_mtrs_in_process=total_mtrs_in_process+r.mtrs
+            prthan=prthan+total_than_in_process
+            prmtrs=prmtrs+total_mtrs_in_process
 
             rec_ready=Record.objects.filter(state="Ready to print",quality=q)
             total_than_in_ready=0
@@ -2158,10 +2181,15 @@ def export_report_xls(request):
             for r in rec_ready:
                 total_than_in_ready=total_than_in_ready+r.than
                 total_mtrs_in_ready=total_mtrs_in_ready+r.mtrs
+            rethan=rethan+total_than_in_ready
+            remtrs=remtrs+total_mtrs_in_ready
 
             tally_mtrs=total_mtrs_in_transit+total_mtrs_in_godown+total_mtrs_in_checked+total_mtrs_in_process+total_mtrs_in_ready
             tally_than=total_than_in_transit+total_than_in_godown+total_than_in_checked+total_than_in_process+total_than_in_ready
             
+            tothan=tothan+tally_than
+            tomtrs=tomtrs+tally_mtrs
+
             d1=[q,
             total_than_in_transit,round(total_mtrs_in_transit,2),
             total_than_in_godown,round(total_mtrs_in_godown,2),
@@ -2172,14 +2200,22 @@ def export_report_xls(request):
             ]
             
             datalist.append(d1)
-    
+        total_all=["Total",
+            round(trthan,2),round(trmtrs,2),
+            round(gothan,2),round(gomtrs,2),
+            round(chthan,2),round(chmtrs,2),
+            round(prthan,2),round(prmtrs,2),
+            round(rethan,2),round(remtrs,2),
+            round(tothan,2),round(tomtrs,2),
+        ]
+        datalist.append(total_all)
     elif (stateur=="colorreport"):
         file_name="Color-Report"
         begin=request.POST.get('start_date')
         end=request.POST.get('end_date')
         columns = ['Color', 'unit', 'opening stock on %s'%str(begin), 'stock purchased', 'total stock', 'quantity consumed','closing stock on %s'%str(end)]
 
-        
+        print(begin)
         
         
         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
@@ -3532,7 +3568,8 @@ def renderClosingStock(request):
     return render(request,'./color/closingstock.html',{'colors':datalist})
 
 def renderColorReportFilter(request):
-    return render(request,'./color/reportfilter.html')
+    d=str(datetime.date.today())
+    return render(request,'./color/reportfilter.html',{'d':d})
 
 # def colorReport(request):
 #     begin = request.POST.get("start_date")
@@ -3670,6 +3707,8 @@ def colorReport(request):
                 # print(first_record.quantity,first_record.con_date)
             except:
                 pass
+    begin=str(begin)
+    end=str(end)
     display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
     display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
