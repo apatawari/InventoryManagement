@@ -2455,7 +2455,7 @@ def placeOrder(request):
 
 def saveOrder(request):
     
-    q=int(request.POST.get('quantity'))
+    q=float(request.POST.get('quantity'))
     r=float(request.POST.get('rate'))
     a=round(q*r,2)
     new_order=ColorRecord(
