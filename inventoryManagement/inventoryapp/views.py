@@ -1571,8 +1571,8 @@ def checkerReport(request):
             datalist.append(l)
         total.append(round(totalthans,2))
         total.append(round(totaltotal,2))
-        begin=str(begin)
-        end=str(end)
+        begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+        end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         return render(request,'checkerreport.html',{'records':datalist,'total':total,'checker':checker,'begin':begin,'end':end})
 
 ###########transport report
