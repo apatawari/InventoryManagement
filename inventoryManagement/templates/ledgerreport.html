@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Report</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+<body>
+  {% url 'index' as index %}
+  {% url 'greyhome' as greyhome %}
+  {% url 'intransit' as intransit %}
+  {% url 'godown' as godown %}
+  {% url 'godownrequest' as godownrequest %}
+  {% url 'checking' as checking %}
+  {% url 'checkingrequest' as checkingrequest %}
+  {% url 'inprocess' as inprocess %}
+  {% url 'processingrequest' as processingrequest %}
+  {% url 'readytoprint' as readytoprint %}
+  {% url 'readytoprintrequest' as readytoprintrequest %}
+    <!-- Nav Bar Start-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarColor03">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
+              <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
+              <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
+              <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
+              <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
+              <a class="nav-link {%if request.path == inprocess %} active {%elif request.path == processingrequest %} active {%endif%}" href="{% url 'inprocess' %}">Processing</a>
+              <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
+          </li>
+          </ul>
+          <!-- Approval Start -->
+            
+          <!-- Approval End-->
+        </div>
+      </nav>
+      <!-- Nav Bar End-->
+
+      <!-- Messages Start -->
+    {% for message in messages %}
+    <div
+      class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show"
+      role="alert"
+    >
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+    <!-- Messages End -->
+    <div class="page-title">
+      <h3 class="title-text">Ledger for {{party}}</h3>
+      <h3 class="title-text">{{begin}} to {{end}}</h3>
+    </div>
+    {% load widget_tweaks %}
+    {% load my_tags %}
+      <br>
+      <!-- Filter End -->
+      <div class="download">
+        <a class="download-button" href="{% url 'excel_page' %}">Print</a>
+      </div>
+      <!-- Display Table Start-->
+      
+
+      
+
+      <br>
+
+      <table border="5px" bordercolor="#8707B0" class="table table-bordered">
+          <tr class="thead-dark">
+            <th>Lot No</th>
+            <th>Total Than</th>
+            <th>Than Pending</th>
+            <th>Record Details</th>
+          </tr>
+        {% for record in data %}
+        <tr>
+        <td>{{record.0}}</td>
+        <td>{{record.1}}</td>
+        <td>{{record.2}}</td>
+        <td>
+        <table border="5px" bordercolor="#F35557" class="table table-bordered">
+            <th>
+                <th>Sent date</th>
+                <th>Gate Pass</th>
+                <th class="td-text">Quality</th>
+                <th>Than</th>
+                <th>Mtrs</th>
+                <th>rate</th>
+                <th>Recieve date</th>
+                <th>Chalan no</th>
+                <th>Than Recieved</th>
+                <th>Than Pending</th>
+            </th>
+        {% for r in record.3 %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{r.0}}</td>
+            <td>{{r.1}}</td>
+            <td class="td-text">{{r.2}}</td>
+            <td>{{r.3}}</td>
+            <td>{{r.4}}</td>
+            <td>{{r.5}}</td>
+            <td>{{r.6}}</td>
+            <td>{{r.7}}</td>
+            {% if r.8 == "Ready to print" %}
+              <td>{{r.3}}</td>
+            {% else %}
+              <td >0</td>
+            {% endif %}
+            {% if r.8 == "In Process" %}
+              <td>{{r.3}}</td>
+            {% else %}
+              <td >0</td>
+            {% endif %}
+        </tr>
+        
+        {% endfor %}
+        </table>
+        </td>
+        </tr>
+        {% endfor %}
+        </table>
+</body>
+{% load static %}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+{% load static %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+{% load static %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</html>

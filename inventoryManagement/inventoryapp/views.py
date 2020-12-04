@@ -1159,7 +1159,73 @@ def reportFilter(request):
             partyname.append(rec.party_name)
     return render(request,'reportfilter.html',{'parties':processing_parties,'sendingparty':partyname})
 
+
 def generateReport(request):
+    selected_states=['In Process','Ready to print']
+    selected_parties=[]
+    lot=request.POST.get("lot_no")
+    if lot == "":
+        lot=None
+    else:
+        lot=int(lot)
+    print(lot)
+    s = request.POST.get("checkbox")
+    if s!=None:
+        selected_parties.append(s)
+    print(selected_parties)
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+
+    if(begin!="" or end!=""):
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+        begin=begin.strftime("%d/%m/%Y")                ######date string format change
+        end=end.strftime("%d/%m/%Y")
+
+        if(lot==None and selected_parties!=[]):
+            rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+        elif(lot!=None and selected_parties==[]):
+            rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('state')
+        else:
+            rec= Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+        lot_list=[]
+        for r in rec:
+            if r.lot_no in lot_list:
+                pass
+            else:
+                lot_list.append(r.lot_no)
+        
+        rec_lists=[]
+        data_row=[]
+        data_block=[]
+        for l in lot_list:
+            totalthan=0
+            pendingthan=0
+            for r in rec:
+                print(type(r))
+                try:
+                    if r.lot_no==l:
+                        totalthan=totalthan+r.than
+                        rec=[r.sent_to_processing_date,r.gate_pass,r.quality,r.than,r.mtrs,r.rate,r.recieve_processed_date,r.chalan_no,r.state ]
+                        rec_lists.append(rec)
+                        if(r.state=="In Process"):
+                            pendingthan=pendingthan+r.than
+                    else:
+                        break 
+                except:
+                    pass
+            data_row=[l,totalthan,pendingthan,rec_lists]
+            data_block.append(data_row)
+    return render(request,'ledgerreport.html',{'data':data_block})
+
+def generateReport1(request):
     selected_states=['In Process','Ready to print']
     selected_states_all=['Transit','Godown','Checked','In Process','Ready to print']
     selected_parties=[]
@@ -2617,7 +2683,7 @@ def saveOrder(request):
     new_order.save()
     
     if(request.POST.get('rate2')!='' and request.POST.get('quantity2')!='' and request.POST.get('color2')!=''):
-        q=int(request.POST.get('quantity2'))
+        q=float(request.POST.get('quantity2'))
         r=float(request.POST.get('rate2'))
         a=round(q*r,2)
         new_order=ColorRecord(
@@ -2649,7 +2715,7 @@ def saveOrder(request):
         )
         new_order.save()
         if(request.POST.get('rate3')!='' and request.POST.get('quantity3')!='' and request.POST.get('color3')!=''):
-            q=int(request.POST.get('quantity3'))
+            q=float(request.POST.get('quantity3'))
             r=float(request.POST.get('rate3'))
             a=round(q*r,2)
             new_order=ColorRecord(
@@ -2682,7 +2748,7 @@ def saveOrder(request):
             new_order.save()
 
             if(request.POST.get('rate4')!='' and request.POST.get('quantity4')!='' and request.POST.get('color4')!=''):
-                q=int(request.POST.get('quantity4'))
+                q=float(request.POST.get('quantity4'))
                 r=float(request.POST.get('rate4'))
                 a=round(q*r,2)
                 new_order=ColorRecord(
@@ -2715,7 +2781,7 @@ def saveOrder(request):
                 new_order.save()
     
                 if(request.POST.get('rate5')!='' and request.POST.get('quantity5')!='' and request.POST.get('color5')!=''):
-                    q=int(request.POST.get('quantity5'))
+                    q=float(request.POST.get('quantity5'))
                     r=float(request.POST.get('rate5'))
                     a=round(q*r,2)
                     new_order=ColorRecord(
@@ -2748,7 +2814,7 @@ def saveOrder(request):
                     new_order.save()
 
                     if(request.POST.get('rate6')!='' and request.POST.get('quantity6')!='' and request.POST.get('color6')!=''):
-                        q=int(request.POST.get('quantity6'))
+                        q=float(request.POST.get('quantity6'))
                         r=float(request.POST.get('rate6'))
                         a=round(q*r,2)
                         new_order=ColorRecord(
@@ -2781,7 +2847,7 @@ def saveOrder(request):
                         new_order.save()
 
                         if(request.POST.get('rate7')!='' and request.POST.get('quantity7')!='' and request.POST.get('color7')!=''):
-                            q=int(request.POST.get('quantity7'))
+                            q=float(request.POST.get('quantity7'))
                             r=float(request.POST.get('rate7'))
                             a=round(q*r,2)
                             new_order=ColorRecord(
@@ -2815,7 +2881,7 @@ def saveOrder(request):
                             new_order.save()
 
                             if(request.POST.get('rate8')!='' and request.POST.get('quantity8')!='' and request.POST.get('color8')!=''):
-                                q=int(request.POST.get('quantity8'))
+                                q=float(request.POST.get('quantity8'))
                                 r=float(request.POST.get('rate8'))
                                 a=round(q*r,2)
                                 new_order=ColorRecord(
@@ -2848,7 +2914,7 @@ def saveOrder(request):
                                 new_order.save()
 
                                 if(request.POST.get('rate9')!='' and request.POST.get('quantity9')!='' and request.POST.get('color9')!=''):
-                                    q=int(request.POST.get('quantity9'))
+                                    q=float(request.POST.get('quantity9'))
                                     r=float(request.POST.get('rate9'))
                                     a=round(q*r,2)
                                     new_order=ColorRecord(
@@ -2881,7 +2947,7 @@ def saveOrder(request):
                                     new_order.save()
 
                                     if(request.POST.get('rate10')!='' and request.POST.get('quantity10')!='' and request.POST.get('color10')!=''):
-                                        q=int(request.POST.get('quantity10'))
+                                        q=float(request.POST.get('quantity10'))
                                         r=float(request.POST.get('rate10'))
                                         a=round(q*r,2)
                                         new_order=ColorRecord(
