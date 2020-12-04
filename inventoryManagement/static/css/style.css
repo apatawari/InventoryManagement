@@ -167,7 +167,7 @@ hr {
 
 .upload-file {
   width: 360px;
-  background: #e6e6e6;
+  background: #d2d2d2;
   position: relative;
   margin: 50px auto 100px;
   padding: 50px 40px;
@@ -263,7 +263,7 @@ hr {
 /* View Data */
 .view-file {
   width: 80%;
-  background: #e6e6e6;
+  background: #d2d2d2;
   position: relative;
   margin: 50px auto 100px;
   padding: 50px 40px;
@@ -422,7 +422,7 @@ hr {
 
 .view-report {
   width: 80%;
-  background: #e6e6e6;
+  background: #d2d2d2;
   position: relative;
   margin: 50px auto 100px;
   padding: 50px 40px 20px 40px;
@@ -544,7 +544,7 @@ hr {
 .container {
   display: flex;
   width: 80%;
-  background: #e6e6e6;
+  background: #d2d2d2;
   position: relative;
   margin: 50px auto 100px;
   padding: 50px 40px;
