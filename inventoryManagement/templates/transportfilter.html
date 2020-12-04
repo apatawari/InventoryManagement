@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Report</title>
+    <title>Report Filter</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -41,9 +41,6 @@
               <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
           </li>
           </ul>
-          <!-- Approval Start -->
-            
-          <!-- Approval End-->
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -66,68 +63,46 @@
     </div>
     {% endfor %}
     <!-- Messages End -->
-    <div class="page-title">
-      <h3 class="title-text">Ledger for {{h1}}</h3>
-      <h3 class="title-text">{{h2}}</h3>
-    </div>
+    
     {% load widget_tweaks %}
     {% load my_tags %}
-      <br>
-      <!-- Filter End -->
-      <div class="download">
-        <a class="download-button" href="{% url 'excel_page' %}">Print</a>
-      </div>
-      <!-- Display Table Start-->
-      
 
-      
-
-      <br>
-
-      <table border="5px" bordercolor="#8707B0" class="table table-bordered">
-          <tr class="thead-dark">
-            <th>Lot No</th>
-            <th>Total Than</th>
-            <th>Than Pending</th>
-            <th>Rate</th>
-            <th>Record Details</th>
-          </tr>
-        {% for record in data %}
-        <tr>
-        <td>{{record.0}}</td>
-        <td>{{record.1}}</td>
-        <td>{{record.2}}</td>
-        <td>{{record.4}}</td>
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">
-            <th>
-                <th>Sent date</th>
-                <th>Gate Pass</th>
-                <th class="td-text">Quality</th>
-                <th>Than</th>
-                <th>Mtrs</th>
-                <th>Recieve date</th>
-                <th>Chalan no</th>
-            </th>
-        {% for r in record.3 %}
-        <tr>
-            <td>{{forloop.counter}}</td>
-            <td>{{r.0}}</td>
-            <td>{{r.1}}</td>
-            <td class="td-text">{{r.2}}</td>
-            <td>{{r.3}}</td>
-            <td>{{r.4}}</td>
-            <td>{{r.5}}</td>
-            <td>{{r.6}}</td>
+    <div class="page-title">
+      <h3 class="title-text">Transport Report</h3>
+    </div>
+      <!-- Record Filter Start-->
+      <form class = "md-form view-report" method="POST" action="{% url 'transportreport' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--First Section -->
+        <div class="form-row form-group">
+          <div class="form-group col-md-4">
+            <label for="firstdate">Start Date</label>
+            <input type="date" class="form-control" id="firstdate" name="start_date" max="{{d}}" placeholder="mm-dd-yyyy" required/>
+            <label for="firstdate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="end_date" max="{{d}}" placeholder="mm-dd-yyyy" required/>
+          </div>
+        <!-- First Section End -->
+        <div class="form-group col-md-4">
+          <div class="form-group form-check scroll">
             
-        </tr>
-        
-        {% endfor %}
-        </table>
-        </td>
-        </tr>
-        {% endfor %}
-        </table>
+            <label for="checker">Transport Agency Name</label>
+                <select class="form-control" name="transport">
+
+                    {% for q in checkers %}
+                        <option value="{{ q.transport }}"]>{{ q.transport }}</option>
+                    {% endfor %}
+                </select>
+          
+          </div>
+        </div>
+
+        <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+        <div class="form-group form-check col-md-4">
+            <button type="submit" class="btn btn-primary button float-right mt-4">Generate Report</button>
+        </div>
+    </div>
+    </form>
+    <!-- Record Filter End-->
 </body>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

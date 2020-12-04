@@ -125,6 +125,7 @@
             <th scope="col"></th>
             <th scope="col"></th>
             <th scope="col"></th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -145,7 +146,13 @@
             <td>{{record.validation}}</td>
             <!--<td>{{record.state}}</td>-->
             
-            
+            <td>
+              {% if record.state == "Ordered" %}
+                <a class ="anchor-button button-small-text danger" href="{% url 'orderdelete' record.id %}">Delete</a>
+              {% else %}
+                <a class ="disabled" href="#">Delete</a>
+              {% endif %}
+            </td> 
             <td>
               {% if record.state == "Ordered" %}
                 <a class ="anchor-button button-small-text" href="{% url 'orderedit' record.id %}">Edit</a>

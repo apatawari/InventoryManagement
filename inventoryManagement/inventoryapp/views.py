@@ -1168,11 +1168,10 @@ def generateReport(request):
         lot=None
     else:
         lot=int(lot)
-    print(lot)
+    
     s = request.POST.get("checkbox")
     if s!=None:
         selected_parties.append(s)
-    print(selected_parties)
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
 
@@ -1189,12 +1188,27 @@ def generateReport(request):
         begin=begin.strftime("%d/%m/%Y")                ######date string format change
         end=end.strftime("%d/%m/%Y")
 
+        flag=0
         if(lot==None and selected_parties!=[]):
             rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            h1=str(selected_parties[0])
+            h2=str(begin) + " - "+str(end)
+            flag=1
         elif(lot!=None and selected_parties==[]):
             rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('state')
-        else:
+            h1=str(lot)
+            h2=str(begin) + " - "+str(end)
+            flag=2
+        elif(lot!=None and selected_parties!=[]):
             rec= Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            h1=str(selected_parties[0]) +" and lot no " +str(lot)
+            h2=str(begin) + " - "+str(end)
+            flag=3
+        else:
+            rec= Record.objects.filter(sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            h1=""
+            h2=str(begin) + " - "+str(end)
+            flag=4
         lot_list=[]
         for r in rec:
             if r.lot_no in lot_list:
@@ -1202,28 +1216,88 @@ def generateReport(request):
             else:
                 lot_list.append(r.lot_no)
         
-        rec_lists=[]
+        
         data_row=[]
         data_block=[]
         for l in lot_list:
             totalthan=0
             pendingthan=0
-            for r in rec:
-                print(type(r))
-                try:
-                    if r.lot_no==l:
-                        totalthan=totalthan+r.than
-                        rec=[r.sent_to_processing_date,r.gate_pass,r.quality,r.than,r.mtrs,r.rate,r.recieve_processed_date,r.chalan_no,r.state ]
-                        rec_lists.append(rec)
-                        if(r.state=="In Process"):
-                            pendingthan=pendingthan+r.than
-                    else:
-                        break 
-                except:
-                    pass
-            data_row=[l,totalthan,pendingthan,rec_lists]
+            rec_lists=[]
+            if(flag==1):
+                rec2 = Record.objects.filter(lot_no=l,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('state')
+
+            elif(flag==2):
+                rec2= Record.objects.filter(lot_no=l,sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('state')
+
+            elif(flag==3):
+                rec2= Record.objects.filter(lot_no=l,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('state')
+
+            elif(flag==4):
+                rec2= Record.objects.filter(lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
+
+            for r in rec2:
+                totalthan=totalthan+r.than
+                rate=r.rate
+                if r.state=="In Process":
+                    pendingthan=pendingthan+r.than
+                else:
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
+                    rec_lists.append(rec)
+                
+            data_row=[l,totalthan,pendingthan,rec_lists,rate]
             data_block.append(data_row)
-    return render(request,'ledgerreport.html',{'data':data_block})
+        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':h2})    
+    else:
+        flag=0
+        if(lot==None and selected_parties!=[]):
+            rec = Record.objects.filter(processing_party_name__in=selected_parties).order_by('lot_no','state')
+            h1=str(selected_parties[0])
+            flag=1
+        elif(lot!=None and selected_parties==[]):
+            rec= Record.objects.filter(lot_no=lot,state__in=selected_states).order_by('state')
+            h1=str(lot)
+            flag=2
+        elif(lot!=None and selected_parties!=[]):
+            h1=str(selected_parties[0]) +" and lot no " +str(lot)
+            rec= Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties).order_by('lot_no','state')
+            flag=3
+        else:
+            messages.error(request,'Please enter valid input')
+            return redirect('/reportfilter')  
+        lot_list=[]
+        for r in rec:
+            if r.lot_no in lot_list:
+                pass
+            else:
+                lot_list.append(r.lot_no)
+        print(lot_list)
+        
+        data_row=[]
+        data_block=[]
+        
+        for l in lot_list:
+            totalthan=0
+            pendingthan=0
+            if(flag==1):
+                rec2 = Record.objects.filter(lot_no=l,processing_party_name__in=selected_parties).order_by('state')
+            elif(flag==2):
+                rec2= Record.objects.filter(lot_no=l,state__in=selected_states).order_by('state')
+            else:
+                rec2= Record.objects.filter(lot_no=l,processing_party_name__in=selected_parties).order_by('lot_no','state')
+
+            rec_lists=[]
+            for r in rec2:
+                totalthan=totalthan+r.than
+                rate=r.rate
+                if r.state=="In Process":
+                    pendingthan=pendingthan+r.than
+                else:
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
+                    rec_lists.append(rec)
+                
+            data_row=[l,totalthan,pendingthan,rec_lists,rate]
+            data_block.append(data_row)
+        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':""})
 
 def generateReport1(request):
     selected_states=['In Process','Ready to print']
@@ -1613,7 +1687,7 @@ def checkerReport(request):
         total=[]
         totalthans=0    
         totaltotal=0
-        recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates).order_by('quality','checking_date')
+        recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates).order_by('lot_no','quality','checking_date')
         for r in recs:
             totalthans=totalthans+r.than
 
@@ -1633,6 +1707,7 @@ def checkerReport(request):
             except:
                 l.append("rate not defined")
                 l.append("rate not defined")
+            l.append(r.lot_no)
 
             datalist.append(l)
         total.append(round(totalthans,2))
@@ -1651,6 +1726,62 @@ def transportReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     transport=Transport.objects.all().order_by('transport')
     return render(request,'transportfilter.html',{'d':d,'checkers':transport})
+
+
+def transportReport(request):
+    transport=request.POST.get('transport')
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+    if(begin!="" or end!=""):
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
+    # selected_qualities=[]
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+
+        datalist=[]
+ 
+        total=[]
+        totalthans=0    
+        totaltotal=0
+        recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
+        for r in recs:
+            totalthans=totalthans+r.than
+
+            l=[]
+            l.append(r.quality)
+            l.append(r.checking_date)
+            l.append(r.than)
+            l.append(r.mtrs)
+            mt=r.than
+            # l.append(mt)
+            try:
+                # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                l.append(r.transport_rate)
+            
+                l.append(round((mt*r.transport_rate),2))
+                totaltotal=totaltotal+round((mt*r.transport_rate),2)
+            except:
+                l.append("rate not defined")
+                l.append("rate not defined")
+            l.append(r.lot_no)
+            datalist.append(l)
+        total.append(round(totalthans,2))
+        total.append(round(totaltotal,2))
+
+        begin = str(begin)
+        end= str(end)
+        display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+        display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+        return render(request,'transportreport.html',{'records':datalist,'total':total,'checker':transport,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+
 
 
 ##########
@@ -2127,9 +2258,58 @@ def export_report_xls(request):
     stateur=ur[0]
     stateur=stateur.split('/')
     stateur=stateur[-1]
+    if(stateur=="transportreport"):
+        file_name="Transport-Report"
+        columns = ['Quality', 'Checking Date', 'Thans Checked','mtrs','Rate(Rs)', 'Total(Rs)','Lot no']
+
+        transport=request.POST.get('transport')
+        begin = request.POST.get("start_date")
+        end = request.POST.get("end_date")
+        if(begin!="" or end!=""):
+            
+            begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+            end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+            selected_dates=[]
+            
+        # selected_qualities=[]
+            next_day = begin
+            while True:
+                if next_day > end:
+                    break
+                selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+                next_day += datetime.timedelta(days=1)
+
+            datalist=[]
+    
+            total=[]
+            totalthans=0    
+            totaltotal=0
+            recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
+            for r in recs:
+                totalthans=totalthans+r.than
+
+                l=[]
+                l.append(r.quality)
+                l.append(str(r.checking_date))
+                l.append(r.than)
+                l.append(r.mtrs)
+                mt=r.than
+                # l.append(mt)
+                try:
+                    # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                    l.append(r.transport_rate)
+                
+                    l.append(round((mt*r.transport_rate),2))
+                    totaltotal=totaltotal+round((mt*r.transport_rate),2)
+                except:
+                    l.append("rate not defined")
+                    l.append("rate not defined")
+                l.append(r.lot_no)
+                datalist.append(l)
+        
     if(stateur=="checkerreport"):
         file_name="Checker-Report"
-        columns = ['Quality', 'Checking Date', 'Thans Checked', 'Average cut', 'Rate(Rs)', 'Total']
+        columns = ['Quality', 'Checking Date', 'Thans Checked', 'Average cut', 'Rate(Rs)', 'Total(Rs)']
         #records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
         checker=request.POST.get('checker')
         begin = request.POST.get("start_date")
@@ -2177,6 +2357,7 @@ def export_report_xls(request):
                 except:
                     l.append("rate not defined")
                     l.append("rate not defined")
+                
                 datalist.append(l)
     elif (stateur=="qualityreport"):
         file_name="Quality-Report"
@@ -2649,7 +2830,7 @@ def placeOrder(request):
     return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'units':units,'date':d,'maxdate':maxdate,'orderno':order_no})
 
 def saveOrder(request):
-    
+    color_unit=[]
     q=float(request.POST.get('quantity'))
     r=float(request.POST.get('rate'))
     a=round(q*r,2)
@@ -2681,11 +2862,17 @@ def saveOrder(request):
         rem_quantity=request.POST.get('quantity')
     )
     new_order.save()
-    
+    l=[request.POST.get('color'),request.POST.get('unit')]
+    color_unit.append(l)
     if(request.POST.get('rate2')!='' and request.POST.get('quantity2')!='' and request.POST.get('color2')!=''):
         q=float(request.POST.get('quantity2'))
         r=float(request.POST.get('rate2'))
         a=round(q*r,2)
+        l=[request.POST.get('color2'),request.POST.get('unit2')]
+        if l in color_unit:
+            messages.error(request,"Color Repeated. Order placed partially till first color")
+            return redirect('/placeorder')
+        color_unit.append(l)
         new_order=ColorRecord(
             color=request.POST.get('color2'),
             supplier=request.POST.get('supplier'),
@@ -2714,10 +2901,16 @@ def saveOrder(request):
             rem_quantity=request.POST.get('quantity2')
         )
         new_order.save()
+
         if(request.POST.get('rate3')!='' and request.POST.get('quantity3')!='' and request.POST.get('color3')!=''):
             q=float(request.POST.get('quantity3'))
             r=float(request.POST.get('rate3'))
             a=round(q*r,2)
+            l=[request.POST.get('color3'),request.POST.get('unit3')]
+            if l in color_unit:
+                messages.error(request,"Color Repeated. Order placed partially till second color")
+                return redirect('/placeorder')
+            color_unit.append(l)
             new_order=ColorRecord(
                 color=request.POST.get('color3'),
                 supplier=request.POST.get('supplier'),
@@ -2751,6 +2944,11 @@ def saveOrder(request):
                 q=float(request.POST.get('quantity4'))
                 r=float(request.POST.get('rate4'))
                 a=round(q*r,2)
+                l=[request.POST.get('color4'),request.POST.get('unit4')]
+                if l in color_unit:
+                    messages.error(request,"Color Repeated. Order placed partially till third color")
+                    return redirect('/placeorder')
+                color_unit.append(l)
                 new_order=ColorRecord(
                     color=request.POST.get('color4'),
                     supplier=request.POST.get('supplier'),
@@ -2784,6 +2982,11 @@ def saveOrder(request):
                     q=float(request.POST.get('quantity5'))
                     r=float(request.POST.get('rate5'))
                     a=round(q*r,2)
+                    l=[request.POST.get('color5'),request.POST.get('unit5')]
+                    if l in color_unit:
+                        messages.error(request,"Color Repeated. Order placed partially till fourth color")
+                        return redirect('/placeorder')
+                    color_unit.append(l)
                     new_order=ColorRecord(
                         color=request.POST.get('color5'),
                         supplier=request.POST.get('supplier'),
@@ -2817,6 +3020,11 @@ def saveOrder(request):
                         q=float(request.POST.get('quantity6'))
                         r=float(request.POST.get('rate6'))
                         a=round(q*r,2)
+                        l=[request.POST.get('color6'),request.POST.get('unit6')]
+                        if l in color_unit:
+                            messages.error(request,"Color Repeated. Order placed partially till fifth color")
+                            return redirect('/placeorder')
+                        color_unit.append(l)
                         new_order=ColorRecord(
                             color=request.POST.get('color6'),
                             supplier=request.POST.get('supplier'),
@@ -2850,6 +3058,11 @@ def saveOrder(request):
                             q=float(request.POST.get('quantity7'))
                             r=float(request.POST.get('rate7'))
                             a=round(q*r,2)
+                            l=[request.POST.get('color7'),request.POST.get('unit7')]
+                            if l in color_unit:
+                                messages.error(request,"Color Repeated. Order placed partially till sixth color")
+                                return redirect('/placeorder')
+                            color_unit.append(l)
                             new_order=ColorRecord(
                                 color=request.POST.get('color7'),
                                 supplier=request.POST.get('supplier'),
@@ -2884,6 +3097,11 @@ def saveOrder(request):
                                 q=float(request.POST.get('quantity8'))
                                 r=float(request.POST.get('rate8'))
                                 a=round(q*r,2)
+                                l=[request.POST.get('color8'),request.POST.get('unit8')]
+                                if l in color_unit:
+                                    messages.error(request,"Color Repeated. Order placed partially till seventh color")
+                                    return redirect('/placeorder')
+                                color_unit.append(l)
                                 new_order=ColorRecord(
                                     color=request.POST.get('color8'),
                                     supplier=request.POST.get('supplier'),
@@ -2917,6 +3135,11 @@ def saveOrder(request):
                                     q=float(request.POST.get('quantity9'))
                                     r=float(request.POST.get('rate9'))
                                     a=round(q*r,2)
+                                    l=[request.POST.get('color9'),request.POST.get('unit9')]
+                                    if l in color_unit:
+                                        messages.error(request,"Color Repeated. Order placed partially till eight color")
+                                        return redirect('/placeorder')
+                                    color_unit.append(l)
                                     new_order=ColorRecord(
                                         color=request.POST.get('color9'),
                                         supplier=request.POST.get('supplier'),
@@ -2950,6 +3173,11 @@ def saveOrder(request):
                                         q=float(request.POST.get('quantity10'))
                                         r=float(request.POST.get('rate10'))
                                         a=round(q*r,2)
+                                        l=[request.POST.get('color10'),request.POST.get('unit10')]
+                                        if l in color_unit:
+                                            messages.error(request,"Color Repeated. Order placed partially till ninth color")
+                                            return redirect('/placeorder')
+                                        
                                         new_order=ColorRecord(
                                             color=request.POST.get('color10'),
                                             supplier=request.POST.get('supplier'),
@@ -3008,6 +3236,12 @@ def orderEdit(request,id):
         messages.error(request,"This order has been recieved")
         return redirect('/ordergeneration')
 
+def orderDelete(request,id):
+    rec=get_object_or_404(AllOrders, id=id)
+    rec2=get_object_or_404(ColorRecord,order_no=rec.order_no,color=rec.color,unit=rec.unit)
+    rec.delete()
+    rec2.delete()
+    return redirect('/ordergeneration')
 
 def orderEditSave(request,id):
     rec_order=get_object_or_404(AllOrders, id=id)
@@ -3785,17 +4019,21 @@ def employeehome(request):
     return render(request, './employee/employeehome.html')
 
 def saveEmployee(request):
+    if(len(request.POST.get('account_no'))>12 or len(request.POST.get('account_no'))<12 or len(request.POST.get('ifsc_code'))>11 or len(request.POST.get('ifsc_code'))<11 or len(request.POST.get('aadhar_no'))>12 or len(request.POST.get('aadhar_no'))<12 or len(request.POST.get('phone_no'))>10 or len(request.POST.get('phone_no'))<10):
+        messages.error(request,"Enter valid details")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
     try:
         emp=get_object_or_404(Employee,
             name = request.POST.get('name'),
             father_name = request.POST.get('father_name'),
             bank_name = request.POST.get('bank_name'),
-            account_no = int(request.POST.get('account_no')),
+            account_no = (request.POST.get('account_no')),
             ifsc = request.POST.get('ifsc_code'),
             account_type = request.POST.get('account_type'),
-            aadhar_no = int(request.POST.get('aadhar_no')),
+            aadhar_no = (request.POST.get('aadhar_no')),
             contractor_name = request.POST.get('contractor_name'),
-            phone_no = int(request.POST.get('phone_no')),
+            phone_no = (request.POST.get('phone_no')),
             address = request.POST.get('address'),
             city = request.POST.get('city')
         )
@@ -3807,12 +4045,12 @@ def saveEmployee(request):
         name = request.POST.get('name'),
         father_name = request.POST.get('father_name'),
         bank_name = request.POST.get('bank_name'),
-        account_no = int(request.POST.get('account_no')),
+        account_no = (request.POST.get('account_no')),
         ifsc = request.POST.get('ifsc_code'),
         account_type = request.POST.get('account_type'),
-        aadhar_no = int(request.POST.get('aadhar_no')),
+        aadhar_no = (request.POST.get('aadhar_no')),
         contractor_name = request.POST.get('contractor_name'),
-        phone_no = int(request.POST.get('phone_no')),
+        phone_no = (request.POST.get('phone_no')),
         address = request.POST.get('address'),
         city = request.POST.get('city')
         )
@@ -3835,9 +4073,12 @@ def renderAddBankAc(request):
     return render(request,'./employee/addbank.html',{'records':checkers})
 
 def saveBank(request):
+    if(len(request.POST.get("account_no"))!=12 or len(request.POST.get("ifsc"))!=11):
+        messages.error(request,'Enter valid details')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     q=request.POST.get("bank_name")
     q = q.strip()
-    l=int(request.POST.get("account_no"))
+    l=(request.POST.get("account_no"))
     
     m=request.POST.get("ifsc")
     m = m.strip()
@@ -3880,7 +4121,7 @@ def editBank(request,id):
     quality=get_object_or_404(CompanyAccounts,id=id)
     q=request.POST.get("bank_name")
     q = q.strip()
-    l=int(request.POST.get("account_no"))
+    l=request.POST.get("account_no")
     
     m=request.POST.get("ifsc")
     m = m.strip()
@@ -3924,21 +4165,7 @@ def generatePayment(request):
 
     selected_employee = Employee.objects.filter(id__in=selected_emps).order_by('name')
 
-    # for e_id in selected_emps:
-    #     emp=get_object_or_404(Employee,id=e_id)
-    #     try:
-    #         last_pay = MonthlyPayment.objects.filter(employee,aadhar_no=emp.aadhar_no).order_by('-payment_date').first()
-    #         last_pay_date = last_pay.payment_date
-    #     except:
-    #         last_pay_date = str(datetime.date.today())
-    #     new_payment = MonthlyPayment(
-    #         employee=emp,
-    #         company_account = bank,
-    #         payment_date = payment_date,
-    #         amount=0,
-    #         last_payment_date=last_pay_date
-    #     )
-    #     new_payment.save()
+    
     return render(request,'./employee/payemployee.html',{'idlist':selected_emps,'employee':selected_employee,'bank':bank,'d':payment_date})
 
 

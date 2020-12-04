@@ -93,6 +93,9 @@ urlpatterns = [
     path('checkerreportfilter',views.checkerReportFilter,name="checkerreportfilter"),
     path('checkerreport',views.checkerReport,name='checkerreport'),
 
+    path('transportreportfilter',views.transportReportFilter,name="transportreportfilter"),
+    path('transportreport',views.transportReport,name='transportreport'),
+
     path('export/excelpage', views.export_page_xls, name='excel_page'),
     path('export/excelall', views.export_all_xls, name='excel_all'),
     path('export/excelfilter', views.export_filter_all_xls, name='excel_filter_all'),
@@ -110,6 +113,7 @@ urlpatterns = [
     path('deletecolor/<int:id>',views.deleteColor,name="deletecolor"),
     path('editcolor/<int:id>',views.renderEditColor,name="rendereditcolor"),
     path('editingcolor/<int:id>',views.editColor,name="editcolor"),
+    path('deleteorder/<int:id>',views.orderDelete,name="orderdelete"),
 
     path('addgodown',views.renderAddGodown,name='addgodown'),
     path('savegodown',views.saveGodown, name="savegodown"),

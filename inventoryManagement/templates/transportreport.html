@@ -11,15 +11,15 @@
 
 
     <div class="page-title">
-      <h3 class="title-text">Checker Report - {{display_begin}} to {{display_end}}</h3>
-      <h3 class="title-text">Checker Name - {{checker}}</h3>
+      <h3 class="title-text">Transport Report - {{display_begin}} to {{display_end}}</h3>
+      <h3 class="title-text">Transport Agency Name - {{checker}}</h3>
     </div>
       <br>
       <!-- Filter End -->
       <div class="download">
         <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
           {% csrf_token %}
-          <input type="text" name="checker" value="{{checker}}" hidden>
+          <input type="text" name="transport" value="{{checker}}" hidden>
           <input type="date" name="start_date" value="{{begin}}" hidden/>
           <input type="date" name="end_date" value="{{end}}" hidden/>
           <button class="download-button">Print</button>
@@ -36,8 +36,6 @@
             <th scope="col" class="td-text">Quality</th>
             <th scope="col">Checking Date</th>
             <th scope="col">Thans Checked</th>
-            
-            <th scope="col">Average Cut</th>
             <th scope="col">Rate(Rs)</th>
             <th scope="col">Total(Rs)</th>
             
@@ -51,13 +49,13 @@
             
             
               <td scope="row">{{ forloop.counter }}</td>
-              <td>{{d.7}}</td>
+              <td>{{d.6}}</td>
               <td class="td-text">{{d.0}}</td>
               <td>{{d.1}}</td>
               <td >{{d.2}}</td>
               <td>{{d.4}}</td>
               <td>{{d.5}}</td>
-              <td>{{d.6}}</td>
+              <!-- <td>{{d.6}}</td> -->
               
               
             </tr>
@@ -70,7 +68,7 @@
           <td>-</td>
           <td ><strong>{{total.0}}</strong></td>
           <td>-</td>
-          <td>-</td>
+          
           <td><strong>{{total.1}}</strong></td>
           
           
