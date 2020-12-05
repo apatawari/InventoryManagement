@@ -51,6 +51,41 @@ def server_error(request):
     return response
 
 def index(request):
+    recs=AllOrders.objects.all()
+    idlist=[]
+    for r in recs:
+        try:
+            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit)
+            flag=0
+            for d in dups:
+                if flag==0:
+                    flag=1
+                else:
+                    idlist.append(d.id)
+
+        except:
+            pass  
+
+    colrecs=ColorRecord.objects.all()
+    idlist2=[]
+    for r in colrecs:
+        try:
+            dups=get_list_or_404(ColorRecord,order_no=r.order_no,color=r.color,unit=r.unit)
+            flag=0
+            for d in dups:
+                if flag==0:
+                    flag=1
+                else:
+                    idlist2.append(d.id)
+
+        except:
+            pass             
+    
+    for i in idlist:
+        AllOrders.objects.filter(id=i).delete()
+    for i in idlist2:
+        ColorRecord.objects.filter(id=i).delete()
+
     return render(request, 'index.html')
 
 def greyhome(request):
@@ -3211,6 +3246,42 @@ def saveOrder(request):
 
 
 def orderGeneration(request):
+    recs=AllOrders.objects.all()
+    idlist=[]
+    for r in recs:
+        try:
+            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit)
+            flag=0
+            for d in dups:
+                if flag==0:
+                    flag=1
+                else:
+                    idlist.append(d.id)
+
+        except:
+            pass  
+
+    colrecs=ColorRecord.objects.all()
+    idlist2=[]
+    for r in colrecs:
+        try:
+            dups=get_list_or_404(ColorRecord,order_no=r.order_no,color=r.color,unit=r.unit)
+            flag=0
+            for d in dups:
+                if flag==0:
+                    flag=1
+                else:
+                    idlist2.append(d.id)
+
+        except:
+            pass             
+    
+    for i in idlist:
+        AllOrders.objects.filter(id=i).delete()
+    for i in idlist2:
+        ColorRecord.objects.filter(id=i).delete()
+
+
     rec=AllOrders.objects.all().order_by('order_no')
     records_filter = ColorOrderFilter(request.GET,queryset=rec)
     # return render(request,'intransit.html',{'records':records_filter})
