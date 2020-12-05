@@ -24,7 +24,6 @@ kombu==5.0.2
 lazy-object-proxy==1.4.3
 MarkupPy==1.14
 mccabe==0.6.1
-mysqlclient @ file:///C:/Users/Shardul%20Shetye/Desktop/Internship/InventoryMgmt/inventoryManagement/mysqlclient-1.4.6-cp37-cp37m-win32.whl
 numpy==1.19.2
 odfpy==1.4.1
 openpyxl==3.0.5
