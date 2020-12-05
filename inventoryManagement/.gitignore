@@ -1,4 +1,4 @@
 mysqlclient-1.4.6-cp37-cp37m-win32.whl
 db.sqlite3
-**/migrations
-**/__pycache__
+inventoryapp/migrations
+inventoryapp/__pycache__
