@@ -5,7 +5,7 @@
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Quality Start-->
-      <form method="POST" action="{% url 'savebank' %}" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'savecity' %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
             <h1>Add City</h1>
@@ -37,11 +37,11 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{q.bank_name}}</td>
+            <td class="td-text">{{q.city}}</td>
 
             <td>
-              <a class ="anchor-button float-right danger" href="#">Delete</a>
-              <a class ="anchor-button float-right space" href="#">Edit</a>
+              <a class ="anchor-button float-right danger" href="{% url 'deletecity' %}">Delete</a>
+              <a class ="anchor-button float-right space" href="{% url 'editcity' q.id %}">Edit</a>
             </td>
             
             

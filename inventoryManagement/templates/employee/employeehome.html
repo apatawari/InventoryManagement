@@ -39,11 +39,11 @@
         <div class="form-row">
             <div class="form-group col-md-3">
                   <label for="City">City</label>
-                  <select class="form-control" id="city" name="city">
+                  <select class="form-control" id="city" name="city" required>
 
-                    {% for q in qualities %}
+                    {% for q in city %}
                         
-                        <option value="{{ q.qualities }}">{{ record.quality }}</option>
+                        <option value="{{ q.city }}">{{ q.city }}</option>
 
                     {% endfor %}
                 </select>

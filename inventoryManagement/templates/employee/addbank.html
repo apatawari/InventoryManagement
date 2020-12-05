@@ -26,8 +26,15 @@
             <input type="text" class="form-control" id="branch_code" placeholder="Branch Code" name="branch_code" required>
 
             <br>
-            <input type="text" class="form-control" id="account_type" placeholder="Account Type" name="account_type" required>
+            <div>
+              <label for="Account Type">Account Type</label>
+              <select class="form-control" id="account_type" name="account_type" required>
+                      
+                  <option value="Checking Account">Checking Account</option>
+                  <option value="Savings Account">Savings Account</option>
 
+              </select>
+            </div>
             <br>
 
             <button class="upload-btn btn-primary" type="submit">Add</button>

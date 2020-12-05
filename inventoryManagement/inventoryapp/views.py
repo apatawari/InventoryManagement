@@ -3,7 +3,7 @@ from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record,Quality,Checker,ThanRange,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
-from .models import Employee,CompanyAccounts,MonthlyPayment,Transport
+from .models import Employee,CompanyAccounts,MonthlyPayment,Transport,CityMaster
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -4015,8 +4015,56 @@ def colorReport(request):
 
 
 ##################################### Module 3 - Employee ######################################
+
+def renderAddCity(request):
+    parties_all = CityMaster.objects.all().order_by('city')
+
+    paginator = Paginator(parties_all,10)
+    page = request.GET.get('page')
+    cities = paginator.get_page(page)
+    return render(request,'./employee/addcity.html',{'records':cities})
+
+def saveCity(request):
+    p = request.POST.get("city_name")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(CityMaster,city=p)
+        messages.error(request,"This City already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addcity')
+        new_Party = CityMaster(
+            city= p
+        )
+        new_Party.save()
+        messages.success(request,"City added successfully")
+    return redirect('/addcity')
+
+def deleteCity(request,id):
+    CityMaster.objects.filter(id=id).delete()
+    messages.success(request,"City deleted")
+    return redirect('/addcity')
+
+def renderEditCity(request,id):
+    party=get_object_or_404(CityMaster,id=id)
+    return render(request,'./employee/editcity.html',{'id':id,'name':party.city})
+
+def editCity(request,id):
+    party=get_object_or_404(CityMaster,id=id)
+    p=request.POST.get("edit-city")
+    p = p.upper()
+    p = p.strip()
+    party.city = p
+    party.save()
+    messages.success(request,"City edited")
+    return redirect('/addtcity')
+
+
 def employeehome(request):
-    return render(request, './employee/employeehome.html')
+    cities = CityMaster.objects.all().order_by('city')
+    return render(request, './employee/employeehome.html',{'city':cities})
 
 def saveEmployee(request):
     if(len(request.POST.get('account_no'))>12 or len(request.POST.get('account_no'))<12 or len(request.POST.get('ifsc_code'))>11 or len(request.POST.get('ifsc_code'))<11 or len(request.POST.get('aadhar_no'))>12 or len(request.POST.get('aadhar_no'))<12 or len(request.POST.get('phone_no'))>10 or len(request.POST.get('phone_no'))<10):
@@ -4038,7 +4086,7 @@ def saveEmployee(request):
             city = request.POST.get('city')
         )
         messages.error(request,"This Employee Already Exists")
-        return render(request,'./employee/employeehome.html')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     except:
         pass
     new_emp = Employee(

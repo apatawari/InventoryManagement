@@ -173,3 +173,5 @@ class MonthlyPayment(models.Model):
     amount = models.FloatField()
     last_payment_date = models.DateField(null=True,default=None)
 
+class CityMaster(models.Model):
+   city = models.CharField(null=True,max_length=50)
