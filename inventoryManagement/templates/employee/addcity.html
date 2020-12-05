@@ -1,6 +1,6 @@
 {% extends './employeenav.html' %}
 
-{% block title%} Add Bank Account {% endblock %}
+{% block title%} Add City {% endblock %}
 {% block content%}
 {% load widget_tweaks %}
 {% load my_tags %}
@@ -8,25 +8,10 @@
       <form method="POST" action="{% url 'savebank' %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Bank Account</h1>
+            <h1>Add City</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="bank_name" placeholder="Bank Name" name="bank_name" autofocus required>
-
-            <br>
-            <input type="number" class="form-control" id="account_no" placeholder="Account No" name="account_no" required>
-
-            <br>
-            <input type="text" class="form-control" id="ifsc" placeholder="IFSC code" name="ifsc" required>
-
-            <br>
-            <input type="text" class="form-control" id="account_name" placeholder="Account holder name" name="account_name" required>
-
-            <br>
-            <input type="text" class="form-control" id="branch_code" placeholder="Branch Code" name="branch_code" required>
-
-            <br>
-            <input type="text" class="form-control" id="account_type" placeholder="Account Type" name="account_type" required>
+            <input type="text" class="form-control" id="city_name" placeholder="City" name="city_name" autofocus required>
 
             <br>
 
@@ -40,10 +25,7 @@
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th class="td-text" scope="col">Bank Name</th>
-            <th class="td-text" scope="col">Account No</th>
-            <th class="td-text" scope="col">IFSC</th>
-            <th class="td-text" scope="col">Account Name</th>
+            <th class="td-text" scope="col">City</th>
             <th></th>
             
             
@@ -56,12 +38,10 @@
             
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{q.bank_name}}</td>
-            <td class="td-text">{{q.company_account}}</td>
-            <td class="td-text">{{q.ifsc}}</td>
-            <td class="td-text">{{q.account_name}}</td>
+
             <td>
-              <a class ="anchor-button float-right danger" href="{% url 'deletequality' q.id %}">Delete</a>
-              <a class ="anchor-button float-right space" href="{% url 'editbank' q.id %}">Edit</a>
+              <a class ="anchor-button float-right danger" href="#">Delete</a>
+              <a class ="anchor-button float-right space" href="#">Edit</a>
             </td>
             
             
