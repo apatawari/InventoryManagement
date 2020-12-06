@@ -115,7 +115,7 @@
                 <select class="form-control" name="checker" required>
 
                     {% for q in checkers %}
-                        <option value="{{ q.checker }}">{{ q.checker }}</option>
+                        <option value="{{ q.id }}">{{ q.checker }}</option>
                         
                         
                     {% endfor %}
@@ -131,7 +131,7 @@
                 <select class="form-control" name="transport" required>
 
                     {% for q in transport %}
-                        <option value="{{ q.transport }}">{{ q.transport }}</option>
+                        <option value="{{ q.id }}">{{ q.transport }}</option>
                         
                         
                     {% endfor %}

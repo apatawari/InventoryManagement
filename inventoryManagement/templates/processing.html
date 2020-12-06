@@ -147,7 +147,7 @@
             <td>{{record.sent_to_processing_date}}</td>
             <!--<td class="td-text">{{record.state}}</td>-->
             <td class="td-text">{{record.processing_type}}</td>
-            <td class="td-text">{{record.processing_party_name}}</td>
+            <td class="td-text">{{record.processing_party_name.processing_party}}</td>
             <td>{{record.gate_pass}}</td>
             <td><a class ="anchor-button button-small-text" href="{% url 'readyapprove' record.id %}">Recieve Processed Grey</a></td>
 

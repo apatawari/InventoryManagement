@@ -9,7 +9,7 @@ class RecordFilter(django_filters.FilterSet):
         fields = {
             'party_name': [ 'contains','exact'],
             'lot_no': ['exact', 'contains'],
-            'quality': ['exact', 'contains'],
+            'quality': ['exact'],
             'lr_no': ['exact', 'contains'],
         }
 
