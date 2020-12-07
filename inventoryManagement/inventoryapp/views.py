@@ -1776,7 +1776,7 @@ def checkerReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'checkerreport.html',{'records':datalist,'total':total,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'checkerreport.html',{'records':datalist,'total':total,'c':checker.checker,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 ###########transport report
 
@@ -2627,6 +2627,7 @@ def export_report_xls(request):
 
 
 ###########################################     COLOR    #################################################
+
 def renderAddColorSupplier(request):
     suppliers=ColorSupplier.objects.all().order_by('supplier')
     paginator = Paginator(suppliers,10)
@@ -2898,8 +2899,8 @@ def saveOrder(request):
     r=float(request.POST.get('rate'))
     a=round(q*r,2)
     new_order=ColorRecord(
-        color=request.POST.get('color'),
-        supplier=request.POST.get('supplier'),
+        color=get_object_or_404(Color,id=int(request.POST.get('color'))),
+        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
         order_no=request.POST.get('order_no'),
         order_date=str(request.POST.get('order_date')),
         rate=request.POST.get('rate'),
@@ -2908,20 +2909,20 @@ def saveOrder(request):
         state="Ordered",
         recieving_date=None,
         total_quantity = request.POST.get('quantity'),
-        unit = request.POST.get('unit')
+        unit = get_object_or_404(Units,id=int(request.POST.get('unit')))
     )
     new_order.save()
 
     new_order=AllOrders(
-        color=request.POST.get('color'),
-        supplier=request.POST.get('supplier'),
+        color=get_object_or_404(Color,id=int(request.POST.get('color'))),
+        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
         order_no=request.POST.get('order_no'),
         order_date=str(request.POST.get('order_date')),
         rate=request.POST.get('rate'),
         amount=a,
         quantity=request.POST.get('quantity'),
         state="Ordered",
-        unit = request.POST.get('unit'),
+        unit = get_object_or_404(Units,id=int(request.POST.get('unit'))),
         rem_quantity=request.POST.get('quantity')
     )
     new_order.save()
@@ -2937,8 +2938,8 @@ def saveOrder(request):
             return redirect('/placeorder')
         color_unit.append(l)
         new_order=ColorRecord(
-            color=request.POST.get('color2'),
-            supplier=request.POST.get('supplier'),
+            color=get_object_or_404(Color,id=int(request.POST.get('color2'))),
+            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
             order_no=request.POST.get('order_no'),
             order_date=str(request.POST.get('order_date')),
             rate=request.POST.get('rate2'),
@@ -2947,20 +2948,20 @@ def saveOrder(request):
             state="Ordered",
             recieving_date=None,
             total_quantity = request.POST.get('quantity2'),
-            unit = request.POST.get('unit2')
+            unit = get_object_or_404(Units,id=int(request.POST.get('unit2')))
         )
         new_order.save()
 
         new_order=AllOrders(
-            color=request.POST.get('color2'),
-            supplier=request.POST.get('supplier'),
+            color=get_object_or_404(Color,id=int(request.POST.get('color2'))),
+            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
             order_no=request.POST.get('order_no'),
             order_date=str(request.POST.get('order_date')),
             rate=request.POST.get('rate2'),
             amount=a,
             quantity=request.POST.get('quantity2'),
             state="Ordered",
-            unit = request.POST.get('unit2'),
+            unit = get_object_or_404(Units,id=int(request.POST.get('unit2'))),
             rem_quantity=request.POST.get('quantity2')
         )
         new_order.save()
@@ -2975,8 +2976,8 @@ def saveOrder(request):
                 return redirect('/placeorder')
             color_unit.append(l)
             new_order=ColorRecord(
-                color=request.POST.get('color3'),
-                supplier=request.POST.get('supplier'),
+                color=get_object_or_404(Color,id=int(request.POST.get('color3'))),
+                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                 order_no=request.POST.get('order_no'),
                 order_date=str(request.POST.get('order_date')),
                 rate=request.POST.get('rate3'),
@@ -2985,20 +2986,20 @@ def saveOrder(request):
                 state="Ordered",
                 recieving_date=None,
                 total_quantity = request.POST.get('quantity3'),
-                unit = request.POST.get('unit3')
+                unit = get_object_or_404(Units,id=int(request.POST.get('unit3')))
             )
             new_order.save()
 
             new_order=AllOrders(
-                color=request.POST.get('color3'),
-                supplier=request.POST.get('supplier'),
+                color=get_object_or_404(Color,id=int(request.POST.get('color3'))),
+                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                 order_no=request.POST.get('order_no'),
                 order_date=str(request.POST.get('order_date')),
                 rate=request.POST.get('rate3'),
                 amount=a,
                 quantity=request.POST.get('quantity3'),
                 state="Ordered",
-                unit = request.POST.get('unit3'),
+                unit = get_object_or_404(Units,id=int(request.POST.get('unit3'))),
                 rem_quantity=request.POST.get('quantity3')
             )
             new_order.save()
@@ -3013,8 +3014,8 @@ def saveOrder(request):
                     return redirect('/placeorder')
                 color_unit.append(l)
                 new_order=ColorRecord(
-                    color=request.POST.get('color4'),
-                    supplier=request.POST.get('supplier'),
+                    color=get_object_or_404(Color,id=int(request.POST.get('color4'))),
+                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                     order_no=request.POST.get('order_no'),
                     order_date=str(request.POST.get('order_date')),
                     rate=request.POST.get('rate4'),
@@ -3023,20 +3024,20 @@ def saveOrder(request):
                     state="Ordered",
                     recieving_date=None,
                     total_quantity = request.POST.get('quantity4'),
-                    unit = request.POST.get('unit4')
+                    unit = get_object_or_404(Units,id=int(request.POST.get('unit4')))
                 )
                 new_order.save()
 
                 new_order=AllOrders(
-                    color=request.POST.get('color4'),
-                    supplier=request.POST.get('supplier'),
+                    color=get_object_or_404(Color,id=int(request.POST.get('color4'))),
+                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                     order_no=request.POST.get('order_no'),
                     order_date=str(request.POST.get('order_date')),
                     rate=request.POST.get('rate4'),
                     amount=a,
                     quantity=request.POST.get('quantity4'),
                     state="Ordered",
-                    unit = request.POST.get('unit4'),
+                    unit = get_object_or_404(Units,id=int(request.POST.get('unit4'))),
                     rem_quantity=request.POST.get('quantity4')
                 )
                 new_order.save()
@@ -3051,8 +3052,8 @@ def saveOrder(request):
                         return redirect('/placeorder')
                     color_unit.append(l)
                     new_order=ColorRecord(
-                        color=request.POST.get('color5'),
-                        supplier=request.POST.get('supplier'),
+                        color=get_object_or_404(Color,id=int(request.POST.get('color5'))),
+                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                         order_no=request.POST.get('order_no'),
                         order_date=str(request.POST.get('order_date')),
                         rate=request.POST.get('rate5'),
@@ -3061,20 +3062,20 @@ def saveOrder(request):
                         state="Ordered",
                         recieving_date=None,
                         total_quantity = request.POST.get('quantity5'),
-                        unit = request.POST.get('unit5')
+                        unit = get_object_or_404(Units,id=int(request.POST.get('unit5')))
                     )
                     new_order.save()
 
                     new_order=AllOrders(
-                        color=request.POST.get('color5'),
-                        supplier=request.POST.get('supplier'),
+                        color=get_object_or_404(Color,id=int(request.POST.get('color5'))),
+                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                         order_no=request.POST.get('order_no'),
                         order_date=str(request.POST.get('order_date')),
                         rate=request.POST.get('rate5'),
                         amount=a,
                         quantity=request.POST.get('quantity5'),
                         state="Ordered",
-                        unit = request.POST.get('unit5'),
+                        unit = get_object_or_404(Units,id=int(request.POST.get('unit5'))),
                         rem_quantity=request.POST.get('quantity5')
                     )
                     new_order.save()
@@ -3089,8 +3090,8 @@ def saveOrder(request):
                             return redirect('/placeorder')
                         color_unit.append(l)
                         new_order=ColorRecord(
-                            color=request.POST.get('color6'),
-                            supplier=request.POST.get('supplier'),
+                            color=get_object_or_404(Color,id=int(request.POST.get('color6'))),
+                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                             order_no=request.POST.get('order_no'),
                             order_date=str(request.POST.get('order_date')),
                             rate=request.POST.get('rate6'),
@@ -3099,20 +3100,20 @@ def saveOrder(request):
                             state="Ordered",
                             recieving_date=None,
                             total_quantity = request.POST.get('quantity6'),
-                            unit = request.POST.get('unit6')
+                            unit = get_object_or_404(Units,id=int(request.POST.get('unit6')))
                         )
                         new_order.save()
 
                         new_order=AllOrders(
-                            color=request.POST.get('color6'),
-                            supplier=request.POST.get('supplier'),
+                            color=get_object_or_404(Color,id=int(request.POST.get('color6'))),
+                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                             order_no=request.POST.get('order_no'),
                             order_date=str(request.POST.get('order_date')),
                             rate=request.POST.get('rate6'),
                             amount=a,
                             quantity=request.POST.get('quantity6'),
                             state="Ordered",
-                            unit = request.POST.get('unit6'),
+                            unit = get_object_or_404(Units,id=int(request.POST.get('unit6'))),
                             rem_quantity=request.POST.get('quantity6')
                         )
                         new_order.save()
@@ -3127,8 +3128,8 @@ def saveOrder(request):
                                 return redirect('/placeorder')
                             color_unit.append(l)
                             new_order=ColorRecord(
-                                color=request.POST.get('color7'),
-                                supplier=request.POST.get('supplier'),
+                                color=get_object_or_404(Color,id=int(request.POST.get('color7'))),
+                                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                 order_no=request.POST.get('order_no'),
                                 order_date=str(request.POST.get('order_date')),
                                 rate=request.POST.get('rate7'),
@@ -3137,20 +3138,20 @@ def saveOrder(request):
                                 state="Ordered",
                                 recieving_date=None,
                                 total_quantity = request.POST.get('quantity7'),
-                                unit = request.POST.get('unit7')
+                                unit = get_object_or_404(Units,id=int(request.POST.get('unit7')))
                             )
                             new_order.save()
 
                             new_order=AllOrders(
-                                color=request.POST.get('color7'),
-                                supplier=request.POST.get('supplier'),
+                                color=get_object_or_404(Color,id=int(request.POST.get('color7'))),
+                                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                 order_no=request.POST.get('order_no'),
                                 order_date=str(request.POST.get('order_date')),
                                 rate=request.POST.get('rate7'),
                                 amount=a,
                                 quantity=request.POST.get('quantity7'),
                                 state="Ordered",
-                                unit = request.POST.get('unit7'),
+                                unit = get_object_or_404(Units,id=int(request.POST.get('unit7'))),
                                 rem_quantity=request.POST.get('quantity7')
                         
                             )
@@ -3166,8 +3167,8 @@ def saveOrder(request):
                                     return redirect('/placeorder')
                                 color_unit.append(l)
                                 new_order=ColorRecord(
-                                    color=request.POST.get('color8'),
-                                    supplier=request.POST.get('supplier'),
+                                    color=get_object_or_404(Color,id=int(request.POST.get('color8'))),
+                                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                     order_no=request.POST.get('order_no'),
                                     order_date=str(request.POST.get('order_date')),
                                     rate=request.POST.get('rate8'),
@@ -3176,20 +3177,20 @@ def saveOrder(request):
                                     state="Ordered",
                                     recieving_date=None,
                                     total_quantity = request.POST.get('quantity8'),
-                                    unit = request.POST.get('unit8')
+                                    unit = get_object_or_404(Units,id=int(request.POST.get('unit8')))
                                 )
                                 new_order.save()
 
                                 new_order=AllOrders(
-                                    color=request.POST.get('color8'),
-                                    supplier=request.POST.get('supplier'),
+                                    color=get_object_or_404(Color,id=int(request.POST.get('color8'))),
+                                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                     order_no=request.POST.get('order_no'),
                                     order_date=str(request.POST.get('order_date')),
                                     rate=request.POST.get('rate8'),
                                     amount=a,
                                     quantity=request.POST.get('quantity8'),
                                     state="Ordered",
-                                    unit = request.POST.get('unit8'),
+                                    unit = get_object_or_404(Units,id=int(request.POST.get('unit8'))),
                                     rem_quantity=request.POST.get('quantity8')
                                 )
                                 new_order.save()
@@ -3204,8 +3205,8 @@ def saveOrder(request):
                                         return redirect('/placeorder')
                                     color_unit.append(l)
                                     new_order=ColorRecord(
-                                        color=request.POST.get('color9'),
-                                        supplier=request.POST.get('supplier'),
+                                        color=get_object_or_404(Color,id=int(request.POST.get('color9'))),
+                                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                         order_no=request.POST.get('order_no'),
                                         order_date=str(request.POST.get('order_date')),
                                         rate=request.POST.get('rate9'),
@@ -3214,20 +3215,20 @@ def saveOrder(request):
                                         state="Ordered",
                                         recieving_date=None,
                                         total_quantity = request.POST.get('quantity9'),
-                                        unit = request.POST.get('unit9')
+                                        unit = get_object_or_404(Units,id=int(request.POST.get('unit9')))
                                     )
                                     new_order.save()
 
                                     new_order=AllOrders(
-                                        color=request.POST.get('color9'),
-                                        supplier=request.POST.get('supplier'),
+                                        color=get_object_or_404(Color,id=int(request.POST.get('color9'))),
+                                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                         order_no=request.POST.get('order_no'),
                                         order_date=str(request.POST.get('order_date')),
                                         rate=request.POST.get('rate9'),
                                         amount=a,
                                         quantity=request.POST.get('quantity9'),
                                         state="Ordered",
-                                        unit = request.POST.get('unit9'),
+                                        unit = get_object_or_404(Units,id=int(request.POST.get('unit9'))),
                                         rem_quantity=request.POST.get('quantity9')
                                     )
                                     new_order.save()
@@ -3242,8 +3243,8 @@ def saveOrder(request):
                                             return redirect('/placeorder')
                                         
                                         new_order=ColorRecord(
-                                            color=request.POST.get('color10'),
-                                            supplier=request.POST.get('supplier'),
+                                            color=get_object_or_404(Color,id=int(request.POST.get('color10'))),
+                                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                             order_no=request.POST.get('order_no'),
                                             order_date=str(request.POST.get('order_date')),
                                             rate=request.POST.get('rate10'),
@@ -3252,20 +3253,20 @@ def saveOrder(request):
                                             state="Ordered",
                                             recieving_date=None,
                                             total_quantity = request.POST.get('quantity10'),
-                                            unit = request.POST.get('unit10')
+                                            unit = get_object_or_404(Unit,id=int(request.POST.get('unit10')))
                                         )
                                         new_order.save()
 
                                         new_order=AllOrders(
-                                            color=request.POST.get('color10'),
-                                            supplier=request.POST.get('supplier'),
+                                            color=get_object_or_404(Color,id=int(request.POST.get('color10'))),
+                                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
                                             order_no=request.POST.get('order_no'),
                                             order_date=str(request.POST.get('order_date')),
                                             rate=request.POST.get('rate10'),
                                             amount=a,
                                             quantity=request.POST.get('quantity10'),
                                             state="Ordered",
-                                            unit = request.POST.get('unit10'),
+                                            unit = get_object_or_404(Units,id=int(request.POST.get('unit10'))),
                                             rem_quantity=request.POST.get('quantity10')
                                         )
                                         new_order.save()
@@ -3317,8 +3318,10 @@ def orderGeneration(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
+    suppliers=ColorSupplier.objects.all().order_by('supplier')
+    colors=Color.objects.all().order_by('color')
 
-    return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter})
+    return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter,'suppliers':suppliers,'colors':colors})
 
 
 def orderEdit(request,id):
@@ -3347,30 +3350,31 @@ def orderEditSave(request,id):
     q=float(request.POST.get('quantity'))
     r=float(request.POST.get('rate'))
     a=q*r
+    a=round(a,2)
     orderno=rec_order.order_no
     color = rec_order.color
     unit=rec_order.unit
     rate=rec_order.rate
     try:
         rec=get_object_or_404(ColorRecord, rate=rate,order_no=orderno,color=color,unit=unit,state="Ordered")
-        rec.supplier=request.POST.get('supplier')
-        rec.color=request.POST.get('color')
+        rec.supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier')))
+        rec.color=get_object_or_404(Color,id=int(request.POST.get('color')))
         rec.order_date=str(request.POST.get('order_date'))                  
         rec.rate=request.POST.get('rate')                               
         rec.amount=a                              
         rec.quantity=request.POST.get('quantity')               
         rec.total_quantity = request.POST.get('quantity') 
-        rec.unit = request.POST.get('unit')         
+        rec.unit = get_object_or_404(Units,id=int(request.POST.get('unit')))         
         rec.save()
     finally:
-        rec_order.supplier=request.POST.get('supplier')
-        rec_order.color=request.POST.get('color')
+        rec_order.supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier')))
+        rec_order.color=get_object_or_404(Color,id=int(request.POST.get('color')))
         rec_order.order_date=str(request.POST.get('order_date'))                  
         rec_order.rate=request.POST.get('rate')                               
         rec_order.amount=a                              
         rec_order.quantity=request.POST.get('quantity')
         rec_order.rem_quantity=request.POST.get('quantity')      
-        rec_order.unit = request.POST.get('unit')         
+        rec_order.unit = get_object_or_404(Units,id=int(request.POST.get('unit')))         
         rec_order.save()
     return redirect('/ordergeneration')
 
@@ -3471,7 +3475,8 @@ def validate(request,id):
 def goodsApprove(request,id):
     prevRec = get_object_or_404(ColorRecord,id=id)
     quantity_recieved = float(request.POST.get("quantityreceived"))
-    godown = request.POST.get('godownnumber')
+    g_id = int(request.POST.get('godownnumber'))
+    godown=get_object_or_404(Godowns,id=g_id)
     recieving_date = request.POST.get('receivingdate')
     amount = prevRec.amount
     print(str(recieving_date))

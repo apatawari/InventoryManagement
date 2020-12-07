@@ -12,7 +12,7 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="new-quality">Supplier Party</label>
-                <input type="text" class="form-control" name="supplier" value="{{ record.supplier}}" readonly>
+                <input type="text" class="form-control" name="supplier" value="{{ record.supplier.supplier}}" readonly>
 
                    
                    
@@ -29,7 +29,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="new-quality">Color</label>
-                <input type="text" class="form-control" value="{{record.color}}" name="color" readonly>
+                <input type="text" class="form-control" value="{{record.color.color}}" name="color" readonly>
  
             </div>
         </div>
@@ -40,7 +40,7 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="Quantity">Unit</label>
-                <input type="text" class="form-control" id="Unit" value="{{record.unit}}" name="Unit" readonly>
+                <input type="text" class="form-control" id="Unit" value="{{record.unit.unit}}" name="Unit" readonly>
             </div>
             <div class="form-group col-md-3">
                 <label for="Rate">Rate</label>
@@ -62,7 +62,7 @@
                 <select class="form-control" name="godownnumber" required>    
                     {% for s in godowns %}
                         
-                        <option value="{{ s.godown }}" >{{ s.godown }}</option>
+                        <option value="{{ s.id }}" >{{ s.godown }}</option>
                                                
                     {% endfor %}
                 </select>   

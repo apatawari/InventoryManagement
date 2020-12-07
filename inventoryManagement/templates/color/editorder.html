@@ -15,10 +15,10 @@
                 <select class="form-control" name="supplier" >
 
                     {% for s in suppliers %}
-                        {% if s.supplier == record.supplier %}
-                        <option value="{{ s.supplier }}" selected>{{ s.supplier }}</option>
+                        {% if s.supplier == record.supplier.supplier %}
+                        <option value="{{ s.id }}" selected>{{ s.supplier }}</option>
                         {% else %}
-                        <option value="{{ s.supplier }}" >{{ s.supplier }}</option>
+                        <option value="{{ s.id}}" >{{ s.supplier }}</option>
                         {% endif %}                       
                     {% endfor %}
                 </select>
@@ -42,10 +42,10 @@
                 <select class="form-control" name="color" >
 
                     {% for party in color %}
-                        {% if party.color == record.color %}
-                        <option value="{{ party.color }}" selected>{{ party.color }}</option>
+                        {% if party.color == record.color.color %}
+                        <option value="{{ party.id }}" selected>{{ party.color }}</option>
                         {% else %}
-                        <option value="{{ party.color }}" >{{ party.color }}</option>
+                        <option value="{{ party.id }}" >{{ party.color }}</option>
                         {% endif %}                       
                     {% endfor %}
                 </select>
@@ -63,10 +63,10 @@
                 <select class="form-control" name="unit" >
 
                     {% for s in units %}
-                        {% if s.unit == record.unit %}
-                        <option value="{{ s.unit }}" selected>{{ s.unit }}</option>
+                        {% if s.unit == record.unit.unit %}
+                        <option value="{{ s.id }}" selected>{{ s.unit }}</option>
                         {% else %}
-                        <option value="{{ s.unit }}" >{{ s.unit }}</option>
+                        <option value="{{ s.id }}" >{{ s.unit }}</option>
                         {% endif %}                       
                     {% endfor %}
                 </select>   

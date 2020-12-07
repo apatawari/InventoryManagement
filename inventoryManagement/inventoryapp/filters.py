@@ -26,10 +26,10 @@ class ColorFilter(django_filters.FilterSet):
     class Meta:
         model=ColorRecord
         fields = {
-            'supplier': [ 'contains','exact'],
+            'supplier': [ 'exact'],
             'order_no': ['exact', 'contains'],
-            'color': ['exact', 'contains'],
-            'godown': ['exact', 'contains'],
+            'color': ['exact'],
+            'godown': ['exact'],
             'lease': ['exact', 'contains']
         }
 
@@ -46,9 +46,9 @@ class ColorOrderFilter(django_filters.FilterSet):
     class Meta:
         model=AllOrders
         fields = {
-            'supplier': [ 'contains','exact'],
+            'supplier': [ 'exact'],
             'order_no': ['exact', 'contains'],
-            'color': ['exact', 'contains']
+            'color': ['exact']
         }
 
         filter_overrides = {

@@ -76,18 +76,40 @@
       <!-- Filter Start -->
       <form method="GET">
           <div class="form-row filter-form">
-            <div class="form-group col-sm-4">
+            <!-- <div class="form-group col-sm-4">
               {{ filter.form.supplier.label_tag }}
               {% render_field filter.form.supplier class="form-control" %}
-            </div>
+            </div> -->
+            <div class="form-group col-sm-4">
+              <label for="new-quality">Supplier</label>
+              <select class="form-control" name="supplier">
+                <option value="">--</option>
+                  {% for q in suppliers %}
+                      
+                      <option value="{{ q.id}}">{{ q.supplier }}</option>
+                      
+                  {% endfor %}
+              </select>
+          </div>
             <div class="form-group col-sm-2">
               {{ filter.form.order_no.label_tag }}
               {% render_field filter.form.order_no class="form-control" %}
             </div>
-            <div class="form-group col-sm-4">
+            <!-- <div class="form-group col-sm-4">
               {{ filter.form.color.label_tag }}
               {% render_field filter.form.color class="form-control" %}
-            </div>
+            </div> -->
+            <div class="form-group col-sm-4">
+              <label for="new-quality">Color</label>
+              <select class="form-control" name="color">
+                <option value="">--</option>
+                  {% for q in colors %}
+                      
+                      <option value="{{ q.id}}">{{ q.color }}</option>
+                      
+                  {% endfor %}
+              </select>
+          </div>
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
             </div>
@@ -133,14 +155,14 @@
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{record.supplier}}</td>
+            <td class="td-text">{{record.supplier.supplier}}</td>
             <td><a href="{% url 'vieworder' record.id %}">{{record.order_no}}</a></td>
             <td>{{record.order_date}}</td>
-            <td class="td-text">{{record.color}}</td>
+            <td class="td-text">{{record.color.color}}</td>
             <td>{{record.quantity}}</td>
             <td>{{ record.quantity |sub:record.rem_quantity }}</td>
             <td>{{record.rem_quantity}}</td>
-            <td>{{record.unit}}</td>
+            <td>{{record.unit.unit}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.amount}}</td>
             <td>{{record.validation}}</td>
