@@ -47,7 +47,7 @@
             <td class="td-text">{{p.city}}</td>
             <td class="td-text">{{p.address}}</td>
             <td>
-              <a class ="anchor-button float-right danger" href="{% url 'deletesupplier' p.id %}">Delete</a>
+              <a class ="anchor-button float-right danger" onclick="return confirm('Are you sure you want to delete this record with Party Name - {{p.supplier}}?')"href="{% url 'deletesupplier' p.id %}">Delete</a>
               <a class ="anchor-button float-right space" href="{% url 'rendereditsupplier' p.id %}">Edit</a>
             </td>
             

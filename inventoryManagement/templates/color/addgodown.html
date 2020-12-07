@@ -39,7 +39,7 @@
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{p.godown}}</td>
             <td>
-              <a class ="anchor-button float-right danger" href="{% url 'deletegodown' p.id %}">Delete</a>
+              <a class ="anchor-button float-right danger" onclick="return confirm('Are you sure you want to delete this record with Godown Name - {{p.godown}}?')" href="{% url 'deletegodown' p.id %}">Delete</a>
               <a class ="anchor-button float-right space" href="{% url 'rendereditgodown' p.id %}">Edit</a>
             </td>
             

@@ -15,7 +15,7 @@
             <div class="form-group col-md-3">
                 <label for="new-quality">Color</label>
                 
-                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.color}}" name="quantity" readonly >
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.color.color}}" name="quantity" readonly >
             
  
             </div>
@@ -25,7 +25,7 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="Unit">Unit</label>
-                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.unit}}" name="quantity" readonly >
+                <input type="text" class="form-control" id="quantity" placeholder="Quantity" value="{{ record.unit.unit}}" name="quantity" readonly >
             
                  
             </div>
@@ -42,7 +42,7 @@
                 <select class="form-control" name="godownname" required>    
                     {% for s in godowns %}
                         
-                        <option value="{{ s.godown }}" >{{ s.godown }}</option>
+                        <option value="{{ s.id }}" >{{ s.godown }}</option>
                                                
                     {% endfor %}
                 </select>   

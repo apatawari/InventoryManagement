@@ -45,13 +45,13 @@
                 <label for="Lease">Loose Godown Name</label>
                 <select class="form-control" name="leasenumber" required>                      
                     {% for l in lease %}
-                        <option value="{{l.lease}}">{{l.lease}}</option>
+                        <option value="{{l.id}}">{{l.lease}}</option>
                     {% endfor %}
                 </select>   
             </div>
             <div class="form-group col-md-3">
                 <label for="Quantity">Godown Name</label>
-                <input type="text" class="form-control" id="godown" name="godown" value="{{record.state}}" required readonly/>
+                <input type="text" class="form-control" id="godown" name="godown" value="{{record.state.godown}}" required readonly/>
             </div>
             
         </div>

@@ -64,8 +64,9 @@ class GodownLeaseFilter(django_filters.FilterSet):
     class Meta:
         model=GodownLeaseColors
         fields = {
-            'color': [ 'contains','exact'],
-            'state': ['exact', 'contains']
+            'color': [ 'exact'],
+            'state': ['exact'],
+            'loose_godown_state': ['exact']
         }
 
         filter_overrides = {

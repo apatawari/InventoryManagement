@@ -55,7 +55,7 @@ def index(request):
     idlist=[]
     for r in recs:
         try:
-            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit)
+            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
             flag=0
             for d in dups:
                 if flag==0:
@@ -70,7 +70,7 @@ def index(request):
     idlist2=[]
     for r in colrecs:
         try:
-            dups=get_list_or_404(ColorRecord,order_no=r.order_no,color=r.color,unit=r.unit)
+            dups=get_list_or_404(ColorRecord,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
             flag=0
             for d in dups:
                 if flag==0:
@@ -2667,8 +2667,11 @@ def saveSupplier(request):
     return redirect('/addcolorsupplier')
 
 def deleteSupplier(request,id):
-    ColorSupplier.objects.filter(id=id).delete()
-    messages.success(request,"Supplier Party deleted")
+    try:
+        ColorSupplier.objects.filter(id=id).delete()
+        messages.success(request,"Supplier Party deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addcolorsupplier')
 
 def renderEditSupplier(request,id):
@@ -2715,8 +2718,11 @@ def saveColor(request):
     return redirect('/addcolor')
 
 def deleteColor(request,id):
-    Color.objects.filter(id=id).delete()
-    messages.success(request,"Color deleted")
+    try:
+        Color.objects.filter(id=id).delete()
+        messages.success(request,"Color deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addcolor')
 
 def renderEditColor(request,id):
@@ -2762,8 +2768,11 @@ def saveGodown(request):
     return redirect('/addgodown')
 
 def deleteGodown(request,id):
-    Godowns.objects.filter(id=id).delete()
-    messages.success(request,"Godown deleted")
+    try:
+        Godowns.objects.filter(id=id).delete()
+        messages.success(request,"Godown deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addgodown')
 
 def renderEditGodown(request,id):
@@ -2810,8 +2819,11 @@ def saveLease(request):
     return redirect('/addlease')
 
 def deleteLease(request,id):
-    Lease.objects.filter(id=id).delete()
-    messages.success(request,"Lease deleted")
+    try:
+        Lease.objects.filter(id=id).delete()
+        messages.success(request,"Lease deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addlease')
 
 def renderEditLease(request,id):
@@ -2858,8 +2870,11 @@ def saveUnit(request):
     return redirect('/addunit')
 
 def deleteUnit(request,id):
-    Units.objects.filter(id=id).delete()
-    messages.success(request,"Unit deleted")
+    try:
+        Units.objects.filter(id=id).delete()
+        messages.success(request,"Unit deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addunit')
 
 def renderEditUnit(request,id):
@@ -3279,7 +3294,7 @@ def orderGeneration(request):
     idlist=[]
     for r in recs:
         try:
-            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit)
+            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
             flag=0
             for d in dups:
                 if flag==0:
@@ -3294,7 +3309,7 @@ def orderGeneration(request):
     idlist2=[]
     for r in colrecs:
         try:
-            dups=get_list_or_404(ColorRecord,order_no=r.order_no,color=r.color,unit=r.unit)
+            dups=get_list_or_404(ColorRecord,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
             flag=0
             for d in dups:
                 if flag==0:
@@ -3385,8 +3400,9 @@ def goodsReceived(request):
     godowns=Godowns.objects.all()
     godowns_list=[]
     for g in godowns:
-        godowns_list.append(g.godown)
-    godown_colors = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0)
+        godowns_list.append(g)
+    
+    godown_colors = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -3394,8 +3410,10 @@ def goodsReceived(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
+    chemicals=Color.objects.all().order_by('color')
+    godowns=Godowns.objects.all().order_by('godown')
 
-    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing"})
+    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})
 
 
     
@@ -3508,26 +3526,26 @@ def goodsApprove(request,id):
                 closing_stock_prev = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
  
                 closing_stock= ClosingStock(
-                    color = prevRec.color,
+                    color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = closing_stock_prev.quantity + quantity_recieved,
-                    unit = prevRec.unit,
+                    unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     dailydate = datetime.date.today()
                 )
                 closing_stock.save()
         except:
             godown_color = GodownLeaseColors(
-                color = prevRec.color,
+                color = get_object_or_404(Color,id=int(prevRec.color.id)),
                 quantity = quantity_recieved,
-                unit = prevRec.unit,
+                unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
                 rate = prevRec.rate,
                 state = godown
             )
             godown_color.save()
             closing_stock= ClosingStock(
-                color = prevRec.color,
+                color = get_object_or_404(Color,id=int(prevRec.color.id)),
                 quantity = quantity_recieved,
-                unit = prevRec.unit,
+                unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
                 rate = prevRec.rate,
                 dailydate = datetime.date.today()
             )
@@ -3544,29 +3562,52 @@ def goodsApprove(request,id):
         amount_recieved = amount_per_quant * quantity_recieved
         amount_remain = prevRec.amount - amount_recieved
 
+        print(prevRec.color,prevRec.supplier,prevRec.unit,godown)
+        color_ob=get_object_or_404(Color,id=int(prevRec.color.id))
+        supp_ob=get_object_or_404(ColorSupplier,id=int(prevRec.supplier.id))
+        unit_ob=get_object_or_404(Units,id=int(prevRec.unit.id))
 
-        value = ColorRecord(
-            color=prevRec.color,
-            supplier=prevRec.supplier,
+        new_value = ColorRecord(
+            recieving_date_string=str(recieving_date),
+            recieving_date=str(recieving_date),
+            color=color_ob,
+            supplier=supp_ob,
             order_no=prevRec.order_no,
             order_date=prevRec.order_date,
             rate=prevRec.rate,
             amount=round(amount_recieved,2),
             quantity=quantity_recieved,
-            unit = prevRec.unit,
+            unit = unit_ob,
             state="Godown",
-            recieving_date=str(recieving_date),
             total_quantity = prevRec.total_quantity,
             godown = godown,
             chalan_no=int(request.POST.get('chalan')),
-            recieving_date_string=str(recieving_date)
             
-            )
+            
+        )
+       
+        # new_value = ColorRecord(
+        #     order_no=125,
+        #     rate=1524,
+        #     order_date=prevRec.order_date,
+        #     amount=1452,
+        #     quantity=124,
+        #     state="Godown",
+        #     chalan_no=52,
+        #     total_quantity = 124
+            
+        # )
+        
+        new_value.save()
+           
+        
+        print(recieving_date)
         if quantity_recieved == 0 :
             messages.error(request,"Quantity Recieved cannot be Zero (0)")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
-            value.save()
+
+            
             prevRec.quantity = prevRec.quantity - quantity_recieved
             prevRec.amount = round(amount_remain,2)
             prevRec.save()
@@ -3589,9 +3630,9 @@ def goodsApprove(request,id):
                     closing_stock_prev = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
  
                     closing_stock= ClosingStock(
-                        color = prevRec.color,
+                        color = get_object_or_404(Color,id=int(prevRec.color.id)),
                         quantity = closing_stock_prev.quantity + quantity_recieved,
-                        unit = prevRec.unit,
+                        unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
                         rate = prevRec.rate,
                         dailydate = datetime.date.today()
                     )
@@ -3600,17 +3641,17 @@ def goodsApprove(request,id):
 
             except:
                 godown_color = GodownLeaseColors(
-                    color = prevRec.color,
+                    color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = quantity_recieved,
-                    unit = prevRec.unit,
+                    unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     state = godown
                 )
                 godown_color.save()
                 closing_stock= ClosingStock(
-                    color = prevRec.color,
+                    color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = quantity_recieved,
-                    unit = prevRec.unit,
+                    unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     dailydate = datetime.date.today()
                 )
@@ -3635,8 +3676,8 @@ def goodsLease(request):
     lease=Lease.objects.all()
     lease_list=[]
     for g in lease:
-        lease_list.append(g.lease)
-    godown_colors = GodownLeaseColors.objects.filter(state__in=lease_list).order_by('color')
+        lease_list.append(g)
+    godown_colors = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list,state=None).order_by('color')
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -3647,7 +3688,9 @@ def goodsLease(request):
     # html = render_to_string('./color/lease.html',{'filter':records_filter,'colors':records})
     # text = htmltoText(html)
     # print(text) 
-    return render(request,'./color/lease.html',{'filter':records_filter,'colors':records})
+    chemicals=Color.objects.all().order_by('color')
+    loose_godowns=Lease.objects.all().order_by('lease')
+    return render(request,'./color/lease.html',{'filter':records_filter,'colors':records,'chemicals':chemicals,'loose_godowns':loose_godowns})
 
 def leaseRequest(request):
     godowns=Godowns.objects.all()
@@ -3679,12 +3722,13 @@ def viewGood(request,id):
 def leaseApprove(request,id):
     prevRec = get_object_or_404(GodownLeaseColors,id=id)
     quantity_recieved = float(request.POST.get("quantitylease"))
-    lease = request.POST.get('leasenumber')
-    
+    l_id = request.POST.get('leasenumber')
+    loose_godown = get_object_or_404(Lease,id=int(l_id))
+
     if(prevRec.quantity == quantity_recieved):
         
         try:
-            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=lease)
+            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
             godown_color.quantity = godown_color.quantity + quantity_recieved
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             godown_color.save()
@@ -3694,7 +3738,8 @@ def leaseApprove(request,id):
                 quantity = quantity_recieved,
                 unit = prevRec.unit,
                 rate = prevRec.rate,
-                state = lease
+                state = None,
+                loose_godown_state=loose_godown
             )
             godown_color.save()
         prevRec.quantity=0
@@ -3707,7 +3752,7 @@ def leaseApprove(request,id):
     else:
         quantity_remaining = prevRec.quantity - quantity_recieved
         try:
-            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=lease)
+            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
             godown_color.quantity = godown_color.quantity + quantity_recieved
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             
@@ -3717,7 +3762,8 @@ def leaseApprove(request,id):
                 quantity = quantity_recieved,
                 unit = prevRec.unit,
                 rate = prevRec.rate,
-                state = lease
+                state = None,
+                loose_godown_state=loose_godown
             )
 
         if quantity_recieved == 0 :
@@ -3738,11 +3784,12 @@ def leaseedit(request,id):
     leasestock = get_object_or_404(GodownLeaseColors,id=id)
     color = Color.objects.all().order_by('color')
     units=Units.objects.all().order_by('unit')
-    godowns=Godowns.objects.all()
+    godowns=Godowns.objects.all().order_by('godown')
     return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'godowns':godowns})   
 
 def savelease(request,id):
-    godownname=request.POST.get('godownname')
+    g_id=request.POST.get('godownname')
+    godown_object=get_object_or_404(Godowns,id=int(g_id))
     act_quantity=float(request.POST.get('act-quantity'))
     
     stock=get_object_or_404(GodownLeaseColors,id=id)
@@ -3754,7 +3801,7 @@ def savelease(request,id):
         return redirect('/goodsreceived')
     else:
         try:
-            stockgodown=get_object_or_404(GodownLeaseColors,color=stock.color,unit=stock.unit,state=godownname)
+            stockgodown=get_object_or_404(GodownLeaseColors,color=stock.color,unit=stock.unit,state=godown_object)
         except:
             messages.error(request,"Selected Godown never consisted this chemical")
             return redirect('/goodslease')
@@ -3770,22 +3817,23 @@ def renderDailyConsumptionLease1(request):                                      
     lease = Lease.objects.all().order_by('lease')
     first_lease = Lease.objects.all().order_by('lease').first()
     try:
-        color = GodownLeaseColors.objects.filter(state=first_lease.lease).order_by('color')
+        color = GodownLeaseColors.objects.filter(loose_godown_state=first_lease.id).order_by('color')
     except:
         new_value = Lease(lease="Loose Godown 1")
         new_value.save()
-        color = GodownLeaseColors.objects.filter(state="Loose Godown 1").order_by('color')
+        color = GodownLeaseColors.objects.filter(loose_godown_state=new_value.id).order_by('color')
     todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
     return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':lease,'name':first_lease.lease})
 
 def renderDailyConsumptionLease2(request):
-    lease = request.POST.get('lease')
+    l_id= request.POST.get('lease')
+    loose_godown_object = get_object_or_404(Lease,id=int(l_id))
     leases = Lease.objects.all().order_by('lease')
-    color = GodownLeaseColors.objects.filter(state=lease).order_by('color')
+    color = GodownLeaseColors.objects.filter(loose_godown_state=loose_godown_object).order_by('color')
     todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
-    return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':lease})
+    return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':loose_godown_object.lease})
 
 # def consume(request,name):
 #     colors = GodownLeaseColors.objects.filter(state=name).exclude(quantity=0).order_by('color')
@@ -3837,7 +3885,8 @@ def renderDailyConsumptionLease2(request):
 #     return redirect('/dailyconsumption1')
 
 def consume(request,name):
-    colors = GodownLeaseColors.objects.filter(state=name).exclude(quantity=0).order_by('color')
+    loose_godown_object=get_object_or_404(Lease,lease=name)
+    colors = GodownLeaseColors.objects.filter(loose_godown_state=loose_godown_object).exclude(quantity=0).order_by('color')
     flag = 0
     consumingdate=request.POST.get('consumingdate')
     # print(consumingdate)
@@ -3921,12 +3970,12 @@ def renderClosingStock(request):
     godowns=Godowns.objects.all()
     godowns_list=[]
     for g in godowns:
-        godowns_list.append(g.godown)
+        godowns_list.append(g)
 
     lease=Lease.objects.all()
     lease_list=[]
     for l in lease:
-        lease_list.append(l.lease)
+        lease_list.append(l)
 
     datalist=[]
     colors=Color.objects.all()
@@ -3935,11 +3984,11 @@ def renderClosingStock(request):
         for u in units:
             try:
                 lq=0
-                recsl=get_list_or_404(GodownLeaseColors,color=c.color,unit=u.unit,state__in=lease_list)
+                recsl=get_list_or_404(GodownLeaseColors,color=c,unit=u,loose_godown_state__in=lease_list)
                 for i in recsl:
                     lq=lq+i.quantity
                 
-                recsg=get_list_or_404(GodownLeaseColors,color=c.color,unit=u.unit,state__in=godowns_list)
+                recsg=get_list_or_404(GodownLeaseColors,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
                 lg=0
                 for i in recsg:
                     lg=lg+i.quantity
@@ -3952,7 +4001,7 @@ def renderClosingStock(request):
                 datalist.append(l)
             except:
                 try:
-                    recsg=get_list_or_404(GodownLeaseColors,color=c.color,unit=u.unit,state__in=godowns_list)
+                    recsg=get_list_or_404(GodownLeaseColors,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
    
                     lg=0
                     for i in recsg:
@@ -4069,7 +4118,7 @@ def colorReport(request):
             try:
                 l=[]
                 try:
-                    first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                    first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
                     l.append(c.color)
                     l.append(u.unit)
                     l.append(first_record.quantity)
@@ -4077,13 +4126,13 @@ def colorReport(request):
 
                     l.append(0)
                 try:
-                    last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
+                    last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
                 except:
-                    last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                    last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
                 
                 
                 try:
-                    records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c.color,unit=u.unit)
+                    records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c,unit=u)
                     
                     
                     quantity = 0
@@ -4095,14 +4144,16 @@ def colorReport(request):
                     l.append(0)
                 
                 l.append(last_record.quantity)
-                # new_stock=(l[4]-l[3])
-                # if(new_stock>0):
-                #     l.append(new_stock)
                 new_stock=0
                 try:
-                    neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c.color,unit=u.unit)
+                    print("this")
+                    #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
+                    neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u)
+                    print(neworders)
                     for i in neworders:
+                        
                         new_stock=new_stock+i.quantity
+                    
                 except:
                     pass
 
