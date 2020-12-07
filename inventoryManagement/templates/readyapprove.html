@@ -151,7 +151,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="new-quality">Processing Party</label>
-                <input type="text" class="form-control" id="processing-party" name="processing_party" value="{{record.processing_party_name}}" readonly/>
+                <input type="text" class="form-control" id="processing-party" name="processing_party" value="{{record.processing_party_name.processing_party}}" readonly/>
 
                 
             </div>
@@ -163,7 +163,7 @@
 
                   {% for party in parties %}
                       
-                      <option value="{{ party.location }}">{{ party.location }}</option>
+                      <option value="{{ party.id }}">{{ party.location }}</option>
                       
                   {% endfor %}
                 </select>

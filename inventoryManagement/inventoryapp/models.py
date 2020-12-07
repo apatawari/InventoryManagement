@@ -3,9 +3,26 @@ from django.utils import timezone
 
 
 # Create your models here.
-class Quality(models.Model):
+class GreyQualityMaster(models.Model):
     qualities = models.CharField(max_length=50)
 
+class ProcessingPartyNameMaster(models.Model):
+    processing_party = models.CharField(max_length=50)
+
+class GreyArrivalLocationMaster(models.Model):
+    location = models.CharField(max_length=50)
+
+class GreyCheckerMaster(models.Model):
+    checker = models.CharField(max_length=50)
+
+class GreyCutRange(models.Model):
+    range1 = models.FloatField(max_length=10)
+    range2 = models.FloatField(max_length=10)
+    rate = models.FloatField(max_length=10)
+
+class GreyTransportMaster(models.Model):
+    transport = models.CharField(max_length=50)
+    rate = models.FloatField(max_length=10)
     
 
 class Record(models.Model):
@@ -14,8 +31,8 @@ class Record(models.Model):
     bill_no = models.IntegerField()
     bill_date = models.CharField(max_length=30)
     bill_amount = models.FloatField(max_length=15)
-    lot_no = models.IntegerField() 
-    quality = models.CharField(max_length=100)
+    lot_no = models.IntegerField()
+    quality = models.ForeignKey(GreyQualityMaster,blank=True,null=True,on_delete=models.PROTECT)
     than = models.IntegerField()
     mtrs = models.FloatField(max_length=15)
     bale = models.IntegerField()
@@ -26,15 +43,15 @@ class Record(models.Model):
     state = models.CharField(max_length=30,default='Transit')
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(null=True, default=None)
-    processing_party_name = models.CharField(max_length=50,default="-")
+    processing_party_name = models.ForeignKey(ProcessingPartyNameMaster,blank=True,null=True,on_delete=models.PROTECT) 
     total_bale = models.IntegerField()
-    checker=models.CharField(max_length=50,default="-")
-    transport=models.CharField(max_length=50,default="-")
-    transport_rate=models.FloatField(max_length=10,default=0)
+    checker=models.ForeignKey(GreyCheckerMaster,blank=True,null=True,on_delete=models.PROTECT) 
+    transport=models.ForeignKey(GreyTransportMaster,blank=True,null=True,on_delete=models.PROTECT)
+    # transport_rate=models.FloatField(max_length=10,default=0)
     checking_date = models.DateField(null=True, default=None)
     processing_type = models.CharField(max_length=50,default="-")           #new
     sent_to_processing_date = models.DateField(null=True, default=None)
-    arrival_location = models.CharField(max_length=50,default="-")          #new
+    arrival_location = models.ForeignKey(GreyArrivalLocationMaster,blank=True,null=True,on_delete=models.PROTECT)          #new
     recieve_processed_date = models.DateField(null=True, default=None)
     total_thans = models.IntegerField()
     total_mtrs = models.FloatField()
@@ -47,23 +64,7 @@ class Record(models.Model):
 
 
 
-class ProcessingPartyName(models.Model):
-    processing_party = models.CharField(max_length=50)
 
-class ArrivalLocation(models.Model):
-    location = models.CharField(max_length=50)
-
-class Checker(models.Model):
-    checker = models.CharField(max_length=50)
-
-class ThanRange(models.Model):
-    range1 = models.FloatField(max_length=10)
-    range2 = models.FloatField(max_length=10)
-    rate = models.FloatField(max_length=10)
-
-class Transport(models.Model):
-    transport = models.CharField(max_length=50)
-    rate = models.FloatField(max_length=10)
 
 ######################################       COLOR      ##########################################
 class ColorSupplier(models.Model):
@@ -85,18 +86,18 @@ class Units(models.Model):
     unit = models.CharField(max_length=50)
 
 class ColorRecord(models.Model):
-    color = models.CharField(max_length=50)
-    supplier = models.CharField(max_length=50)
+    color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
+    supplier = models.ForeignKey(ColorSupplier,blank=True,null=True,on_delete=models.PROTECT)
     order_date = models.DateField(default=None)
     order_no = models.IntegerField()
     quantity = models.FloatField()
-    unit = models.CharField(null=True,max_length=50)
+    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
     rate = models.FloatField()
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)
     recieving_date = models.DateField(null=True,default=None)
     total_quantity = models.FloatField()
-    godown = models.CharField(max_length=50,default="-")
+    godown = models.ForeignKey(Godowns,blank=True,null=True,on_delete=models.PROTECT)
     lease = models.CharField(max_length=50,default="-")
     bill_no = models.IntegerField(null=True)
     bill_date = models.DateField(null=True,default=None)
@@ -113,8 +114,8 @@ class DailyConsumption(models.Model):
     quantity_remaining = models.FloatField(max_length=15)
 
 class AllOrders(models.Model):
-    color = models.CharField(max_length=50)
-    supplier = models.CharField(max_length=50)
+    color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
+    supplier = models.ForeignKey(ColorSupplier,blank=True,null=True,on_delete=models.PROTECT)
     order_date = models.DateField(default=None)
     order_no = models.IntegerField()
     quantity = models.FloatField()
@@ -122,7 +123,7 @@ class AllOrders(models.Model):
     rate = models.FloatField()
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)
-    unit = models.CharField(null=True,max_length=50)
+    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
     bill_no = models.IntegerField(null=True)
     bill_date = models.DateField(null=True,default=None)
     validation = models.CharField(null=True,max_length=50,default="No")
@@ -167,9 +168,9 @@ class CompanyAccounts(models.Model):
     account_type = models.CharField(max_length=50,default="Savings")
 
 class MonthlyPayment(models.Model):
-    employee = models.ForeignKey(Employee,default=1,on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee,blank=True,null=True,on_delete=models.PROTECT)
     payment_date = models.DateField(null=True,default=None)
-    company_account = models.ForeignKey(CompanyAccounts,default=1,on_delete=models.CASCADE)
+    company_account = models.ForeignKey(CompanyAccounts,blank=True,null=True,on_delete=models.PROTECT)
     amount = models.FloatField()
     last_payment_date = models.DateField(null=True,default=None)
 

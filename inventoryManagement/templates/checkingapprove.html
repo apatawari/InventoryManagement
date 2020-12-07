@@ -86,10 +86,10 @@
                 <select class="form-control" name="new-quality">
 
                     {% for q in qualities %}
-                        {% ifequal record.quality q.qualities  %}
-                            <option value="{{ q.qualities }}" selected>{{ record.quality }}</option>
+                        {% ifequal record.quality.qualities q.qualities  %}
+                            <option value="{{ q.id }}" selected>{{ record.quality.qualities }}</option>
                         {% else %}
-                            <option value="{{ q.qualities }}">{{ q.qualities }}</option>
+                            <option value="{{ q.id }}">{{ q.qualities }}</option>
                         {% endifequal %}
                     {% endfor %}
                 </select>
@@ -115,7 +115,7 @@
                 <select class="form-control" name="checker" required>
 
                     {% for q in checkers %}
-                        <option value="{{ q.checker }}">{{ q.checker }}</option>
+                        <option value="{{ q.id }}">{{ q.checker }}</option>
                         
                         
                     {% endfor %}
@@ -131,7 +131,7 @@
                 <select class="form-control" name="transport" required>
 
                     {% for q in transport %}
-                        <option value="{{ q.transport }}">{{ q.transport }}</option>
+                        <option value="{{ q.id }}">{{ q.transport }}</option>
                         
                         
                     {% endfor %}
