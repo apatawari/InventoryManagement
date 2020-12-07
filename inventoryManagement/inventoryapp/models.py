@@ -6,21 +6,21 @@ from django.utils import timezone
 class GreyQualityMaster(models.Model):
     qualities = models.CharField(max_length=50)
 
-class ProcessingPartyName(models.Model):
+class ProcessingPartyNameMaster(models.Model):
     processing_party = models.CharField(max_length=50)
 
-class ArrivalLocation(models.Model):
+class GreyArrivalLocationMaster(models.Model):
     location = models.CharField(max_length=50)
 
-class Checker(models.Model):
+class GreyCheckerMaster(models.Model):
     checker = models.CharField(max_length=50)
 
-class ThanRange(models.Model):
+class GreyCutRange(models.Model):
     range1 = models.FloatField(max_length=10)
     range2 = models.FloatField(max_length=10)
     rate = models.FloatField(max_length=10)
 
-class Transport(models.Model):
+class GreyTransportMaster(models.Model):
     transport = models.CharField(max_length=50)
     rate = models.FloatField(max_length=10)
     
@@ -43,15 +43,15 @@ class Record(models.Model):
     state = models.CharField(max_length=30,default='Transit')
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(null=True, default=None)
-    processing_party_name = models.ForeignKey(ProcessingPartyName,blank=True,null=True,on_delete=models.PROTECT) 
+    processing_party_name = models.ForeignKey(ProcessingPartyNameMaster,blank=True,null=True,on_delete=models.PROTECT) 
     total_bale = models.IntegerField()
-    checker=models.ForeignKey(Checker,blank=True,null=True,on_delete=models.PROTECT) 
-    transport=models.ForeignKey(Transport,blank=True,null=True,on_delete=models.PROTECT)
+    checker=models.ForeignKey(GreyCheckerMaster,blank=True,null=True,on_delete=models.PROTECT) 
+    transport=models.ForeignKey(GreyTransportMaster,blank=True,null=True,on_delete=models.PROTECT)
     # transport_rate=models.FloatField(max_length=10,default=0)
     checking_date = models.DateField(null=True, default=None)
     processing_type = models.CharField(max_length=50,default="-")           #new
     sent_to_processing_date = models.DateField(null=True, default=None)
-    arrival_location = models.ForeignKey(ArrivalLocation,blank=True,null=True,on_delete=models.PROTECT)          #new
+    arrival_location = models.ForeignKey(GreyArrivalLocationMaster,blank=True,null=True,on_delete=models.PROTECT)          #new
     recieve_processed_date = models.DateField(null=True, default=None)
     total_thans = models.IntegerField()
     total_mtrs = models.FloatField()

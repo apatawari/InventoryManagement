@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,GreyQualityMaster,Checker,ThanRange,ProcessingPartyName,ArrivalLocation,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
-from .models import Employee,CompanyAccounts,MonthlyPayment,Transport,CityMaster
+from .models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
+from .models import Employee,CompanyAccounts,MonthlyPayment,GreyTransportMaster,CityMaster
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -446,8 +446,8 @@ def checkingApprove(request,id):
     mindate=str(rec.recieving_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities_all = GreyQualityMaster.objects.all().order_by('qualities')
-    checkers=Checker.objects.all().order_by('checker')
-    transports=Transport.objects.all().order_by('transport')
+    checkers=GreyCheckerMaster.objects.all().order_by('checker')
+    transports=GreyTransportMaster.objects.all().order_by('transport')
     d=datetime.date.today()
     d=str(d)
     return render(request, 'checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
@@ -460,9 +460,9 @@ def approveCheck(request,id):
     mtrs_edit=request.POST.get("mtrs-checked")
 
     checker_id=int(request.POST.get("checker"))
-    checker=get_object_or_404(Checker,id=checker_id)
+    checker=get_object_or_404(GreyCheckerMaster,id=checker_id)
     t=int(request.POST.get("transport"))
-    transport=get_object_or_404(Transport,id=t)
+    transport=get_object_or_404(GreyTransportMaster,id=t)
 
     q_id=int(request.POST.get("new-quality"))
     quality_object=get_object_or_404(GreyQualityMaster,id=q_id)
@@ -648,7 +648,7 @@ def checkedEdit(request,id):
 
 #Checker and Quality and Processing party master
 def renderAddChecker(request):
-    all_checker = Checker.objects.all().order_by('checker')
+    all_checker = GreyCheckerMaster.objects.all().order_by('checker')
     #return render(request,'addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
@@ -660,13 +660,13 @@ def saveChecker(request):
     q=request.POST.get("add_checker")
     q = q.strip()
     try:
-        existing_quality=get_object_or_404(Checker,checker=q.upper())
+        existing_quality=get_object_or_404(GreyCheckerMaster,checker=q.upper())
         messages.error(request,"This checker already exists")
     except:
         if q.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addchecker')
-        new_quality = Checker(
+        new_quality = GreyCheckerMaster(
             checker=q.upper()
         )
         new_quality.save()
@@ -676,18 +676,18 @@ def saveChecker(request):
 
 def deleteChecker(request,id):
     try:
-        Checker.objects.filter(id=id).delete()
+        GreyCheckerMaster.objects.filter(id=id).delete()
         messages.success(request,"Checker deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addchecker')
 
 def renderEditChecker(request,id):
-    quality=get_object_or_404(Checker,id=id)
+    quality=get_object_or_404(GreyCheckerMaster,id=id)
     return render(request,'editchecker.html',{'id':id,'name':quality.checker})
 
 def editChecker(request,id):
-    quality=get_object_or_404(Checker,id=id)
+    quality=get_object_or_404(GreyCheckerMaster,id=id)
     p=request.POST.get("edit-checker")
     p = p.upper()
     p = p.strip()
@@ -699,7 +699,7 @@ def editChecker(request,id):
 #########
 
 def renderAddRange(request):
-    all_checker = ThanRange.objects.all().order_by('range1')
+    all_checker = GreyCutRange.objects.all().order_by('range1')
     #return render(request,'addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
@@ -711,7 +711,7 @@ def renderAddRange(request):
 def saveRange(request):
     r1=float(request.POST.get("range_1"))
     r2=float(request.POST.get("range_2"))
-    existingrange=ThanRange.objects.all()
+    existingrange=GreyCutRange.objects.all()
     flag=0
     for i in existingrange:
         
@@ -720,7 +720,7 @@ def saveRange(request):
             break
     if flag==0:
         print("if")
-        newR=ThanRange(
+        newR=GreyCutRange(
             range1=r1,
             range2=r2,
             rate=float(request.POST.get('rate'))
@@ -735,7 +735,7 @@ def saveRange(request):
         return redirect('/addrate')
     
 def deleteRange(request,id):
-    ThanRange.objects.filter(id=id).delete()
+    GreyCutRange.objects.filter(id=id).delete()
     messages.success(request,"Range deleted")
     return redirect('/addrate')
 ############
@@ -791,7 +791,7 @@ def editQuality(request,id):
 
 #######
 def renderAddLocation(request):
-    location_all = ArrivalLocation.objects.all().order_by('location')
+    location_all = GreyArrivalLocationMaster.objects.all().order_by('location')
     #return render(request,'addparty.html',{'parties':parties_all})
 
     paginator = Paginator(location_all,10)
@@ -804,13 +804,13 @@ def saveLocation(request):
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(ArrivalLocation,location=p)
+        existing_party=get_object_or_404(GreyArrivalLocationMaster,location=p)
         messages.error(request,"This arrival location already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addarrivallocation')
-        new_loc = ArrivalLocation(
+        new_loc = GreyArrivalLocationMaster(
             location= p
         )
         new_loc.save()
@@ -819,18 +819,18 @@ def saveLocation(request):
 
 def deleteLocation(request,id):
     try:
-        ArrivalLocation.objects.filter(id=id).delete()
+        GreyArrivalLocationMaster.objects.filter(id=id).delete()
         messages.success(request,"Arrival location deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addarrivallocation')
 
 def renderEditLocation(request,id):
-    loc=get_object_or_404(ArrivalLocation,id=id)
+    loc=get_object_or_404(GreyArrivalLocationMaster,id=id)
     return render(request,'editlocation.html',{'id':id,'name':loc.location})
 
 def editArrivalLocation(request,id):
-    party=get_object_or_404(ArrivalLocation,id=id)
+    party=get_object_or_404(GreyArrivalLocationMaster,id=id)
     p=request.POST.get("edit-location")
     p = p.upper()
     p = p.strip()
@@ -842,7 +842,7 @@ def editArrivalLocation(request,id):
 
 #Processing party.......
 def renderAddParty(request):
-    parties_all = ProcessingPartyName.objects.all().order_by('processing_party')
+    parties_all = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     #return render(request,'addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
@@ -855,13 +855,13 @@ def saveParty(request):
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(ProcessingPartyName,processing_party=p)
+        existing_party=get_object_or_404(ProcessingPartyNameMaster,processing_party=p)
         messages.error(request,"This Processing Party already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addparty')
-        new_Party = ProcessingPartyName(
+        new_Party = ProcessingPartyNameMaster(
             processing_party= p
         )
         new_Party.save()
@@ -870,18 +870,18 @@ def saveParty(request):
 
 def deleteProcessingParty(request,id):
     try:
-        ProcessingPartyName.objects.filter(id=id).delete()
+        ProcessingPartyNameMaster.objects.filter(id=id).delete()
         messages.success(request,"Processing House Party deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addparty')
 
 def renderEditParty(request,id):
-    party=get_object_or_404(ProcessingPartyName,id=id)
+    party=get_object_or_404(ProcessingPartyNameMaster,id=id)
     return render(request,'editparty.html',{'id':id,'name':party.processing_party})
 
 def editProcessingParty(request,id):
-    party=get_object_or_404(ProcessingPartyName,id=id)
+    party=get_object_or_404(ProcessingPartyNameMaster,id=id)
     p=request.POST.get("edit-party")
     p = p.upper()
     p = p.strip()
@@ -895,7 +895,7 @@ def editProcessingParty(request,id):
 
 
 def renderAddTransport(request):
-    parties_all = Transport.objects.all().order_by('transport')
+    parties_all = GreyTransportMaster.objects.all().order_by('transport')
     #return render(request,'addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
@@ -908,13 +908,13 @@ def saveTransport(request):
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(Transport,transport=p)
+        existing_party=get_object_or_404(GreyTransportMaster,transport=p)
         messages.error(request,"This Transport Party already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addtransport')
-        new_Party = Transport(
+        new_Party = GreyTransportMaster(
             transport= p,
             rate=float(request.POST.get('rate'))
         )
@@ -924,18 +924,18 @@ def saveTransport(request):
 
 def deleteTransport(request,id):
     try:
-        Transport.objects.filter(id=id).delete()
+        GreyTransportMaster.objects.filter(id=id).delete()
         messages.success(request,"Transport Party deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addtransport')
 
 def renderEditTransport(request,id):
-    party=get_object_or_404(Transport,id=id)
+    party=get_object_or_404(GreyTransportMaster,id=id)
     return render(request,'edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
 
 def editTransport(request,id):
-    party=get_object_or_404(Transport,id=id)
+    party=get_object_or_404(GreyTransportMaster,id=id)
     p=request.POST.get("edit-transport")
     p = p.upper()
     p = p.strip()
@@ -987,7 +987,7 @@ def processingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=str(rec.checking_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
+    processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     d=datetime.date.today()
     d=str(d)
     return render(request, 'processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
@@ -998,7 +998,7 @@ def sendInProcess(request,id):
     than_recieved = int(than_recieved)
     process_type = request.POST.get("processing-type")
     party_id=int(request.POST.get("processing-party"))
-    partyprocessing=get_object_or_404(ProcessingPartyName,id=party_id)
+    partyprocessing=get_object_or_404(ProcessingPartyNameMaster,id=party_id)
     total_amount=prevRec.bill_amount
     totalthan=prevRec.than
     cost_per_than=total_amount/totalthan
@@ -1107,7 +1107,7 @@ def readyApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=str(rec.sent_to_processing_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    locations = ArrivalLocation.objects.all().order_by('location')
+    locations = GreyArrivalLocationMaster.objects.all().order_by('location')
 
     d=datetime.date.today()
     d=str(d)
@@ -1116,7 +1116,7 @@ def readyApprove(request,id):
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)
     loc_id = int(request.POST.get("arrival-location"))
-    location = get_object_or_404(ArrivalLocation,id=loc_id)
+    location = get_object_or_404(GreyArrivalLocationMaster,id=loc_id)
     tally_lot_no = prevRec.lot_no
     tally_total_thans=prevRec.total_thans
     than_recieved=request.POST.get("than_ready")
@@ -1206,7 +1206,7 @@ def readyToPrint(request,id):
         return redirect('/inprocess')
 
 def reportFilter(request):
-    processing_parties = ProcessingPartyName.objects.all().order_by('processing_party')
+    processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     partyname =[]
     records = Record.objects.all().order_by('party_name')
     for rec in records:
@@ -1229,7 +1229,7 @@ def generateReport(request):
     s = request.POST.get("checkbox")
     if s!=None:
         selected_parties.append(s)
-        selected_party_object=get_object_or_404(ProcessingPartyName,processing_party=selected_parties[0])
+        selected_party_object=get_object_or_404(ProcessingPartyNameMaster,processing_party=selected_parties[0])
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
 
@@ -1715,12 +1715,12 @@ def showDefective(request):
 # Ledger
 def checkerReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
-    checkers=Checker.objects.all().order_by('checker')
+    checkers=GreyCheckerMaster.objects.all().order_by('checker')
     return render(request,'checkerfilter.html',{'d':d,'checkers':checkers})
 
 def checkerReport(request):
     c_id=int(request.POST.get('checker'))
-    checker=get_object_or_404(Checker,id=c_id)
+    checker=get_object_or_404(GreyCheckerMaster,id=c_id)
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
@@ -1751,14 +1751,14 @@ def checkerReport(request):
             totalthans=totalthans+r.than
 
             l=[]
-            l.append(r.quality)
+            l.append(r.quality.qualities)
             l.append(r.checking_date)
             l.append(r.than)
             l.append(r.mtrs)
             mt=round((r.mtrs/r.than),2)
             l.append(mt)
             try:
-                range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                range=GreyCutRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
                 l.append(range.rate)
             
                 l.append(round((mt*range.rate),2))
@@ -1783,13 +1783,13 @@ def checkerReport(request):
 
 def transportReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
-    transport=Transport.objects.all().order_by('transport')
+    transport=GreyTransportMaster.objects.all().order_by('transport')
     return render(request,'transportfilter.html',{'d':d,'checkers':transport})
 
 
 def transportReport(request):
     t_id=int(request.POST.get('transport'))
-    transport=get_object_or_404(Transport,id=t_id)
+    transport=get_object_or_404(GreyTransportMaster,id=t_id)
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
@@ -1816,7 +1816,7 @@ def transportReport(request):
             totalthans=totalthans+r.than
 
             l=[]
-            l.append(r.quality)
+            l.append(r.quality.qualities)
             l.append(r.checking_date)
             l.append(r.than)
             l.append(r.mtrs)
@@ -1840,7 +1840,7 @@ def transportReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'transportreport.html',{'records':datalist,'total':total,'checker':transport.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'transportreport.html',{'records':datalist,'total':total,'t':transport.transport,'checker':transport.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 
 
@@ -2323,7 +2323,7 @@ def export_report_xls(request):
         columns = ['Quality', 'Checking Date', 'Thans Checked','mtrs','Rate(Rs)', 'Total(Rs)','Lot no']
 
         t_id=int(request.POST.get('transport'))
-        transport=get_object_or_404(Transport,id=t_id)
+        transport=get_object_or_404(GreyTransportMaster,id=t_id)
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
@@ -2350,7 +2350,7 @@ def export_report_xls(request):
                 totalthans=totalthans+r.than
 
                 l=[]
-                l.append(r.quality)
+                l.append(r.quality.qualities)
                 l.append(str(r.checking_date))
                 l.append(r.than)
                 l.append(r.mtrs)
@@ -2374,7 +2374,7 @@ def export_report_xls(request):
         #records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
         c_id=int(request.POST.get('checker'))
 
-        checker=get_object_or_404(Checker,id=c_id)
+        checker=get_object_or_404(GreyCheckerMaster,id=c_id)
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
@@ -2405,14 +2405,14 @@ def export_report_xls(request):
                 totalthans=totalthans+r.than
 
                 l=[]
-                l.append(r.quality)
+                l.append(r.quality.qualities)
                 print(r.checking_date)
                 l.append(str(r.checking_date))
                 l.append(r.than)
                 mt=round((r.mtrs/r.than),2)
                 l.append(mt)
                 try:
-                    trange=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                    trange=GreyCutRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
                     l.append(trange.rate)
             
                     l.append(round((mt*trange.rate),2))
