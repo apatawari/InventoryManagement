@@ -76,16 +76,38 @@
       <!-- Filter Start -->
       <form method="GET">
           <div class="form-row filter-form">
-            <div class="form-group col-sm-4">
-              <!-- {{ filter.form.color.label_tag }} -->
+            <!-- <div class="form-group col-sm-4">
+              {{ filter.form.color.label_tag }}
               Chemical name:
               {% render_field filter.form.color class="form-control" %}
-            </div>
-            <div class="form-group col-sm-2">
-              <!--{{ filter.form.state.label_tag }}-->
+            </div> -->
+            <div class="form-group col-sm-4">
+              <label for="new-quality">Chemical Name</label>
+              <select class="form-control" name="color">
+                <option value="">--</option>
+                  {% for q in chemicals %}
+                      
+                      <option value="{{ q.id}}">{{ q.color }}</option>
+                      
+                  {% endfor %}
+              </select>
+          </div>
+            <!-- <div class="form-group col-sm-2">
+              {{ filter.form.state.label_tag }}
               Godown name:
               {% render_field filter.form.state class="form-control" %}
-            </div>
+            </div> -->
+            <div class="form-group col-sm-4">
+              <label for="new-quality">Godown Name</label>
+              <select class="form-control" name="state">
+                <option value="">--</option>
+                  {% for q in godowns %}
+                      
+                      <option value="{{ q.id}}">{{ q.godown }}</option>
+                      
+                  {% endfor %}
+              </select>
+          </div>
             
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
@@ -125,12 +147,12 @@
         <tr>
 
           <td scope="row">{{ forloop.counter }}</td>
-          <td class="td-text">{{record.color}}</td>
+          <td class="td-text">{{record.color.color}}</td>
           <td>{{record.quantity}}</td>
-          <td>{{record.unit}}</td>
+          <td>{{record.unit.unit}}</td>
           <td>{{record.rate}}</td>
           <!--<td>Godown</td>-->
-          <td>{{record.state}}</td>
+          <td>{{record.state.godown}}</td>
           <td><a class ="anchor-button button-small-text" href="{% url 'leaseapprove' record.id %}">Move To Loose</a></td>
 
         </tr>

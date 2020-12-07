@@ -16,7 +16,7 @@
               <select class="form-control loose-list" name="lease" required>    
                 {% for s in lease %}
                     
-                    <option value="{{ s.lease }}" >{{ s.lease }}</option>
+                    <option value="{{ s.id }}" >{{ s.lease }}</option>
                                            
                 {% endfor %}
               </select> 
@@ -50,16 +50,16 @@
 
               </tr>
             </thead>
-<tbody>
+            <tbody>
             {% for record in colors %}
               <tr>
 
                 <td scope="row">{{ forloop.counter }}</td>
-                <td class="td-text">{{record.color}}</td>
-                <td>{{record.unit}}</td>
+                <td class="td-text">{{record.color.color}}</td>
+                <td>{{record.unit.unit}}</td>
                 <td>{{record.quantity}}</td>
                 <td>{{record.rate}}</td>
-                <td>{{record.state}}</td>
+                <td>{{record.loose_godown_state.lease}}</td>
                 <td>
                   <input type="number" step="0.01"  class="form-control" id="quantityconsume" value=0 placeholder="Enter Quantity" name="{{record.id}}" autofocus>
                 </td>

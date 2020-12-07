@@ -130,17 +130,18 @@ class AllOrders(models.Model):
     chalan_no = models.IntegerField(null=True)
 
 class GodownLeaseColors(models.Model):
-    color = models.CharField(max_length=50)
+    color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
     quantity = models.FloatField()
     rate = models.FloatField()
-    unit = models.CharField(null=True,max_length=50)
-    state = models.CharField(max_length=50)
+    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
+    state = models.ForeignKey(Godowns,blank=True,null=True,on_delete=models.PROTECT)
+    loose_godown_state = models.ForeignKey(Lease,blank=True,null=True,on_delete=models.PROTECT)
 
 class ClosingStock(models.Model):
-    color = models.CharField(max_length=50)
+    color =models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
     quantity = models.FloatField()
     rate = models.FloatField()
-    unit = models.CharField(null=True,max_length=50)
+    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
     dailydate = models.DateField(null=True,default=None)
 
 
