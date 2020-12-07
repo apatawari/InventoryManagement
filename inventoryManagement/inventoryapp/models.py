@@ -3,7 +3,7 @@ from django.utils import timezone
 
 
 # Create your models here.
-class Quality(models.Model):
+class GreyQualityMaster(models.Model):
     qualities = models.CharField(max_length=50)
 
 class ProcessingPartyName(models.Model):
@@ -32,7 +32,7 @@ class Record(models.Model):
     bill_date = models.CharField(max_length=30)
     bill_amount = models.FloatField(max_length=15)
     lot_no = models.IntegerField()
-    quality = models.ForeignKey(Quality,default=1,on_delete=models.PROTECT)
+    quality = models.ForeignKey(GreyQualityMaster,blank=True,null=True,on_delete=models.PROTECT)
     than = models.IntegerField()
     mtrs = models.FloatField(max_length=15)
     bale = models.IntegerField()
@@ -43,15 +43,15 @@ class Record(models.Model):
     state = models.CharField(max_length=30,default='Transit')
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(null=True, default=None)
-    processing_party_name = models.ForeignKey(ProcessingPartyName,default=1,on_delete=models.PROTECT) 
+    processing_party_name = models.ForeignKey(ProcessingPartyName,blank=True,null=True,on_delete=models.PROTECT) 
     total_bale = models.IntegerField()
-    checker=models.ForeignKey(Checker,default=1,on_delete=models.PROTECT) 
-    transport=models.ForeignKey(Transport,default=1,on_delete=models.PROTECT)
+    checker=models.ForeignKey(Checker,blank=True,null=True,on_delete=models.PROTECT) 
+    transport=models.ForeignKey(Transport,blank=True,null=True,on_delete=models.PROTECT)
     # transport_rate=models.FloatField(max_length=10,default=0)
     checking_date = models.DateField(null=True, default=None)
     processing_type = models.CharField(max_length=50,default="-")           #new
     sent_to_processing_date = models.DateField(null=True, default=None)
-    arrival_location = models.ForeignKey(ArrivalLocation,default=1,on_delete=models.PROTECT)          #new
+    arrival_location = models.ForeignKey(ArrivalLocation,blank=True,null=True,on_delete=models.PROTECT)          #new
     recieve_processed_date = models.DateField(null=True, default=None)
     total_thans = models.IntegerField()
     total_mtrs = models.FloatField()
@@ -168,9 +168,9 @@ class CompanyAccounts(models.Model):
     account_type = models.CharField(max_length=50,default="Savings")
 
 class MonthlyPayment(models.Model):
-    employee = models.ForeignKey(Employee,default=1,on_delete=models.PROTECT)
+    employee = models.ForeignKey(Employee,blank=True,null=True,on_delete=models.PROTECT)
     payment_date = models.DateField(null=True,default=None)
-    company_account = models.ForeignKey(CompanyAccounts,default=1,on_delete=models.PROTECT)
+    company_account = models.ForeignKey(CompanyAccounts,blank=True,null=True,on_delete=models.PROTECT)
     amount = models.FloatField()
     last_payment_date = models.DateField(null=True,default=None)
 

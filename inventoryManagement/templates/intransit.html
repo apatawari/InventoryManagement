@@ -29,15 +29,13 @@
             <div class="form-group col-sm-4">
               <label for="new-quality">Quality</label>
               <select class="form-control" name="quality">
-
+                <option value="">--</option>
                   {% for q in qualities %}
                       
                       <option value="{{ q.id}}">{{ q.qualities }}</option>
                       
                   {% endfor %}
               </select>
-
-              
           </div>
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>

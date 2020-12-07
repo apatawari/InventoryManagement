@@ -85,10 +85,21 @@
               {{ filter.form.lot_no.label_tag }}
               {% render_field filter.form.lot_no class="form-control" %}
             </div>
-            <div class="form-group col-sm-4">
+            <!-- <div class="form-group col-sm-4">
               {{ filter.form.quality.label_tag }}
               {% render_field filter.form.quality class="form-control" %}
-            </div>
+            </div> -->
+            <div class="form-group col-sm-4">
+              <label for="new-quality">Quality</label>
+              <select class="form-control" name="quality">
+                <option value="">--</option>
+                  {% for q in qualities %}
+                      
+                      <option value="{{ q.id}}">{{ q.qualities }}</option>
+                      
+                  {% endfor %}
+              </select>
+          </div>
             <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
             </div>
@@ -139,7 +150,7 @@
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
             <td>{{record.lot_no}}</td>
-            <td class="td-text">{{record.quality}}</td>
+            <td class="td-text">{{record.quality.qualities}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.rate}}</td>
