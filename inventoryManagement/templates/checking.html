@@ -157,7 +157,7 @@
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
             <td>{{record.checking_date}}</td>
-            <td>{{record.checker.checker}}</td>
+            <td>{{record.checker.name}}</td>
             <!--<td class="td-text">{{record.state}}</td>-->
             <td><a class ="anchor-button button-small-text" href="{% url 'editchecked' record.id %}">Edit</a></td>
             <td><a class ="anchor-button button-small-text" href="{% url 'processingapprove' record.id %}">Send For Processing</a></td>

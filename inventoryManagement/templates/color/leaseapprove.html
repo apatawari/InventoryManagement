@@ -14,12 +14,12 @@
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="new-quality">Chemical Name</label>
-                <input type="text" class="form-control" value="{{record.color}}" name="color" readonly>
+                <input type="text" class="form-control" value="{{record.color.color}}" name="color" readonly>
  
             </div>
             <div class="form-group col-md-3">
                 <label for="new-quality">Unit</label>
-                <input type="text" class="form-control" value="{{record.unit}}" name="color" readonly>
+                <input type="text" class="form-control" value="{{record.unit.unit}}" name="color" readonly>
  
             </div>
             <div class="form-group col-md-3">
@@ -58,7 +58,7 @@
         
         <div class="form-row">
             <div class="form-group col-md-6 next-previous">
-                <a class ="anchor-button" href="{% url 'backtoorders' record.state %}">Back</a>        
+                <a class ="anchor-button" href="{% url 'backtoorders' record.state.godown %}">Back</a>        
             </div>
             <div class="form-group col-md-6">
                 <button type="submit" class="btn btn-primary button float-right">Approve Color</button>

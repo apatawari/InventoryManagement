@@ -448,7 +448,7 @@ def checkingApprove(request,id):
     mindate=str(rec.recieving_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities_all = GreyQualityMaster.objects.all().order_by('qualities')
-    checkers=GreyCheckerMaster.objects.all().order_by('checker')
+    checkers=Employee.objects.all().order_by('name')
     transports=GreyTransportMaster.objects.all().order_by('transport')
     d=datetime.date.today()
     d=str(d)
@@ -462,7 +462,7 @@ def approveCheck(request,id):
     mtrs_edit=request.POST.get("mtrs-checked")
 
     checker_id=int(request.POST.get("checker"))
-    checker=get_object_or_404(GreyCheckerMaster,id=checker_id)
+    checker=get_object_or_404(Employee,id=checker_id)
     t=int(request.POST.get("transport"))
     transport=get_object_or_404(GreyTransportMaster,id=t)
 
@@ -632,7 +632,7 @@ def checkedEdit(request,id):
         record.bill_date=request.POST.get("bill_date")
         record.bill_amount=request.POST.get("bill_amount")
         record.lot_no=request.POST.get("lot_no")
-        record.quality=request.POST.get("quality")
+        # record.quality=request.POST.get("quality")
         record.than=request.POST.get("than")
         record.mtrs=request.POST.get("mtrs")
         record.bale=request.POST.get("bale")
@@ -1211,12 +1211,13 @@ def reportFilter(request):
     processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     partyname =[]
     records = Record.objects.all().order_by('party_name')
+    d=str(datetime.date.today())
     for rec in records:
         if(rec.party_name in partyname):
             pass
         else:
             partyname.append(rec.party_name)
-    return render(request,'reportfilter.html',{'parties':processing_parties,'sendingparty':partyname})
+    return render(request,'reportfilter.html',{'date':d,'parties':processing_parties,'sendingparty':partyname})
 
 
 def generateReport(request):
@@ -1711,18 +1712,19 @@ def showDefective(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
-    return render(request,'defective.html',{'records':records,'filter':records_filter})
+    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    return render(request,'defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
 
 
 # Ledger
 def checkerReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
-    checkers=GreyCheckerMaster.objects.all().order_by('checker')
+    checkers=Employee.objects.all().order_by('name')
     return render(request,'checkerfilter.html',{'d':d,'checkers':checkers})
 
 def checkerReport(request):
     c_id=int(request.POST.get('checker'))
-    checker=get_object_or_404(GreyCheckerMaster,id=c_id)
+    checker=get_object_or_404(Employee,id=c_id)
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
@@ -1778,7 +1780,7 @@ def checkerReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'checkerreport.html',{'records':datalist,'total':total,'c':checker.checker,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'checkerreport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 ###########transport report
 
@@ -2376,7 +2378,7 @@ def export_report_xls(request):
         #records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
         c_id=int(request.POST.get('checker'))
 
-        checker=get_object_or_404(GreyCheckerMaster,id=c_id)
+        checker=get_object_or_404(Employee,id=c_id)
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
@@ -3679,7 +3681,7 @@ def goodsLease(request):
     lease_list=[]
     for g in lease:
         lease_list.append(g)
-    godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list,state=None).order_by('color')
+    godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list,state=None).exclude(quantity=0).order_by('color')
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -3819,11 +3821,11 @@ def renderDailyConsumptionLease1(request):                                      
     lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
     first_lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease').first()
     try:
-        color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=first_lease.id).order_by('color')
+        color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=first_lease.id).exclude(quantity=0).order_by('color')
     except:
         new_value = ChemicalsLooseGodownMaster(lease="Loose Godown 1")
         new_value.save()
-        color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=new_value.id).order_by('color')
+        color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=new_value.id).exclude(quantity=0).order_by('color')
     todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
     return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':lease,'name':first_lease.lease})
@@ -3832,7 +3834,7 @@ def renderDailyConsumptionLease2(request):
     l_id= request.POST.get('lease')
     loose_godown_object = get_object_or_404(ChemicalsLooseGodownMaster,id=int(l_id))
     leases = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object).order_by('color')
+    color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object).exclude(quantity=0).order_by('color')
     todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
     return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':loose_godown_object.lease})
@@ -4230,7 +4232,8 @@ def saveEmployee(request):
     if(len(request.POST.get('account_no'))>12 or len(request.POST.get('account_no'))<12 or len(request.POST.get('ifsc_code'))>11 or len(request.POST.get('ifsc_code'))<11 or len(request.POST.get('aadhar_no'))>12 or len(request.POST.get('aadhar_no'))<12 or len(request.POST.get('phone_no'))>10 or len(request.POST.get('phone_no'))<10):
         messages.error(request,"Enter valid details")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
+    c_id=int(request.POST.get('city'))
+    city=get_object_or_404(CityMaster,id=c_id)
     try:
         emp=get_object_or_404(Employee,
             name = request.POST.get('name'),
@@ -4243,7 +4246,7 @@ def saveEmployee(request):
             contractor_name = request.POST.get('contractor_name'),
             phone_no = (request.POST.get('phone_no')),
             address = request.POST.get('address'),
-            city = request.POST.get('city')
+            city = city
         )
         messages.error(request,"This Employee Already Exists")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -4260,7 +4263,7 @@ def saveEmployee(request):
         contractor_name = request.POST.get('contractor_name'),
         phone_no = (request.POST.get('phone_no')),
         address = request.POST.get('address'),
-        city = request.POST.get('city')
+        city = city
         )
     new_emp.save()
     messages.success(request,"Employee Added")
