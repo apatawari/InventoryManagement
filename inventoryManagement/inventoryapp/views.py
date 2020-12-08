@@ -300,7 +300,9 @@ def edit(request,id):
         record.bill_date=request.POST.get("bill_date")
         record.bill_amount=request.POST.get("bill_amount")
         record.lot_no=request.POST.get("lot_no")
-        record.quality=request.POST.get("quality")
+        # q_id=request.POST.get("quality")
+        # quality_ob=get_object_or_404(Quality,id=int(q_id))
+        # record.quality=quality_ob
         record.than=request.POST.get("than")
         record.mtrs=request.POST.get("mtrs")
         record.bale=request.POST.get("bale")

@@ -8,7 +8,7 @@
       <form method="POST" class="md-form upload-file" action="{% url 'saverange' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Rate for Mtrs</h1>
+            <h1>Add Cut Rate</h1>
         </div>
         <div class="upload-container">
             <input type="number" step="0.01" class="form-control" id="range1" placeholder="Starting Range" name="range_1" autofocus required>

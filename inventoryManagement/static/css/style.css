@@ -567,5 +567,6 @@ hr {
   transition: all 0.25s ease-out 0s;
 }
 
-
-
+.color-report {
+  width: 360px;
+}
