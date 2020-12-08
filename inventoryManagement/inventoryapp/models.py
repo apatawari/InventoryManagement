@@ -25,7 +25,7 @@ class GreyTransportMaster(models.Model):
     rate = models.FloatField(max_length=10)
     
 
-class Record(models.Model):
+class Record(models.Model):    ########################   Main grey order
     sr_no= models.IntegerField()
     party_name= models.CharField(max_length=50,default="no")
     bill_no = models.IntegerField()
@@ -67,7 +67,7 @@ class Record(models.Model):
 
 
 ######################################       COLOR      ##########################################
-class ColorSupplier(models.Model):
+class ColorAndChemicalsSupplier(models.Model):
     supplier = models.CharField(max_length=50)
     address = models.CharField(null=True,max_length=100)
     city = models.CharField(null=True,max_length=20)
@@ -76,28 +76,28 @@ class Color(models.Model):
     color = models.CharField(max_length=50)
     quantity = models.FloatField(max_length=15,default=0.0)
 
-class Godowns(models.Model):
+class ChemicalsGodownsMaster(models.Model):
     godown = models.CharField(max_length=50)
 
-class Lease(models.Model):
+class ChemicalsLooseGodownMaster(models.Model):
     lease = models.CharField(max_length=50)
 
-class Units(models.Model):
+class ChemicalsUnitsMaster(models.Model):
     unit = models.CharField(max_length=50)
 
 class ColorRecord(models.Model):
     color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
-    supplier = models.ForeignKey(ColorSupplier,blank=True,null=True,on_delete=models.PROTECT)
+    supplier = models.ForeignKey(ColorAndChemicalsSupplier,blank=True,null=True,on_delete=models.PROTECT)
     order_date = models.DateField(default=None)
     order_no = models.IntegerField()
     quantity = models.FloatField()
-    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
+    unit = models.ForeignKey(ChemicalsUnitsMaster,blank=True,null=True,on_delete=models.PROTECT)
     rate = models.FloatField()
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)
     recieving_date = models.DateField(null=True,default=None)
     total_quantity = models.FloatField()
-    godown = models.ForeignKey(Godowns,blank=True,null=True,on_delete=models.PROTECT)
+    godown = models.ForeignKey(ChemicalsGodownsMaster,blank=True,null=True,on_delete=models.PROTECT)
     lease = models.CharField(max_length=50,default="-")
     bill_no = models.IntegerField(null=True)
     bill_date = models.DateField(null=True,default=None)
@@ -106,16 +106,16 @@ class ColorRecord(models.Model):
     b_date = models.DateField(null=True,default=None)
     a = models.CharField(max_length=50,default="-")
 
-class DailyConsumption(models.Model):
+class ChemicalsDailyConsumption(models.Model):
     con_date = models.DateField(null=True,default=None)
     color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
-    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
+    unit = models.ForeignKey(ChemicalsUnitsMaster,blank=True,null=True,on_delete=models.PROTECT)
     quantity = models.FloatField(max_length=15)
     quantity_remaining = models.FloatField(max_length=15)
 
-class AllOrders(models.Model):
+class ChemicalsAllOrders(models.Model):
     color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
-    supplier = models.ForeignKey(ColorSupplier,blank=True,null=True,on_delete=models.PROTECT)
+    supplier = models.ForeignKey(ColorAndChemicalsSupplier,blank=True,null=True,on_delete=models.PROTECT)
     order_date = models.DateField(default=None)
     order_no = models.IntegerField()
     quantity = models.FloatField()
@@ -123,32 +123,32 @@ class AllOrders(models.Model):
     rate = models.FloatField()
     amount = models.FloatField(max_length=15)
     state = models.CharField(max_length=50)
-    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
+    unit = models.ForeignKey(ChemicalsUnitsMaster,blank=True,null=True,on_delete=models.PROTECT)
     bill_no = models.IntegerField(null=True)
     bill_date = models.DateField(null=True,default=None)
     validation = models.CharField(null=True,max_length=50,default="No")
     chalan_no = models.IntegerField(null=True)
 
-class GodownLeaseColors(models.Model):
+class ChemicalsGodownLooseMergeStock(models.Model):
     color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
     quantity = models.FloatField()
     rate = models.FloatField()
-    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
-    state = models.ForeignKey(Godowns,blank=True,null=True,on_delete=models.PROTECT)
-    loose_godown_state = models.ForeignKey(Lease,blank=True,null=True,on_delete=models.PROTECT)
+    unit = models.ForeignKey(ChemicalsUnitsMaster,blank=True,null=True,on_delete=models.PROTECT)
+    state = models.ForeignKey(ChemicalsGodownsMaster,blank=True,null=True,on_delete=models.PROTECT)
+    loose_godown_state = models.ForeignKey(ChemicalsLooseGodownMaster,blank=True,null=True,on_delete=models.PROTECT)
 
-class ClosingStock(models.Model):
+class ChemicalsClosingStock(models.Model):
     color =models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
     quantity = models.FloatField()
     rate = models.FloatField()
-    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
+    unit = models.ForeignKey(ChemicalsUnitsMaster,blank=True,null=True,on_delete=models.PROTECT)
     dailydate = models.DateField(null=True,default=None)
 
 
 ################################Employeee###############
 class CityMaster(models.Model):
    city = models.CharField(null=True,max_length=50)
-   
+
 class Employee(models.Model):
     name = models.CharField(max_length=50)
     father_name = models.CharField(max_length=50)
