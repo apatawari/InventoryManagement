@@ -1,4 +1,4 @@
-from .models import Record,ColorRecord,AllOrders,GodownLeaseColors
+from .models import Record,ColorRecord,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock
 import django_filters
 from django.db import models
 from django import forms
@@ -44,7 +44,7 @@ class ColorFilter(django_filters.FilterSet):
 
 class ColorOrderFilter(django_filters.FilterSet):
     class Meta:
-        model=AllOrders
+        model=ChemicalsAllOrders
         fields = {
             'supplier': [ 'exact'],
             'order_no': ['exact', 'contains'],
@@ -62,7 +62,7 @@ class ColorOrderFilter(django_filters.FilterSet):
 
 class GodownLeaseFilter(django_filters.FilterSet):
     class Meta:
-        model=GodownLeaseColors
+        model=ChemicalsGodownLooseMergeStock
         fields = {
             'color': [ 'exact'],
             'state': ['exact'],

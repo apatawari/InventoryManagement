@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from .models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorSupplier,Color,ColorRecord,DailyConsumption,AllOrders,GodownLeaseColors,Godowns,Lease,Units,ClosingStock
+from .models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
 from .models import Employee,CompanyAccounts,MonthlyPayment,GreyTransportMaster,CityMaster
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
@@ -51,11 +51,11 @@ def server_error(request):
     return response
 
 def index(request):
-    recs=AllOrders.objects.all()
+    recs=ChemicalsAllOrders.objects.all()
     idlist=[]
     for r in recs:
         try:
-            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
+            dups=get_list_or_404(ChemicalsAllOrders,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
             flag=0
             for d in dups:
                 if flag==0:
@@ -82,7 +82,7 @@ def index(request):
             pass             
     
     for i in idlist:
-        AllOrders.objects.filter(id=i).delete()
+        ChemicalsAllOrders.objects.filter(id=i).delete()
     for i in idlist2:
         ColorRecord.objects.filter(id=i).delete()
 
@@ -117,13 +117,13 @@ def back(request,state):
     
 
 def backtoorders(request,state):
-    godowns=Godowns.objects.all()
+    godowns=ChemicalsGodownsMaster.objects.all()
     
     g_list=[]
     
     for g in godowns:
         g_list.append(g.godown)
-    lease=Lease.objects.all()
+    lease=ChemicalsLooseGodownMaster.objects.all()
     
     l_list=[]
     
@@ -1979,24 +1979,24 @@ def export_page_xls(request):
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','godown name']
-        godowns=Godowns.objects.all()
+        godowns=ChemicalsGodownsMaster.objects.all()
         godowns_list=[]
         for g in godowns:
             godowns_list.append(g)
-        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
-        lease=Lease.objects.all()
+        lease=ChemicalsLooseGodownMaster.objects.all()
         lease_list=[]
         for g in lease:
             lease_list.append(g)
-        records_list = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
-        records_list=AllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+        records_list=ChemicalsAllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
 
 
 
@@ -2120,24 +2120,24 @@ def export_filter_all_xls(request):
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','godown name']
-        godowns=Godowns.objects.all()
+        godowns=ChemicalsGodownsMaster.objects.all()
         godowns_list=[]
         for g in godowns:
             godowns_list.append(g)
-        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
-        lease=Lease.objects.all()
+        lease=ChemicalsLooseGodownMaster.objects.all()
         lease_list=[]
         for g in lease:
             lease_list.append(g)
-        records_list = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
-        records_list=AllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+        records_list=ChemicalsAllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
 
 
 
@@ -2255,24 +2255,24 @@ def export_all_xls(request):
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','godown name']
-        godowns=Godowns.objects.all()
+        godowns=ChemicalsGodownsMaster.objects.all()
         godowns_list=[]
         for g in godowns:
             godowns_list.append(g)
-        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
-        lease=Lease.objects.all()
+        lease=ChemicalsLooseGodownMaster.objects.all()
         lease_list=[]
         for g in lease:
             lease_list.append(g)
-        records_list = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
-        records_list=AllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+        records_list=ChemicalsAllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
 
     
     
@@ -2544,13 +2544,13 @@ def export_report_xls(request):
             next_day += datetime.timedelta(days=1)
         datalist=[]
         colors= Color.objects.all()
-        units= Units.objects.all()
+        units= ChemicalsUnitsMaster.objects.all()
         for c in colors:
             for u in units:
                 try:
                     l=[]
                     try:
-                        first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                        first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
                         l.append(c.color)
                         l.append(u.unit)
                         l.append(first_record.quantity)
@@ -2569,13 +2569,13 @@ def export_report_xls(request):
                     l.append(new_stock)
                     l.append(new_stock+l[-1])
                     try:
-                        last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
+                        last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
                     except:
-                        last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                        last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
                     
                     
                     try:
-                        records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c,unit=u)
+                        records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
                         
                         
                         quantity = 0
@@ -2629,7 +2629,7 @@ def export_report_xls(request):
 ###########################################     COLOR    #################################################
 
 def renderAddColorSupplier(request):
-    suppliers=ColorSupplier.objects.all().order_by('supplier')
+    suppliers=ColorAndChemicalsSupplier.objects.all().order_by('supplier')
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
@@ -2651,13 +2651,13 @@ def saveSupplier(request):
     a = a.upper()
     a = a.strip()
     try:
-        existing_party=get_object_or_404(ColorSupplier,supplier=p,city=c,address=a)
+        existing_party=get_object_or_404(ColorAndChemicalsSupplier,supplier=p,city=c,address=a)
         messages.error(request,"This Supplier Party already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addcolorsupplier')
-        new_Party = ColorSupplier(
+        new_Party = ColorAndChemicalsSupplier(
             supplier = p,
             address=a,
             city=c
@@ -2668,18 +2668,18 @@ def saveSupplier(request):
 
 def deleteSupplier(request,id):
     try:
-        ColorSupplier.objects.filter(id=id).delete()
+        ColorAndChemicalsSupplier.objects.filter(id=id).delete()
         messages.success(request,"Supplier Party deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addcolorsupplier')
 
 def renderEditSupplier(request,id):
-    party=get_object_or_404(ColorSupplier,id=id)
+    party=get_object_or_404(ColorAndChemicalsSupplier,id=id)
     return render(request,'./color/editsupplier.html',{'id':id,'name':party.supplier})
 
 def editSupplier(request,id):
-    party=get_object_or_404(ColorSupplier,id=id)
+    party=get_object_or_404(ColorAndChemicalsSupplier,id=id)
     p=request.POST.get("edit-party")
     p = p.upper()
     p = p.strip()
@@ -2741,7 +2741,7 @@ def editColor(request,id):
 
 ###########add Godown
 def renderAddGodown(request):
-    suppliers=Godowns.objects.all().order_by('godown')
+    suppliers=ChemicalsGodownsMaster.objects.all().order_by('godown')
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
@@ -2754,13 +2754,13 @@ def saveGodown(request):
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(Godowns,godown=p)
+        existing_party=get_object_or_404(ChemicalsGodownsMaster,godown=p)
         messages.error(request,"This Godown already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addgodown')
-        new_Party = Godowns(
+        new_Party = ChemicalsGodownsMaster(
             godown = p
         )
         new_Party.save()
@@ -2769,18 +2769,18 @@ def saveGodown(request):
 
 def deleteGodown(request,id):
     try:
-        Godowns.objects.filter(id=id).delete()
+        ChemicalsGodownsMaster.objects.filter(id=id).delete()
         messages.success(request,"Godown deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addgodown')
 
 def renderEditGodown(request,id):
-    party=get_object_or_404(Godowns,id=id)
+    party=get_object_or_404(ChemicalsGodownsMaster,id=id)
     return render(request,'./color/editgodown.html',{'id':id,'name':party.godown})
 
 def editGodown(request,id):
-    party=get_object_or_404(Godowns,id=id)
+    party=get_object_or_404(ChemicalsGodownsMaster,id=id)
     p=request.POST.get("edit-party")
     p = p.upper()
     p = p.strip()
@@ -2792,7 +2792,7 @@ def editGodown(request,id):
 #############add loose
 
 def renderAddLease(request):
-    suppliers=Lease.objects.all().order_by('lease')
+    suppliers=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
@@ -2805,13 +2805,13 @@ def saveLease(request):
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(Lease,lease=p)
+        existing_party=get_object_or_404(ChemicalsLooseGodownMaster,lease=p)
         messages.error(request,"This Loose already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addlease')
-        new_Party = Lease(
+        new_Party = ChemicalsLooseGodownMaster(
             lease = p
         )
         new_Party.save()
@@ -2820,18 +2820,18 @@ def saveLease(request):
 
 def deleteLease(request,id):
     try:
-        Lease.objects.filter(id=id).delete()
+        ChemicalsLooseGodownMaster.objects.filter(id=id).delete()
         messages.success(request,"Lease deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addlease')
 
 def renderEditLease(request,id):
-    party=get_object_or_404(Lease,id=id)
+    party=get_object_or_404(ChemicalsLooseGodownMaster,id=id)
     return render(request,'./color/editlease.html',{'id':id,'name':party.lease})
 
 def editLease(request,id):
-    party=get_object_or_404(Lease,id=id)
+    party=get_object_or_404(ChemicalsLooseGodownMaster,id=id)
     p=request.POST.get("edit-party")
     p = p.upper()
     p = p.strip()
@@ -2843,7 +2843,7 @@ def editLease(request,id):
 
 #######unit master
 def renderAddUnit(request):
-    suppliers=Units.objects.all().order_by('unit')
+    suppliers=ChemicalsUnitsMaster.objects.all().order_by('unit')
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
@@ -2856,13 +2856,13 @@ def saveUnit(request):
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(Units,unit=p)
+        existing_party=get_object_or_404(ChemicalsUnitsMaster,unit=p)
         messages.error(request,"This Unit already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/addunit')
-        new_Party = Units(
+        new_Party = ChemicalsUnitsMaster(
             unit = p
         )
         new_Party.save()
@@ -2871,18 +2871,18 @@ def saveUnit(request):
 
 def deleteUnit(request,id):
     try:
-        Units.objects.filter(id=id).delete()
+        ChemicalsUnitsMaster.objects.filter(id=id).delete()
         messages.success(request,"Unit deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addunit')
 
 def renderEditUnit(request,id):
-    party=get_object_or_404(Units,id=id)
+    party=get_object_or_404(ChemicalsUnitsMaster,id=id)
     return render(request,'./color/editunit.html',{'id':id,'name':party.unit})
 
 def editUnit(request,id):
-    party=get_object_or_404(Units,id=id)
+    party=get_object_or_404(ChemicalsUnitsMaster,id=id)
     p=request.POST.get("edit-party")
     p = p.upper()
     p = p.strip()
@@ -2895,8 +2895,8 @@ def editUnit(request,id):
 
 def placeOrder(request):
     color=Color.objects.all().order_by("color")
-    suppliers=ColorSupplier.objects.all().order_by('supplier')
-    units=Units.objects.all().order_by('unit')
+    suppliers=ColorAndChemicalsSupplier.objects.all().order_by('supplier')
+    units=ChemicalsUnitsMaster.objects.all().order_by('unit')
     
     d=datetime.date.today()
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
@@ -2915,7 +2915,7 @@ def saveOrder(request):
     a=round(q*r,2)
     new_order=ColorRecord(
         color=get_object_or_404(Color,id=int(request.POST.get('color'))),
-        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+        supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
         order_no=request.POST.get('order_no'),
         order_date=str(request.POST.get('order_date')),
         rate=request.POST.get('rate'),
@@ -2924,20 +2924,20 @@ def saveOrder(request):
         state="Ordered",
         recieving_date=None,
         total_quantity = request.POST.get('quantity'),
-        unit = get_object_or_404(Units,id=int(request.POST.get('unit')))
+        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit')))
     )
     new_order.save()
 
-    new_order=AllOrders(
+    new_order=ChemicalsAllOrders(
         color=get_object_or_404(Color,id=int(request.POST.get('color'))),
-        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+        supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
         order_no=request.POST.get('order_no'),
         order_date=str(request.POST.get('order_date')),
         rate=request.POST.get('rate'),
         amount=a,
         quantity=request.POST.get('quantity'),
         state="Ordered",
-        unit = get_object_or_404(Units,id=int(request.POST.get('unit'))),
+        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit'))),
         rem_quantity=request.POST.get('quantity')
     )
     new_order.save()
@@ -2954,7 +2954,7 @@ def saveOrder(request):
         color_unit.append(l)
         new_order=ColorRecord(
             color=get_object_or_404(Color,id=int(request.POST.get('color2'))),
-            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+            supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
             order_no=request.POST.get('order_no'),
             order_date=str(request.POST.get('order_date')),
             rate=request.POST.get('rate2'),
@@ -2963,20 +2963,20 @@ def saveOrder(request):
             state="Ordered",
             recieving_date=None,
             total_quantity = request.POST.get('quantity2'),
-            unit = get_object_or_404(Units,id=int(request.POST.get('unit2')))
+            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit2')))
         )
         new_order.save()
 
-        new_order=AllOrders(
+        new_order=ChemicalsAllOrders(
             color=get_object_or_404(Color,id=int(request.POST.get('color2'))),
-            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+            supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
             order_no=request.POST.get('order_no'),
             order_date=str(request.POST.get('order_date')),
             rate=request.POST.get('rate2'),
             amount=a,
             quantity=request.POST.get('quantity2'),
             state="Ordered",
-            unit = get_object_or_404(Units,id=int(request.POST.get('unit2'))),
+            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit2'))),
             rem_quantity=request.POST.get('quantity2')
         )
         new_order.save()
@@ -2992,7 +2992,7 @@ def saveOrder(request):
             color_unit.append(l)
             new_order=ColorRecord(
                 color=get_object_or_404(Color,id=int(request.POST.get('color3'))),
-                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                 order_no=request.POST.get('order_no'),
                 order_date=str(request.POST.get('order_date')),
                 rate=request.POST.get('rate3'),
@@ -3001,20 +3001,20 @@ def saveOrder(request):
                 state="Ordered",
                 recieving_date=None,
                 total_quantity = request.POST.get('quantity3'),
-                unit = get_object_or_404(Units,id=int(request.POST.get('unit3')))
+                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit3')))
             )
             new_order.save()
 
-            new_order=AllOrders(
+            new_order=ChemicalsAllOrders(
                 color=get_object_or_404(Color,id=int(request.POST.get('color3'))),
-                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                 order_no=request.POST.get('order_no'),
                 order_date=str(request.POST.get('order_date')),
                 rate=request.POST.get('rate3'),
                 amount=a,
                 quantity=request.POST.get('quantity3'),
                 state="Ordered",
-                unit = get_object_or_404(Units,id=int(request.POST.get('unit3'))),
+                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit3'))),
                 rem_quantity=request.POST.get('quantity3')
             )
             new_order.save()
@@ -3030,7 +3030,7 @@ def saveOrder(request):
                 color_unit.append(l)
                 new_order=ColorRecord(
                     color=get_object_or_404(Color,id=int(request.POST.get('color4'))),
-                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                    supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                     order_no=request.POST.get('order_no'),
                     order_date=str(request.POST.get('order_date')),
                     rate=request.POST.get('rate4'),
@@ -3039,20 +3039,20 @@ def saveOrder(request):
                     state="Ordered",
                     recieving_date=None,
                     total_quantity = request.POST.get('quantity4'),
-                    unit = get_object_or_404(Units,id=int(request.POST.get('unit4')))
+                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit4')))
                 )
                 new_order.save()
 
-                new_order=AllOrders(
+                new_order=ChemicalsAllOrders(
                     color=get_object_or_404(Color,id=int(request.POST.get('color4'))),
-                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                    supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                     order_no=request.POST.get('order_no'),
                     order_date=str(request.POST.get('order_date')),
                     rate=request.POST.get('rate4'),
                     amount=a,
                     quantity=request.POST.get('quantity4'),
                     state="Ordered",
-                    unit = get_object_or_404(Units,id=int(request.POST.get('unit4'))),
+                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit4'))),
                     rem_quantity=request.POST.get('quantity4')
                 )
                 new_order.save()
@@ -3068,7 +3068,7 @@ def saveOrder(request):
                     color_unit.append(l)
                     new_order=ColorRecord(
                         color=get_object_or_404(Color,id=int(request.POST.get('color5'))),
-                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                        supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                         order_no=request.POST.get('order_no'),
                         order_date=str(request.POST.get('order_date')),
                         rate=request.POST.get('rate5'),
@@ -3077,20 +3077,20 @@ def saveOrder(request):
                         state="Ordered",
                         recieving_date=None,
                         total_quantity = request.POST.get('quantity5'),
-                        unit = get_object_or_404(Units,id=int(request.POST.get('unit5')))
+                        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit5')))
                     )
                     new_order.save()
 
-                    new_order=AllOrders(
+                    new_order=ChemicalsAllOrders(
                         color=get_object_or_404(Color,id=int(request.POST.get('color5'))),
-                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                        supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                         order_no=request.POST.get('order_no'),
                         order_date=str(request.POST.get('order_date')),
                         rate=request.POST.get('rate5'),
                         amount=a,
                         quantity=request.POST.get('quantity5'),
                         state="Ordered",
-                        unit = get_object_or_404(Units,id=int(request.POST.get('unit5'))),
+                        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit5'))),
                         rem_quantity=request.POST.get('quantity5')
                     )
                     new_order.save()
@@ -3106,7 +3106,7 @@ def saveOrder(request):
                         color_unit.append(l)
                         new_order=ColorRecord(
                             color=get_object_or_404(Color,id=int(request.POST.get('color6'))),
-                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                            supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                             order_no=request.POST.get('order_no'),
                             order_date=str(request.POST.get('order_date')),
                             rate=request.POST.get('rate6'),
@@ -3115,20 +3115,20 @@ def saveOrder(request):
                             state="Ordered",
                             recieving_date=None,
                             total_quantity = request.POST.get('quantity6'),
-                            unit = get_object_or_404(Units,id=int(request.POST.get('unit6')))
+                            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit6')))
                         )
                         new_order.save()
 
-                        new_order=AllOrders(
+                        new_order=ChemicalsAllOrders(
                             color=get_object_or_404(Color,id=int(request.POST.get('color6'))),
-                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                            supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                             order_no=request.POST.get('order_no'),
                             order_date=str(request.POST.get('order_date')),
                             rate=request.POST.get('rate6'),
                             amount=a,
                             quantity=request.POST.get('quantity6'),
                             state="Ordered",
-                            unit = get_object_or_404(Units,id=int(request.POST.get('unit6'))),
+                            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit6'))),
                             rem_quantity=request.POST.get('quantity6')
                         )
                         new_order.save()
@@ -3144,7 +3144,7 @@ def saveOrder(request):
                             color_unit.append(l)
                             new_order=ColorRecord(
                                 color=get_object_or_404(Color,id=int(request.POST.get('color7'))),
-                                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                 order_no=request.POST.get('order_no'),
                                 order_date=str(request.POST.get('order_date')),
                                 rate=request.POST.get('rate7'),
@@ -3153,20 +3153,20 @@ def saveOrder(request):
                                 state="Ordered",
                                 recieving_date=None,
                                 total_quantity = request.POST.get('quantity7'),
-                                unit = get_object_or_404(Units,id=int(request.POST.get('unit7')))
+                                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit7')))
                             )
                             new_order.save()
 
-                            new_order=AllOrders(
+                            new_order=ChemicalsAllOrders(
                                 color=get_object_or_404(Color,id=int(request.POST.get('color7'))),
-                                supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                 order_no=request.POST.get('order_no'),
                                 order_date=str(request.POST.get('order_date')),
                                 rate=request.POST.get('rate7'),
                                 amount=a,
                                 quantity=request.POST.get('quantity7'),
                                 state="Ordered",
-                                unit = get_object_or_404(Units,id=int(request.POST.get('unit7'))),
+                                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit7'))),
                                 rem_quantity=request.POST.get('quantity7')
                         
                             )
@@ -3183,7 +3183,7 @@ def saveOrder(request):
                                 color_unit.append(l)
                                 new_order=ColorRecord(
                                     color=get_object_or_404(Color,id=int(request.POST.get('color8'))),
-                                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                    supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                     order_no=request.POST.get('order_no'),
                                     order_date=str(request.POST.get('order_date')),
                                     rate=request.POST.get('rate8'),
@@ -3192,20 +3192,20 @@ def saveOrder(request):
                                     state="Ordered",
                                     recieving_date=None,
                                     total_quantity = request.POST.get('quantity8'),
-                                    unit = get_object_or_404(Units,id=int(request.POST.get('unit8')))
+                                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit8')))
                                 )
                                 new_order.save()
 
-                                new_order=AllOrders(
+                                new_order=ChemicalsAllOrders(
                                     color=get_object_or_404(Color,id=int(request.POST.get('color8'))),
-                                    supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                    supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                     order_no=request.POST.get('order_no'),
                                     order_date=str(request.POST.get('order_date')),
                                     rate=request.POST.get('rate8'),
                                     amount=a,
                                     quantity=request.POST.get('quantity8'),
                                     state="Ordered",
-                                    unit = get_object_or_404(Units,id=int(request.POST.get('unit8'))),
+                                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit8'))),
                                     rem_quantity=request.POST.get('quantity8')
                                 )
                                 new_order.save()
@@ -3221,7 +3221,7 @@ def saveOrder(request):
                                     color_unit.append(l)
                                     new_order=ColorRecord(
                                         color=get_object_or_404(Color,id=int(request.POST.get('color9'))),
-                                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                        supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                         order_no=request.POST.get('order_no'),
                                         order_date=str(request.POST.get('order_date')),
                                         rate=request.POST.get('rate9'),
@@ -3230,20 +3230,20 @@ def saveOrder(request):
                                         state="Ordered",
                                         recieving_date=None,
                                         total_quantity = request.POST.get('quantity9'),
-                                        unit = get_object_or_404(Units,id=int(request.POST.get('unit9')))
+                                        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit9')))
                                     )
                                     new_order.save()
 
-                                    new_order=AllOrders(
+                                    new_order=ChemicalsAllOrders(
                                         color=get_object_or_404(Color,id=int(request.POST.get('color9'))),
-                                        supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                        supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                         order_no=request.POST.get('order_no'),
                                         order_date=str(request.POST.get('order_date')),
                                         rate=request.POST.get('rate9'),
                                         amount=a,
                                         quantity=request.POST.get('quantity9'),
                                         state="Ordered",
-                                        unit = get_object_or_404(Units,id=int(request.POST.get('unit9'))),
+                                        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit9'))),
                                         rem_quantity=request.POST.get('quantity9')
                                     )
                                     new_order.save()
@@ -3259,7 +3259,7 @@ def saveOrder(request):
                                         
                                         new_order=ColorRecord(
                                             color=get_object_or_404(Color,id=int(request.POST.get('color10'))),
-                                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                            supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                             order_no=request.POST.get('order_no'),
                                             order_date=str(request.POST.get('order_date')),
                                             rate=request.POST.get('rate10'),
@@ -3272,16 +3272,16 @@ def saveOrder(request):
                                         )
                                         new_order.save()
 
-                                        new_order=AllOrders(
+                                        new_order=ChemicalsAllOrders(
                                             color=get_object_or_404(Color,id=int(request.POST.get('color10'))),
-                                            supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier'))),
+                                            supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
                                             order_no=request.POST.get('order_no'),
                                             order_date=str(request.POST.get('order_date')),
                                             rate=request.POST.get('rate10'),
                                             amount=a,
                                             quantity=request.POST.get('quantity10'),
                                             state="Ordered",
-                                            unit = get_object_or_404(Units,id=int(request.POST.get('unit10'))),
+                                            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit10'))),
                                             rem_quantity=request.POST.get('quantity10')
                                         )
                                         new_order.save()
@@ -3290,11 +3290,11 @@ def saveOrder(request):
 
 
 def orderGeneration(request):
-    recs=AllOrders.objects.all()
+    recs=ChemicalsAllOrders.objects.all()
     idlist=[]
     for r in recs:
         try:
-            dups=get_list_or_404(AllOrders,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
+            dups=get_list_or_404(ChemicalsAllOrders,order_no=r.order_no,color=r.color,unit=r.unit,state="Ordered")
             flag=0
             for d in dups:
                 if flag==0:
@@ -3321,47 +3321,47 @@ def orderGeneration(request):
             pass             
     
     for i in idlist:
-        AllOrders.objects.filter(id=i).delete()
+        ChemicalsAllOrders.objects.filter(id=i).delete()
     for i in idlist2:
         ColorRecord.objects.filter(id=i).delete()
 
 
-    rec=AllOrders.objects.all().order_by('order_no')
+    rec=ChemicalsAllOrders.objects.all().order_by('order_no')
     records_filter = ColorOrderFilter(request.GET,queryset=rec)
     # return render(request,'intransit.html',{'records':records_filter})
     
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
-    suppliers=ColorSupplier.objects.all().order_by('supplier')
+    suppliers=ColorAndChemicalsSupplier.objects.all().order_by('supplier')
     colors=Color.objects.all().order_by('color')
 
     return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter,'suppliers':suppliers,'colors':colors})
 
 
 def orderEdit(request,id):
-    rec=get_object_or_404(AllOrders, id=id)
+    rec=get_object_or_404(ChemicalsAllOrders, id=id)
     try:
         #rec2=get_object_or_404(ColorRecord,rate=rec.rate,order_no=rec.order_no,color=rec.color,unit=rec.unit,state="Ordered")
     
         orderdate=str(rec.order_date)
         color = Color.objects.all().order_by('color')
-        supplier = ColorSupplier.objects.all().order_by('supplier')
-        unit = Units.objects.all().order_by('unit')
+        supplier = ColorAndChemicalsSupplier.objects.all().order_by('supplier')
+        unit = ChemicalsUnitsMaster.objects.all().order_by('unit')
         return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier,'units':unit})
     except:
         messages.error(request,"This order has been recieved")
         return redirect('/ordergeneration')
 
 def orderDelete(request,id):
-    rec=get_object_or_404(AllOrders, id=id)
+    rec=get_object_or_404(ChemicalsAllOrders, id=id)
     rec2=get_object_or_404(ColorRecord,order_no=rec.order_no,color=rec.color,unit=rec.unit)
     rec.delete()
     rec2.delete()
     return redirect('/ordergeneration')
 
 def orderEditSave(request,id):
-    rec_order=get_object_or_404(AllOrders, id=id)
+    rec_order=get_object_or_404(ChemicalsAllOrders, id=id)
     q=float(request.POST.get('quantity'))
     r=float(request.POST.get('rate'))
     a=q*r
@@ -3372,24 +3372,24 @@ def orderEditSave(request,id):
     rate=rec_order.rate
     try:
         rec=get_object_or_404(ColorRecord, rate=rate,order_no=orderno,color=color,unit=unit,state="Ordered")
-        rec.supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier')))
+        rec.supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier')))
         rec.color=get_object_or_404(Color,id=int(request.POST.get('color')))
         rec.order_date=str(request.POST.get('order_date'))                  
         rec.rate=request.POST.get('rate')                               
         rec.amount=a                              
         rec.quantity=request.POST.get('quantity')               
         rec.total_quantity = request.POST.get('quantity') 
-        rec.unit = get_object_or_404(Units,id=int(request.POST.get('unit')))         
+        rec.unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit')))         
         rec.save()
     finally:
-        rec_order.supplier=get_object_or_404(ColorSupplier,id=int(request.POST.get('supplier')))
+        rec_order.supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier')))
         rec_order.color=get_object_or_404(Color,id=int(request.POST.get('color')))
         rec_order.order_date=str(request.POST.get('order_date'))                  
         rec_order.rate=request.POST.get('rate')                               
         rec_order.amount=a                              
         rec_order.quantity=request.POST.get('quantity')
         rec_order.rem_quantity=request.POST.get('quantity')      
-        rec_order.unit = get_object_or_404(Units,id=int(request.POST.get('unit')))         
+        rec_order.unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit')))         
         rec_order.save()
     return redirect('/ordergeneration')
 
@@ -3397,12 +3397,12 @@ def orderEditSave(request,id):
 ######color in godown
 
 def goodsReceived(request):
-    godowns=Godowns.objects.all()
+    godowns=ChemicalsGodownsMaster.objects.all()
     godowns_list=[]
     for g in godowns:
         godowns_list.append(g)
     
-    godown_colors = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0)
+    godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -3411,7 +3411,7 @@ def goodsReceived(request):
     page = request.GET.get('page')
     records = paginator.get_page(page)
     chemicals=Color.objects.all().order_by('color')
-    godowns=Godowns.objects.all().order_by('godown')
+    godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
 
     return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})
 
@@ -3430,7 +3430,7 @@ def goodsRequest(request):
     return render(request,'./color/goodsrequest.html',{'records':records,'filter':records_filter})
 
 def goods(request,id):
-    ogorder=get_object_or_404(AllOrders, id=id)
+    ogorder=get_object_or_404(ChemicalsAllOrders, id=id)
     rec=get_object_or_404(ColorRecord, order_no=ogorder.order_no,state="Ordered",color = ogorder.color, unit = ogorder.unit)
 
     mindate=str(rec.order_date)
@@ -3438,11 +3438,11 @@ def goods(request,id):
     d=datetime.date.today()
     d=str(d)
     orderdate=str(rec.order_date)
-    godowns = Godowns.objects.all().order_by('godown')
+    godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
     return render(request, './color/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
 
 def viewOrder(request,id):
-    ogorder = get_object_or_404(AllOrders, id=id)
+    ogorder = get_object_or_404(ChemicalsAllOrders, id=id)
     try:
         recieved_recs=get_list_or_404(ColorRecord, order_no=ogorder.order_no,state="Godown",color = ogorder.color, unit = ogorder.unit)
     except:
@@ -3453,7 +3453,7 @@ def viewOrder(request,id):
     d=str(d)
     orderdate=str(ogorder.order_date)
     billdate=str(ogorder.bill_date)
-    godowns = Godowns.objects.all().order_by('godown')
+    godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
     print(billdate)
     remaining_order = 0
     
@@ -3464,7 +3464,7 @@ def viewOrder(request,id):
     return render(request, './color/vieworder.html', {'d':d,'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
 
 def renderValidate(request,id):
-    rec=get_object_or_404(AllOrders, id=id)
+    rec=get_object_or_404(ChemicalsAllOrders, id=id)
     mindate=str(rec.order_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     
@@ -3481,7 +3481,7 @@ def validate(request,id):
     q=0
     for i in all_recs:
         q=q+i.quantity
-    ogorder=AllOrders.objects.filter(order_no=rec.order_no,color=rec.color,unit=rec.unit).first()
+    ogorder=ChemicalsAllOrders.objects.filter(order_no=rec.order_no,color=rec.color,unit=rec.unit).first()
     if(q==ogorder.quantity):
         ogorder.validation="Yes"
         ogorder.save()
@@ -3494,7 +3494,7 @@ def goodsApprove(request,id):
     prevRec = get_object_or_404(ColorRecord,id=id)
     quantity_recieved = float(request.POST.get("quantityreceived"))
     g_id = int(request.POST.get('godownnumber'))
-    godown=get_object_or_404(Godowns,id=g_id)
+    godown=get_object_or_404(ChemicalsGodownsMaster,id=g_id)
     recieving_date = request.POST.get('receivingdate')
     amount = prevRec.amount
     print(str(recieving_date))
@@ -3505,47 +3505,47 @@ def goodsApprove(request,id):
         prevRec.chalan_no=int(request.POST.get('chalan'))
         prevRec.recieving_date_string=str(recieving_date)
         prevRec.save()
-        ogorder = get_object_or_404(AllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
+        ogorder = get_object_or_404(ChemicalsAllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
         ogorder.state="Godown"
         ogorder.rem_quantity = 0
         ogorder.chalan_no=int(request.POST.get('chalan'))
         ogorder.save()
         try:
 
-            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
+            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
             godown_color.quantity = godown_color.quantity + quantity_recieved
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             godown_color.save()
             try:
                 #closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
-                closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()    ####loophole
+                closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()    ####loophole
                 closing_stock.quantity=closing_stock.quantity + quantity_recieved
                 closing_stock.save()
                 print("same")
             except:
-                closing_stock_prev = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
+                closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
  
-                closing_stock= ClosingStock(
+                closing_stock= ChemicalsClosingStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = closing_stock_prev.quantity + quantity_recieved,
-                    unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
+                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     dailydate = datetime.date.today()
                 )
                 closing_stock.save()
         except:
-            godown_color = GodownLeaseColors(
+            godown_color = ChemicalsGodownLooseMergeStock(
                 color = get_object_or_404(Color,id=int(prevRec.color.id)),
                 quantity = quantity_recieved,
-                unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
+                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                 rate = prevRec.rate,
                 state = godown
             )
             godown_color.save()
-            closing_stock= ClosingStock(
+            closing_stock= ChemicalsClosingStock(
                 color = get_object_or_404(Color,id=int(prevRec.color.id)),
                 quantity = quantity_recieved,
-                unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
+                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                 rate = prevRec.rate,
                 dailydate = datetime.date.today()
             )
@@ -3564,8 +3564,8 @@ def goodsApprove(request,id):
 
         print(prevRec.color,prevRec.supplier,prevRec.unit,godown)
         color_ob=get_object_or_404(Color,id=int(prevRec.color.id))
-        supp_ob=get_object_or_404(ColorSupplier,id=int(prevRec.supplier.id))
-        unit_ob=get_object_or_404(Units,id=int(prevRec.unit.id))
+        supp_ob=get_object_or_404(ColorAndChemicalsSupplier,id=int(prevRec.supplier.id))
+        unit_ob=get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id))
 
         new_value = ColorRecord(
             recieving_date_string=str(recieving_date),
@@ -3611,28 +3611,28 @@ def goodsApprove(request,id):
             prevRec.quantity = prevRec.quantity - quantity_recieved
             prevRec.amount = round(amount_remain,2)
             prevRec.save()
-            ogorder = get_object_or_404(AllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
+            ogorder = get_object_or_404(ChemicalsAllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
             ogorder.state="In Transit"
             ogorder.rem_quantity= ogorder.rem_quantity - quantity_recieved
             ogorder.save()
             try:
-                godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=godown)
+                godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
                 godown_color.quantity = godown_color.quantity + quantity_recieved
                 godown_color.rate = (godown_color.rate + prevRec.rate)/2
                 godown_color.save()
                 print("godown")
                 try:
-                    closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()
+                    closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()
                     closing_stock.quantity=closing_stock.quantity + quantity_recieved
                     closing_stock.save()
                     print("same rec",closing_stock.quantity)
                 except:
-                    closing_stock_prev = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
+                    closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
  
-                    closing_stock= ClosingStock(
+                    closing_stock= ChemicalsClosingStock(
                         color = get_object_or_404(Color,id=int(prevRec.color.id)),
                         quantity = closing_stock_prev.quantity + quantity_recieved,
-                        unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
+                        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                         rate = prevRec.rate,
                         dailydate = datetime.date.today()
                     )
@@ -3640,18 +3640,18 @@ def goodsApprove(request,id):
                     print("exc")
 
             except:
-                godown_color = GodownLeaseColors(
+                godown_color = ChemicalsGodownLooseMergeStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = quantity_recieved,
-                    unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
+                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     state = godown
                 )
                 godown_color.save()
-                closing_stock= ClosingStock(
+                closing_stock= ChemicalsClosingStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = quantity_recieved,
-                    unit = get_object_or_404(Units,id=int(prevRec.unit.id)),
+                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     dailydate = datetime.date.today()
                 )
@@ -3673,11 +3673,11 @@ def htmltoText(html):
 
 
 def goodsLease(request):
-    lease=Lease.objects.all()
+    lease=ChemicalsLooseGodownMaster.objects.all()
     lease_list=[]
     for g in lease:
         lease_list.append(g)
-    godown_colors = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list,state=None).order_by('color')
+    godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list,state=None).order_by('color')
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -3689,15 +3689,15 @@ def goodsLease(request):
     # text = htmltoText(html)
     # print(text) 
     chemicals=Color.objects.all().order_by('color')
-    loose_godowns=Lease.objects.all().order_by('lease')
+    loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
     return render(request,'./color/lease.html',{'filter':records_filter,'colors':records,'chemicals':chemicals,'loose_godowns':loose_godowns})
 
 def leaseRequest(request):
-    godowns=Godowns.objects.all()
+    godowns=ChemicalsGodownsMaster.objects.all()
     godowns_list=[]
     for g in godowns:
         godowns_list.append(g.godown)
-    godown_colors = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0)
+    godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
     # return render(request,'intransit.html',{'records':records_filter})
@@ -3709,31 +3709,31 @@ def leaseRequest(request):
     return render(request,'./color/leaserequest.html',{'filter':records_filter,'colors':records})
 
 def viewGood(request,id):
-    rec=get_object_or_404(GodownLeaseColors, id=id)
+    rec=get_object_or_404(ChemicalsGodownLooseMergeStock, id=id)
     # mindate=str(rec.recieving_date)
     # maxdate=datetime.date.today().strftime('%Y-%m-%d')
     d=datetime.date.today()
     d=str(d)
     # recievedate=str(rec.recieving_date)
-    lease = Lease.objects.all().order_by('lease')
+    lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
     return render(request, './color/leaseapprove.html', {'d':d,'record':rec,'lease':lease})
 
 
 def leaseApprove(request,id):
-    prevRec = get_object_or_404(GodownLeaseColors,id=id)
+    prevRec = get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
     quantity_recieved = float(request.POST.get("quantitylease"))
     l_id = request.POST.get('leasenumber')
-    loose_godown = get_object_or_404(Lease,id=int(l_id))
+    loose_godown = get_object_or_404(ChemicalsLooseGodownMaster,id=int(l_id))
 
     if(prevRec.quantity == quantity_recieved):
         
         try:
-            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
+            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
             godown_color.quantity = godown_color.quantity + quantity_recieved
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             godown_color.save()
         except:
-            godown_color = GodownLeaseColors(
+            godown_color = ChemicalsGodownLooseMergeStock(
                 color = prevRec.color,
                 quantity = quantity_recieved,
                 unit = prevRec.unit,
@@ -3752,12 +3752,12 @@ def leaseApprove(request,id):
     else:
         quantity_remaining = prevRec.quantity - quantity_recieved
         try:
-            godown_color = get_object_or_404(GodownLeaseColors,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
+            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
             godown_color.quantity = godown_color.quantity + quantity_recieved
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             
         except:
-            godown_color = GodownLeaseColors(
+            godown_color = ChemicalsGodownLooseMergeStock(
                 color = prevRec.color,
                 quantity = quantity_recieved,
                 unit = prevRec.unit,
@@ -3781,18 +3781,18 @@ def leaseApprove(request,id):
 
 
 def leaseedit(request,id):
-    leasestock = get_object_or_404(GodownLeaseColors,id=id)
+    leasestock = get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
     color = Color.objects.all().order_by('color')
-    units=Units.objects.all().order_by('unit')
-    godowns=Godowns.objects.all().order_by('godown')
+    units=ChemicalsUnitsMaster.objects.all().order_by('unit')
+    godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
     return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'godowns':godowns})   
 
 def savelease(request,id):
     g_id=request.POST.get('godownname')
-    godown_object=get_object_or_404(Godowns,id=int(g_id))
+    godown_object=get_object_or_404(ChemicalsGodownsMaster,id=int(g_id))
     act_quantity=float(request.POST.get('act-quantity'))
     
-    stock=get_object_or_404(GodownLeaseColors,id=id)
+    stock=get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
     
     old_quantity=stock.quantity
     diff=old_quantity-act_quantity
@@ -3801,7 +3801,7 @@ def savelease(request,id):
         return redirect('/goodsreceived')
     else:
         try:
-            stockgodown=get_object_or_404(GodownLeaseColors,color=stock.color,unit=stock.unit,state=godown_object)
+            stockgodown=get_object_or_404(ChemicalsGodownLooseMergeStock,color=stock.color,unit=stock.unit,state=godown_object)
         except:
             messages.error(request,"Selected Godown never consisted this chemical")
             return redirect('/goodslease')
@@ -3814,29 +3814,29 @@ def savelease(request,id):
 
 
 def renderDailyConsumptionLease1(request):                                                      ####repair required 
-    lease = Lease.objects.all().order_by('lease')
-    first_lease = Lease.objects.all().order_by('lease').first()
+    lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
+    first_lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease').first()
     try:
-        color = GodownLeaseColors.objects.filter(loose_godown_state=first_lease.id).order_by('color')
+        color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=first_lease.id).order_by('color')
     except:
-        new_value = Lease(lease="Loose Godown 1")
+        new_value = ChemicalsLooseGodownMaster(lease="Loose Godown 1")
         new_value.save()
-        color = GodownLeaseColors.objects.filter(loose_godown_state=new_value.id).order_by('color')
-    todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
+        color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=new_value.id).order_by('color')
+    todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
     return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':lease,'name':first_lease.lease})
 
 def renderDailyConsumptionLease2(request):
     l_id= request.POST.get('lease')
-    loose_godown_object = get_object_or_404(Lease,id=int(l_id))
-    leases = Lease.objects.all().order_by('lease')
-    color = GodownLeaseColors.objects.filter(loose_godown_state=loose_godown_object).order_by('color')
-    todays = DailyConsumption.objects.filter(con_date=str(datetime.date.today()))
+    loose_godown_object = get_object_or_404(ChemicalsLooseGodownMaster,id=int(l_id))
+    leases = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
+    color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object).order_by('color')
+    todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
     return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':loose_godown_object.lease})
 
 # def consume(request,name):
-#     colors = GodownLeaseColors.objects.filter(state=name).exclude(quantity=0).order_by('color')
+#     colors = ChemicalsGodownLooseMergeStock.objects.filter(state=name).exclude(quantity=0).order_by('color')
 #     flag = 0
 #     for c in colors:
 #         if(int(request.POST.get(str(c.id)))>c.quantity):
@@ -3866,7 +3866,7 @@ def renderDailyConsumptionLease2(request):
 
 #         c.quantity=c.quantity - int(request.POST.get(str(c.id)))
 #         c.save()
-#         stored_color = GodownLeaseColors.objects.filter(color=c.color,unit=c.unit)
+#         stored_color = ChemicalsGodownLooseMergeStock.objects.filter(color=c.color,unit=c.unit)
 #         q=0
 #         for sc in stored_color:
 #             q=q+sc.quantity
@@ -3885,8 +3885,8 @@ def renderDailyConsumptionLease2(request):
 #     return redirect('/dailyconsumption1')
 
 def consume(request,name):
-    loose_godown_object=get_object_or_404(Lease,lease=name)
-    colors = GodownLeaseColors.objects.filter(loose_godown_state=loose_godown_object).exclude(quantity=0).order_by('color')
+    loose_godown_object=get_object_or_404(ChemicalsLooseGodownMaster,lease=name)
+    colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object).exclude(quantity=0).order_by('color')
     flag = 0
     consumingdate=request.POST.get('consumingdate')
     # print(consumingdate)
@@ -3909,13 +3909,13 @@ def consume(request,name):
             flag = flag + 1
             continue
         try:
-            closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__lte=str(consumingdate)).order_by('-dailydate').first()
+            closing_stock = ChemicalsClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__lte=str(consumingdate)).order_by('-dailydate').first()
             print(str(closing_stock.dailydate),closing_stock.quantity,type(closing_stock.dailydate))
             print(type(consumingdate))
             #closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit).order_by('-dailydate').first()
             if(str(closing_stock.dailydate) != consumingdate):
                 print("done4")
-                new_cs = ClosingStock(
+                new_cs = ChemicalsClosingStock(
                     color=c.color,
                     unit=c.unit,
                     quantity=closing_stock.quantity - float(request.POST.get(str(c.id))),
@@ -3930,7 +3930,7 @@ def consume(request,name):
             new_dates=selected_dates[1:]
             
             
-            all_closingstocks = ClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__in=new_dates)
+            all_closingstocks = ChemicalsClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__in=new_dates)
             #print("got all")
             #print(new_dates)
             for a in all_closingstocks:
@@ -3946,12 +3946,12 @@ def consume(request,name):
             
         c.quantity=c.quantity - float(request.POST.get(str(c.id)))
         c.save()
-        stored_color = GodownLeaseColors.objects.filter(color=c.color,unit=c.unit)
+        stored_color = ChemicalsGodownLooseMergeStock.objects.filter(color=c.color,unit=c.unit)
         q=0
         for sc in stored_color:
             q=q+sc.quantity
 
-        daily_consump = DailyConsumption(
+        daily_consump = ChemicalsDailyConsumption(
             con_date = str(consumingdate),
             color = c.color,
             unit = c.unit,
@@ -3967,28 +3967,28 @@ def consume(request,name):
 
 
 def renderClosingStock(request):
-    godowns=Godowns.objects.all()
+    godowns=ChemicalsGodownsMaster.objects.all()
     godowns_list=[]
     for g in godowns:
         godowns_list.append(g)
 
-    lease=Lease.objects.all()
+    lease=ChemicalsLooseGodownMaster.objects.all()
     lease_list=[]
     for l in lease:
         lease_list.append(l)
 
     datalist=[]
     colors=Color.objects.all()
-    units=Units.objects.all()
+    units=ChemicalsUnitsMaster.objects.all()
     for c in colors:
         for u in units:
             try:
                 lq=0
-                recsl=get_list_or_404(GodownLeaseColors,color=c,unit=u,loose_godown_state__in=lease_list)
+                recsl=get_list_or_404(ChemicalsGodownLooseMergeStock,color=c,unit=u,loose_godown_state__in=lease_list)
                 for i in recsl:
                     lq=lq+i.quantity
                 
-                recsg=get_list_or_404(GodownLeaseColors,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
+                recsg=get_list_or_404(ChemicalsGodownLooseMergeStock,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
                 lg=0
                 for i in recsg:
                     lg=lg+i.quantity
@@ -4001,7 +4001,7 @@ def renderClosingStock(request):
                 datalist.append(l)
             except:
                 try:
-                    recsg=get_list_or_404(GodownLeaseColors,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
+                    recsg=get_list_or_404(ChemicalsGodownLooseMergeStock,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
    
                     lg=0
                     for i in recsg:
@@ -4112,13 +4112,13 @@ def colorReport(request):
             next_day += datetime.timedelta(days=1)
     datalist=[]
     colors= Color.objects.all()
-    units= Units.objects.all()
+    units= ChemicalsUnitsMaster.objects.all()
     for c in colors:
         for u in units:
             try:
                 l=[]
                 try:
-                    first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
+                    first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
                     l.append(c.color)
                     l.append(u.unit)
                     l.append(first_record.quantity)
@@ -4126,13 +4126,13 @@ def colorReport(request):
 
                     l.append(0)
                 try:
-                    last_record = get_object_or_404(ClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
+                    last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
                 except:
-                    last_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
+                    last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
                 
                 
                 try:
-                    records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c,unit=u)
+                    records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
                     
                     
                     quantity = 0
