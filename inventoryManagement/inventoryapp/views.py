@@ -1982,8 +1982,8 @@ def export_page_xls(request):
         godowns=Godowns.objects.all()
         godowns_list=[]
         for g in godowns:
-            godowns_list.append(g.godown)
-        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+            godowns_list.append(g)
+        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
@@ -1991,8 +1991,8 @@ def export_page_xls(request):
         lease=Lease.objects.all()
         lease_list=[]
         for g in lease:
-            lease_list.append(g.lease)
-        records_list = GodownLeaseColors.objects.filter(state__in=lease_list).values_list('color','quantity','unit','rate','state')
+            lease_list.append(g)
+        records_list = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
@@ -2123,8 +2123,8 @@ def export_filter_all_xls(request):
         godowns=Godowns.objects.all()
         godowns_list=[]
         for g in godowns:
-            godowns_list.append(g.godown)
-        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+            godowns_list.append(g)
+        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
@@ -2132,8 +2132,8 @@ def export_filter_all_xls(request):
         lease=Lease.objects.all()
         lease_list=[]
         for g in lease:
-            lease_list.append(g.lease)
-        records_list = GodownLeaseColors.objects.filter(state__in=lease_list).values_list('color','quantity','unit','rate','state')
+            lease_list.append(g)
+        records_list = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
@@ -2258,8 +2258,8 @@ def export_all_xls(request):
         godowns=Godowns.objects.all()
         godowns_list=[]
         for g in godowns:
-            godowns_list.append(g.godown)
-        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+            godowns_list.append(g)
+        records_list = GodownLeaseColors.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
@@ -2267,8 +2267,8 @@ def export_all_xls(request):
         lease=Lease.objects.all()
         lease_list=[]
         for g in lease:
-            lease_list.append(g.lease)
-        records_list = GodownLeaseColors.objects.filter(state__in=lease_list).values_list('color','quantity','unit','rate','state')
+            lease_list.append(g)
+        records_list = GodownLeaseColors.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
@@ -2575,7 +2575,7 @@ def export_report_xls(request):
                     
                     
                     try:
-                        records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c.color,unit=u.unit)
+                        records=get_list_or_404(DailyConsumption,con_date__in=selected_dates,color=c,unit=u)
                         
                         
                         quantity = 0
@@ -4198,8 +4198,11 @@ def saveCity(request):
     return redirect('/addcity')
 
 def deleteCity(request,id):
-    CityMaster.objects.filter(id=id).delete()
-    messages.success(request,"City deleted")
+    try:
+        CityMaster.objects.filter(id=id).delete()
+        messages.success(request,"City deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addcity')
 
 def renderEditCity(request,id):
@@ -4312,8 +4315,11 @@ def saveBank(request):
 
 
 def deleteBank(request,id):
-    CompanyAccounts.objects.filter(id=id).delete()
-    messages.success(request,"Bank deleted")
+    try:
+        CompanyAccounts.objects.filter(id=id).delete()
+        messages.success(request,"Bank deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/addbank')
 
 def renderEditBank(request,id):

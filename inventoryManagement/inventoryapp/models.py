@@ -108,8 +108,8 @@ class ColorRecord(models.Model):
 
 class DailyConsumption(models.Model):
     con_date = models.DateField(null=True,default=None)
-    color = models.CharField(max_length=50,default="-")
-    unit = models.CharField(null=True,max_length=50)
+    color = models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
+    unit = models.ForeignKey(Units,blank=True,null=True,on_delete=models.PROTECT)
     quantity = models.FloatField(max_length=15)
     quantity_remaining = models.FloatField(max_length=15)
 
@@ -146,6 +146,9 @@ class ClosingStock(models.Model):
 
 
 ################################Employeee###############
+class CityMaster(models.Model):
+   city = models.CharField(null=True,max_length=50)
+   
 class Employee(models.Model):
     name = models.CharField(max_length=50)
     father_name = models.CharField(max_length=50)
@@ -157,7 +160,7 @@ class Employee(models.Model):
     contractor_name = models.CharField(max_length=50)
     phone_no = models.CharField(max_length=10)
     address = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
+    city = models.ForeignKey(CityMaster,blank=True,null=True,on_delete=models.PROTECT)
     
 
 class CompanyAccounts(models.Model):
@@ -175,5 +178,3 @@ class MonthlyPayment(models.Model):
     amount = models.FloatField()
     last_payment_date = models.DateField(null=True,default=None)
 
-class CityMaster(models.Model):
-   city = models.CharField(null=True,max_length=50)
