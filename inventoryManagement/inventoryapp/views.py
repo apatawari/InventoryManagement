@@ -1189,7 +1189,7 @@ def readyToPrint(request,id):
             chalan_no = int(request.POST.get('chalan')),
             checker=prevRec.checker,
             transport=prevRec.transport,
-            
+            checking_date=prevRec.checking_date,
             )
         if than_recieved == 0 :
             messages.error(request,"Than Recieved cannot be Zero (0)")
