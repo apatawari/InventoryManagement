@@ -3883,17 +3883,22 @@ def saveDailyConsumption(request,id):
     #colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object,).order_by('color')
     merge_color=get_object_or_404(ChemicalsGodownLooseMergeStock,color=rec.color,unit=rec.unit,loose_godown_state=rec.loose_godown)
     merge_color.quantity=round((merge_color.quantity + new_q),2)
+    merge_color.save()
 
     try:
-        all_closing=ChemicalsClosingStock.objects.filter(color=rec.color,unit=rec.unit,dailydate__in=selected_dates)
+        all_closingstocks=ChemicalsClosingStock.objects.filter(color=rec.color,unit=rec.unit,dailydate__in=selected_dates)
+        
         for a in all_closingstocks:
-            print(a.color)
-            print(a.dailydate)
-            # a.quantity=round((a.quantity-float(request.POST.get(str(c.id)))),2)
-            # a.save()
+            a.quantity=round((a.quantity+new_q),2)
+            a.save()
+            
+        
     except:
         pass
-    print("a")
+    rec.quantity_remaining=round((rec.quantity_remaining+rec.quantity-new_q),2)
+    rec.quantity=new_q
+
+    rec.save()
     return render(request,'./color/editdailyconsumption.html',{'record':rec})
 
 
