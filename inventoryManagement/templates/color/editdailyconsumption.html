@@ -1,0 +1,58 @@
+{% extends './colornav.html' %}
+
+{% block title%} Place Order {% endblock %}
+{% block content%}
+      <!-- Diplay Record Start -->
+        <div class="page-title">
+            <h3 class="title-text">Edit Daily Consumption</h3>
+        </div>
+
+      <form class = "md-form view-file" method="POST" action="{% url 'savedailyconsumption' record.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="Order No">Chemicals</label>
+                <input type="text" class="form-control" id="order_no" placeholder="color" value="{{ record.color.color}}"  name="chemicals" readonly>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Order Date">Unit</label>
+                <input type="text" class="form-control" id="Order Date" name="unit" value="{{ record.unit.unit }}" readonly/>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="new-quality">Loose Godown</label>
+                <input type="text" class="form-control" id="Order Date" name="loose" value="{{ record.loose_godown.lease }}" readonly/>              
+ 
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="Quantity">Quantity</label>
+                <input type="number" step="0.01"  class="form-control" id="quantity" placeholder="Quantity" value="{{ record.quantity}}" name="quantity" readonly >
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Unit">Date</label>
+                
+                <input type="date" class="form-control" id="Order Date" name="order_date" value="{{ d }}" readonly />
+            
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Rate">Actual Quantity</label>
+                <input type="number" step="0.01"  class="form-control" id="rate" placeholder="0.0"  name="new-quantity" required >
+            </div>
+            
+            
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group col-md-6 next-previous">
+                <a class ="anchor-button" href="#">Back</a>        
+            </div>
+            <div class="form-group col-md-6">
+                <button type="submit" class="btn btn-primary button float-right">Save Changes</button>
+            </div>          
+        </div>
+      </form>
+      <!-- Display Record End -->
+{% endblock %}
