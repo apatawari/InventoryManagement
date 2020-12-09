@@ -3964,13 +3964,13 @@ def consume(request,name):
                 new_cs = ChemicalsClosingStock(
                     color=c.color,
                     unit=c.unit,
-                    quantity=closing_stock.quantity - float(request.POST.get(str(c.id))),
+                    quantity=round((closing_stock.quantity - float(request.POST.get(str(c.id)))),2),
                     dailydate=str(consumingdate),
                     rate=c.rate
                 )
                 new_cs.save()
             else:
-                closing_stock.quantity=closing_stock.quantity - float(request.POST.get(str(c.id)))
+                closing_stock.quantity=round((closing_stock.quantity - float(request.POST.get(str(c.id)))),2)
                 closing_stock.save()
                 print("done")
             new_dates=selected_dates[1:]
@@ -3982,7 +3982,7 @@ def consume(request,name):
             for a in all_closingstocks:
                 print(a.color)
                 print(a.dailydate)
-                a.quantity=a.quantity-float(request.POST.get(str(c.id)))
+                a.quantity=round((a.quantity-float(request.POST.get(str(c.id)))),2)
                 a.save()
         except:
             #print("ec")
@@ -3990,18 +3990,18 @@ def consume(request,name):
             
             
             
-        c.quantity=c.quantity - float(request.POST.get(str(c.id)))
+        c.quantity=round((c.quantity - float(request.POST.get(str(c.id)))),2)
         c.save()
         stored_color = ChemicalsGodownLooseMergeStock.objects.filter(color=c.color,unit=c.unit)
         q=0
         for sc in stored_color:
-            q=q+sc.quantity
+            q=round((q+sc.quantity),2)
 
         daily_consump = ChemicalsDailyConsumption(
             con_date = str(consumingdate),
             color = c.color,
             unit = c.unit,
-            quantity = float(request.POST.get(str(c.id))),
+            quantity = round(float(request.POST.get(str(c.id))),2),
             quantity_remaining = q,
             loose_godown= loose_godown_object
         )

@@ -11,6 +11,7 @@
     </div>
 
     <!-- Filter Start -->
+    <!--
     <form method="GET">
         <div class="form-row filter-form">
           <div class="form-group col-sm-4">
@@ -22,6 +23,7 @@
           </div>
         </div>
     </form>
+  -->
     <!-- Filter End -->
     
     <!-- Download Button Start-->
@@ -67,7 +69,7 @@
           <td>{{record.contractor_name}}</td>
           <td>{{record.phone_no}}</td>
           <td>{{record.address}}</td>
-          <td>{{record.city}}</td>
+          <td>{{record.city.city}}</td>
 
         </tr>
       {% endfor %}

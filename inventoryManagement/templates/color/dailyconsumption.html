@@ -14,11 +14,13 @@
           {% csrf_token %}
           <label class="ml-3" for="lease">Choose Loose Godown</label>
             <div class="form-row mb-7 ml-3">
-              <select class="form-control loose-list" name="lease" required>    
+              <select class="form-control loose-list" name="lease" onchange="this.form.submit()" required>    
                 {% for s in lease %}
-                    
-                    <option value="{{ s.id }}" >{{ s.lease }}</option>
-                                           
+                    {% if s.lease == name %}
+                      <option value="{{ s.id }}" selected>{{ s.lease }}</option>
+                    {% else %}    
+                      <option value="{{ s.id }}" >{{ s.lease }}</option>
+                    {% endif %}                   
                 {% endfor %}
               </select> 
               <button class="download-button ml-4" style="width: 10%;">Go</button>
@@ -77,7 +79,7 @@
           </div>
 
           <br>
-          <button class="btn-add float-right mr-2" type="submit" style="width: 15%;">CONSUME</button>
+          <button class="btn-add float-right mr-2" type="submit" style="width: 15%;" onclick="this.disabled=true,this.form.submit();">CONSUME</button>
         </div>
       </form>
       <!-- Add Party End -->

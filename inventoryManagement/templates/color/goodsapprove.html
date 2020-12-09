@@ -81,7 +81,7 @@
                 <a class ="anchor-button" href="{% url 'backtoorders' record.state %}">Back</a>        
             </div>
             <div class="form-group col-md-9">
-                <button type="submit" class="btn btn-primary button float-right">Approve Color</button>
+                <button type="submit" class="btn btn-primary button float-right" onclick="this.disabled=true,this.form.submit();">Approve Color</button>
             </div>
         </div>
       </form>
