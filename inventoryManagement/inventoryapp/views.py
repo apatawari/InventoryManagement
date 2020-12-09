@@ -3859,6 +3859,7 @@ def saveDailyConsumption(request,id):
     rec=get_object_or_404(ChemicalsDailyConsumption,id=id)
     new_q=float(request.POST.get('new-quantity'))
     
+    
     if(new_q>rec.quantity):
         messages.error(request,"Quantity cannot exceed original quantity")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -3877,58 +3878,24 @@ def saveDailyConsumption(request,id):
             break
         selected_dates.append((datetime.datetime.strptime(str(next_day), '%Y-%m-%d')))#.strftime('%b %d,%Y'))
         next_day += datetime.timedelta(days=1)
+    
+    #loose_godown_object=get_object_or_404(ChemicalsLooseGodownMaster,lease=rec.loose_godown.lease)
+    #colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object,).order_by('color')
+    merge_color=get_object_or_404(ChemicalsGodownLooseMergeStock,color=rec.color,unit=rec.unit,loose_godown_state=rec.loose_godown)
+    merge_color.quantity=round((merge_color.quantity + new_q),2)
 
-
-    print(selected_dates)
+    try:
+        all_closing=ChemicalsClosingStock.objects.filter(color=rec.color,unit=rec.unit,dailydate__in=selected_dates)
+        for a in all_closingstocks:
+            print(a.color)
+            print(a.dailydate)
+            # a.quantity=round((a.quantity-float(request.POST.get(str(c.id)))),2)
+            # a.save()
+    except:
+        pass
+    print("a")
     return render(request,'./color/editdailyconsumption.html',{'record':rec})
-# def consume(request,name):
-#     colors = ChemicalsGodownLooseMergeStock.objects.filter(state=name).exclude(quantity=0).order_by('color')
-#     flag = 0
-#     for c in colors:
-#         if(int(request.POST.get(str(c.id)))>c.quantity):
-#             flag = flag + 1
-#             continue
-#         try:
 
-#             closing_stock = ClosingStock.objects.filter(color=c.color,unit=c.unit).order_by('-dailydate').first()
-#             if(closing_stock.dailydate != datetime.date.today()):
-#                 new_cs = ClosingStock(
-#                     color=c.color,
-#                     unit=c.unit,
-#                     quantity=closing_stock.quantity - int(request.POST.get(str(c.id))),
-#                     dailydate=datetime.date.today(),
-#                     rate=c.rate
-#                 )
-#                 new_cs.save()
-
-#             else:
-#                 closing_stock.quantity=closing_stock.quantity - int(request.POST.get(str(c.id)))
-#                 closing_stock.save()
-
-#         except:
-#             pass
-
-
-
-#         c.quantity=c.quantity - int(request.POST.get(str(c.id)))
-#         c.save()
-#         stored_color = ChemicalsGodownLooseMergeStock.objects.filter(color=c.color,unit=c.unit)
-#         q=0
-#         for sc in stored_color:
-#             q=q+sc.quantity
-
-#         daily_consump = DailyConsumption(
-#             con_date = datetime.date.today(),
-#             color = c.color,
-#             unit = c.unit,
-#             quantity = int(request.POST.get(str(c.id))),
-#             quantity_remaining = q
-#         )
-#         daily_consump.save()
-
-#     if (flag != 0):
-#         messages.error(request,"%s Quantity entered exceeded the quantities available in Loose" %(flag))
-#     return redirect('/dailyconsumption1')
 
 def consume(request,name):
     loose_godown_object=get_object_or_404(ChemicalsLooseGodownMaster,lease=name)
