@@ -186,6 +186,7 @@ class ChemicalsDailyConsumption(models.Model):
     unit = models.ForeignKey(ChemicalsUnitsMaster,blank=True,null=True,on_delete=models.PROTECT)
     quantity = models.FloatField(max_length=15)
     quantity_remaining = models.FloatField(max_length=15)
+    loose_godown=models.ForeignKey(ChemicalsLooseGodownMaster,blank=True,null=True,on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'Chemicals_Daily_consumption_details'

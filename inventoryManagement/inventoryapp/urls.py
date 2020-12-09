@@ -158,6 +158,10 @@ urlpatterns = [
 
     path('dailyconsumption1',views.renderDailyConsumptionLease1,name='dailyconsumption'),
     path('dailyconsumption2',views.renderDailyConsumptionLease2,name='dailyconsumption2'),
+    path('dailyconsumptiondetails',views.dailyconsumptionDetails,name='dailyconsumptiondetails'),
+    path('dailyconsumptiondetails2',views.dailyconsumptionDetails2,name='dailyconsumptiondetails2'),
+    path('editdailyconsumption/<int:id>',views.editDailyConsumption,name='editdailyconsumption'),
+    path('savedailyconsumption/<int:id>',views.saveDailyConsumption,name='savedailyconsumption'),
     path('consume/<str:name>',views.consume,name='consume'),
     path('closingstock',views.renderClosingStock,name='closingstock'),
 

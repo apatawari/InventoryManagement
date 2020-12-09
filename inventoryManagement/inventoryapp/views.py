@@ -3330,7 +3330,7 @@ def orderGeneration(request):
         ColorRecord.objects.filter(id=i).delete()
 
 
-    rec=ChemicalsAllOrders.objects.all().order_by('order_no')
+    rec=ChemicalsAllOrders.objects.all().order_by('-state','order_no')
     records_filter = ColorOrderFilter(request.GET,queryset=rec)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -3732,14 +3732,15 @@ def leaseApprove(request,id):
     if(prevRec.quantity == quantity_recieved):
         
         try:
-            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
-            godown_color.quantity = godown_color.quantity + quantity_recieved
-            godown_color.rate = (godown_color.rate + prevRec.rate)/2
+            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
+            godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
+            r = round(((godown_color.rate + prevRec.rate)/2),2)
+            godown_color.rate=r
             godown_color.save()
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
                 color = prevRec.color,
-                quantity = quantity_recieved,
+                quantity = round(quantity_recieved,2),
                 unit = prevRec.unit,
                 rate = prevRec.rate,
                 state = None,
@@ -3754,16 +3755,16 @@ def leaseApprove(request,id):
         messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
-        quantity_remaining = prevRec.quantity - quantity_recieved
+        quantity_remaining = round(prevRec.quantity - quantity_recieved,2)
         try:
-            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=loose_godown)
-            godown_color.quantity = godown_color.quantity + quantity_recieved
-            godown_color.rate = (godown_color.rate + prevRec.rate)/2
+            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
+            godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
+            godown_color.rate = round(((godown_color.rate + prevRec.rate)/2))
             
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
                 color = prevRec.color,
-                quantity = quantity_recieved,
+                quantity = round(quantity_recieved,2),
                 unit = prevRec.unit,
                 rate = prevRec.rate,
                 state = None,
@@ -3839,6 +3840,47 @@ def renderDailyConsumptionLease2(request):
     todaydate=str(datetime.date.today())
     return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':loose_godown_object.lease})
 
+def dailyconsumptionDetails(request):
+    todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
+    return render(request,'./color/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today()),'date':str(datetime.date.today())})
+
+def dailyconsumptionDetails2(request):
+    date_c=request.POST.get('consumingdate')
+    # date_c=datetime.datetime.strptime(date_c,"%Y-%m-%d").date()
+    todays = ChemicalsDailyConsumption.objects.filter(con_date=date_c)
+    return render(request,'./color/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today),'date':date_c})
+
+def editDailyConsumption(request,id):
+    rec=get_object_or_404(ChemicalsDailyConsumption,id=id)
+    d=str(rec.con_date)
+    return render(request,'./color/editdailyconsumption.html',{'record':rec,'d':d})
+
+def saveDailyConsumption(request,id):
+    rec=get_object_or_404(ChemicalsDailyConsumption,id=id)
+    new_q=float(request.POST.get('new-quantity'))
+    
+    if(new_q>rec.quantity):
+        messages.error(request,"Quantity cannot exceed original quantity")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    elif(new_q==rec.quantity):
+        messages.error(request,"Quantity is same as original quantity")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    begin=datetime.datetime.strptime(str(rec.con_date),"%Y-%m-%d").date()
+    end=datetime.date.today()
+    selected_dates=[]
+        
+    # selected_qualities=[]
+    next_day = begin
+    while True:
+        if next_day > end:
+            break
+        selected_dates.append((datetime.datetime.strptime(str(next_day), '%Y-%m-%d')))#.strftime('%b %d,%Y'))
+        next_day += datetime.timedelta(days=1)
+
+
+    print(selected_dates)
+    return render(request,'./color/editdailyconsumption.html',{'record':rec})
 # def consume(request,name):
 #     colors = ChemicalsGodownLooseMergeStock.objects.filter(state=name).exclude(quantity=0).order_by('color')
 #     flag = 0
@@ -3960,7 +4002,8 @@ def consume(request,name):
             color = c.color,
             unit = c.unit,
             quantity = float(request.POST.get(str(c.id))),
-            quantity_remaining = q
+            quantity_remaining = q,
+            loose_godown= loose_godown_object
         )
         daily_consump.save()
    
