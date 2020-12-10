@@ -1961,24 +1961,24 @@ def export_page_xls(request):
     if(stateur=="intransit"):
         file_name="Intransit"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
-        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
     
     elif(stateur=="godown"):
         file_name="Godown"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     elif(stateur=="checking"):
         file_name="Checked"
-        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ]
-        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state')
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State','Checker Name','Transport Agency' ]
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name','transport__transport')
     elif(stateur=="inprocess"):
         file_name="InProcess"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name__processing_party')
     elif (stateur=="readytoprint"):
         file_name="ProcessedGrey"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
-        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
 ######color
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
@@ -1987,7 +1987,7 @@ def export_page_xls(request):
         godowns_list=[]
         for g in godowns:
             godowns_list.append(g)
-        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color__color','quantity','unit__unit','rate','state__godown')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
@@ -1996,11 +1996,11 @@ def export_page_xls(request):
         lease_list=[]
         for g in lease:
             lease_list.append(g)
-        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color__color','quantity','unit__unit','rate','loose_godown_state__lease')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
-        records_list=ChemicalsAllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+        records_list=ChemicalsAllOrders.objects.all().values_list('supplier__supplier', 'order_no', 'order_date', 'color__color', 'quantity', 'rem_quantity', 'unit__unit', 'rate', 'amount', 'validation', 'state')
 
 
 
@@ -2237,24 +2237,24 @@ def export_all_xls(request):
     if(stateur=="intransit"):
         file_name="Intransit-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
-        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
     
     elif(stateur=="godown"):
         file_name="Godown-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     elif(stateur=="checking"):
         file_name="Checked-all"
-        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ]
-        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state')
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ,'Checker name','Transport Agency']
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name','transport__transport')
     elif(stateur=="inprocess"):
         file_name="InProcess-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name__processing_party')
     elif(stateur=="readytoprint"):
         file_name="ProcessedGrey-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
-        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
 ######color
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
@@ -2263,7 +2263,7 @@ def export_all_xls(request):
         godowns_list=[]
         for g in godowns:
             godowns_list.append(g)
-        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color__color','quantity','unit__unit','rate','state__godown')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
@@ -2272,11 +2272,11 @@ def export_all_xls(request):
         lease_list=[]
         for g in lease:
             lease_list.append(g)
-        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color__color','quantity','unit__unit','rate','loose_godown_state__lease')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
-        records_list=ChemicalsAllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+        records_list=ChemicalsAllOrders.objects.all().values_list('supplier__supplier', 'order_no', 'order_date', 'color__color', 'quantity', 'rem_quantity', 'unit__unit', 'rate', 'amount', 'validation', 'state')
 
     
     
@@ -2324,7 +2324,7 @@ def export_report_xls(request):
     stateur=stateur[-1]
     if(stateur=="transportreport"):
         file_name="Transport-Report"
-        columns = ['Quality', 'Checking Date', 'Thans Checked','mtrs','Rate(Rs)', 'Total(Rs)','Lot no']
+        columns = ['Lot no','Quality', 'Checking Date', 'Thans Checked','mtrs','Rate(Rs)', 'Total(Rs)']
 
         t_id=int(request.POST.get('transport'))
         transport=get_object_or_404(GreyTransportMaster,id=t_id)
@@ -2354,6 +2354,7 @@ def export_report_xls(request):
                 totalthans=totalthans+r.than
 
                 l=[]
+                l.append(r.lot_no)
                 l.append(r.quality.qualities)
                 l.append(str(r.checking_date))
                 l.append(r.than)
@@ -2369,12 +2370,12 @@ def export_report_xls(request):
                 except:
                     l.append("rate not defined")
                     l.append("rate not defined")
-                l.append(r.lot_no)
+                
                 datalist.append(l)
         
     if(stateur=="checkerreport"):
         file_name="Checker-Report"
-        columns = ['Quality', 'Checking Date', 'Thans Checked', 'Average cut', 'Rate(Rs)', 'Total(Rs)']
+        columns = ['lot No','Quality', 'Checking Date', 'Thans Checked', 'Average cut', 'Rate(Rs)', 'Total(Rs)']
         #records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
         c_id=int(request.POST.get('checker'))
 
@@ -2409,6 +2410,7 @@ def export_report_xls(request):
                 totalthans=totalthans+r.than
 
                 l=[]
+                l.append(r.lot_no)
                 l.append(r.quality.qualities)
                 print(r.checking_date)
                 l.append(str(r.checking_date))
@@ -2554,7 +2556,7 @@ def export_report_xls(request):
                 try:
                     l=[]
                     try:
-                        first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                        first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
                         l.append(c.color)
                         l.append(u.unit)
                         l.append(first_record.quantity)
@@ -2564,7 +2566,7 @@ def export_report_xls(request):
                     
                     new_stock=0
                     try:
-                        neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c.color,unit=u.unit)
+                        neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
                         for i in neworders:
                             new_stock=new_stock+i.quantity
                     except:
@@ -2573,9 +2575,9 @@ def export_report_xls(request):
                     l.append(new_stock)
                     l.append(new_stock+l[-1])
                     try:
-                        last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c.color,unit = u.unit)
+                        last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
                     except:
-                        last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c.color,unit = u.unit).order_by('-dailydate').first()
+                        last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
                     
                     
                     try:
@@ -3517,13 +3519,13 @@ def goodsApprove(request,id):
         try:
 
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
-            godown_color.quantity = godown_color.quantity + quantity_recieved
+            godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
             godown_color.rate = (godown_color.rate + prevRec.rate)/2
             godown_color.save()
             try:
                 #closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
                 closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()    ####loophole
-                closing_stock.quantity=closing_stock.quantity + quantity_recieved
+                closing_stock.quantity=round(closing_stock.quantity + quantity_recieved,2)
                 closing_stock.save()
                 print("same")
             except:
@@ -3531,7 +3533,7 @@ def goodsApprove(request,id):
  
                 closing_stock= ChemicalsClosingStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
-                    quantity = closing_stock_prev.quantity + quantity_recieved,
+                    quantity = round(closing_stock_prev.quantity + quantity_recieved,2),
                     unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     dailydate = datetime.date.today()
@@ -3540,7 +3542,7 @@ def goodsApprove(request,id):
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
                 color = get_object_or_404(Color,id=int(prevRec.color.id)),
-                quantity = quantity_recieved,
+                quantity = round(quantity_recieved,2),
                 unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                 rate = prevRec.rate,
                 state = godown
@@ -3548,7 +3550,7 @@ def goodsApprove(request,id):
             godown_color.save()
             closing_stock= ChemicalsClosingStock(
                 color = get_object_or_404(Color,id=int(prevRec.color.id)),
-                quantity = quantity_recieved,
+                quantity = round(quantity_recieved,2),
                 unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                 rate = prevRec.rate,
                 dailydate = datetime.date.today()
@@ -3560,7 +3562,7 @@ def goodsApprove(request,id):
         messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
-        quantity_remaining = prevRec.quantity - quantity_recieved
+        quantity_remaining = round(prevRec.quantity - quantity_recieved)
         
         amount_per_quant = prevRec.amount/prevRec.quantity
         amount_recieved = amount_per_quant * quantity_recieved
@@ -3612,22 +3614,22 @@ def goodsApprove(request,id):
         else:
 
             
-            prevRec.quantity = prevRec.quantity - quantity_recieved
+            prevRec.quantity = round(prevRec.quantity - quantity_recieved,2)
             prevRec.amount = round(amount_remain,2)
             prevRec.save()
             ogorder = get_object_or_404(ChemicalsAllOrders,order_no=prevRec.order_no,color=prevRec.color,unit=prevRec.unit)
             ogorder.state="In Transit"
-            ogorder.rem_quantity= ogorder.rem_quantity - quantity_recieved
+            ogorder.rem_quantity= round(ogorder.rem_quantity - quantity_recieved,2)
             ogorder.save()
             try:
                 godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
-                godown_color.quantity = godown_color.quantity + quantity_recieved
+                godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
                 godown_color.rate = (godown_color.rate + prevRec.rate)/2
                 godown_color.save()
                 print("godown")
                 try:
                     closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()
-                    closing_stock.quantity=closing_stock.quantity + quantity_recieved
+                    closing_stock.quantity=round(closing_stock.quantity + quantity_recieved,2)
                     closing_stock.save()
                     print("same rec",closing_stock.quantity)
                 except:
@@ -3635,7 +3637,7 @@ def goodsApprove(request,id):
  
                     closing_stock= ChemicalsClosingStock(
                         color = get_object_or_404(Color,id=int(prevRec.color.id)),
-                        quantity = closing_stock_prev.quantity + quantity_recieved,
+                        quantity = round(closing_stock_prev.quantity + quantity_recieved,2),
                         unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                         rate = prevRec.rate,
                         dailydate = datetime.date.today()
@@ -3646,7 +3648,7 @@ def goodsApprove(request,id):
             except:
                 godown_color = ChemicalsGodownLooseMergeStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
-                    quantity = quantity_recieved,
+                    quantity = round(quantity_recieved,2),
                     unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     state = godown
@@ -3654,7 +3656,7 @@ def goodsApprove(request,id):
                 godown_color.save()
                 closing_stock= ChemicalsClosingStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
-                    quantity = quantity_recieved,
+                    quantity = round(quantity_recieved,2),
                     unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
                     dailydate = datetime.date.today()
@@ -3725,7 +3727,7 @@ def viewGood(request,id):
 
 def leaseApprove(request,id):
     prevRec = get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
-    quantity_recieved = float(request.POST.get("quantitylease"))
+    quantity_recieved = round(float(request.POST.get("quantitylease")),2)
     l_id = request.POST.get('leasenumber')
     loose_godown = get_object_or_404(ChemicalsLooseGodownMaster,id=int(l_id))
 
@@ -3795,7 +3797,7 @@ def leaseedit(request,id):
 def savelease(request,id):
     g_id=request.POST.get('godownname')
     godown_object=get_object_or_404(ChemicalsGodownsMaster,id=int(g_id))
-    act_quantity=float(request.POST.get('act-quantity'))
+    act_quantity=round(float(request.POST.get('act-quantity')),2)
     
     stock=get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
     
@@ -3812,7 +3814,7 @@ def savelease(request,id):
             return redirect('/goodslease')
         stock.quantity=act_quantity
         stock.save()
-        stockgodown.quantity=stockgodown.quantity+diff
+        stockgodown.quantity=round(stockgodown.quantity+diff,2)
         stockgodown.save()
         messages.success(request,"Loose Godown quantity edited")
         return redirect('/goodslease')
@@ -3840,15 +3842,19 @@ def renderDailyConsumptionLease2(request):
     todaydate=str(datetime.date.today())
     return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':loose_godown_object.lease})
 
+def backToDailyConsumption(request):
+    return redirect('/dailyconsumptiondetails')
+
 def dailyconsumptionDetails(request):
-    todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
+    l=ChemicalsLooseGodownMaster.objects.all().first()
+    todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()),loose_godown=l).exclude(quantity=0)
     return render(request,'./color/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today()),'date':str(datetime.date.today())})
 
 def dailyconsumptionDetails2(request):
     date_c=request.POST.get('consumingdate')
     # date_c=datetime.datetime.strptime(date_c,"%Y-%m-%d").date()
-    todays = ChemicalsDailyConsumption.objects.filter(con_date=date_c)
-    return render(request,'./color/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today),'date':date_c})
+    todays = ChemicalsDailyConsumption.objects.filter(con_date=date_c).exclude(quantity=0)
+    return render(request,'./color/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today()),'date':date_c})
 
 def editDailyConsumption(request,id):
     rec=get_object_or_404(ChemicalsDailyConsumption,id=id)
@@ -3882,14 +3888,14 @@ def saveDailyConsumption(request,id):
     #loose_godown_object=get_object_or_404(ChemicalsLooseGodownMaster,lease=rec.loose_godown.lease)
     #colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object,).order_by('color')
     merge_color=get_object_or_404(ChemicalsGodownLooseMergeStock,color=rec.color,unit=rec.unit,loose_godown_state=rec.loose_godown)
-    merge_color.quantity=round((merge_color.quantity + new_q),2)
+    merge_color.quantity=round((merge_color.quantity + rec.quantity - new_q),2)
     merge_color.save()
 
     try:
         all_closingstocks=ChemicalsClosingStock.objects.filter(color=rec.color,unit=rec.unit,dailydate__in=selected_dates)
         
         for a in all_closingstocks:
-            a.quantity=round((a.quantity+new_q),2)
+            a.quantity=round((a.quantity + rec.quantity - new_q),2)
             a.save()
             
         
@@ -3899,7 +3905,7 @@ def saveDailyConsumption(request,id):
     rec.quantity=new_q
 
     rec.save()
-    return render(request,'./color/editdailyconsumption.html',{'record':rec})
+    return redirect('/dailyconsumptiondetails')
 
 
 def consume(request,name):

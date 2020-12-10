@@ -162,6 +162,7 @@ urlpatterns = [
     path('dailyconsumptiondetails2',views.dailyconsumptionDetails2,name='dailyconsumptiondetails2'),
     path('editdailyconsumption/<int:id>',views.editDailyConsumption,name='editdailyconsumption'),
     path('savedailyconsumption/<int:id>',views.saveDailyConsumption,name='savedailyconsumption'),
+    path('backdailyconsumption',views.backToDailyConsumption,name='backtodailydetails'),
     path('consume/<str:name>',views.consume,name='consume'),
     path('closingstock',views.renderClosingStock,name='closingstock'),
 
