@@ -92,7 +92,7 @@
             </div> -->
             <div class="form-group col-sm-4">
               <label for="new-quality">Quality</label>
-              <select class="form-control" name="quality">
+              <select class="form-control" name="quality" onchange="this.form.submit()">
                 <option value="">--</option>
                   {% for q in qualities %}
                       
@@ -101,18 +101,18 @@
                   {% endfor %}
               </select>
           </div>
-            <div class="form-group col-sm-2 filter-button">
+            <!-- <div class="form-group col-sm-2 filter-button">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
-            </div>
+            </div> -->
           </div>
       </form>
       <!-- Filter End -->
       
       <!-- Download Button Start-->
       <div class="download">
-        <a class="download-button" href="{% url 'excel_page' %}">Print This Page</a>
-        <a class="download-button" href="{% url 'excel_filter_all' %}">Print All Filtered Data</a>
-        <a class="download-button" href="{% url 'excel_all' %}">Print All Data</a>
+        <!-- <a class="download-button" href="{% url 'excel_page' %}">Print This Page</a> -->
+        <a class="download-button" href="{% url 'excel_filter_all' %}">Print</a>
+        <!-- <a class="download-button" href="{% url 'excel_all' %}">Print All Data</a> -->
       </div>
       <!-- Download Button End-->
 

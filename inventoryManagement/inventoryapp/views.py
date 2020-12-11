@@ -3742,7 +3742,7 @@ def leaseApprove(request,id):
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
             # r = round(((godown_color.rate + prevRec.rate)/2),2)
-            godown_color.rate=prevRec.rate
+            # godown_color.rate=prevRec.rate
             godown_color.save()
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
@@ -3766,7 +3766,7 @@ def leaseApprove(request,id):
         try:
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
-            godown_color.rate = prevRec.rate
+            # godown_color.rate = prevRec.rate
             
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
