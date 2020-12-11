@@ -2102,24 +2102,24 @@ def export_filter_all_xls(request):
     if(stateur=="intransit"):
         file_name="Intransit-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
-        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
     
     elif(stateur=="godown"):
         file_name="Godown-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     elif(stateur=="checking"):
         file_name="Checked-filt"
-        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ]
-        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state')
+        columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ,'Checker name','Transport' ]
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name', 'transport__transport')
     elif(stateur=="inprocess"):
         file_name="InProcess-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name__processing_party')
     elif (stateur=="readytoprint"):
         file_name="ProcessedGrey-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
-        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location', 'state')
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
     ######color
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
@@ -2128,7 +2128,7 @@ def export_filter_all_xls(request):
         godowns_list=[]
         for g in godowns:
             godowns_list.append(g)
-        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color__color','quantity','unit__unit','rate','state__godown')
     
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
@@ -2137,11 +2137,11 @@ def export_filter_all_xls(request):
         lease_list=[]
         for g in lease:
             lease_list.append(g)
-        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color','quantity','unit','rate','state')
+        records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color__color','quantity','unit__unit','rate','loose_godown_state__lease')
     else:
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
-        records_list=ChemicalsAllOrders.objects.all().values_list('supplier', 'order_no', 'order_date', 'color', 'quantity', 'rem_quantity', 'unit', 'rate', 'amount', 'validation', 'state')
+        records_list=ChemicalsAllOrders.objects.all().values_list('supplier__supplier', 'order_no', 'order_date', 'color__color', 'quantity', 'rem_quantity', 'unit__unit', 'rate', 'amount', 'validation', 'state')
 
 
 
@@ -2210,9 +2210,14 @@ def export_filter_all_xls(request):
     d=QueryDict('',mutable=True)
     d.update(dic1)
 
-    
+    print(d)
 
-    records_filter = RecordFilter(d,queryset=records_list)
+    if stateur== "ordergeneration":
+        records_filter = ColorOrderFilter(d,queryset=records_list)
+    elif stateur in ["goodsreceived","goodslease"]:
+        records_filter = GodownLeaseFilter(d,queryset=records_list)
+    else:
+        records_filter = RecordFilter(d,queryset=records_list)
     
     # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     for row in records_filter.qs:
@@ -3736,8 +3741,8 @@ def leaseApprove(request,id):
         try:
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
-            r = round(((godown_color.rate + prevRec.rate)/2),2)
-            godown_color.rate=r
+            # r = round(((godown_color.rate + prevRec.rate)/2),2)
+            godown_color.rate=prevRec.rate
             godown_color.save()
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
@@ -3761,7 +3766,7 @@ def leaseApprove(request,id):
         try:
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
-            godown_color.rate = round(((godown_color.rate + prevRec.rate)/2))
+            godown_color.rate = prevRec.rate
             
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
