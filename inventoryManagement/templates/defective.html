@@ -70,7 +70,7 @@
     {% load widget_tweaks %}
     {% load my_tags %}
       <!-- Filter Start -->
-      <form method="GET">
+      <!-- <form method="GET">
         <div class="form-row filter-form">
           <div class="form-group col-sm-4">
             {{ filter.form.party_name.label_tag }}
@@ -80,10 +80,10 @@
             {{ filter.form.lot_no.label_tag }}
             {% render_field filter.form.lot_no class="form-control" %}
           </div>
-          <!-- <div class="form-group col-sm-4">
+           <div class="form-group col-sm-4">
             {{ filter.form.quality.label_tag }}
             {% render_field filter.form.quality class="form-control" %}
-          </div> -->
+          </div> 
           <div class="form-group col-sm-4">
             <label for="new-quality">Quality</label>
             <select class="form-control" name="quality">
@@ -99,9 +99,9 @@
             <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
           </div>
         </div>
-    </form>
+    </form> -->
       <!-- Filter End -->
-
+      <br><br>
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">
@@ -137,7 +137,7 @@
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
             <td>{{record.lot_no}}</td>
-            <td>{{record.quality}}</td>
+            <td>{{record.quality.qualities}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.bale}}</td>

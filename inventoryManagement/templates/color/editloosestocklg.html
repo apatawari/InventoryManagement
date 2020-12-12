@@ -4,10 +4,10 @@
 {% block content%}
       <!-- Diplay Record Start -->
         <div class="page-title">
-            <h3 class="title-text">Edit Loose Godown Stock</h3>
+            <h3 class="title-text">Change Loose Godown</h3>
         </div>
 
-      <form class = "md-form view-file" method="POST" action="{% url 'savelease' record.id %}" enctype="multipart/form-data">
+      <form class = "md-form view-file" method="POST" action="{% url 'savechangeloosegodown' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         
         
@@ -32,22 +32,24 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label for="Unit">Actual Total Quantity</label>
-                <input type="number" step="0.01" class="form-control" id="quantity" placeholder="Quantity" name="act-quantity" value="{{ record.quantity}}" name="quantity" required autofocus>
+                <label for="Unit">Quantity To Move</label>
+                <input type="number" step="0.01" class="form-control" id="quantity" placeholder="Quantity" name="move-quantity" value="{{ record.quantity}}" name="quantity" required autofocus>
             
                  
             </div>
+            
             <div class="form-group col-md-4">
-                <label for="Quantity">Choose Godown To Move</label>
-                <select class="form-control" name="godownname" required>    
-                    {% for s in godowns %}
-                        
-                        <option value="{{ s.id }}" >{{ s.godown }}</option>
-                                               
+                <label for="Quantity">Loose Godown Name</label>
+                <select class="form-control" name="loosename" required>    
+                    {% for s in loose %}
+                        {%if s.lease == record.loose_godown_state.lease %}
+                        <option value="{{ s.id }}" selected>{{ s.lease }}</option>
+                        {% else %}
+                        <option value="{{ s.id }}" >{{ s.lease }}</option>
+                        {% endif %}                       
                     {% endfor %}
                 </select>   
             </div>
-            
             
         </div>
         

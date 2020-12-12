@@ -137,6 +137,7 @@
             <!--<th scope="col">State</th>-->
             <th scope="col">Loose Godown Name</th>
             <th scope="col"></th>
+            <th scope="col"></th>
             
             
             
@@ -153,8 +154,8 @@
             <td>{{record.rate}}</td>
             <!--<td>Loose</td>-->
             <td>{{record.loose_godown_state.lease}}</td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'changeloosegodown' record.id %}">Change Loose Godown</a></td>
             <td><a class ="anchor-button button-small-text" href="{% url 'leaseedit' record.id %}">Edit</a></td>
-
           </tr>
         {% endfor %}
           

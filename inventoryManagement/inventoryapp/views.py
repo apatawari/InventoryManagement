@@ -3279,7 +3279,7 @@ def saveOrder(request):
                                             state="Ordered",
                                             recieving_date=None,
                                             total_quantity = request.POST.get('quantity10'),
-                                            unit = get_object_or_404(Unit,id=int(request.POST.get('unit10')))
+                                            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit10')))
                                         )
                                         new_order.save()
 
@@ -3790,14 +3790,52 @@ def leaseApprove(request,id):
             
     return redirect('/goodsreceived')
 
+def changeLooseGodown(request,id):
+    leasestock = get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
+    #color = Color.objects.all().order_by('color')
+    #units=ChemicalsUnitsMaster.objects.all().order_by('unit')
+    #godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
+    loose_godown=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
+    return render(request,'./color/editloosestocklg.html',{'record':leasestock,'loose':loose_godown})   
 
+def savechangeLooseGodown(request,id):
+    if(float(request.POST.get('move-quantity'))==0):
+        messages.error(request,"Please enter valid quantity")
+        return redirect('/goodslease')
+    l_id=request.POST.get('loosename')
+    loose_object=get_object_or_404(ChemicalsLooseGodownMaster,id=int(l_id))
+    move_quantity=round(float(request.POST.get('move-quantity')),2)
+    
+    merge_stock=get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
+    if(loose_object==merge_stock.loose_godown_state):
+        messages.error(request,"Cannot update because loose godown you selected is same as previous")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    try:
+        merge_stock_other=get_object_or_404(ChemicalsGodownLooseMergeStock,loose_godown_state=loose_object,color=merge_stock.color,unit=merge_stock.unit)
+        merge_stock_other.quantity=round(merge_stock_other.quantity+move_quantity,2)
+        merge_stock_other.save()
+    except:
+        new_merge_stock_other=ChemicalsGodownLooseMergeStock(
+            color=merge_stock.color,
+            unit=merge_stock.unit,
+            quantity=move_quantity,
+            rate=merge_stock.rate,
+            state=None,
+            loose_godown_state=loose_object
+        )
+        new_merge_stock_other.save()
+    merge_stock.quantity=round(merge_stock.quantity - move_quantity)
+    merge_stock.save()
+    messages.success(request,"Loose godown name changed")
+    return redirect('/goodslease')
 
 def leaseedit(request,id):
     leasestock = get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
     color = Color.objects.all().order_by('color')
     units=ChemicalsUnitsMaster.objects.all().order_by('unit')
     godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
-    return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'godowns':godowns})   
+    loose_godown=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
+    return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'loose':loose_godown,'godowns':godowns})   
 
 def savelease(request,id):
     g_id=request.POST.get('godownname')
@@ -4027,7 +4065,7 @@ def renderClosingStock(request):
                 l.append(u.unit)
                 l.append(lq)
                 l.append(lg)
-                l.append(lq+lg)
+                l.append(round(lq+lg,2))
                 datalist.append(l)
             except:
                 try:
