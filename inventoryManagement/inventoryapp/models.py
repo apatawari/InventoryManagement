@@ -18,6 +18,7 @@ class Employee(models.Model):
     phone_no = models.CharField(max_length=10)
     address = models.CharField(max_length=50)
     city = models.ForeignKey(CityMaster,blank=True,null=True,on_delete=models.PROTECT)
+    employee_category = models.CharField(max_length=50)
     
     class Meta:
         db_table = 'Employee_master'

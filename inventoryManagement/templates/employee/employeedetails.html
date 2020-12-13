@@ -46,11 +46,12 @@
           <th scope="col">IFSC Code</th>
           <th scope="col">Account Type</th>
           <th scope="col">Aadhar No</th>
-          <th scope="col">Contractor Name</th>
           <th scope="col">Phone No</th>
           <th scope="col">Address</th>
           <th scope="col">City</th>
-          
+          <th scope="col">Employee Type</th>
+          <th scope="col">Contractor Name</th>
+          <th></th>
           
         </tr>
       </thead>
@@ -66,11 +67,12 @@
           <td>{{record.ifsc}}</td>
           <td class="td-text">{{record.account_type}}</td>
           <td>{{record.aadhar_no}}</td>
-          <td>{{record.contractor_name}}</td>
           <td>{{record.phone_no}}</td>
           <td>{{record.address}}</td>
           <td>{{record.city.city}}</td>
-
+          <td>{{record.employee_category}}</td>          
+          <td>{{record.contractor_name}}</td>
+          <td><a class ="anchor-button float-right space" href="{% url 'editemployee' record.id %}">Edit</a></td>
         </tr>
       {% endfor %}
       </tbody>

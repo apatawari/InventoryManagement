@@ -135,6 +135,7 @@
             <th scope="col">Tally</th>
             <th scope="col">Gate Pass No</th>
             <th scope="col">Chalan No</th>
+            <th></th>
             
             
           </tr>
@@ -159,7 +160,8 @@
             <td>{{record.tally}}</td>
             <td>{{record.gate_pass}}</td>
             <td>{{record.chalan_no}}</td>
-            
+            <td><a class ="anchor-button button-small-text" onclick="return confirm('Are you sure you want to delete this record ?')" href="{% url 'changestateback' record.id %}">Delete</a></td>
+
           </tr>
         {% endfor %}
         <tr>

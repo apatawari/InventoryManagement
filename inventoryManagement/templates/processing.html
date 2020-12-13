@@ -137,7 +137,7 @@
             <th class="td-text" scope="col">Processing Party</th>
             <th scope="col">Gate Pass</th>
             <th scope="col"></th>
-            
+            <th scope="col"></th>
             
           </tr>
         </thead>
@@ -161,6 +161,7 @@
             <td class="td-text">{{record.processing_party_name.processing_party}}</td>
             <td>{{record.gate_pass}}</td>
             <td><a class ="anchor-button button-small-text" href="{% url 'readyapprove' record.id %}">Recieve Processed Grey</a></td>
+            <td><a class ="anchor-button button-small-text" onclick="return confirm('Are you sure you want to delete this record ?')" href="{% url 'changestateback' record.id %}">Delete</a></td>
 
             
           </tr>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Report</title>
+    <title>Report Filter</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -41,9 +41,6 @@
               <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
           </li>
           </ul>
-          <!-- Approval Start -->
-            
-          <!-- Approval End-->
         </div>
       </nav>
       <!-- Nav Bar End-->
@@ -66,132 +63,101 @@
     </div>
     {% endfor %}
     <!-- Messages End -->
-    <div class="page-title">
-      <h3 class="title-text">Ledger for {{h1}}</h3>
-      <h3 class="title-text">{{h2}}</h3>
-    </div>
+    
     {% load widget_tweaks %}
     {% load my_tags %}
-      <br>
-      <!-- Filter End -->
-      <div class="download">
-        <form method="POST" action="{% url 'printledgerexcel' %}" enctype="multipart/form-data">
-          {% csrf_token %}
-          <input type="text" name="lot_no" value="{{lot_no}}" hidden>
-          <input type="text" name="processing_party" value="{{party}}" hidden>
-          <input type="date" name="start_date" value="{{begin}}" hidden/>
-          <input type="date" name="end_date" value="{{end}}" hidden/>
-          <button class="download-button">Print</button>
-        </form>
-        
-      </div>
-      <!-- Display Table Start-->
-      
 
+    <div class="page-title">
+      <h3 class="title-text">Quality - Processing House Report</h3>
+    </div>
+      <!-- Record Filter Start-->
+      <form class = "md-form view-report" method="POST" action="{% url 'qualityreport2' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--First Section -->
+        <div class="form-row form-group">
+          <div class="form-group col-md-4">
+            <label for="firstdate">Start Date</label>
+            <input type="date" class="form-control" id="firstdate" name="start_date" max="{{date}}" placeholder="mm-dd-yyyy"/>
+            <label for="firstdate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="end_date" max="{{date}}" placeholder="mm-dd-yyyy" />
 
-
-      <table border="5px" bordercolor="#8707B0" class="table table-bordered">
-          <tr class="thead-dark">
-            <th colspan="1">Lot No</th>
-            <th colspan="1">Total Than</th>
-            <th colspan="1">Than Pending</th>
-            <th colspan="1">Rate</th>
-            <th colspan="7">Record Details</th>
-          </tr>
-          <tr class="thead-dark">
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col">Sent date</th>
-              <th scope="col">Gate Pass</th>
-              <th scope="col" class="td-text">Quality</th>
-              <th scope="col">Than</th>
-              <th scope="col">Mtrs</th>
-              <th scope="col">Recieve date</th>
-              <th scope="col">Chalan no</th>
-          </tr>
-        {% for record in data %}
-        <tr>
-        <td>{{record.0}}</td>
-        <td>{{record.1}}</td>
-        <td>{{record.2}}</td>
-        <td>{{record.4}}</td>
-
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">    
-        {% for r in record.3 %}
-        <tr>
-          <td>{{r.0}}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </td>
-
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">    
-        {% for r in record.3 %}
-        <tr>
-          <td>{{r.1}}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </td>
-
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">    
-        {% for r in record.3 %}
-        <tr>
-          <td class="td-text">{{r.2}}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </td>
-
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">    
-        {% for r in record.3 %}
-        <tr>
-          <td>{{r.3}}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </td>
-
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">    
-        {% for r in record.3 %}
-        <tr>
-          <td>{{r.4}}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </td>
-
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">    
-        {% for r in record.3 %}
-        <tr>
-          <td>{{r.5}}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </td>
-
-        <td>
-        <table border="5px" bordercolor="#F35557" class="table table-bordered">    
-        {% for r in record.3 %}
-        <tr>
-          <td>{{r.6}}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </td>
-
-    </tr>
-    {% endfor %}
-    </table>
+            
+          </div>
+         
+        <div class="form-group col-md-4">
+          <label class="form-check-label pl-4" for="processing_party"><b>SELECT SENDING PARTY NAME</b></label>
+          <div class="form-group form-check ">
+            <hr class="small">
+            <input class="form-check-input-2" type="checkbox" onClick="togglesendingparty(this)" />
+            <label class="form-check-label-2">SELECT ALL</label>
+            <hr class="small">
+          </div>
+          <div class="form-group form-check scroll checkboxqualities" >
+              
+            {% for q in qualities %}
+            <input class="form-check-input-2" type="checkbox" value="{{q.id}}" name="{{q.qualities}}" id="qualities">
+            <label class="form-check-label-2">
+                {{q.qualities}}
+            </label>
+          {% endfor %}
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+            <label class="form-check-label pl-4" for="processing_party"><b>SELECT PROCESSING PARTY</b></label>
+            <div class="form-group form-check ">
+              <hr class="small">
+              <!-- <input class="form-check-input" type="checkbox" onClick="toggleprocessingparty(this)" />
+              <label class="form-check-label">SELECT ALL</label> -->
+              <!-- <hr class="small"> -->
+            </div>
+            
+            <div class="form-group form-check scroll">
+                
+                {% for p in parties %}
+                <input class="form-check-input" type="radio" value="{{p.id}}" name="checkbox" id="parties" required>
+                <label class="form-check-label">
+                    {{p.processing_party}}
+                </label>
+                {% endfor %}
+       
+            </div>
+        </div>
+            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+            <div class="form-group form-check col-md-4"><!--Empty Div--></div>
+            <div class="form-group form-check col-md-4">
+                <button type="submit" class="btn btn-primary button float-right mt-4" >Generate Report</button>
+            </div>
+        </div>
+        <!-- Record Filter End-->
 </body>
+
+<script>
+  
+  $(function(){
+    var requiredCheckboxes = $('.checkboxqualities :checkbox[required]');
+    requiredCheckboxes.change(function(){
+        if(requiredCheckboxes.is(':checked')) {
+            requiredCheckboxes.removeAttr('required');
+        } else {
+            requiredCheckboxes.attr('required', 'required');
+        }
+    });
+  });
+
+
+  function toggleprocessingparty(source) {
+    checkboxes = document.getElementsByClassName('form-check-input');
+    for(var i=0, n=checkboxes.length;i<n;i++) {
+      checkboxes[i].checked = source.checked;
+    }
+  }
+  function togglesendingparty(source) {
+    checkboxes = document.getElementsByClassName('form-check-input-2');
+    for(var i=0, n=checkboxes.length;i<n;i++) {
+      checkboxes[i].checked = source.checked;
+    }
+  }
+</script>
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

@@ -73,6 +73,8 @@ urlpatterns = [
     path('back/<str:state>',views.back,name="back"),
     path('backtoorders/<str:state>',views.backtoorders,name="backtoorders"),
 
+    path('changestateback/<int:id>',views.changeStateBack,name="changestateback"),
+
     path('deleteparty/<int:id>',views.deleteProcessingParty,name="deleteprocessingparty"),
     path('editparty/<int:id>',views.renderEditParty,name="rendereditparty"),
     path('editprocessingparty/<int:id>',views.editProcessingParty,name="editprocessingparty"),
@@ -89,6 +91,8 @@ urlpatterns = [
 
     path('qualityreportfilter',views.qualityReportFilter, name='qualityreportfilter'),
     path('qualityreport',views.qualityReport,name='qualityreport'),
+    path('qualitypartyreportfilter',views.qualityReport2filter, name='qualityreport2filter'),
+    path('qualitypartyreport',views.qualityReport2,name='qualityreport2'),
 
     path('checkerreportfilter',views.checkerReportFilter,name="checkerreportfilter"),
     path('checkerreport',views.checkerReport,name='checkerreport'),
@@ -101,6 +105,7 @@ urlpatterns = [
     path('export/excelfilter', views.export_filter_all_xls, name='excel_filter_all'),
 
     path('export/report',views.export_report_xls,name='export_report_xls'),
+    path('export/ledger',views.printLedgerExcel,name='printledgerexcel'),
 
     #####################   COLOR    #############################################################
     path('addcolorsupplier',views.renderAddColorSupplier,name='addcolorsupplier'),
@@ -175,15 +180,17 @@ urlpatterns = [
     path('employeehome', views.employeehome,name='employeehome'),
     path('saveemployee', views.saveEmployee,name='saveemployee'),
     path('employeedetails', views.employeedetails,name='employeedetails'),
+    path('editemployee/<int:id>', views.renderEditEmployee,name='editemployee'),
+    path('saveeditemployee/<int:id>', views.saveEditEmployee,name='saveeditemployee'),
     path('addbank', views.renderAddBankAc,name='addbank'),
     path('savebank', views.saveBank,name='savebank'),
-    path('deletebank', views.deleteBank,name='deletebank'),
+    path('deletebank/<int:id>', views.deleteBank,name='deletebank'),
     path('editbank/<int:id>', views.renderEditBank,name='editbank'),
     path('bankedit/<int:id>', views.editBank,name='bankedit'),
 
     path('addcity', views.renderAddCity,name='addcity'),
     path('savecity', views.saveCity,name='savecity'),
-    path('deletecity', views.deleteCity,name='deletecity'),
+    path('deletecity/<int:id>', views.deleteCity,name='deletecity'),
     path('editcity/<int:id>', views.renderEditCity,name='editcity'),
     path('cityedit/<int:id>', views.editCity,name='cityedit'),
 

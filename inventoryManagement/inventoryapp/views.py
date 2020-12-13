@@ -619,6 +619,22 @@ def approveCheck(request,id):
 
     return redirect('/godown')
 
+def changeStateBack(request,id):
+    rec=get_object_or_404(Record,id=id)
+    if rec.state=="Checked":
+        rec.state="Godown"
+        rec.save()
+        return redirect('/checking')
+    elif rec.state=="In Process":
+        rec.state="Checked"
+        rec.save()
+        return redirect('/inprocess')
+    else:
+        rec.state="In Process" 
+        rec.save()
+        return redirect('/readytoprint')
+    
+
 def editChecked(request,id):
     rec=get_object_or_404(Record, id=id)
     return render(request, 'editchecked.html', {'record':rec})
@@ -1246,27 +1262,30 @@ def generateReport(request):
                 break
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
+        
+        begin1=begin
+        end1=end
         begin=begin.strftime("%d/%m/%Y")                ######date string format change
         end=end.strftime("%d/%m/%Y")
 
         flag=0
         if(lot==None and selected_parties!=[]):
-            rec = Record.objects.filter(processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
             h1=str(selected_parties[0])
             h2=str(begin) + " - "+str(end)
             flag=1
         elif(lot!=None and selected_parties==[]):
-            rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,sent_to_processing_date__in=selected_dates).order_by('state')
             h1=str(lot)
             h2=str(begin) + " - "+str(end)
             flag=2
         elif(lot!=None and selected_parties!=[]):
-            rec= Record.objects.filter(lot_no=lot,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
             h1=str(selected_parties[0]) +" and lot no " +str(lot)
             h2=str(begin) + " - "+str(end)
             flag=3
         else:
-            rec= Record.objects.filter(sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            rec= Record.objects.filter(state__in=selected_states,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
             h1=""
             h2=str(begin) + " - "+str(end)
             flag=4
@@ -1285,16 +1304,16 @@ def generateReport(request):
             pendingthan=0
             rec_lists=[]
             if(flag==1):
-                rec2 = Record.objects.filter(lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==2):
-                rec2= Record.objects.filter(lot_no=l,sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==3):
-                rec2= Record.objects.filter(lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==4):
-                rec2= Record.objects.filter(lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
 
             for r in rec2:
                 totalthan=totalthan+r.than
@@ -1307,20 +1326,21 @@ def generateReport(request):
                 
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
             data_block.append(data_row)
-        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':h2})    
+        
+        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':h2,'lot_no':lot,'party':s,'begin':str(begin1),'end':str(end1)})    
     else:
         flag=0
         if(lot==None and selected_parties!=[]):
-            rec = Record.objects.filter(processing_party_name=selected_party_object).order_by('lot_no','state')
+            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object).order_by('lot_no','state')
             h1=str(selected_parties[0])
             flag=1
         elif(lot!=None and selected_parties==[]):
-            rec= Record.objects.filter(lot_no=lot,state__in=selected_states).order_by('state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot).order_by('state')
             h1=str(lot)
             flag=2
         elif(lot!=None and selected_parties!=[]):
             h1=str(selected_parties[0]) +" and lot no " +str(lot)
-            rec= Record.objects.filter(lot_no=lot,processing_party_name=selected_party_object).order_by('lot_no','state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object).order_by('lot_no','state')
             flag=3
         else:
             messages.error(request,'Please enter valid input')
@@ -1340,11 +1360,11 @@ def generateReport(request):
             totalthan=0
             pendingthan=0
             if(flag==1):
-                rec2 = Record.objects.filter(lot_no=l,processing_party_name=selected_party_object).order_by('state')
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('state')
             elif(flag==2):
-                rec2= Record.objects.filter(lot_no=l,state__in=selected_states).order_by('state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l).order_by('state')
             else:
-                rec2= Record.objects.filter(lot_no=l,processing_party_name=selected_party_object).order_by('lot_no','state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('lot_no','state')
 
             rec_lists=[]
             for r in rec2:
@@ -1358,7 +1378,240 @@ def generateReport(request):
                 
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
             data_block.append(data_row)
-        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':""})
+        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
+
+def printLedgerExcel(request):
+    selected_states=['In Process','Ready to print']
+    selected_parties=[]
+    lot=request.POST.get("lot_no")
+    if lot == "None":
+        lot=None
+    else:
+        lot=int(lot)
+    
+    s = request.POST.get("processing_party")
+    if s!="None":
+        selected_parties.append(s)
+        selected_party_object=get_object_or_404(ProcessingPartyNameMaster,processing_party=selected_parties[0])
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+
+    if(begin!="" or end!=""):
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+        
+        begin1=begin
+        end1=end
+        begin=begin.strftime("%d/%m/%Y")                ######date string format change
+        end=end.strftime("%d/%m/%Y")
+
+        flag=0
+        if(lot==None and selected_parties!=[]):
+            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            h1=str(selected_parties[0])
+            h2=str(begin) + " - "+str(end)
+            flag=1
+        elif(lot!=None and selected_parties==[]):
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,sent_to_processing_date__in=selected_dates).order_by('state')
+            h1=str(lot)
+            h2=str(begin) + " - "+str(end)
+            flag=2
+        elif(lot!=None and selected_parties!=[]):
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            h1=str(selected_parties[0]) +" and lot no " +str(lot)
+            h2=str(begin) + " - "+str(end)
+            flag=3
+        else:
+            rec= Record.objects.filter(state__in=selected_states,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            h1=""
+            h2=str(begin) + " - "+str(end)
+            flag=4
+        lot_list=[]
+        for r in rec:
+            if r.lot_no in lot_list:
+                pass
+            else:
+                lot_list.append(r.lot_no)
+        
+        
+        data_row=[]
+        data_block=[]
+        for l in lot_list:
+            totalthan=0
+            pendingthan=0
+            rec_lists=[]
+            if(flag==1):
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+
+            elif(flag==2):
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
+
+            elif(flag==3):
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+
+            elif(flag==4):
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
+
+            for r in rec2:
+                totalthan=totalthan+r.than
+                rate=r.rate
+                if r.state=="In Process":
+                    pendingthan=pendingthan+r.than
+                else:
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
+                    rec_lists.append(rec)
+            if len(rec_lists)!=0:
+                for a in rec_lists:
+                    a.insert(0,l)
+                    a.insert(1,totalthan)
+                    a.insert(2,pendingthan)
+                    a.insert(3,rate)
+                    data_block.append(a)
+            else:
+                data_row=[l,totalthan,pendingthan,rate]
+                data_block.append(data_row)
+
+        columns=['Lot No','Total Than','Than Pending','Rate','sent date','Gate pass','Quality','Than','mtrs','recieve date','Chalan No']
+
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=Ledger.xls'   #"Intransit-all.xls"
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Data') 
+
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+        
+        #prev url req string to dict to querydict
+        
+
+        
+        # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        for row in data_block:
+            row_num += 1
+            for col_num in range(len(row)):
+                
+                ws.write(row_num, col_num, str(row[col_num]), font_style)
+
+        wb.save(response)
+        
+        return response
+
+       
+    else:
+        flag=0
+        if(lot==None and selected_parties!=[]):
+            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object).order_by('lot_no','state')
+            h1=str(selected_parties[0])
+            flag=1
+        elif(lot!=None and selected_parties==[]):
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot).order_by('state')
+            h1=str(lot)
+            flag=2
+        elif(lot!=None and selected_parties!=[]):
+            h1=str(selected_parties[0]) +" and lot no " +str(lot)
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object).order_by('lot_no','state')
+            flag=3
+        else:
+            messages.error(request,'Please enter valid input')
+            return redirect('/reportfilter')  
+        lot_list=[]
+        for r in rec:
+            if r.lot_no in lot_list:
+                pass
+            else:
+                lot_list.append(r.lot_no)
+        print(lot_list)
+        
+        data_row=[]
+        data_block=[]
+        
+        for l in lot_list:
+            totalthan=0
+            pendingthan=0
+            if(flag==1):
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('state')
+            elif(flag==2):
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l).order_by('state')
+            else:
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('lot_no','state')
+
+            rec_lists=[]
+            for r in rec2:
+                totalthan=totalthan+r.than
+                rate=r.rate
+                if r.state=="In Process":
+                    pendingthan=pendingthan+r.than
+                else:
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
+                    rec_lists.append(rec)
+            
+            if len(rec_lists)!=0:
+                for a in rec_lists:
+                    a.insert(0,l)
+                    a.insert(1,totalthan)
+                    a.insert(2,pendingthan)
+                    a.insert(3,rate)
+                    data_block.append(a)
+            else:
+                data_row=[l,totalthan,pendingthan,rate]
+                data_block.append(data_row)
+
+        columns=['Lot No','Total Than','Than Pending','Rate','sent date','Gate pass','Quality','Than','mtrs','recieve date','Chalan No']
+
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=Ledger.xls'   #"Intransit-all.xls"
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Data') # this will make a sheet named Users Data
+
+        # Sheet header, first row
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+        
+        #prev url req string to dict to querydict
+        
+
+        
+        # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        for row in data_block:
+            row_num += 1
+            for col_num in range(len(row)):
+                
+                ws.write(row_num, col_num, str(row[col_num]), font_style)
+
+        wb.save(response)
+        
+        return response
+            # data_row=[l,totalthan,pendingthan,rec_lists,rate]
+            # data_block.append(data_row)
+        #return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
+
 
 # def generateReport1(request):
 #     selected_states=['In Process','Ready to print']
@@ -1949,6 +2202,96 @@ def qualityReport(request):
             # d=[d1,[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
     return render(request,'qualityreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities})
 
+
+def qualityReport2filter(request):
+    party=ProcessingPartyNameMaster.objects.all().order_by('processing_party')
+    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    return render(request,'qualityreport2filter.html',{'qualities':qualities,'parties':party})
+
+
+def qualityReport2(request):
+    begin = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+    if(begin!="" or end!=""):
+        
+        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+        selected_dates=[]
+        
+    # selected_qualities=[]
+        next_day = begin
+        while True:
+            if next_day > end:
+                break
+            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+            next_day += datetime.timedelta(days=1)
+        print(selected_dates)
+    party_id=int(request.POST.get('checkbox'))
+    party_ob=get_object_or_404(ProcessingPartyNameMaster,id=party_id)
+    final_qs=[]
+    total_all=[]
+    
+    prthan=0
+    prmtrs=0
+    rethan=0
+    remtrs=0
+    tothan=0
+    tomtrs=0
+    qualities= GreyQualityMaster.objects.all().order_by('qualities')
+    selected_qualities=[]
+    for q in qualities:
+        
+        if(request.POST.get(q.qualities)!=None):
+            selected_qualities.append(request.POST.get(q.qualities))
+            
+            if(begin!="" or end!=""):
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            else:
+                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            total_than_in_process=0
+            total_mtrs_in_process=0
+            for r in rec_process:
+                total_than_in_process=total_than_in_process+r.than
+                total_mtrs_in_process=total_mtrs_in_process+r.mtrs
+            prthan=prthan+total_than_in_process
+            prmtrs=prmtrs+total_mtrs_in_process
+
+            if(begin!="" or end!=""):
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            else:
+                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+
+            total_than_in_ready=0
+            total_mtrs_in_ready=0
+            for r in rec_ready:
+                total_than_in_ready=total_than_in_ready+r.than
+                total_mtrs_in_ready=total_mtrs_in_ready+r.mtrs
+            rethan=rethan+total_than_in_ready
+            remtrs=remtrs+total_mtrs_in_ready
+
+            tally_mtrs=total_mtrs_in_process+total_mtrs_in_ready
+            tally_than=total_than_in_process+total_than_in_ready
+            
+            tothan=tothan+tally_than
+            tomtrs=tomtrs+tally_mtrs
+
+            d1=[q.qualities,
+            total_than_in_process,round(total_mtrs_in_process,2),
+            total_than_in_ready,round(total_mtrs_in_ready,2),
+            tally_than,round(tally_mtrs,2)
+            ]
+            
+            final_qs.append(d1) 
+    total_all=[round(prthan,2),round(prmtrs,2),
+            round(rethan,2),round(remtrs,2),
+            round(tothan,2),round(tomtrs,2),
+    ]
+    if(begin!="" or end!=""):
+        return render(request,'qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
+    else:
+        return render(request,'qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
+
+
 #Download Excel Files
 
 
@@ -2260,6 +2603,7 @@ def export_all_xls(request):
         file_name="ProcessedGrey-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
         records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
+
 ######color
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
@@ -2269,7 +2613,9 @@ def export_all_xls(request):
         for g in godowns:
             godowns_list.append(g)
         records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color__color','quantity','unit__unit','rate','state__godown')
+
     
+
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
@@ -2368,7 +2714,7 @@ def export_report_xls(request):
                 # l.append(mt)
                 try:
                     # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
-                    l.append(r.transport_rate)
+                    l.append(r.transport.rate)
                 
                     l.append(round((mt*r.transport.rate),2))
                     totaltotal=totaltotal+round((mt*r.transport.rate),2)
@@ -2530,6 +2876,93 @@ def export_report_xls(request):
             round(tothan,2),round(tomtrs,2),
         ]
         datalist.append(total_all)
+
+    elif (stateur=="qualitypartyreport"):
+        file_name="Quality-Report"
+        columns = ['Quality','In process than','In process mtrs','processed than','processed mtrs','total than','total mtrs']
+
+        qual=(request.POST.get('qualities'))
+        qualities=ast.literal_eval(qual)
+
+        begin = request.POST.get("start_date")
+        end = request.POST.get("end_date")
+        if(begin!="" or end!=""):
+            
+            begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+            end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+            selected_dates=[]
+            
+        # selected_qualities=[]
+            next_day = begin
+            while True:
+                if next_day > end:
+                    break
+                selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+                next_day += datetime.timedelta(days=1)
+            
+        party_id=(request.POST.get('party'))
+        party_ob=get_object_or_404(ProcessingPartyNameMaster,processing_party=party_id)
+        final_qs=[]
+        total_all=[]
+        
+        prthan=0
+        prmtrs=0
+        rethan=0
+        remtrs=0
+        tothan=0
+        tomtrs=0
+        
+        selected_qualities=[]
+        for q in qualities:
+            
+            
+                
+            if(begin!="" or end!=""):
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            else:
+                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            total_than_in_process=0
+            total_mtrs_in_process=0
+            for r in rec_process:
+                total_than_in_process=total_than_in_process+r.than
+                total_mtrs_in_process=total_mtrs_in_process+r.mtrs
+            prthan=prthan+total_than_in_process
+            prmtrs=prmtrs+total_mtrs_in_process
+
+            if(begin!="" or end!=""):
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            else:
+                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+
+            total_than_in_ready=0
+            total_mtrs_in_ready=0
+            for r in rec_ready:
+                total_than_in_ready=total_than_in_ready+r.than
+                total_mtrs_in_ready=total_mtrs_in_ready+r.mtrs
+            rethan=rethan+total_than_in_ready
+            remtrs=remtrs+total_mtrs_in_ready
+
+            tally_mtrs=total_mtrs_in_process+total_mtrs_in_ready
+            tally_than=total_than_in_process+total_than_in_ready
+                
+            tothan=tothan+tally_than
+            tomtrs=tomtrs+tally_mtrs
+
+            d1=[get_object_or_404(GreyQualityMaster,id=int(q)).qualities,
+            total_than_in_process,round(total_mtrs_in_process,2),
+            total_than_in_ready,round(total_mtrs_in_ready,2),
+            tally_than,round(tally_mtrs,2)
+            ]
+                
+            final_qs.append(d1) 
+        total_all=["-",round(prthan,2),round(prmtrs,2),
+            round(rethan,2),round(remtrs,2),
+            round(tothan,2),round(tomtrs,2),
+        ]
+        final_qs.append(total_all)
+        datalist=final_qs
+        
+
     elif (stateur=="colorreport"):
         file_name="Color-Report"
         begin=request.POST.get('start_date')
@@ -4285,15 +4718,16 @@ def editCity(request,id):
     party.city = p
     party.save()
     messages.success(request,"City edited")
-    return redirect('/addtcity')
+    return redirect('/addcity')
 
 
 def employeehome(request):
+    emp=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
     cities = CityMaster.objects.all().order_by('city')
-    return render(request, './employee/employeehome.html',{'city':cities})
+    return render(request, './employee/employeehome.html',{'city':cities,'emp':emp})
 
 def saveEmployee(request):
-    if(len(request.POST.get('account_no'))>12 or len(request.POST.get('account_no'))<12 or len(request.POST.get('ifsc_code'))>11 or len(request.POST.get('ifsc_code'))<11 or len(request.POST.get('aadhar_no'))>12 or len(request.POST.get('aadhar_no'))<12 or len(request.POST.get('phone_no'))>10 or len(request.POST.get('phone_no'))<10):
+    if(len(request.POST.get('phone_no'))>10 or len(request.POST.get('phone_no'))<10):
         messages.error(request,"Enter valid details")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     c_id=int(request.POST.get('city'))
@@ -4311,6 +4745,7 @@ def saveEmployee(request):
             phone_no = (request.POST.get('phone_no')),
             address = request.POST.get('address'),
             city = city
+
         )
         messages.error(request,"This Employee Already Exists")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -4327,11 +4762,12 @@ def saveEmployee(request):
         contractor_name = request.POST.get('contractor_name'),
         phone_no = (request.POST.get('phone_no')),
         address = request.POST.get('address'),
-        city = city
+        city = city,
+        employee_category=request.POST.get('employeetype')
         )
     new_emp.save()
     messages.success(request,"Employee Added")
-    return render(request,'./employee/employeehome.html')
+    return redirect('/employeehome')
 
 def employeedetails(request):
     emps = Employee.objects.all().order_by('name')
@@ -4346,6 +4782,32 @@ def renderAddBankAc(request):
     checkers = paginator.get_page(page)
 
     return render(request,'./employee/addbank.html',{'records':checkers})
+
+def renderEditEmployee(request,id):
+    emp=get_object_or_404(Employee,id=id)
+    employees=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
+    cities = CityMaster.objects.all().order_by('city')
+    return render(request,'./employee/editemployee.html',{'emp':emp,'employees':employees,'city':cities})
+
+def saveEditEmployee(request,id):
+    c_id = int(request.POST.get('city'))
+    city = get_object_or_404(CityMaster,id=c_id)
+    emp=get_object_or_404(Employee,id=id)
+    emp.name= request.POST.get('name')
+    emp.father_name = request.POST.get('father_name')
+    emp.bank_name = request.POST.get('bank_name')
+    emp.account_no = (request.POST.get('account_no'))
+    emp.ifsc = request.POST.get('ifsc_code')
+    emp.account_type = request.POST.get('account_type')
+    emp.aadhar_no = (request.POST.get('aadhar_no'))
+    emp.contractor_name = request.POST.get('contractor_name')
+    emp.phone_no = (request.POST.get('phone_no'))
+    emp.address = request.POST.get('address')
+    emp.city = city
+    emp.employee_category=request.POST.get('employeetype')
+    emp.save()
+    messages.success(request,"Employee details are saved")
+    return redirect('/employeedetails')
 
 def saveBank(request):
     if(len(request.POST.get("account_no"))!=12 or len(request.POST.get("ifsc"))!=11):
