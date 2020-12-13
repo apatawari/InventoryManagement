@@ -110,19 +110,26 @@
 
             <li class="nav-item dropdown {%if request.path == intransit %}active {%elif request.path == godown %} active {%endif%}">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {%if request.path == ordergeneration %}
-                  Order Generation
-                {%elif request.path == goodsreceived %}
-                  Godown Stock
-                {%elif request.path == goodslease %}
-                  Loose Godown Stock
-                {% else %}
+                {%if request.path == employeehome %}
+                  Employee - Home
+                {%elif request.path == employeedetails %}
                   Employee Details
+                {%elif request.path == generatorform %}
+                  Pay Employee
+                {%elif request.path == banksheet %}
+                  Bank Sheet
+                {%elif request.path == salatysheet %}
+                  Salary Sheet               
+                {% else %}
+                  Employee
                 {% endif %}
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="nav-link dropdown-item" href="{% url 'employeehome' %}">Employee - Home</a>
-                <a class="nav-link dropdown-item" href="#">Employee Details</a>
+                <a class="nav-link dropdown-item" href="{% url 'employeedetails' %}">Employee Details</a>
+                <a class="nav-link dropdown-item" href="{% url 'generatorform' %}">Pay Employee</a>
+                <a class="nav-link dropdown-item" href="{% url 'banksheet' %}">Bank Sheet</a>
+                <a class="nav-link dropdown-item" href="{% url 'salarysheet' %}">Salary Sheet</a>
               </div>
             </li>
           </ul>
