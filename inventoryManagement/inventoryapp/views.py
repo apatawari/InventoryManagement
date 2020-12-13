@@ -2286,6 +2286,9 @@ def qualityReport2(request):
             round(rethan,2),round(remtrs,2),
             round(tothan,2),round(tomtrs,2),
     ]
+    if selected_qualities==[]:
+        messages.error(request,"Please select atleast one grey quality")
+        return redirect('/qualitypartyreportfilter')
     if(begin!="" or end!=""):
         return render(request,'qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
     else:
