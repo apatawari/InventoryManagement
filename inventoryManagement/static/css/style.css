@@ -570,3 +570,7 @@ hr {
 .color-report {
   width: 360px;
 }
+
+.hide-filter{
+  display:none;
+}

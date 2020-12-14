@@ -34,10 +34,9 @@
             <th scope="col">Sr. No</th>
             <th scope="col">Lot No</th>
             <th scope="col" class="td-text">Quality</th>
-            <th scope="col">Checking Date</th>
-            <th scope="col">Thans Checked</th>
+            <th scope="col">Bales Received</th>
             <th scope="col">Rate(Rs)</th>
-            <th scope="col">Total(Rs)</th>
+            <th scope="col">Total Amount(Rs)</th>
             
             
             
@@ -49,12 +48,12 @@
             
             
               <td scope="row">{{ forloop.counter }}</td>
-              <td>{{d.6}}</td>
-              <td class="td-text">{{d.0}}</td>
-              <td>{{d.1}}</td>
-              <td >{{d.2}}</td>
+              <td>{{d.0}}</td>
+              <td class="td-text">{{d.1}}</td>
+              <td>{{d.2}}</td>
+              <td >{{d.3}}</td>
               <td>{{d.4}}</td>
-              <td>{{d.5}}</td>
+              
               <!-- <td>{{d.6}}</td> -->
               
               
@@ -64,7 +63,7 @@
         <tr>
           <td scope="row"><strong>Total</strong></td>
           <td class="td-text">-</td>
-          <td>-</td>
+          
           <td>-</td>
           <td ><strong>{{total.0}}</strong></td>
           <td>-</td>

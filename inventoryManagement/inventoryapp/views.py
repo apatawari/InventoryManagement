@@ -1468,15 +1468,25 @@ def printLedgerExcel(request):
                     rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
                     rec_lists.append(rec)
             if len(rec_lists)!=0:
+                flag=0
                 for a in rec_lists:
-                    a.insert(0,l)
-                    a.insert(1,totalthan)
-                    a.insert(2,pendingthan)
-                    a.insert(3,rate)
-                    data_block.append(a)
+                    if flag==0:
+                        a.insert(0,l)
+                        a.insert(1,totalthan)
+                        a.insert(2,pendingthan)
+                        a.insert(3,rate)
+                        data_block.append(a)
+                        flag=1
+                    else:
+                        a.insert(0,"")
+                        a.insert(1,"")
+                        a.insert(2,"")
+                        a.insert(3,"")
+                        data_block.append(a)
             else:
                 data_row=[l,totalthan,pendingthan,rate]
                 data_block.append(data_row)
+            data_block.append(['','','','','','','','','','',''])
 
         columns=['Lot No','Total Than','Than Pending','Rate','sent date','Gate pass','Quality','Than','mtrs','recieve date','Chalan No']
 
@@ -1563,15 +1573,25 @@ def printLedgerExcel(request):
                     rec_lists.append(rec)
             
             if len(rec_lists)!=0:
+                flag=0
                 for a in rec_lists:
-                    a.insert(0,l)
-                    a.insert(1,totalthan)
-                    a.insert(2,pendingthan)
-                    a.insert(3,rate)
-                    data_block.append(a)
+                    if flag==0:
+                        a.insert(0,l)
+                        a.insert(1,totalthan)
+                        a.insert(2,pendingthan)
+                        a.insert(3,rate)
+                        data_block.append(a)
+                        flag=1
+                    else:
+                        a.insert(0,"")
+                        a.insert(1,"")
+                        a.insert(2,"")
+                        a.insert(3,"")
+                        data_block.append(a)
             else:
                 data_row=[l,totalthan,pendingthan,rate]
                 data_block.append(data_row)
+            data_block.append(['','','','','','','','','','',''])
 
         columns=['Lot No','Total Than','Than Pending','Rate','sent date','Gate pass','Quality','Than','mtrs','recieve date','Chalan No']
 
@@ -2065,34 +2085,54 @@ def transportReport(request):
 
         datalist=[]
  
-        total=[]
-        totalthans=0    
+        total=[]   
+        totalbales=0 
         totaltotal=0
+
         recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
+        lot_list=[]
         for r in recs:
-            totalthans=totalthans+r.than
+            if r.lot_no not in lot_list:
+                lot_list.append(r.lot_no)
 
-            l=[]
-            l.append(r.quality.qualities)
-            l.append(r.checking_date)
-            l.append(r.than)
-            l.append(r.mtrs)
-            mt=r.than
-            # l.append(mt)
-            try:
-                # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
-                l.append(r.transport.rate)
+        for l in lot_list:
+            rec_one = Record.objects.filter(lot_no=l,transport=transport,checking_date__in=selected_dates).first()
+            than_inlot = rec_one.total_thans
+            bale_inlot = rec_one.total_bale
+            records=get_list_or_404(Record,lot_no=l,transport=transport,checking_date__in=selected_dates)
+            than_recieved=0
+            for r in records:
+                than_recieved=than_recieved+r.than
+            if than_inlot==than_recieved:
+                row_list=[l,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
+                totalbales=totalbales+bale_inlot
+                totaltotal=round(totaltotal + rec_one.transport.rate*bale_inlot,2)
+                datalist.append(row_list)
+
+        # for r in recs:
+        #     totalthans=totalthans+r.than
+
+        #     l=[]
+        #     l.append(r.quality.qualities)
+        #     l.append(r.checking_date)
+        #     l.append(r.than)
+        #     l.append(r.mtrs)
+        #     mt=r.than
+        #     # l.append(mt)
+        #     try:
+        #         # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+        #         l.append(r.transport.rate)
             
-                l.append(round((mt*r.transport.rate),2))
-                totaltotal=totaltotal+round((mt*r.transport.rate),2)
-            except:
-                l.append("rate not defined")
-                l.append("rate not defined")
-            l.append(r.lot_no)
-            datalist.append(l)
-        total.append(round(totalthans,2))
+        #         l.append(round((mt*r.transport.rate),2))
+        #         totaltotal=totaltotal+round((mt*r.transport.rate),2)
+        #     except:
+        #         l.append("rate not defined")
+        #         l.append("rate not defined")
+        #     l.append(r.lot_no)
+        #     datalist.append(l)
+        total.append(round(totalbales,2))
         total.append(round(totaltotal,2))
-
+        
         begin = str(begin)
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
@@ -2237,6 +2277,7 @@ def qualityReport2(request):
     remtrs=0
     tothan=0
     tomtrs=0
+    
     qualities= GreyQualityMaster.objects.all().order_by('qualities')
     selected_qualities=[]
     for q in qualities:
@@ -2278,13 +2319,15 @@ def qualityReport2(request):
             d1=[q.qualities,
             total_than_in_process,round(total_mtrs_in_process,2),
             total_than_in_ready,round(total_mtrs_in_ready,2),
-            tally_than,round(tally_mtrs,2)
+            tally_than,round(tally_mtrs,2),
+            round(tally_than-total_than_in_ready,2),round(tally_mtrs-total_mtrs_in_ready,2)
             ]
             
             final_qs.append(d1) 
     total_all=[round(prthan,2),round(prmtrs,2),
             round(rethan,2),round(remtrs,2),
             round(tothan,2),round(tomtrs,2),
+            round(tothan-rethan,2),round(tomtrs-remtrs,2)
     ]
     if selected_qualities==[]:
         messages.error(request,"Please select atleast one grey quality")
@@ -2678,7 +2721,7 @@ def export_report_xls(request):
     stateur=stateur[-1]
     if(stateur=="transportreport"):
         file_name="Transport-Report"
-        columns = ['Lot no','Quality', 'Checking Date', 'Thans Checked','mtrs','Rate(Rs)', 'Total(Rs)']
+        columns = ['Lot no','Quality', 'Bales Received','Rate(Rs)', 'Total Amount(Rs)']
 
         t_id=int(request.POST.get('transport'))
         transport=get_object_or_404(GreyTransportMaster,id=t_id)
@@ -2697,35 +2740,58 @@ def export_report_xls(request):
                     break
                 selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
                 next_day += datetime.timedelta(days=1)
+        datalist=[]
+        totalbales=0 
+        totaltotal=0
 
-            datalist=[]
+        recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
+        lot_list=[]
+        for r in recs:
+            if r.lot_no not in lot_list:
+                lot_list.append(r.lot_no)
+
+        for l in lot_list:
+            rec_one = Record.objects.filter(lot_no=l,transport=transport,checking_date__in=selected_dates).first()
+            than_inlot = rec_one.total_thans
+            bale_inlot = rec_one.total_bale
+            records=get_list_or_404(Record,lot_no=l,transport=transport,checking_date__in=selected_dates)
+            than_recieved=0
+            for r in records:
+                than_recieved=than_recieved+r.than
+            if than_inlot==than_recieved:
+                row_list=[l,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
+                totalbales=totalbales+bale_inlot
+                totaltotal=round(totaltotal + rec_one.transport.rate*bale_inlot,2)
+                datalist.append(row_list)
+
+            # datalist=[]
     
-            total=[]
-            totalthans=0    
-            totaltotal=0
-            recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
-            for r in recs:
-                totalthans=totalthans+r.than
+            # total=[]
+            # totalthans=0    
+            # totaltotal=0
+            # recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
+            # for r in recs:
+            #     totalthans=totalthans+r.than
 
-                l=[]
-                l.append(r.lot_no)
-                l.append(r.quality.qualities)
-                l.append(str(r.checking_date))
-                l.append(r.than)
-                l.append(r.mtrs)
-                mt=r.than
-                # l.append(mt)
-                try:
-                    # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
-                    l.append(r.transport.rate)
+            #     l=[]
+            #     l.append(r.lot_no)
+            #     l.append(r.quality.qualities)
+            #     l.append(str(r.checking_date))
+            #     l.append(r.than)
+            #     l.append(r.mtrs)
+            #     mt=r.than
+            #     # l.append(mt)
+            #     try:
+            #         # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+            #         l.append(r.transport.rate)
                 
-                    l.append(round((mt*r.transport.rate),2))
-                    totaltotal=totaltotal+round((mt*r.transport.rate),2)
-                except:
-                    l.append("rate not defined")
-                    l.append("rate not defined")
+            #         l.append(round((mt*r.transport.rate),2))
+            #         totaltotal=totaltotal+round((mt*r.transport.rate),2)
+            #     except:
+            #         l.append("rate not defined")
+            #         l.append("rate not defined")
                 
-                datalist.append(l)
+            #     datalist.append(l)
         
     if(stateur=="checkerreport"):
         file_name="Checker-Report"
