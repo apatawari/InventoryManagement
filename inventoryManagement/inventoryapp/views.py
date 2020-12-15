@@ -177,7 +177,6 @@ def upload(request):
                 rec=get_list_or_404(Record, 
                     party_name=data[1],
                     bill_no=data[2],
-                    bill_amount=data[4],
                     lot_no=data[5],
                     lr_no=data[11],
                     order_no=data[12])
@@ -2104,7 +2103,7 @@ def transportReport(request):
             for r in records:
                 than_recieved=than_recieved+r.than
             if than_inlot==than_recieved:
-                row_list=[l,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
+                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
                 totalbales=totalbales+bale_inlot
                 totaltotal=round(totaltotal + rec_one.transport.rate*bale_inlot,2)
                 datalist.append(row_list)
@@ -2721,7 +2720,7 @@ def export_report_xls(request):
     stateur=stateur[-1]
     if(stateur=="transportreport"):
         file_name="Transport-Report"
-        columns = ['Lot no','Quality', 'Bales Received','Rate(Rs)', 'Total Amount(Rs)']
+        columns = ['Lot no','Lr No','Sending Party','Quality', 'Bales Received','Rate(Rs)', 'Total Amount(Rs)']
 
         t_id=int(request.POST.get('transport'))
         transport=get_object_or_404(GreyTransportMaster,id=t_id)
@@ -2759,7 +2758,7 @@ def export_report_xls(request):
             for r in records:
                 than_recieved=than_recieved+r.than
             if than_inlot==than_recieved:
-                row_list=[l,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
+                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
                 totalbales=totalbales+bale_inlot
                 totaltotal=round(totaltotal + rec_one.transport.rate*bale_inlot,2)
                 datalist.append(row_list)
@@ -4789,6 +4788,58 @@ def editCity(request,id):
     messages.success(request,"City edited")
     return redirect('/addcity')
 
+###employee category master
+
+# def renderAddEmpCategory(request):
+#     parties_all = CityMaster.objects.all().order_by('city')
+
+#     paginator = Paginator(parties_all,10)
+#     page = request.GET.get('page')
+#     cities = paginator.get_page(page)
+#     return render(request,'./employee/addcity.html',{'records':cities})
+
+# def saveCity(request):
+#     p = request.POST.get("city_name")
+#     p = p.upper()
+#     p = p.strip()
+#     try:
+#         existing_party=get_object_or_404(CityMaster,city=p)
+#         messages.error(request,"This City already exists")
+#     except:
+#         if p.strip()=="":
+#             messages.error(request,"please enter valid input")
+#             return redirect('/addcity')
+#         new_Party = CityMaster(
+#             city= p
+#         )
+#         new_Party.save()
+#         messages.success(request,"City added successfully")
+#     return redirect('/addcity')
+
+# def deleteCity(request,id):
+#     try:
+#         CityMaster.objects.filter(id=id).delete()
+#         messages.success(request,"City deleted")
+#     except:
+#         messages.error(request,"Cannot delete this master since it is being used")
+#     return redirect('/addcity')
+
+# def renderEditCity(request,id):
+#     party=get_object_or_404(CityMaster,id=id)
+#     return render(request,'./employee/editcity.html',{'id':id,'name':party.city})
+
+# def editCity(request,id):
+#     party=get_object_or_404(CityMaster,id=id)
+#     p=request.POST.get("edit-city")
+#     p = p.upper()
+#     p = p.strip()
+#     party.city = p
+#     party.save()
+#     messages.success(request,"City edited")
+#     return redirect('/addcity')
+
+
+
 
 def employeehome(request):
     emp=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
@@ -4821,16 +4872,16 @@ def saveEmployee(request):
     except:
         pass
     new_emp = Employee(
-        name = request.POST.get('name'),
-        father_name = request.POST.get('father_name'),
-        bank_name = request.POST.get('bank_name'),
+        name = (request.POST.get('name')).title(),
+        father_name = (request.POST.get('father_name')).title(),
+        bank_name = (request.POST.get('bank_name')).upper(),
         account_no = (request.POST.get('account_no')),
-        ifsc = request.POST.get('ifsc_code'),
+        ifsc = (request.POST.get('ifsc_code')).upper(),
         account_type = request.POST.get('account_type'),
         aadhar_no = (request.POST.get('aadhar_no')),
         contractor_name = request.POST.get('contractor_name'),
         phone_no = (request.POST.get('phone_no')),
-        address = request.POST.get('address'),
+        address = (request.POST.get('address')).title(),
         city = city,
         employee_category=request.POST.get('employeetype')
         )
@@ -4842,6 +4893,10 @@ def employeedetails(request):
     emps = Employee.objects.all().order_by('name')
     return render(request, './employee/employeedetails.html',{'records':emps})
 
+def deleteEmployee(request,id):
+    Employee.objects.filter(id=id).delete()
+    messages.success(request,'Employee Deleted')
+    return redirect('/employeedetails')
 
 def renderAddBankAc(request):
     all_checker = CompanyAccounts.objects.all().order_by('bank_name')
@@ -4862,16 +4917,16 @@ def saveEditEmployee(request,id):
     c_id = int(request.POST.get('city'))
     city = get_object_or_404(CityMaster,id=c_id)
     emp=get_object_or_404(Employee,id=id)
-    emp.name= request.POST.get('name')
-    emp.father_name = request.POST.get('father_name')
-    emp.bank_name = request.POST.get('bank_name')
+    emp.name= (request.POST.get('name')).title()
+    emp.father_name = (request.POST.get('father_name')).title()
+    emp.bank_name = (request.POST.get('bank_name')).upper()
     emp.account_no = (request.POST.get('account_no'))
-    emp.ifsc = request.POST.get('ifsc_code')
+    emp.ifsc = (request.POST.get('ifsc_code')).upper()
     emp.account_type = request.POST.get('account_type')
     emp.aadhar_no = (request.POST.get('aadhar_no'))
     emp.contractor_name = request.POST.get('contractor_name')
     emp.phone_no = (request.POST.get('phone_no'))
-    emp.address = request.POST.get('address')
+    emp.address = (request.POST.get('address')).upper()
     emp.city = city
     emp.employee_category=request.POST.get('employeetype')
     emp.save()
@@ -4879,9 +4934,6 @@ def saveEditEmployee(request,id):
     return redirect('/employeedetails')
 
 def saveBank(request):
-    if(len(request.POST.get("account_no"))!=12 or len(request.POST.get("ifsc"))!=11):
-        messages.error(request,'Enter valid details')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     q=request.POST.get("bank_name")
     q = q.strip()
     l=(request.POST.get("account_no"))
@@ -4968,8 +5020,8 @@ def generatePayment(request):
     emps = Employee.objects.all().order_by('name')
     selected_emps=[]
     for e in emps:
-        if(request.POST.get(str(e.aadhar_no))!=None):
-            selected_emps.append(int(request.POST.get(str(e.aadhar_no))))
+        if(request.POST.get(str(e.phone_no))!=None):
+            selected_emps.append(int(request.POST.get(str(e.phone_no))))
     print(selected_emps,bank.bank_name,payment_date)
 
     selected_employee = Employee.objects.filter(id__in=selected_emps).order_by('name')
@@ -4997,7 +5049,7 @@ def makePayment(request):
             employee=emp,
             company_account = bank,
             payment_date = payment_date,
-            amount=float(request.POST.get(str(emp.aadhar_no))),
+            amount=float(request.POST.get(str(emp.phone_no))),
             last_payment_date=last_pay_date
         )
         new_payment.save()

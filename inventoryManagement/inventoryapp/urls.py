@@ -180,6 +180,7 @@ urlpatterns = [
     path('employeehome', views.employeehome,name='employeehome'),
     path('saveemployee', views.saveEmployee,name='saveemployee'),
     path('employeedetails', views.employeedetails,name='employeedetails'),
+    path('deleteemployee/<int:id>', views.deleteEmployee,name='deleteemployee'),
     path('editemployee/<int:id>', views.renderEditEmployee,name='editemployee'),
     path('saveeditemployee/<int:id>', views.saveEditEmployee,name='saveeditemployee'),
     path('addbank', views.renderAddBankAc,name='addbank'),

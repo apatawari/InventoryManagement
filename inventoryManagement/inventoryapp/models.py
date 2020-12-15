@@ -10,10 +10,10 @@ class Employee(models.Model):
     name = models.CharField(max_length=50)
     father_name = models.CharField(max_length=50)
     bank_name = models.CharField(max_length=50)
-    account_no = models.CharField(max_length=12)
-    ifsc = models.CharField(max_length=11)
+    account_no = models.CharField(max_length=50)
+    ifsc = models.CharField(max_length=50)
     account_type =models.CharField(max_length=50)
-    aadhar_no = models.CharField(max_length=12)
+    aadhar_no = models.CharField(max_length=50)
     contractor_name = models.CharField(max_length=50)
     phone_no = models.CharField(max_length=10)
     address = models.CharField(max_length=50)
@@ -24,9 +24,9 @@ class Employee(models.Model):
         db_table = 'Employee_master'
 
 class CompanyAccounts(models.Model):
-    company_account = models.CharField(max_length=11)
+    company_account = models.CharField(max_length=50)
     account_name = models.CharField(max_length=50)
-    ifsc = models.CharField(null=True,max_length=11)
+    ifsc = models.CharField(null=True,max_length=50)
     bank_name = models.CharField(null=True,max_length=50)
     branch_code = models.CharField(max_length=50,default="")
     account_type = models.CharField(max_length=50,default="Savings")

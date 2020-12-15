@@ -52,6 +52,7 @@
           <th scope="col">Employee Type</th>
           <th scope="col">Contractor Name</th>
           <th></th>
+          <th></th>
           
         </tr>
       </thead>
@@ -73,6 +74,10 @@
           <td>{{record.employee_category}}</td>          
           <td>{{record.contractor_name}}</td>
           <td><a class ="anchor-button float-right space" href="{% url 'editemployee' record.id %}">Edit</a></td>
+          <td>
+            <a class ="anchor-button float-right danger" onclick="return confirm('Are you sure you want to delete this Employee?')" href="{% url 'deleteemployee' record.id%}">Delete</a>
+            
+          </td>
         </tr>
       {% endfor %}
       </tbody>
