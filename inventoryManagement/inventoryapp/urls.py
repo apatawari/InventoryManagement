@@ -195,6 +195,12 @@ urlpatterns = [
     path('editcity/<int:id>', views.renderEditCity,name='editcity'),
     path('cityedit/<int:id>', views.editCity,name='cityedit'),
 
+    path('addemployeecategory', views.renderAddEmpCategory,name='addempcategory'),
+    path('saveempcategory', views.saveEmpCategory,name='saveempcategory'),
+    path('deleteempcategory/<int:id>', views.deleteEmpCategory,name='deleteempcategory'),
+    path('editemployeecategory/<int:id>', views.renderEditEmpCategory,name='editempcategory'),
+    path('empcategoryedit/<int:id>', views.editEmpCategory,name='empcategoryedit'),
+
     path('paymentgenerationform', views.renderGeneratorForm,name='generatorform'),
     path('generatepayment', views.generatePayment,name='generatepayment'),
     path('makepayment', views.makePayment,name='makepayment'),

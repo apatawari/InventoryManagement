@@ -3,7 +3,7 @@ from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
-from .models import Employee,CompanyAccounts,MonthlyPayment,GreyTransportMaster,CityMaster
+from .models import Employee,CompanyAccounts,MonthlyPayment,GreyTransportMaster,CityMaster,EmployeeCategoryMaster
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -4790,53 +4790,53 @@ def editCity(request,id):
 
 ###employee category master
 
-# def renderAddEmpCategory(request):
-#     parties_all = CityMaster.objects.all().order_by('city')
+def renderAddEmpCategory(request):
+    parties_all = EmployeeCategoryMaster.objects.all().order_by('category')
 
-#     paginator = Paginator(parties_all,10)
-#     page = request.GET.get('page')
-#     cities = paginator.get_page(page)
-#     return render(request,'./employee/addcity.html',{'records':cities})
+    paginator = Paginator(parties_all,10)
+    page = request.GET.get('page')
+    cities = paginator.get_page(page)
+    return render(request,'./employee/addemployeecategory.html',{'records':cities})
 
-# def saveCity(request):
-#     p = request.POST.get("city_name")
-#     p = p.upper()
-#     p = p.strip()
-#     try:
-#         existing_party=get_object_or_404(CityMaster,city=p)
-#         messages.error(request,"This City already exists")
-#     except:
-#         if p.strip()=="":
-#             messages.error(request,"please enter valid input")
-#             return redirect('/addcity')
-#         new_Party = CityMaster(
-#             city= p
-#         )
-#         new_Party.save()
-#         messages.success(request,"City added successfully")
-#     return redirect('/addcity')
+def saveEmpCategory(request):
+    p = request.POST.get("emp-category")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(EmployeeCategoryMaster,category=p)
+        messages.error(request,"This Category already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addemployeecategory')
+        new_Party = EmployeeCategoryMaster(
+            category= p
+        )
+        new_Party.save()
+        messages.success(request,"Category added successfully")
+    return redirect('/addemployeecategory')
 
-# def deleteCity(request,id):
-#     try:
-#         CityMaster.objects.filter(id=id).delete()
-#         messages.success(request,"City deleted")
-#     except:
-#         messages.error(request,"Cannot delete this master since it is being used")
-#     return redirect('/addcity')
+def deleteEmpCategory(request,id):
+    try:
+        EmployeeCategoryMaster.objects.filter(id=id).delete()
+        messages.success(request,"Category deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
+    return redirect('/addemployeecategory')
 
-# def renderEditCity(request,id):
-#     party=get_object_or_404(CityMaster,id=id)
-#     return render(request,'./employee/editcity.html',{'id':id,'name':party.city})
+def renderEditEmpCategory(request,id):
+    party=get_object_or_404(EmployeeCategoryMaster,id=id)
+    return render(request,'./employee/editemployeecategory.html',{'id':id,'name':party.category})
 
-# def editCity(request,id):
-#     party=get_object_or_404(CityMaster,id=id)
-#     p=request.POST.get("edit-city")
-#     p = p.upper()
-#     p = p.strip()
-#     party.city = p
-#     party.save()
-#     messages.success(request,"City edited")
-#     return redirect('/addcity')
+def editEmpCategory(request,id):
+    party=get_object_or_404(EmployeeCategoryMaster,id=id)
+    p=request.POST.get("edit-category")
+    p = p.upper()
+    p = p.strip()
+    party.category = p
+    party.save()
+    messages.success(request,"Category edited")
+    return redirect('/addemployeecategory')
 
 
 
@@ -4844,7 +4844,8 @@ def editCity(request,id):
 def employeehome(request):
     emp=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
     cities = CityMaster.objects.all().order_by('city')
-    return render(request, './employee/employeehome.html',{'city':cities,'emp':emp})
+    empcat=EmployeeCategoryMaster.objects.all().order_by('category')
+    return render(request, './employee/employeehome.html',{'city':cities,'emp':emp,'empcat':empcat})
 
 def saveEmployee(request):
     if(len(request.POST.get('phone_no'))>10 or len(request.POST.get('phone_no'))<10):
@@ -4883,7 +4884,8 @@ def saveEmployee(request):
         phone_no = (request.POST.get('phone_no')),
         address = (request.POST.get('address')).title(),
         city = city,
-        employee_category=request.POST.get('employeetype')
+        employee_category=request.POST.get('employeetype'),
+        category=get_object_or_404(EmployeeCategoryMaster,id=int(request.POST.get('emp-cat')))
         )
     new_emp.save()
     messages.success(request,"Employee Added")
@@ -4898,20 +4900,14 @@ def deleteEmployee(request,id):
     messages.success(request,'Employee Deleted')
     return redirect('/employeedetails')
 
-def renderAddBankAc(request):
-    all_checker = CompanyAccounts.objects.all().order_by('bank_name')
-    #return render(request,'addquality.html',{'allqualities':all_qualities})
-    paginator = Paginator(all_checker,10)
-    page = request.GET.get('page')
-    checkers = paginator.get_page(page)
 
-    return render(request,'./employee/addbank.html',{'records':checkers})
 
 def renderEditEmployee(request,id):
     emp=get_object_or_404(Employee,id=id)
     employees=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
     cities = CityMaster.objects.all().order_by('city')
-    return render(request,'./employee/editemployee.html',{'emp':emp,'employees':employees,'city':cities})
+    empcat=EmployeeCategoryMaster.objects.all().order_by('category')
+    return render(request,'./employee/editemployee.html',{'emp':emp,'employees':employees,'city':cities,'empcat':empcat})
 
 def saveEditEmployee(request,id):
     c_id = int(request.POST.get('city'))
@@ -4929,9 +4925,21 @@ def saveEditEmployee(request,id):
     emp.address = (request.POST.get('address')).upper()
     emp.city = city
     emp.employee_category=request.POST.get('employeetype')
+    emp.category = get_object_or_404(EmployeeCategoryMaster,id=int(request.POST.get('emp-cat')))
     emp.save()
     messages.success(request,"Employee details are saved")
     return redirect('/employeedetails')
+
+
+def renderAddBankAc(request):
+    all_checker = CompanyAccounts.objects.all().order_by('bank_name')
+    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+
+    return render(request,'./employee/addbank.html',{'records':checkers})
+
 
 def saveBank(request):
     q=request.POST.get("bank_name")

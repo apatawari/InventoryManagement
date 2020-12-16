@@ -6,6 +6,9 @@ from django.utils import timezone
 class CityMaster(models.Model):
     city = models.CharField(null=True,max_length=50)
 
+class EmployeeCategoryMaster(models.Model):
+    category = models.CharField(null=True,max_length=50)
+
 class Employee(models.Model):
     name = models.CharField(max_length=50)
     father_name = models.CharField(max_length=50)
@@ -19,6 +22,7 @@ class Employee(models.Model):
     address = models.CharField(max_length=50)
     city = models.ForeignKey(CityMaster,blank=True,null=True,on_delete=models.PROTECT)
     employee_category = models.CharField(max_length=50)
+    category = models.ForeignKey(EmployeeCategoryMaster,blank=True,null=True,on_delete=models.PROTECT)
     
     class Meta:
         db_table = 'Employee_master'

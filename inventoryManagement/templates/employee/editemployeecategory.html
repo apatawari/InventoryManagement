@@ -1,0 +1,32 @@
+{% extends './employeenav.html' %}
+
+{% block title%} Add Quality {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Add Party Start-->
+      <form method="POST" action="{% url 'empcategoryedit' id %}" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Edit Employee Category</h1>
+        </div>
+        <div class="upload-container">
+            <input type="text" class="form-control" id="addquality" placeholder="Category Name" value="{{name}}" name="edit-category" autofocus required>
+
+            <br>
+            
+
+            <button class="upload-btn btn-primary" type="submit">Save</button>
+        </div>
+        
+      </form>
+
+      
+        
+        
+        
+      <!-- Add Party End -->
+      
+
+
+{% endblock %}

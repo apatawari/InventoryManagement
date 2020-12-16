@@ -83,6 +83,19 @@
                     {% endfor %}
                 </select>    
             </div>
+            <div class="form-group col-md-3">
+                <label for="Contractor Name">Employee Category</label>
+                <select class="form-control" id="city" name="emp-cat" required>
+                    
+                    {% for q in empcat %}
+                        {%if q.category == emp.category.category %}
+                        <option value="{{ q.id }}" selected>{{ q.category }}</option>
+                        {%else%}
+                        <option value="{{ q.id }}">{{ q.category }}</option>
+                        {%endif%}
+                    {% endfor %}
+                </select>    
+            </div>
         </div>
         
         <hr>

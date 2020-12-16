@@ -67,6 +67,17 @@
                     {% endfor %}
                 </select>    
             </div>
+            <div class="form-group col-md-3">
+                <label for="Contractor Name">Employee Category</label>
+                <select class="form-control" id="city" name="emp-cat" required>
+                    
+                    {% for q in empcat %}
+                        
+                        <option value="{{ q.id }}">{{ q.category }}</option>
+
+                    {% endfor %}
+                </select>    
+            </div>
         </div>
         
         <hr>
