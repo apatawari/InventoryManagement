@@ -567,8 +567,10 @@ hr {
   transition: all 0.25s ease-out 0s;
 }
 
-
-.hide-filter{
-  display:none;
+.hide-filter {
+  display: none;
 }
 
+.employee-date {
+  width: 20%;
+}

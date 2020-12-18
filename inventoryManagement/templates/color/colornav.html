@@ -40,6 +40,9 @@
                 <a class="nav-link {%if request.path == closingstock %} active {%endif%}" href="{% url 'closingstock' %}">Closing Stock</a>
             </li>
           </ul>
+          {%if request.path == dailyconsumption %}
+            <a class ="btn-request float-right" href="{% url 'dailyconsumptiondetails' %}">Edit Consumption Details</a>
+          {%endif%}
         </div>
       </nav>
       <!-- Nav Bar End-->

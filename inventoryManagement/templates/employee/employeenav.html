@@ -14,7 +14,11 @@
 <body>
   {% url 'index' as index %}
   {% url 'employeehome' as employeehome %}
-  
+  {% url 'employeedetails' as employeedetails %}
+  {% url 'generatorform' as generatorform %}
+  {% url 'banksheet' as banksheet %}
+  {% url 'salarysheet' as salarysheet %}
+
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,10 +30,10 @@
             <li class="nav-item">
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
                 <a class="nav-link {%if request.path == employeehome %} active {%endif%}" href="{% url 'employeehome' %}">Employee - Home</a>
-                <a class="nav-link" href="{% url 'employeedetails' %}">Employee Details</a>
-                <a class="nav-link" href="{% url 'generatorform' %}">Pay Employee</a>
-                <a class="nav-link" href="{% url 'banksheet' %}">Bank Sheet</a>
-                <a class="nav-link" href="{% url 'salarysheet' %}">Salary Sheet</a>
+                <a class="nav-link {%if request.path == employeedetails %} active {%endif%}" href="{% url 'employeedetails' %}">Employee Details</a>
+                <a class="nav-link {%if request.path == generatorform %} active {%endif%}" href="{% url 'generatorform' %}">Pay Employee</a>
+                <a class="nav-link {%if request.path == banksheet %} active {%endif%}" href="{% url 'banksheet' %}">Bank Sheet</a>
+                <a class="nav-link {%if request.path == salarysheet %} active {%endif%}" href="{% url 'salarysheet' %}">Salary Sheet</a>
             </li>
           </ul>
         </div>

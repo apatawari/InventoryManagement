@@ -13,13 +13,13 @@
         <form method="POST" class="md-form" action="{% url 'salarysheet2' %}" enctype="multipart/form-data">
           {% csrf_token %}
           <label class="ml-3" for="lease"><b>Choose Month</b></label>
-            <div class="form-row mb-5 ml-3 col-md-3">
-              <label for="firstdate">Start Date</label>
-              <input type="date" class="form-control" id="firstdate" name="start_date" placeholder="mm-dd-yyyy"/>
-              <label for="firstdate">End Date</label>
-              <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" />
+            <div class="form-row col-md-12">
+              <label class="ml-3 mr-3 mt-1" for="firstdate">Start Date</label>
+              <input type="date" class="form-control employee-date" id="firstdate" name="start_date" placeholder="mm-dd-yyyy"/>
+              <label class="ml-3 mr-3 mt-1" for="firstdate">End Date</label>
+              <input type="date" class="form-control employee-date" id="enddate" name="end_date" placeholder="mm-dd-yyyy" />
 
-              <button class="download-button mt-3" style="width: 50%;">Go</button>
+              <button class="download-button ml-3" style="width: 10%;">Go</button>
             </div>
         </form>
     </div>
