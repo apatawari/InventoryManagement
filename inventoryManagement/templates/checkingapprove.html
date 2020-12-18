@@ -101,6 +101,7 @@
             <div class="form-group col-md-4">
                 <label for="new-quality">Defect status</label>
                 <select class="form-control" name="defect">
+                    <option></option>
                     <option value="no defect">No defect</option>
                     <option value="Defect- Transport defect">Defect due to transport</option>
                     <option value="Defect- Manufacturing defect">Defect in manufacturing</option>
@@ -113,7 +114,7 @@
             <div class="form-group col-md-4">
                 <label for="checker">Checker Name</label>
                 <select class="form-control" name="checker" required>
-
+                    <option></option>
                     {% for q in checkers %}
                         <option value="{{ q.id }}">{{ q.name }}</option>
                         
@@ -129,7 +130,7 @@
             <div class="form-group col-md-4">
                 <label for="checker">Transport Agency Name</label>
                 <select class="form-control" name="transport" required>
-
+                    <option></option>
                     {% for q in transport %}
                         <option value="{{ q.id }}">{{ q.transport }}</option>
                         

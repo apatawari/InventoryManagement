@@ -25,7 +25,8 @@
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="Contractor Name">Employee Type</label>
-                <select name="employeetype" class="form-control">
+                <select name="employeetype" class="form-control" required>
+                    <option></option>
                     <option value="Office staff">Office staff</option>
                     <option value="Factory staff">Factory staff</option>
                     <option value="Contractor staff">Contractor staff</option>
@@ -44,7 +45,7 @@
             <div class="form-group col-md-3">
                   <label for="City">City</label>
                   <select class="form-control" id="city" name="city" required>
-
+                    <option></option>
                     {% for q in city %}
                         
                         <option value="{{ q.id }}">{{ q.city }}</option>
@@ -70,7 +71,7 @@
             <div class="form-group col-md-3">
                 <label for="Contractor Name">Employee Category</label>
                 <select class="form-control" id="city" name="emp-cat" required>
-                    
+                    <option></option>
                     {% for q in empcat %}
                         
                         <option value="{{ q.id }}">{{ q.category }}</option>
@@ -98,7 +99,7 @@
             <div class="form-group col-md-3">
                 <label for="Account Type">Account Type</label>
                 <select class="form-control" id="account_type" name="account_type">
-                        
+                    <option></option> 
                     <option value="Checking Account">Checking Account</option>
                     <option value="Savings Account">Savings Account</option>
 

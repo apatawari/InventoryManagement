@@ -1,4 +1,4 @@
-from .models import Record,ColorRecord,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock
+from .models import Record,ColorRecord,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,Employee
 import django_filters
 from django.db import models
 from django import forms
@@ -67,6 +67,25 @@ class GodownLeaseFilter(django_filters.FilterSet):
             'color': [ 'exact'],
             'state': ['exact'],
             'loose_godown_state': ['exact']
+        }
+
+        filter_overrides = {
+            models.CharField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'icontains',
+                },
+            }
+        }
+
+
+class EmployeeFilter(django_filters.FilterSet):
+    class Meta:
+        model=Employee
+        fields = {
+            'name': [ 'exact','contains'],
+            'contractor_name': ['exact','contains'],
+            'category': ['exact']
         }
 
         filter_overrides = {

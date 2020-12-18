@@ -5,7 +5,7 @@ from django.template import RequestContext
 from .models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
 from .models import Employee,CompanyAccounts,ChemicalsClosingStockperGodown,MonthlyPayment,GreyTransportMaster,CityMaster,EmployeeCategoryMaster
 from .resources import ItemResources
-from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
+from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
 from tablib import Dataset
 from django.http import HttpResponseRedirect
@@ -223,7 +223,7 @@ def upload(request):
 
 def showIntransit(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')
-    print(request.GET)
+    
     records_filter = RecordFilter(request.GET,queryset=records_list)
     # return render(request,'intransit.html',{'records':records_filter})
     
@@ -277,9 +277,10 @@ def showGodownRequest(request):
 
     return render(request, 'godownrequest.html',{'records':records,'filter':records_filter})
 
-def record(request,id):
+def record(request,id):                             ######edit form for intransit record
     rec=get_object_or_404(Record, id=id)
-    return render(request, 'record.html', {'record':rec})
+    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    return render(request, 'record.html', {'record':rec,'qualities':qualities})
 
 def goDownApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -290,7 +291,7 @@ def goDownApprove(request,id):
     d=str(d)
     return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
 
-def edit(request,id):
+def edit(request,id):                                       #########edit in transit record
     if request.method=="POST":
         record = get_object_or_404(Record,id=id)
         prevBale=record.bale
@@ -299,9 +300,9 @@ def edit(request,id):
         record.bill_date=request.POST.get("bill_date")
         record.bill_amount=request.POST.get("bill_amount")
         record.lot_no=request.POST.get("lot_no")
-        # q_id=request.POST.get("quality")
-        # quality_ob=get_object_or_404(Quality,id=int(q_id))
-        # record.quality=quality_ob
+        q_id=request.POST.get("quality")
+        quality_ob=get_object_or_404(GreyQualityMaster,id=int(q_id))
+        record.quality=quality_ob
         record.than=request.POST.get("than")
         record.mtrs=request.POST.get("mtrs")
         record.bale=request.POST.get("bale")
@@ -323,15 +324,7 @@ def edit(request,id):
             messages.success(request,"Data Updated Successfully")
         #print(record.bill_date)
         return redirect('/intransit')
-        # records=Record.objects.all()
-        
-        # return render(request,'intransit.html',{'records':records})
-        
-# def searchIntransit(request):
-#     records_list=Record.objects.all()
-#     records_filter = RecordFilter(request.GET,queryset=records_list)
-#     return render(request,'intransit.html',{'records':records_filter})
-#?page={{records.next_page_number}}
+
 
 def nextRec(request,id):
     rec=get_object_or_404(Record, id=id+1)
@@ -2526,11 +2519,66 @@ def export_filter_all_xls(request):
         for g in lease:
             lease_list.append(g)
         records_list = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list).values_list('color__color','quantity','unit__unit','rate','loose_godown_state__lease')
-    else:
+    elif (stateur=="ordergeneration"):
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
         records_list=ChemicalsAllOrders.objects.all().values_list('supplier__supplier', 'order_no', 'order_date', 'color__color', 'quantity', 'rem_quantity', 'unit__unit', 'rate', 'amount', 'validation', 'state')
+    elif (stateur=="banksheetfiltered"):
+        file_name="Bank Sheet"
+        begin = request.POST.get("start_date1")
+        end = request.POST.get("end_date1")
+        if(begin!="" or end!=""):
+            begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+            end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+            selected_dates=[]
+            
+            next_day = begin
+            while True:
+                if next_day > end:
+                    break
+                selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+                next_day += datetime.timedelta(days=1)
 
+            
+            print(begin,end)
+            # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
+            columns = [ 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Mobile No']
+            records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no')
+    elif(stateur=="banksheet"): 
+        
+        file_name="Bank Sheet"   
+        # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
+        columns = [ 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Mobile No']
+        records_list=MonthlyPayment.objects.all().values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no')
+
+    elif(stateur=="salarysheet"): 
+        
+        file_name="Salary Sheet"   
+        # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
+        columns = [ 'Name', 'Father Name', 'Bank Name', 'Account No', 'IFSC Code', 'Amount', 'Aadhar No','Contractor Name','Phone No','Address','City','Payment date']
+        records_list=MonthlyPayment.objects.all().values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date')
+
+    elif (stateur=="salarysheetfiltered"):
+        file_name="Salary Sheet"
+        begin = request.POST.get("start_date1")
+        end = request.POST.get("end_date1")
+        if(begin!="" or end!=""):
+            begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+            end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+            selected_dates=[]
+            
+            next_day = begin
+            while True:
+                if next_day > end:
+                    break
+                selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+                next_day += datetime.timedelta(days=1)
+
+            
+            
+            # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
+            columns = [ 'Name', 'Father Name', 'Bank Name', 'Account No', 'IFSC Code', 'Amount', 'Aadhar No','Contractor Name','Phone No','Address','City','Payment date']
+            records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date')
 
 
     response = HttpResponse(content_type='application/ms-excel')
@@ -4089,7 +4137,7 @@ def goodsApprove(request,id):
         messages.success(request,"Data Updated Successfully")
         return redirect('/ordergeneration')
     elif(prevRec.quantity<quantity_recieved):
-        messages.error(request,"Quantity Recieved cannot be more than Original Amount of Than")
+        messages.error(request,"Quantity Recieved cannot be more than Original Amount of Chemicals")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         quantity_remaining = round(prevRec.quantity - quantity_recieved)
@@ -5351,8 +5399,15 @@ def saveEmployee(request):
     return redirect('/employeehome')
 
 def employeedetails(request):
-    emps = Employee.objects.all().order_by('name')
-    return render(request, './employee/employeedetails.html',{'records':emps})
+    employees = Employee.objects.all().order_by('name')
+    records_filter = EmployeeFilter(request.GET,queryset=employees)
+    # return render(request,'intransit.html',{'records':records_filter})
+    
+    paginator = Paginator(records_filter.qs,20)
+    page = request.GET.get('page')
+    emps = paginator.get_page(page)
+    categories=EmployeeCategoryMaster.objects.all().order_by('category')
+    return render(request, './employee/employeedetails.html',{'records':emps,'filter':records_filter,'categories':categories})
 
 def deleteEmployee(request,id):
     Employee.objects.filter(id=id).delete()
@@ -5544,7 +5599,10 @@ def bankSheet2(request):
 
         
         payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates)
-        return render(request,'./employee/banksheet.html',{'payments':payments})
+        begin=str(begin)
+        end=str(end)
+
+        return render(request,'./employee/banksheet.html',{'payments':payments,'begin':begin,'end':end})
 
 def salarySheet(request):
     payments=MonthlyPayment.objects.all()
@@ -5568,4 +5626,7 @@ def salarySheet2(request):
 
         
         payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates)
-        return render(request,'./employee/salarysheet.html',{'payments':payments})
+
+        begin=str(begin)
+        end=str(end)
+        return render(request,'./employee/salarysheet.html',{'payments':payments,'begin':begin,'end':end})

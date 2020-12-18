@@ -19,9 +19,22 @@
               <label for="firstdate">End Date</label>
               <input type="date" class="form-control" id="enddate" name="end_date" placeholder="mm-dd-yyyy" />
 
-              <button class="download-button mt-3" style="width: 10%;">Go</button>
+              <button class="download-button mt-3" style="width: 50%;">Go</button>
             </div>
         </form>
+    </div>
+    <div class="download">
+      <form method="POST" class="md-form" action="{% url 'excel_filter_all' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+          
+            <input type="date" name="start_date1" value="{{begin}}" placeholder="mm-dd-yyyy" hidden/>
+            
+            <input type="date" name="end_date1" value="{{end}}" placeholder="mm-dd-yyyy" hidden/>
+
+            <button class="download-button mt-3" style="width: 10%;">Print</button>
+          
+      </form>
     </div>
 
       <form method="POST" class="md-form" enctype="multipart/form-data">

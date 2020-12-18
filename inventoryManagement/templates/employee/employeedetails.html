@@ -11,19 +11,35 @@
     </div>
 
     <!-- Filter Start -->
-    <!--
+    
     <form method="GET">
         <div class="form-row filter-form">
           <div class="form-group col-sm-4">
-            {{ filter.form.party_name.label_tag }}
-            {% render_field filter.form.party_name class="form-control" %}
+            <label for="new-quality">Name</label>
+            {% render_field filter.form.name class="form-control" %}
           </div>
+          <div class="form-group col-sm-3">
+            <label for="new-quality">Contractor Name</label>
+            {% render_field filter.form.contractor_name class="form-control" %}
+          </div>
+          <div class="form-group col-sm-3">
+            <label for="new-quality">Employee Category</label>
+            <select class="form-control" name="category" onchange="this.form.submit()">
+              
+              <option value="">--</option>
+                {% for q in categories %}
+                    
+                    <option value="{{ q.id}}">{{ q.category }}</option>
+                    
+                {% endfor %}
+            </select>
+        </div>
           <div class="form-group col-sm-2 filter-button">
             <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
           </div>
         </div>
     </form>
-  -->
+ 
     <!-- Filter End -->
     
     <!-- Download Button Start-->

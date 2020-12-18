@@ -149,7 +149,7 @@
             <div class="form-group col-md-4">
                 <label for="new-quality">Processing Party</label>
                 <select class="form-control" name="processing-party" required>
-
+                  <option></option>
                     {% for party in parties %}
                         
                         <option value="{{ party.id}}">{{ party.processing_party }}</option>
@@ -164,6 +164,7 @@
           <div class="form-group col-md-4">
               <label for="new-quality">Processing type</label>
               <select class="form-control" name="processing-type">
+                  <option></option>
                   <option value="Bleaching">Bleaching</option>
                   <option value="Dyeing">Dyeing</option>
                   

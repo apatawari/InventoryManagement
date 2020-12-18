@@ -59,7 +59,8 @@
             
             <div class="form-group col-md-3">
                 <label for="Quantity">Godown Name</label>
-                <select class="form-control" name="godownnumber" required>    
+                <select class="form-control" name="godownnumber" required>
+                    <option></option>    
                     {% for s in godowns %}
                         
                         <option value="{{ s.id }}" >{{ s.godown }}</option>

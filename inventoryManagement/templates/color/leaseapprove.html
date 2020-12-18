@@ -35,7 +35,7 @@
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="Quantity">Quantity Loose</label>
-                <input type="number" step="0.01" class="form-control" id="quantityreceived" placeholder="Quantity Lease" value="{{ record.quantity }}" name="quantitylease" required autofocus>
+                <input type="number" step="0.01" class="form-control" id="quantityreceived" placeholder="Quantity Lease" value=0 name="quantitylease" required autofocus>
             </div>
             <div class="form-group col-md-3">
                 <label for="Order Date">Moving Date</label>
@@ -43,7 +43,8 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="Lease">Loose Godown Name</label>
-                <select class="form-control" name="leasenumber" required>                      
+                <select class="form-control" name="leasenumber" required>  
+                    <option></option>                    
                     {% for l in lease %}
                         <option value="{{l.id}}">{{l.lease}}</option>
                     {% endfor %}

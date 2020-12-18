@@ -160,7 +160,7 @@
             <div class="form-group col-md-4">
                 <label for="new-quality">Arrival location</label>
                 <select class="form-control" name="arrival-location" required>
-
+                  <option></option>
                   {% for party in parties %}
                       
                       <option value="{{ party.id }}">{{ party.location }}</option>
