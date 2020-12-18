@@ -23,7 +23,7 @@ class Employee(models.Model):
     city = models.ForeignKey(CityMaster,blank=True,null=True,on_delete=models.PROTECT)
     employee_category = models.CharField(max_length=50)
     category = models.ForeignKey(EmployeeCategoryMaster,blank=True,null=True,on_delete=models.PROTECT)
-    
+
     class Meta:
         db_table = 'Employee_master'
 
@@ -236,4 +236,17 @@ class ChemicalsClosingStock(models.Model):
 
     class Meta:
         db_table = 'Chemicals_daily_closing_stocks'
+
+
+class ChemicalsClosingStockperGodown(models.Model):
+    color =models.ForeignKey(Color,blank=True,null=True,on_delete=models.PROTECT)
+    quantity = models.FloatField()
+    rate = models.FloatField()
+    unit = models.ForeignKey(ChemicalsUnitsMaster,blank=True,null=True,on_delete=models.PROTECT)
+    godown=models.ForeignKey(ChemicalsGodownsMaster,blank=True,null=True,on_delete=models.PROTECT)
+    loose_godown = models.ForeignKey(ChemicalsLooseGodownMaster,blank=True,null=True,on_delete=models.PROTECT)
+    dailydate = models.DateField(null=True,default=None)
+
+    class Meta:
+        db_table = 'Chemicals_daily_closing_stocks_per_godown'
 

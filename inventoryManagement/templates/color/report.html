@@ -16,7 +16,7 @@
       <br>
       <!-- Filter End -->
       <div class="download">
-        <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
+        <form method="POST" action="#" enctype="multipart/form-data">
           {% csrf_token %}
           <input type="date" name="start_date" value="{{begin}}" hidden>
           <input type="date" name="end_date" value="{{end}}" hidden>
@@ -34,7 +34,7 @@
             <th scope="col">Opening Stock on {{display_begin}}</th>
             <th scope="col">Stock Purchased</th>
             <th scope="col">Total Stock</th>
-            <th scope="col">Quantity Consumed</th>
+            <th scope="col">Quantity Moved/Consumed</th>
             
             <th scope="col">Closing Stock on {{display_end}}</th>
             
@@ -50,11 +50,14 @@
             <td class="td-text">{{d.0}}</td>
             <td class="td-text">{{d.1}}</td>
             <td>{{d.2}}</td>
-            <td>{{d.5}}</td>
-            <td>{{d.5|addition:d.2}}</td>
             <td>{{d.3}}</td>
-            
-            <td>{{d.4}}</td>
+            <td>{{d.3|addition:d.2}}</td>
+            {%ifequal d.4 "loop" %}
+              <td>{{d.3|addition:d.2 |sub:d.5}}</td>
+            {%else%}
+              <td>{{d.4}}</td>
+            {%endifequal%}
+            <td>{{d.5}}</td>
             
             
           </tr>

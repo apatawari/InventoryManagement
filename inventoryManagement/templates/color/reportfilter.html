@@ -11,59 +11,110 @@
       <h3 class="title-text">Report filter</h3>
     </div>
       <!-- Record Filter Start-->
-      <form class = "md-form view-report color-report" method="POST" action="{% url 'colorreport' %}" enctype="multipart/form-data">
+      <form class = "md-form view-report" method="POST" action="{% url 'colorreport' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <!--First Section -->
         <div class="form-row form-group">
-          <div class="form-group col-md-12">
+          <div class="form-group col-md-4">
             <label for="firstdate">Start Date</label>
             <input type="date" class="form-control" id="firstdate" name="start_date" max="{{d}}" placeholder="mm-dd-yyyy" required/>
             <label for="firstdate">End Date</label>
             <input type="date" class="form-control" id="enddate" name="end_date" max="{{d}}" placeholder="mm-dd-yyyy" required/>
+            
+            <div class="form-group form-check ml-2">
+              <hr class="small">
+              <input class="form-check-input" type="checkbox" onClick="toggleall(this)" />
+              <label class="form-check-label">SELECT ALL GODOWNS</label>
+              
+            </div>
           </div>
+
+          
         <!-- First Section End -->
-        <!--<div class="form-group col-md-4">
-          <label class="form-check-label pl-4" for="processing_party"><b>SELECT SENDING PARTY NAME</b></label>
-          <div class="form-group form-check ">
+        <div class="form-group col-md-4">
+          <label class="form-check-label pl-4" for="processing_party"><b>SELECT MAIN GODOWN NAME</b></label>
+          <hr class="small">
+          <!-- <div class="form-group form-check ">
             <hr class="small">
-            <input class="form-check-input-2" type="checkbox" onClick="togglesendingparty(this)" />
+            <input class="form-check-input-2" type="checkbox" onClick="togglegodown(this); toggleopp(this);" />
             <label class="form-check-label-2">SELECT ALL</label>
             <hr class="small">
-          </div>
+          </div> -->
           <div class="form-group form-check scroll">
               
-            {% for p in sendingparty %}
-            <input class="form-check-input-2" type="checkbox" value="{{p}}" name="{{p}}" id="partyname">
+            {% for p in godowns %}
+            <input class="form-check-input-2" type="checkbox" value="{{p.id}}" name="{{p.godown}}" id="partyname" onClick="toggleopp(this)">
             <label class="form-check-label-2">
-                {{p}}
+                {{p.godown}}
             </label>
           {% endfor %}
           </div>
         </div>
         <div class="form-group col-md-4">
-            <label class="form-check-label pl-4" for="processing_party"><b>SELECT PROCESSING PARTY</b></label>
-            <div class="form-group form-check ">
+            <label class="form-check-label pl-4" for="processing_party"><b>SELECT LOOSE GODOWN NAME</b></label>
+            <hr class="small">
+            <!-- <div class="form-group form-check ">
               <hr class="small">
-              <input class="form-check-input" type="checkbox" onClick="toggleprocessingparty(this)" />
+              <input class="form-check-input" type="checkbox" onClick="toggleloose(this); toggleopp2(this)" />
               <label class="form-check-label">SELECT ALL</label>
               <hr class="small">
-            </div>
+            </div> -->
             <div class="form-group form-check scroll">
                 
-                {% for p in parties %}
-                <input class="form-check-input" type="checkbox" value="{{p.processing_party}}" name="{{p.processing_party}}" id="partyname">
+                {% for p in loose %}
+                <input class="form-check-input" type="checkbox" value="{{p.id}}" name="{{p.lease}}" id="partyname" onClick="toggleopp2()">
                 <label class="form-check-label">
-                    {{p.processing_party}}
+                    {{p.lease}}
                 </label>
                 {% endfor %}
             </div>
         </div>
             <div class="form-group form-check col-md-4"></div>
-            <div class="form-group form-check col-md-4"></div>-->
+            <div class="form-group form-check col-md-4"></div>
             <div class="form-group form-check col-md-12">
                 <button type="submit" class="btn btn-primary button mt-4">Generate Report</button>
             </div>
         </div>
         <!-- Record Filter End-->
 
+
+        <script>
+          // function togglegodown(source) {
+          //   checkboxes = document.getElementsByClassName('form-check-input-2');
+          //   for(var i=0, n=checkboxes.length;i<n;i++) {
+          //     checkboxes[i].checked = source.checked;
+          //   }
+          // }
+          // function toggleloose(source) {
+          //   checkboxes = document.getElementsByClassName('form-check-input');
+          //   for(var i=0, n=checkboxes.length;i<n;i++) {
+          //     checkboxes[i].checked = source.checked;
+          //   }
+          // }
+          function toggleopp(source) {
+            
+            checkboxes = document.getElementsByClassName('form-check-input');
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+              checkboxes[i].checked = false;
+            }
+          }
+          function toggleopp2(source) {
+            checkboxes = document.getElementsByClassName('form-check-input-2');
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+              checkboxes[i].checked = false;
+            }
+          }
+
+          function toggleall(source) {
+            checkboxes = document.getElementsByClassName('form-check-input');
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+              checkboxes[i].checked = source.checked;
+            }
+            checkboxes = document.getElementsByClassName('form-check-input-2');
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+              checkboxes[i].checked = source.checked;
+            }
+          }
+          
+        </script>
         {% endblock %}

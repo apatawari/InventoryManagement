@@ -3,7 +3,7 @@ from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
 from .models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
-from .models import Employee,CompanyAccounts,MonthlyPayment,GreyTransportMaster,CityMaster,EmployeeCategoryMaster
+from .models import Employee,CompanyAccounts,ChemicalsClosingStockperGodown,MonthlyPayment,GreyTransportMaster,CityMaster,EmployeeCategoryMaster
 from .resources import ItemResources
 from .filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter
 from django.contrib import messages
@@ -4008,6 +4008,7 @@ def goodsApprove(request,id):
     g_id = int(request.POST.get('godownnumber'))
     godown=get_object_or_404(ChemicalsGodownsMaster,id=g_id)
     recieving_date = request.POST.get('receivingdate')
+    recieve_date = datetime.datetime.strptime(recieving_date,'%Y-%m-%d').date()
     amount = prevRec.amount
     print(str(recieving_date))
     if(prevRec.quantity == quantity_recieved):
@@ -4024,27 +4025,50 @@ def goodsApprove(request,id):
         ogorder.save()
         try:
 
-            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
-            godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
-            godown_color.rate = (godown_color.rate + prevRec.rate)/2
-            godown_color.save()
+            
             try:
+                try:
+                    closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(godown=godown,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+                    closing_stock_pg.quantity=round(closing_stock_pg.quantity + quantity_recieved,2)
+                    closing_stock_pg.save()
+
+                except:
+                    try:
+                        closing_stock_prev_pg = ChemicalsClosingStockperGodown.objects.filter(godown=godown,color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
+                        pq=closing_stock_prev_pg.quantity
+                    except:
+                        pq=0
+                    newpg= ChemicalsClosingStockperGodown(
+                        color = get_object_or_404(Color,id=int(prevRec.color.id)),
+                        quantity = round(pq + quantity_recieved,2),
+                        unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+                        rate = prevRec.rate,
+                        dailydate = recieve_date,
+                        godown=godown
+                    )
+                    newpg.save()
                 #closing_stock = ClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
-                closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()    ####loophole
+                closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()    ####loophole solved
                 closing_stock.quantity=round(closing_stock.quantity + quantity_recieved,2)
                 closing_stock.save()
-                print("same")
+            
+            
+
             except:
-                closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
+                closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
  
                 closing_stock= ChemicalsClosingStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = round(closing_stock_prev.quantity + quantity_recieved,2),
                     unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
-                    dailydate = datetime.date.today()
+                    dailydate = recieve_date
                 )
                 closing_stock.save()
+            godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
+            godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
+            godown_color.rate = (godown_color.rate + prevRec.rate)/2
+            godown_color.save()
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
                 color = get_object_or_404(Color,id=int(prevRec.color.id)),
@@ -4059,7 +4083,7 @@ def goodsApprove(request,id):
                 quantity = round(quantity_recieved,2),
                 unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                 rate = prevRec.rate,
-                dailydate = datetime.date.today()
+                dailydate = recieve_date
             )
             closing_stock.save()
         messages.success(request,"Data Updated Successfully")
@@ -4097,18 +4121,6 @@ def goodsApprove(request,id):
             
             
         )
-       
-        # new_value = ColorRecord(
-        #     order_no=125,
-        #     rate=1524,
-        #     order_date=prevRec.order_date,
-        #     amount=1452,
-        #     quantity=124,
-        #     state="Godown",
-        #     chalan_no=52,
-        #     total_quantity = 124
-            
-        # )
         
         new_value.save()
            
@@ -4128,29 +4140,56 @@ def goodsApprove(request,id):
             ogorder.rem_quantity= round(ogorder.rem_quantity - quantity_recieved,2)
             ogorder.save()
             try:
-                godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
-                godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
-                godown_color.rate = (godown_color.rate + prevRec.rate)/2
-                godown_color.save()
-                print("godown")
+                
                 try:
-                    closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = datetime.date.today()).order_by('-dailydate').first()
+                    try:
+                        print("11")
+                        closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(godown=godown,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+                        print("12")
+                        closing_stock_pg.quantity=round(closing_stock_pg.quantity + quantity_recieved,2)
+                        print("13")
+                        closing_stock_pg.save()
+                        print("14")
+
+                    except:
+                        try:
+                            closing_stock_prev_pg = ChemicalsClosingStockperGodown.objects.filter(godown=godown,color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
+                            pq=closing_stock_prev_pg.quantity
+                        except:
+                            pq=0
+                        
+    
+                        newpg= ChemicalsClosingStockperGodown(
+                            color = get_object_or_404(Color,id=int(prevRec.color.id)),
+                            quantity = round(pq + quantity_recieved,2),
+                            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+                            rate = prevRec.rate,
+                            dailydate = recieve_date,
+                            godown=godown
+                        )
+                        newpg.save()
+                    closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
                     closing_stock.quantity=round(closing_stock.quantity + quantity_recieved,2)
                     closing_stock.save()
                     print("same rec",closing_stock.quantity)
                 except:
-                    closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit).order_by('-dailydate').first()
+                    closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate__lt=recieve_date).order_by('-dailydate').first()
  
                     closing_stock= ChemicalsClosingStock(
                         color = get_object_or_404(Color,id=int(prevRec.color.id)),
                         quantity = round(closing_stock_prev.quantity + quantity_recieved,2),
                         unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                         rate = prevRec.rate,
-                        dailydate = datetime.date.today()
+                        dailydate = recieve_date
                     )
                     closing_stock.save()
                     print("exc")
 
+                godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,state=godown)
+                godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
+                godown_color.rate = (godown_color.rate + prevRec.rate)/2
+                godown_color.save()
+                print("godown")
             except:
                 godown_color = ChemicalsGodownLooseMergeStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
@@ -4165,7 +4204,7 @@ def goodsApprove(request,id):
                     quantity = round(quantity_recieved,2),
                     unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
                     rate = prevRec.rate,
-                    dailydate = datetime.date.today()
+                    dailydate = recieve_date
                 )
                 closing_stock.save()
 
@@ -4236,9 +4275,72 @@ def leaseApprove(request,id):
     quantity_recieved = round(float(request.POST.get("quantitylease")),2)
     l_id = request.POST.get('leasenumber')
     loose_godown = get_object_or_404(ChemicalsLooseGodownMaster,id=int(l_id))
-
+    recieve_date=datetime.datetime.strptime(request.POST.get('movingdate'),'%Y-%m-%d').date()
     if(prevRec.quantity == quantity_recieved):
-        
+        try:
+            closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+            print(closing_stock_g)
+            closing_stock_g.quantity = round(closing_stock_g.quantity-quantity_recieved,2)
+            print("sa")
+            closing_stock_g.save()
+        except:
+            print("h1")
+            closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
+            print("h2")
+            newpg= ChemicalsClosingStockperGodown(
+                color = get_object_or_404(Color,id=int(prevRec.color.id)),
+                quantity = round(closing_stock_g.quantity -  quantity_recieved,2),
+                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+                rate = prevRec.rate,
+                dailydate = recieve_date,
+                godown=prevRec.state
+            )
+            newpg.save()
+            print("h3")
+        try:
+            
+            print("1")
+            closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+            print(closing_stock_pg)
+            closing_stock_pg.quantity=round(closing_stock_pg.quantity + quantity_recieved,2)
+            print("4")
+            closing_stock_pg.save()
+            print("5")
+
+        except:
+            print("here")
+            # try:
+            #     closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+            #     closing_stock_g.quantity = round(closing_stock_g.quantity-quantity_recieved,2)
+            #     closing_stock_g.save()
+            # except:
+            #     closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate_lt = recieve_date).order_by('-dailydate').first()
+            #     newpg= ChemicalsClosingStockperGodown(
+            #         color = get_object_or_404(Color,id=int(prevRec.color.id)),
+            #         quantity = round(closing_stock_g.quantity -  quantity_recieved,2),
+            #         unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+            #         rate = prevRec.rate,
+            #         dailydate = recieve_date,
+            #         godown=prevRec.state
+            #     )
+            #     newpg.save()
+            try:
+                closing_stock_prev_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown,color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
+                pq=closing_stock_prev_pg.quantity
+            except:
+                pq=0
+                        
+    
+            newpg= ChemicalsClosingStockperGodown(
+                color = get_object_or_404(Color,id=int(prevRec.color.id)),
+                quantity = round(pq + quantity_recieved,2),
+                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+                rate = prevRec.rate,
+                dailydate = recieve_date,
+                loose_godown=loose_godown
+                )
+            newpg.save()
+          ####################3  
         try:
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
@@ -4264,6 +4366,63 @@ def leaseApprove(request,id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         quantity_remaining = round(prevRec.quantity - quantity_recieved,2)
+        try:
+            try:
+                print("21")
+                closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+                print(closing_stock_g)
+                closing_stock_g.quantity = round(closing_stock_g.quantity-quantity_recieved,2)
+                print("23")
+                closing_stock_g.save()
+                print("24")
+            except:
+                closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
+                newpg= ChemicalsClosingStockperGodown(
+                    color = get_object_or_404(Color,id=int(prevRec.color.id)),
+                    quantity = round(closing_stock_g.quantity -  quantity_recieved,2),
+                    unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+                    rate = prevRec.rate,
+                    dailydate = recieve_date,
+                    godown=prevRec.state
+                )
+                newpg.save()
+            closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+            closing_stock_pg.quantity=round(closing_stock_pg.quantity + quantity_recieved,2)
+            closing_stock_pg.save()
+            
+
+        except:
+            # try:
+            #     closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
+            #     closing_stock_g.quantity = round(closing_stock_g.quantity-quantity_recieved,2)
+            #     closing_stock_g.save()
+            # except:
+            #     closing_stock_g = ChemicalsClosingStockperGodown.objects.filter(godown=prevRec.state,color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
+            #     newpg= ChemicalsClosingStockperGodown(
+            #         color = get_object_or_404(Color,id=int(prevRec.color.id)),
+            #         quantity = round(closing_stock_g.quantity -  quantity_recieved,2),
+            #         unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+            #         rate = prevRec.rate,
+            #         dailydate = recieve_date,
+            #         godown=prevRec.state
+            #     )
+            #     newpg.save()
+            try:
+                closing_stock_prev_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown,color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
+                pq=closing_stock_prev_pg.quantity
+            except:
+                pq=0
+                        
+    
+            newpg= ChemicalsClosingStockperGodown(
+                color = get_object_or_404(Color,id=int(prevRec.color.id)),
+                quantity = round(pq + quantity_recieved,2),
+                unit = get_object_or_404(ChemicalsUnitsMaster,id=int(prevRec.unit.id)),
+                rate = prevRec.rate,
+                dailydate = recieve_date,
+                loose_godown=loose_godown
+                )
+            newpg.save()
         try:
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
@@ -4327,6 +4486,43 @@ def savechangeLooseGodown(request,id):
         new_merge_stock_other.save()
     merge_stock.quantity=round(merge_stock.quantity - move_quantity)
     merge_stock.save()
+
+
+    prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=merge_stock.loose_godown_state,color=merge_stock.color,unit=merge_stock.unit).order_by('-dailydate').first()
+    prevlg.quantity = round(prevlg.quantity - move_quantity,2)
+    prevlg.save()
+    try:
+            
+        print("1")
+        closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_object,color=merge_stock.color,unit=merge_stock.unit,dailydate=prevlg.dailydate).order_by('-dailydate').first()
+        print(closing_stock_pg)
+        closing_stock_pg.quantity=round(closing_stock_pg.quantity + move_quantity,2)
+        print("4")
+        closing_stock_pg.save()
+        print("5")
+
+    except:
+        print("here")
+            
+        try:
+            closing_stock_prev_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_object,color=merge_stock.color,unit=merge_stock.unit,dailydate__lt = prevlg.dailydate).order_by('-dailydate').first()
+            pq=closing_stock_prev_pg.quantity
+        except:
+            pq=0
+                        
+    
+        newpg= ChemicalsClosingStockperGodown(
+            color = get_object_or_404(Color,id=int(merge_stock.color.id)),
+            quantity = round(pq + move_quantity,2),
+            unit = get_object_or_404(ChemicalsUnitsMaster,id=int(merge_stock.unit.id)),
+            rate = merge_stock.rate,
+            dailydate = prevlg.dailydate,
+            loose_godown=loose_object
+            )
+        newpg.save()
+
+
+
     messages.success(request,"Loose godown name changed")
     return redirect('/goodslease')
 
@@ -4360,9 +4556,18 @@ def savelease(request,id):
         stock.save()
         stockgodown.quantity=round(stockgodown.quantity+diff,2)
         stockgodown.save()
-        messages.success(request,"Loose Godown quantity edited")
-        return redirect('/goodslease')
+    
+    prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=stock.loose_godown_state,color=stock.color,unit=stock.unit).order_by('-dailydate').first()
+    prevlg.quantity = round(prevlg.quantity - diff,2)
+    prevlg.save()
 
+    prevgodown1 = ChemicalsClosingStockperGodown.objects.filter(godown=godown_object,color=stock.color,unit=stock.unit).order_by('-dailydate').first()
+    prevgodown1.quantity = round(prevgodown1.quantity + diff)
+    prevgodown1.save()
+
+    messages.success(request,"Loose Godown quantity edited")
+    return redirect('/goodslease')
+    
 
 def renderDailyConsumptionLease1(request):                                                      ####repair required 
     lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
@@ -4445,6 +4650,16 @@ def saveDailyConsumption(request,id):
         
     except:
         pass
+
+    try:
+        all_prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=rec.loose_godown,color=rec.color,unit=rec.unit,dailydate__in=selected_dates).order_by('dailydate')
+                
+        for a in all_prevlg:
+           
+            a.quantity=round((a.quantity + rec.quantity - new_q),2)
+            a.save()
+    except:
+        pass
     rec.quantity_remaining=round((rec.quantity_remaining+rec.quantity-new_q),2)
     rec.quantity=new_q
 
@@ -4473,9 +4688,51 @@ def consume(request,name):
 
     print(selected_dates)
     for c in colors:
+        
         if(float(request.POST.get(str(c.id)))>c.quantity):
             flag = flag + 1
             continue
+
+        try:
+            prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown_object,color=c.color,unit=c.unit,dailydate__lte=str(consumingdate)).order_by('-dailydate').first()
+            
+
+            if(str(datetime.date.today()) != consumingdate):
+                print("diff")
+                all_prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown_object,color=c.color,unit=c.unit,dailydate__in=selected_dates).order_by('dailydate')
+                
+                for a in all_prevlg:
+                    print("d")
+                    a.quantity=round(a.quantity - float(request.POST.get(str(c.id))),2)
+                    a.save()
+                recbefore = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown_object,color=c.color,unit=c.unit,dailydate__in=selected_dates).order_by('-dailydate').first()   
+                if(str(datetime.date.today()) != str(recbefore.dailydate)):
+                    new_lg = ChemicalsClosingStockperGodown(
+                        color=c.color,
+                        unit=c.unit,
+                        quantity=recbefore.quantity,
+                        dailydate=str(datetime.date.today()),
+                        rate=c.rate,
+                        loose_godown = loose_godown_object
+                    )
+                    new_lg.save()
+            else:
+                if(str(prevlg.dailydate)!=str(datetime.date.today())):
+                    new_lg = ChemicalsClosingStockperGodown(
+                        color=c.color,
+                        unit=c.unit,
+                        quantity=round((prevlg.quantity - float(request.POST.get(str(c.id)))),2),
+                        dailydate=str(datetime.date.today()),
+                        rate=c.rate,
+                        loose_godown = loose_godown_object
+                    )
+                    new_lg.save()
+                else:    
+                    prevlg.quantity = round(prevlg.quantity - float(request.POST.get(str(c.id))),2)
+                    prevlg.save()
+
+        except:
+            pass
         try:
             closing_stock = ChemicalsClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__lte=str(consumingdate)).order_by('-dailydate').first()
             print(str(closing_stock.dailydate),closing_stock.quantity,type(closing_stock.dailydate))
@@ -4591,7 +4848,9 @@ def renderClosingStock(request):
 
 def renderColorReportFilter(request):
     d=str(datetime.date.today())
-    return render(request,'./color/reportfilter.html',{'d':d})
+    godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
+    loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
+    return render(request,'./color/reportfilter.html',{'d':d,'godowns':godowns,'loose':loose_godowns})
 
 # def colorReport(request):
 #     begin = request.POST.get("start_date")
@@ -4660,6 +4919,86 @@ def renderColorReportFilter(request):
 #     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
 
 
+########### previous working color report
+
+# def colorReport(request):
+#     begin = request.POST.get("start_date")
+#     end = request.POST.get("end_date")
+#     if(begin!="" or end!=""):
+        
+#         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+#         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+#         selected_dates=[]
+        
+#     # selected_qualities=[]
+#         next_day = begin
+#         while True:
+#             if next_day > end:
+#                 break
+    
+        
+    
+#             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+#             next_day += datetime.timedelta(days=1)
+#     datalist=[]
+#     colors= Color.objects.all()
+#     units= ChemicalsUnitsMaster.objects.all()
+#     for c in colors:
+#         for u in units:
+#             try:
+#                 l=[]
+#                 try:
+#                     first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
+#                     l.append(c.color)
+#                     l.append(u.unit)
+#                     l.append(first_record.quantity)
+#                 except:
+
+#                     l.append(0)
+#                 try:
+#                     last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
+#                 except:
+#                     last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
+                
+                
+#                 try:
+#                     records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
+                    
+                    
+#                     quantity = 0
+#                     for rec in records:
+#                         quantity = quantity+rec.quantity
+                
+#                     l.append(quantity)
+#                 except:
+#                     l.append(0)
+                
+#                 l.append(last_record.quantity)
+#                 new_stock=0
+#                 try:
+                    
+#                     #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
+#                     neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u)
+#                     print(neworders)
+#                     for i in neworders:
+                        
+#                         new_stock=new_stock+i.quantity
+                    
+#                 except:
+#                     pass
+
+#                 l.append(new_stock)
+#                 datalist.append(l)
+#                 # print(first_record.quantity,first_record.con_date)
+#             except:
+#                 pass
+#     begin=str(begin)
+#     end=str(end)
+#     display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+#     display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
+#     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
+
+
 def colorReport(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
@@ -4682,52 +5021,170 @@ def colorReport(request):
     datalist=[]
     colors= Color.objects.all()
     units= ChemicalsUnitsMaster.objects.all()
+
+    godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
+    loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
+
+    selected_godowns=[]
+    selected_loose=[]
+    for g in godowns:
+        if(request.POST.get(g.godown)!=None):
+            selected_godowns.append(get_object_or_404(ChemicalsGodownsMaster,id=int(request.POST.get(g.godown))))
+
+    for g in loose_godowns:
+        if(request.POST.get(g.lease)!=None):
+            selected_loose.append(get_object_or_404(ChemicalsLooseGodownMaster,id=int(request.POST.get(g.lease))))
+
+    
+    if selected_loose==[] and selected_godowns == []:
+        for g in loose_godowns:
+            selected_loose.append(g)
+        for g in godowns:
+            selected_godowns.append(g)
+
+    # if selected_godowns == []:
+    #     for g in godowns:
+    #         selected_godowns.append(g)
+
     for c in colors:
         for u in units:
             try:
                 l=[]
+                
+    #######opening stock
                 try:
-                    first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
                     l.append(c.color)
                     l.append(u.unit)
-                    l.append(first_record.quantity)
+                    quan=0
+                    for g in selected_godowns:
+                        first_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,godown=g).order_by('-dailydate').first()
+                        try:
+                            quan=quan+first_record.quantity
+                        except:
+                            pass
+                    
+                    for lg in selected_loose:
+                        first_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
+                        try:
+                            quan=quan+first_record.quantity
+                        except:
+                            pass
+                    
+                    l.append(quan)
                 except:
 
                     l.append(0)
-                try:
-                    last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
-                except:
-                    last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
                 
-                
-                try:
-                    records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
-                    
-                    
-                    quantity = 0
-                    for rec in records:
-                        quantity = quantity+rec.quantity
-                
-                    l.append(quantity)
-                except:
-                    l.append(0)
-                
-                l.append(last_record.quantity)
+#########new stock
                 new_stock=0
-                try:
-                    print("this")
-                    #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
-                    neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u)
-                    print(neworders)
-                    for i in neworders:
+                if selected_loose==[] and selected_godowns!=[]:
+                    try:
                         
-                        new_stock=new_stock+i.quantity
+                        #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
+                        neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
+                        
+                        for i in neworders:
+                            
+                            new_stock=new_stock+i.quantity
+                        
+                    except:
+                        pass
+                elif selected_godowns==[] and selected_loose!=[]:
+                    try:
+                        records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
+                        
+                        
+                        quantity = 0
+                        for rec in records:
+                            quantity = quantity+rec.quantity
                     
+                        consumed_stock=quantity
+                        
+                    except:
+                        consumed_stock=0
+                    try:
+                        q=0
+                        for lg in selected_loose:
+                            lstock = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
+                            fstock = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
+                            print(fstock)
+                            if fstock:
+                                
+                                q= q+lstock.quantity - fstock.quantity
+                            else:
+                                q=q+lstock.quantity
+                        
+                        new_stock=q+consumed_stock
+                    except:
+                        pass
+
+                
+                else:
+                    try:
+                        
+                        #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
+                        neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
+                        
+                        for i in neworders:
+                            
+                            new_stock=new_stock+i.quantity
+                        
+                    except:
+                        pass
+                l.append(new_stock)
+
+#############consumption
+                if selected_godowns!=[] and selected_loose==[]:
+                    l.append("loop")
+                elif selected_loose!=[] and selected_godowns==[]:
+                    try:
+                        records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
+                        
+                        
+                        quantity = 0
+                        for rec in records:
+                            quantity = quantity+rec.quantity
+                    
+                        l.append(quantity)
+                    except:
+                        l.append(0)
+                else:
+                    try:
+                        records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
+                        
+                        
+                        quantity = 0
+                        for rec in records:
+                            quantity = quantity+rec.quantity
+                    
+                        l.append(quantity)
+                    except:
+                        l.append(0)
+#############closing stock
+                try:
+                    lquan=0
+                    for g in selected_godowns:
+                        last_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,godown=g).order_by('-dailydate').first()
+                        try:
+                            lquan=lquan+last_record.quantity
+                        except:
+                            pass
+                    for s in selected_loose:
+                        last_record1 = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,loose_godown=s).order_by('-dailydate').first()
+                        try:
+                            lquan=lquan+last_record1.quantity
+                        except:
+                            pass
                 except:
                     pass
-
-                l.append(new_stock)
-                datalist.append(l)
+                
+                
+                l.append(lquan)
+                
+                if l[2]==0 and l[3]==0 and l[5]==0:
+                    pass
+                else:
+                    datalist.append(l)
                 # print(first_record.quantity,first_record.con_date)
             except:
                 pass
@@ -4736,6 +5193,7 @@ def colorReport(request):
     display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
     display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
+
 
 
 ##################################### Module 3 - Employee ######################################
@@ -4799,6 +5257,7 @@ def renderAddEmpCategory(request):
     return render(request,'./employee/addemployeecategory.html',{'records':cities})
 
 def saveEmpCategory(request):
+    q=request.POST.get("ada")
     p = request.POST.get("emp-category")
     p = p.upper()
     p = p.strip()
