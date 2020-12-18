@@ -3072,7 +3072,10 @@ def export_report_xls(request):
             tally_than,round(tally_mtrs,2)
             ]
                 
-            final_qs.append(d1) 
+            if(d1[1]==0 and d1[2]==0 and d1[3]==0 and d1[4]==0):
+                pass
+            else:
+                final_qs.append(d1) 
         total_all=["-",round(prthan,2),round(prmtrs,2),
             round(rethan,2),round(remtrs,2),
             round(tothan,2),round(tomtrs,2),
