@@ -16,10 +16,12 @@
       <br>
       <!-- Filter End -->
       <div class="download">
-        <form method="POST" action="#" enctype="multipart/form-data">
+        <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
           {% csrf_token %}
           <input type="date" name="start_date" value="{{begin}}" hidden>
           <input type="date" name="end_date" value="{{end}}" hidden>
+          <input type="text" name="selected_godowns" value="{{selected_godowns_id}}" hidden>
+          <input type="text" name="selected_loose" value="{{selected_loose_id}}" hidden>
           <button class="download-button">Print</button>
         </form>
       </div>

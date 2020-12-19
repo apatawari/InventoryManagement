@@ -2541,24 +2541,22 @@ def export_filter_all_xls(request):
                 selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
                 next_day += datetime.timedelta(days=1)
 
-            
-            print(begin,end)
             # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
             columns = [ 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Mobile No']
-            records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no')
+            records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no').order_by('payment_date')
     elif(stateur=="banksheet"): 
         
         file_name="Bank Sheet"   
         # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
         columns = [ 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Mobile No']
-        records_list=MonthlyPayment.objects.all().values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no')
+        records_list=MonthlyPayment.objects.all().values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no').order_by('payment_date')
 
     elif(stateur=="salarysheet"): 
         
         file_name="Salary Sheet"   
         # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
         columns = [ 'Name', 'Father Name', 'Bank Name', 'Account No', 'IFSC Code', 'Amount', 'Aadhar No','Contractor Name','Phone No','Address','City','Payment date']
-        records_list=MonthlyPayment.objects.all().values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date')
+        records_list=MonthlyPayment.objects.all().values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date').order_by('payment_date')
 
     elif (stateur=="salarysheetfiltered"):
         file_name="Salary Sheet"
@@ -2580,7 +2578,7 @@ def export_filter_all_xls(request):
             
             # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
             columns = [ 'Name', 'Father Name', 'Bank Name', 'Account No', 'IFSC Code', 'Amount', 'Aadhar No','Contractor Name','Phone No','Address','City','Payment date']
-            records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date')
+            records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date').order_by('payment_date')
 
 
     response = HttpResponse(content_type='application/ms-excel')
@@ -3088,78 +3086,294 @@ def export_report_xls(request):
         file_name="Color-Report"
         begin=request.POST.get('start_date')
         end=request.POST.get('end_date')
-        columns = ['Color', 'unit', 'opening stock on %s'%str(begin), 'stock purchased', 'total stock', 'quantity consumed','closing stock on %s'%str(end)]
+        columns = ['Color', 'unit', 'opening stock on %s'%str(begin), 'stock purchased', 'total stock', 'quantity Consumed/Moved','closing stock on %s'%str(end)]
 
         print(begin)
         
+        begin = request.POST.get("start_date")
+        end = request.POST.get("end_date")
+        if(begin!="" or end!=""):
+            
+            begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+            end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+            selected_dates=[]
+            
+        # selected_qualities=[]
+            next_day = begin
+            while True:
+                if next_day > end:
+                    break
         
-        begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
-        end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
-        selected_dates=[]
+            
         
-    # selected_qualities=[]
-        next_day = begin
-        while True:
-            if next_day > end:
-                break
-    
-        
-    
-            selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
-            next_day += datetime.timedelta(days=1)
+                selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+                next_day += datetime.timedelta(days=1)
         datalist=[]
         colors= Color.objects.all()
         units= ChemicalsUnitsMaster.objects.all()
+
+        godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
+        loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
+
+        selected_godowns_id = request.POST.get('selected_godowns')
+        selected_godowns_id = ast.literal_eval(selected_godowns_id)
+
+        selected_loose_id = request.POST.get('selected_loose')
+        selected_loose_id = ast.literal_eval(selected_loose_id)
+
+        selected_godowns=[]
+        selected_loose=[]
+        for g in selected_godowns_id:
+            selected_godowns.append(get_object_or_404(ChemicalsGodownsMaster,id=int(g)))
+
+        for g in selected_loose_id:
+            selected_loose.append(get_object_or_404(ChemicalsLooseGodownMaster,id=int(g)))
+
+        
+        if selected_loose==[] and selected_godowns == []:
+            for g in loose_godowns:
+                selected_loose.append(g)
+            for g in godowns:
+                selected_godowns.append(g)
+
+        # if selected_godowns == []:
+        #     for g in godowns:
+        #         selected_godowns.append(g)
+
         for c in colors:
             for u in units:
                 try:
                     l=[]
+                    
+        #######opening stock
                     try:
-                        first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
                         l.append(c.color)
                         l.append(u.unit)
-                        l.append(first_record.quantity)
+                        quan=0
+                        for g in selected_godowns:
+                            first_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,godown=g).order_by('-dailydate').first()
+                            try:
+                                quan=quan+first_record.quantity
+                            except:
+                                pass
+                        
+                        for lg in selected_loose:
+                            first_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
+                            try:
+                                quan=quan+first_record.quantity
+                            except:
+                                pass
+                        
+                        l.append(quan)
                     except:
 
                         l.append(0)
                     
+    #########new stock
                     new_stock=0
+                    if selected_loose==[] and selected_godowns!=[]:
+                        try:
+                            
+                            #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
+                            neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
+                            
+                            for i in neworders:
+                                
+                                new_stock=new_stock+i.quantity
+                            
+                        except:
+                            pass
+                    elif selected_godowns==[] and selected_loose!=[]:
+                        try:
+                            records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
+                            
+                            
+                            quantity = 0
+                            for rec in records:
+                                quantity = quantity+rec.quantity
+                        
+                            consumed_stock=quantity
+                            
+                        except:
+                            consumed_stock=0
+                        try:
+                            q=0
+                            for lg in selected_loose:
+                                lstock = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
+                                fstock = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
+                                print(fstock)
+                                if fstock:
+                                    
+                                    q= q+lstock.quantity - fstock.quantity
+                                else:
+                                    q=q+lstock.quantity
+                            
+                            new_stock=q+consumed_stock
+                        except:
+                            pass
+
+                    
+                    else:
+                        try:
+                            
+                            #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
+                            neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
+                            
+                            for i in neworders:
+                                
+                                new_stock=new_stock+i.quantity
+                            
+                        except:
+                            pass
+                    l.append(new_stock)
+
+####################total stock
+                    x=l[2]+l[3]
+                    l.append(round(x,2))
+
+#######################closing stock calculations
+
                     try:
-                        neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
-                        for i in neworders:
-                            new_stock=new_stock+i.quantity
+                        lquan=0
+                        for g in selected_godowns:
+                            last_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,godown=g).order_by('-dailydate').first()
+                            try:
+                                lquan=lquan+last_record.quantity
+                            except:
+                                pass
+                        for s in selected_loose:
+                            last_record1 = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,loose_godown=s).order_by('-dailydate').first()
+                            try:
+                                lquan=lquan+last_record1.quantity
+                            except:
+                                pass
                     except:
                         pass
 
-                    l.append(new_stock)
-                    l.append(new_stock+l[-1])
-                    try:
-                        last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
-                    except:
-                        last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
-                    
-                    
-                    try:
-                        records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
+    #############consumption
+                    if selected_godowns!=[] and selected_loose==[]:
+                        x=l[2]+l[3]-lquan
+                        l.append(round(x,2))
+                    elif selected_loose!=[] and selected_godowns==[]:
+                        try:
+                            records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
+                            
+                            
+                            quantity = 0
+                            for rec in records:
+                                quantity = quantity+rec.quantity
                         
+                            l.append(quantity)
+                        except:
+                            l.append(0)
+                    else:
+                        try:
+                            records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
+                            
+                            
+                            quantity = 0
+                            for rec in records:
+                                quantity = quantity+rec.quantity
                         
-                        quantity = 0
-                        for rec in records:
-                            quantity = quantity+rec.quantity
-                    
-                        l.append(quantity)
+                            l.append(quantity)
+                        except:
+                            l.append(0)
+    #############closing stock
+                    try:
+                        lquan=0
+                        for g in selected_godowns:
+                            last_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,godown=g).order_by('-dailydate').first()
+                            try:
+                                lquan=lquan+last_record.quantity
+                            except:
+                                pass
+                        for s in selected_loose:
+                            last_record1 = ChemicalsClosingStockperGodown.objects.filter(dailydate__lte=selected_dates[-1],color = c,unit = u,loose_godown=s).order_by('-dailydate').first()
+                            try:
+                                lquan=lquan+last_record1.quantity
+                            except:
+                                pass
                     except:
-                        l.append(0)
+                        pass
                     
-                    l.append(last_record.quantity)
-                    # new_stock=(l[4]-l[3])
-                    # if(new_stock>0):
-                    #     l.append(new_stock)
                     
-                    datalist.append(l)
+                    l.append(lquan)
+                    
+                    if l[2]==0 and l[3]==0 and l[5]==0:
+                        pass
+                    else:
+                        datalist.append(l)
                     # print(first_record.quantity,first_record.con_date)
                 except:
                     pass
+        
+    #     begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
+    #     end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
+    #     selected_dates=[]
+        
+    # # selected_qualities=[]
+    #     next_day = begin
+    #     while True:
+    #         if next_day > end:
+    #             break
+    
+        
+    
+    #         selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
+    #         next_day += datetime.timedelta(days=1)
+    #     datalist=[]
+    #     colors= Color.objects.all()
+    #     units= ChemicalsUnitsMaster.objects.all()
+    #     for c in colors:
+    #         for u in units:
+    #             try:
+    #                 l=[]
+    #                 try:
+    #                     first_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u).order_by('-dailydate').first()
+    #                     l.append(c.color)
+    #                     l.append(u.unit)
+    #                     l.append(first_record.quantity)
+    #                 except:
+
+    #                     l.append(0)
+                    
+    #                 new_stock=0
+    #                 try:
+    #                     neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
+    #                     for i in neworders:
+    #                         new_stock=new_stock+i.quantity
+    #                 except:
+    #                     pass
+
+    #                 l.append(new_stock)
+    #                 l.append(new_stock+l[-1])
+    #                 try:
+    #                     last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
+    #                 except:
+    #                     last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
+                    
+                    
+    #                 try:
+    #                     records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
+                        
+                        
+    #                     quantity = 0
+    #                     for rec in records:
+    #                         quantity = quantity+rec.quantity
+                    
+    #                     l.append(quantity)
+    #                 except:
+    #                     l.append(0)
+                    
+    #                 l.append(last_record.quantity)
+    #                 # new_stock=(l[4]-l[3])
+    #                 # if(new_stock>0):
+    #                 #     l.append(new_stock)
+                    
+    #                 datalist.append(l)
+    #                 # print(first_record.quantity,first_record.con_date)
+    #             except:
+    #                 pass
         
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s.xls'%file_name   #"Intransit-all.xls"
@@ -4741,7 +4955,9 @@ def consume(request,name):
 
     print(selected_dates)
     for c in colors:
-        
+        if(request.POST.get(str(c.id))==""):
+            
+            continue
         if(float(request.POST.get(str(c.id)))>c.quantity):
             flag = flag + 1
             continue
@@ -5080,14 +5296,16 @@ def colorReport(request):
 
     selected_godowns=[]
     selected_loose=[]
+    selected_godowns_id=[]
+    selected_loose_id=[]
     for g in godowns:
         if(request.POST.get(g.godown)!=None):
             selected_godowns.append(get_object_or_404(ChemicalsGodownsMaster,id=int(request.POST.get(g.godown))))
-
+            selected_godowns_id.append(int(request.POST.get(g.godown)))
     for g in loose_godowns:
         if(request.POST.get(g.lease)!=None):
             selected_loose.append(get_object_or_404(ChemicalsLooseGodownMaster,id=int(request.POST.get(g.lease))))
-
+            selected_loose_id.append(int(request.POST.get(g.lease)))
     
     if selected_loose==[] and selected_godowns == []:
         for g in loose_godowns:
@@ -5245,7 +5463,7 @@ def colorReport(request):
     end=str(end)
     display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
     display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-    return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
+    return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end,'selected_godowns_id':selected_godowns_id,'selected_loose_id':selected_loose_id})
 
 
 
@@ -5567,6 +5785,8 @@ def makePayment(request):
 
     for e_id in selected_emp:
         emp=get_object_or_404(Employee,id=int(e_id))
+        if(request.POST.get(str(emp.phone_no))==""):
+            continue
         try:
             last_pay = MonthlyPayment.objects.filter(employee=emp).order_by('-payment_date').first()
             last_pay_date = last_pay.payment_date
@@ -5583,7 +5803,7 @@ def makePayment(request):
     return redirect('/banksheet')
 
 def bankSheet(request):
-    payments=MonthlyPayment.objects.all()
+    payments=MonthlyPayment.objects.all().order_by('-payment_date')
     return render(request,'./employee/banksheet.html',{'payments':payments})
 
 def bankSheet2(request):
@@ -5603,14 +5823,14 @@ def bankSheet2(request):
             next_day += datetime.timedelta(days=1)
 
         
-        payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates)
+        payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates).order_by('payment_date')
         begin=str(begin)
         end=str(end)
 
         return render(request,'./employee/banksheet.html',{'payments':payments,'begin':begin,'end':end})
 
 def salarySheet(request):
-    payments=MonthlyPayment.objects.all()
+    payments=MonthlyPayment.objects.all().order_by('-payment_date')
     return render(request,'./employee/salarysheet.html',{'payments':payments})
 
 def salarySheet2(request):
@@ -5630,7 +5850,7 @@ def salarySheet2(request):
             next_day += datetime.timedelta(days=1)
 
         
-        payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates)
+        payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates).order_by('payment_date')
 
         begin=str(begin)
         end=str(end)
