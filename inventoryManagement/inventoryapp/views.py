@@ -18,10 +18,7 @@ import ast
 from django.template.loader import render_to_string
 
 
-
-#from django.shortcuts import render_to_response
-
-
+####### EVENT HANDLERS ########
 # Bad Request 400
 def bad_request(request, exception):
     response = render('400.html', context_instance=RequestContext(request))
@@ -50,6 +47,8 @@ def server_error(request):
 
     return response
 
+###### GREY MODULE ######
+##### HOMEPAGE #####
 def index(request):
     recs=ChemicalsAllOrders.objects.all()
     idlist=[]
@@ -91,16 +90,12 @@ def index(request):
 def greyhome(request):
     return render(request, 'greyhome.html')
 
+###### BACK BUTTONS ######
 def back1(request):
     return redirect('/intransit')
 
 def back2checking(request):
     return redirect('/checking')
-# def back2processing(request):
-#     return redirect('/inprocess')
-# def back2ready(request):
-#     return redirect('/readytoprint')
-
 
 def back(request,state):
     print(state)
@@ -115,7 +110,6 @@ def back(request,state):
     elif state == "Ordered" or state == "In Transit":
         return redirect('/ordergeneration')
     
-
 def backtoorders(request,state):
     godowns=ChemicalsGodownsMaster.objects.all()
     
@@ -137,7 +131,7 @@ def backtoorders(request,state):
     elif state in l_list:
         return redirect('/goodslease')
     
-
+###### GREY UPLOAD EXCEL SHEET ######
 def upload(request):
     counter = 0
     if request.method == 'POST':
@@ -221,6 +215,7 @@ def upload(request):
 
     return redirect('/greyhome')
 
+###### GREY - INTRANSIT STOCK ######
 def showIntransit(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')
     
@@ -244,7 +239,7 @@ def showIntransit(request):
 
     return render(request, 'intransit.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
     
-
+###### GREY - GODOWN STOCK ######
 def showGodown(request):
     records_list=Record.objects.filter(state="Godown").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
@@ -266,6 +261,7 @@ def showGodown(request):
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
     return render(request, 'godown.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
+###### GREY - REQUEST GODOWN STOCK ######
 def showGodownRequest(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
@@ -277,11 +273,13 @@ def showGodownRequest(request):
 
     return render(request, 'godownrequest.html',{'records':records,'filter':records_filter})
 
-def record(request,id):                             ######edit form for intransit record
+###### Edit form for intransit record ######
+def record(request,id):                             
     rec=get_object_or_404(Record, id=id)
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
     return render(request, 'record.html', {'record':rec,'qualities':qualities})
 
+###### GODOWN APPROVE FORM ######
 def goDownApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=datetime.datetime.strptime(rec.bill_date,'%b %d,%Y').strftime('%Y-%m-%d')
@@ -291,7 +289,8 @@ def goDownApprove(request,id):
     d=str(d)
     return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
 
-def edit(request,id):                                       #########edit in transit record
+ ###### Edit in transit record ######
+def edit(request,id):                                      
     if request.method=="POST":
         record = get_object_or_404(Record,id=id)
         prevBale=record.bale
@@ -326,6 +325,7 @@ def edit(request,id):                                       #########edit in tra
         return redirect('/intransit')
 
 
+##### NEXT AND PREVIOUS BUTTONS #####
 def nextRec(request,id):
     rec=get_object_or_404(Record, id=id+1)
     return render(request, 'record.html', {'record':rec})
@@ -334,7 +334,7 @@ def prevRec(request,id):
     rec=get_object_or_404(Record, id=id-1)
     return render(request, 'record.html', {'record':rec})
 
-#Intransit To Godown
+##### Intransit To Godown #####
 def approveBale(request,id): 
     prevRec = get_object_or_404(Record,id=id)
     bale_recieved=request.POST.get("bale_recieved")
@@ -404,6 +404,7 @@ def approveBale(request,id):
 
 #quality2 = request.POST.get("quality2")
 
+############ GREY: CHECKING OF STOCKS START #################
 def showChecked(request):
     records_list=Record.objects.filter(state="Checked").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
@@ -611,6 +612,7 @@ def approveCheck(request,id):
 
     return redirect('/godown')
 
+##### FUNCTION TO SEND STOCK BACK TO PREVIOUS STATE #####
 def changeStateBack(request,id):
     rec=get_object_or_404(Record,id=id)
     if rec.state=="Checked":
@@ -626,11 +628,9 @@ def changeStateBack(request,id):
         rec.save()
         return redirect('/readytoprint')
     
-
 def editChecked(request,id):
     rec=get_object_or_404(Record, id=id)
     return render(request, 'editchecked.html', {'record':rec})
-
 
 def checkedEdit(request,id):
     if request.method=="POST":
@@ -655,8 +655,9 @@ def checkedEdit(request,id):
             messages.success(request,"Data Updated Successfully")
         #print(record.bill_date)
         return redirect('/checking')
+############ GREY: CHECKING OF STOCKS END #################
 
-#Checker and Quality and Processing party master
+############ GREY: Checker(EMPLOYEE), Quality and Processing party master ##########
 def renderAddChecker(request):
     all_checker = GreyCheckerMaster.objects.all().order_by('checker')
     #return render(request,'addquality.html',{'allqualities':all_qualities})
@@ -683,7 +684,6 @@ def saveChecker(request):
         messages.success(request,"Checker added")
     return redirect('/addchecker')
 
-
 def deleteChecker(request,id):
     try:
         GreyCheckerMaster.objects.filter(id=id).delete()
@@ -706,7 +706,7 @@ def editChecker(request,id):
     messages.success(request,"Checker edited")
     return redirect('/addchecker')
 
-#########
+######### GREY - CUT RANGE MASTER ########
 
 def renderAddRange(request):
     all_checker = GreyCutRange.objects.all().order_by('range1')
@@ -716,7 +716,6 @@ def renderAddRange(request):
     checkers = paginator.get_page(page)
 
     return render(request,'addrate.html',{'records':checkers})
-
 
 def saveRange(request):
     r1=float(request.POST.get("range_1"))
@@ -748,7 +747,9 @@ def deleteRange(request,id):
     GreyCutRange.objects.filter(id=id).delete()
     messages.success(request,"Range deleted")
     return redirect('/addrate')
-############
+
+
+############ GREY : QUALITY MASTER ############
 
 def renderAddQuality(request):
     all_qualities = GreyQualityMaster.objects.all().order_by('qualities')
@@ -799,7 +800,8 @@ def editQuality(request,id):
     messages.success(request,"Grey Quality edited")
     return redirect('/addquality')
 
-#######
+####### GREY : ARRIVAL LOCATION MASTER #######
+
 def renderAddLocation(request):
     location_all = GreyArrivalLocationMaster.objects.all().order_by('location')
     #return render(request,'addparty.html',{'parties':parties_all})
@@ -850,7 +852,8 @@ def editArrivalLocation(request,id):
     return redirect('/addarrivallocation')
 
 
-#Processing party.......
+###### GREY : Processing House Party Master #######
+
 def renderAddParty(request):
     parties_all = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     #return render(request,'addparty.html',{'parties':parties_all})
@@ -901,8 +904,7 @@ def editProcessingParty(request,id):
     return redirect('/addparty')
 
 
-##########Transport master
-
+########## Transport Agency Master ###########
 
 def renderAddTransport(request):
     parties_all = GreyTransportMaster.objects.all().order_by('transport')
@@ -955,14 +957,10 @@ def editTransport(request,id):
     messages.success(request,"Transport Party edited")
     return redirect('/addtransport')
 
+##################################### GREY MASTER END ###########################################
 
-
-
-
-
-
-
-#processing-----
+####### GREY - PROCESSING #######
+####### GREY - Stock in Processing #######
 def showProcessing(request):
     records_list=Record.objects.filter(state="In Process").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
@@ -1081,8 +1079,10 @@ def sendInProcess(request,id):
         #print(than_in_transit,than_in_godown)
         return redirect('/checking')
 
+####### GREY - PROCESSING END #######
 
-#ready to print-----
+####### GREY - READY TO PRINT #######
+####### GREY - READY TO PRINT STOCK #######
 def showReadyToPrint(request):
     records_list=Record.objects.filter(state="Ready to print").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
@@ -1215,6 +1215,11 @@ def readyToPrint(request,id):
         #print(than_in_transit,than_in_godown)
         return redirect('/inprocess')
 
+####### GREY - READY TO PRINT END #######
+
+########################################## GREY REPORTING #################################################################
+
+############### GREY - LEDGER REPORT #################
 def reportFilter(request):
     processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     partyname =[]
@@ -1372,6 +1377,7 @@ def generateReport(request):
             data_block.append(data_row)
         return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
 
+############# PRINT LEDGER REPORT ###########
 def printLedgerExcel(request):
     selected_states=['In Process','Ready to print']
     selected_parties=[]
@@ -1970,7 +1976,7 @@ def printLedgerExcel(request):
 
 
 
-
+############## GREY - DEFECTIVE STOCK ###############
 def showDefective(request):
     records_list=Record.objects.filter(state__in=['Defect- Transport defect','Defect- Manufacturing defect'])
     records_filter = RecordFilter(request.GET,queryset=records_list)
@@ -1981,7 +1987,7 @@ def showDefective(request):
     return render(request,'defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
 
 
-# Ledger
+################## GREY -  REPORT BY CHECKER BASED ##############
 def checkerReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     checkers=Employee.objects.all().order_by('name')
@@ -2047,8 +2053,8 @@ def checkerReport(request):
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         return render(request,'checkerreport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
-###########transport report
 
+################### Transport Report ######################
 
 def transportReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
@@ -2133,7 +2139,7 @@ def transportReport(request):
 
 
 
-##########
+################### QUALITY WISE REPORT ########################
 def qualityReportFilter(request):
     qualities= GreyQualityMaster.objects.all().order_by('qualities')
     return render(request,'qualityreportfilter.html',{'qualities':qualities})
@@ -2233,8 +2239,9 @@ def qualityReport(request):
     ]
             # d=[d1,[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
     return render(request,'qualityreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities})
+################### QUALITY WISE REPORT END########################
 
-
+################### QUALITY WISE LEDGER ########################
 def qualityReport2filter(request):
     party=ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
@@ -2330,10 +2337,9 @@ def qualityReport2(request):
         return render(request,'qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
     else:
         return render(request,'qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
+################### QUALITY WISE LEDGER END########################
 
-
-#Download Excel Files
-
+############################# Download Records in Excel Files (GREY, COLOR & CHEMICAL) #######################################
 
 def export_page_xls(request):
     ur=request.META.get('HTTP_REFERER')
@@ -2362,7 +2368,7 @@ def export_page_xls(request):
         file_name="ProcessedGrey"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
         records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
-######color
+######################## color & chemical download #############################
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','godown name']
@@ -2384,7 +2390,6 @@ def export_page_xls(request):
         file_name="Color Orders"
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
         records_list=ChemicalsAllOrders.objects.all().values_list('supplier__supplier', 'order_no', 'order_date', 'color__color', 'quantity', 'rem_quantity', 'unit__unit', 'rate', 'amount', 'validation', 'state')
-
 
 
     # ur=request.META.get('HTTP_REFERER')
@@ -2757,9 +2762,9 @@ def export_all_xls(request):
     wb.save(response)
     
     return response
+###################################### RECORD DOWNLOAD END ###################################
 
-
-#############################report print
+############################# report print start ##############################
 def export_report_xls(request):
     ur=request.META.get('HTTP_REFERER')
     ur=ur.split('?')
@@ -3145,7 +3150,7 @@ def export_report_xls(request):
                 try:
                     l=[]
                     
-        #######opening stock
+        ######################### opening stock #########################################
                     try:
                         l.append(c.color)
                         l.append(u.unit)
@@ -3169,7 +3174,7 @@ def export_report_xls(request):
 
                         l.append(0)
                     
-    #########new stock
+    ################################### new stock ##################################
                     new_stock=0
                     if selected_loose==[] and selected_godowns!=[]:
                         try:
@@ -3227,11 +3232,11 @@ def export_report_xls(request):
                             pass
                     l.append(new_stock)
 
-####################total stock
+#################### total stock #################################
                     x=l[2]+l[3]
                     l.append(round(x,2))
 
-#######################closing stock calculations
+####################### closing stock calculations ##############################
 
                     try:
                         lquan=0
@@ -3250,7 +3255,7 @@ def export_report_xls(request):
                     except:
                         pass
 
-    #############consumption
+    ######################### daily consumption ####################################
                     if selected_godowns!=[] and selected_loose==[]:
                         x=l[2]+l[3]-lquan
                         l.append(round(x,2))
@@ -3278,7 +3283,7 @@ def export_report_xls(request):
                             l.append(quantity)
                         except:
                             l.append(0)
-    #############closing stock
+    ####################################### closing stock #########################################
                     try:
                         lquan=0
                         for g in selected_godowns:
@@ -3405,8 +3410,9 @@ def export_report_xls(request):
 
 
 
-###########################################     COLOR    #################################################
+###########################################     COLOR & CHEMICAL TAB   #################################################
 
+####### COLOR - SUPPLIER MASTER ########
 def renderAddColorSupplier(request):
     suppliers=ColorAndChemicalsSupplier.objects.all().order_by('supplier')
     paginator = Paginator(suppliers,10)
@@ -3468,15 +3474,13 @@ def editSupplier(request,id):
     return redirect('/addcolorsupplier')
 
 
-##Colormaster
+#################### Color - ADD CHEMICAL/COLOR MASTER ################
 def renderAddColor(request):
     suppliers=Color.objects.all().order_by('color')
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
     return render(request,'./color/addcolor.html',{'suppliers':parties})
-
-
 
 def saveColor(request):
     p = request.POST.get("color")
@@ -3518,15 +3522,13 @@ def editColor(request,id):
     messages.success(request,"Color edited")
     return redirect('/addcolor')
 
-###########add Godown
+########### Add COLOR & CHEMICAL - Godown #############
 def renderAddGodown(request):
     suppliers=ChemicalsGodownsMaster.objects.all().order_by('godown')
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
     return render(request,'./color/addgodown.html',{'suppliers':parties})
-
-
 
 def saveGodown(request):
     p = request.POST.get("godown")
@@ -3568,7 +3570,7 @@ def editGodown(request,id):
     messages.success(request,"Godown edited")
     return redirect('/addgodown')
 
-#############add loose
+########### Add COLOR & CHEMICAL - Loose Godown #############
 
 def renderAddLease(request):
     suppliers=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
@@ -3576,8 +3578,6 @@ def renderAddLease(request):
     page = request.GET.get('page')
     parties = paginator.get_page(page)
     return render(request,'./color/addlease.html',{'suppliers':parties})
-
-
 
 def saveLease(request):
     p = request.POST.get("lease")
@@ -3620,15 +3620,13 @@ def editLease(request,id):
     return redirect('/addlease')
 
 
-#######unit master
+########### ADD COLOR & CHEMICAL - UNIT MASTER #############
 def renderAddUnit(request):
     suppliers=ChemicalsUnitsMaster.objects.all().order_by('unit')
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
     return render(request,'./color/addunit.html',{'suppliers':parties})
-
-
 
 def saveUnit(request):
     p = request.POST.get("unit")
@@ -3670,7 +3668,7 @@ def editUnit(request,id):
     messages.success(request,"Unit edited")
     return redirect('/addunit')
 
-######colorrecord
+########### Place order for COLOR & CHEMICAL #############
 
 def placeOrder(request):
     color=Color.objects.all().order_by("color")
@@ -4067,7 +4065,7 @@ def saveOrder(request):
     messages.success(request,'Order has been Placed')
     return redirect('/placeorder')
 
-
+########### DISPLAY PLACED COLOR & CHEMICAL ORDERS #############
 def orderGeneration(request):
     recs=ChemicalsAllOrders.objects.all()
     idlist=[]
@@ -4116,7 +4114,6 @@ def orderGeneration(request):
     colors=Color.objects.all().order_by('color')
 
     return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter,'suppliers':suppliers,'colors':colors})
-
 
 def orderEdit(request,id):
     rec=get_object_or_404(ChemicalsAllOrders, id=id)
@@ -4173,7 +4170,7 @@ def orderEditSave(request,id):
     return redirect('/ordergeneration')
 
 
-######color in godown
+########### DISPLAY COLOR & CHEMICAL COMBINED STOCK IN GODOWN ############
 
 def goodsReceived(request):
     godowns=ChemicalsGodownsMaster.objects.all()
@@ -4192,10 +4189,7 @@ def goodsReceived(request):
     chemicals=Color.objects.all().order_by('color')
     godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
 
-    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})
-
-
-    
+    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})    
 
 def goodsRequest(request):
     rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
@@ -4242,6 +4236,7 @@ def viewOrder(request,id):
     remaining_order = ogorder.quantity - remaining_order
     return render(request, './color/vieworder.html', {'d':d,'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
 
+######################### validate order ##########################
 def renderValidate(request,id):
     rec=get_object_or_404(ChemicalsAllOrders, id=id)
     mindate=str(rec.order_date)
@@ -4268,7 +4263,7 @@ def validate(request,id):
     messages.success(request,"Order Validated")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
+#################### PLACED ORDERS TO GODOWN #######################
 def goodsApprove(request,id):
     prevRec = get_object_or_404(ColorRecord,id=id)
     quantity_recieved = float(request.POST.get("quantityreceived"))
@@ -4481,15 +4476,13 @@ def goodsApprove(request,id):
         #print(than_in_transit,than_in_godown)
         return redirect('/ordergeneration')
 
-    
-####lease
 
-def htmltoText(html):
-    h=html2text.HTML2Text()
-    h.ignore_links=True
-    return h.handle(html)
+# def htmltoText(html):
+#     h=html2text.HTML2Text()
+#     h.ignore_links=True
+#     return h.handle(html)
 
-
+################# Chemical in loose Godown ##################
 def goodsLease(request):
     lease=ChemicalsLooseGodownMaster.objects.all()
     lease_list=[]
@@ -4834,9 +4827,10 @@ def savelease(request,id):
 
     messages.success(request,"Loose Godown quantity edited")
     return redirect('/goodslease')
-    
+########################### COLOR CHEMICAL LOOSE END ################################
 
-def renderDailyConsumptionLease1(request):                                                      ####repair required 
+########################### COLOR CHEMICAL DAILY CONSUMPTION ################################
+def renderDailyConsumptionLease1(request):                                                      
     lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
     first_lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease').first()
     try:
@@ -4933,7 +4927,7 @@ def saveDailyConsumption(request,id):
     rec.save()
     return redirect('/dailyconsumptiondetails')
 
-
+######################## CONSUME STOCK FROM LOOSE GODOWN ######################
 def consume(request,name):
     loose_godown_object=get_object_or_404(ChemicalsLooseGodownMaster,lease=name)
     colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object).exclude(quantity=0).order_by('color')
@@ -5060,7 +5054,7 @@ def consume(request,name):
     return redirect('/dailyconsumption1')
 
 
-
+########################### DISPLAY CLOSING STOCK #############################
 def renderClosingStock(request):
     godowns=ChemicalsGodownsMaster.objects.all()
     godowns_list=[]
@@ -5115,6 +5109,7 @@ def renderClosingStock(request):
 
     return render(request,'./color/closingstock.html',{'colors':datalist})
 
+########################### COLOR REPORT FILTER #################################
 def renderColorReportFilter(request):
     d=str(datetime.date.today())
     godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
@@ -5267,7 +5262,7 @@ def renderColorReportFilter(request):
 #     display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
 #     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
 
-
+########################### COLOR REPORT MAIN FUNCTION #################################
 def colorReport(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
@@ -5322,7 +5317,7 @@ def colorReport(request):
             try:
                 l=[]
                 
-    #######opening stock
+    ######################### opening stock ##################################
                 try:
                     l.append(c.color)
                     l.append(u.unit)
@@ -5346,7 +5341,7 @@ def colorReport(request):
 
                     l.append(0)
                 
-#########new stock
+###################### new stock #################################
                 new_stock=0
                 if selected_loose==[] and selected_godowns!=[]:
                     try:
@@ -5404,7 +5399,7 @@ def colorReport(request):
                         pass
                 l.append(new_stock)
 
-#############consumption
+################################# consumption ########################################
                 if selected_godowns!=[] and selected_loose==[]:
                     l.append("loop")
                 elif selected_loose!=[] and selected_godowns==[]:
@@ -5431,7 +5426,7 @@ def colorReport(request):
                         l.append(quantity)
                     except:
                         l.append(0)
-#############closing stock
+############################### closing stock ##############################
                 try:
                     lquan=0
                     for g in selected_godowns:
@@ -5467,8 +5462,9 @@ def colorReport(request):
 
 
 
-##################################### Module 3 - Employee ######################################
+##################################### Module 3 - Employee Start ######################################
 
+################ ADD CITY MASTER ####################
 def renderAddCity(request):
     parties_all = CityMaster.objects.all().order_by('city')
 
@@ -5517,7 +5513,7 @@ def editCity(request,id):
     messages.success(request,"City edited")
     return redirect('/addcity')
 
-###employee category master
+################ employee category master ######################
 
 def renderAddEmpCategory(request):
     parties_all = EmployeeCategoryMaster.objects.all().order_by('category')
@@ -5569,14 +5565,14 @@ def editEmpCategory(request,id):
     return redirect('/addemployeecategory')
 
 
-
-
+#################### EMPLOYEE HOME ######################
 def employeehome(request):
     emp=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
     cities = CityMaster.objects.all().order_by('city')
     empcat=EmployeeCategoryMaster.objects.all().order_by('category')
     return render(request, './employee/employeehome.html',{'city':cities,'emp':emp,'empcat':empcat})
 
+################### ADD NEW EMPLOYEE ####################
 def saveEmployee(request):
     if(len(request.POST.get('phone_no'))>10 or len(request.POST.get('phone_no'))<10):
         messages.error(request,"Enter valid details")
@@ -5621,6 +5617,7 @@ def saveEmployee(request):
     messages.success(request,"Employee Added")
     return redirect('/employeehome')
 
+############### VIEW ALL EMPLOYEES #################
 def employeedetails(request):
     employees = Employee.objects.all().order_by('name')
     records_filter = EmployeeFilter(request.GET,queryset=employees)
@@ -5632,13 +5629,13 @@ def employeedetails(request):
     categories=EmployeeCategoryMaster.objects.all().order_by('category')
     return render(request, './employee/employeedetails.html',{'records':emps,'filter':records_filter,'categories':categories})
 
+########## DELETE EMPLOYEE ############
 def deleteEmployee(request,id):
     Employee.objects.filter(id=id).delete()
     messages.success(request,'Employee Deleted')
     return redirect('/employeedetails')
 
-
-
+########### EDIT EMPLOYEE ############
 def renderEditEmployee(request,id):
     emp=get_object_or_404(Employee,id=id)
     employees=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
@@ -5667,7 +5664,7 @@ def saveEditEmployee(request,id):
     messages.success(request,"Employee details are saved")
     return redirect('/employeedetails')
 
-
+############## BANK MASTER #############
 def renderAddBankAc(request):
     all_checker = CompanyAccounts.objects.all().order_by('bank_name')
     #return render(request,'addquality.html',{'allqualities':all_qualities})
@@ -5676,7 +5673,6 @@ def renderAddBankAc(request):
     checkers = paginator.get_page(page)
 
     return render(request,'./employee/addbank.html',{'records':checkers})
-
 
 def saveBank(request):
     q=request.POST.get("bank_name")
@@ -5709,7 +5705,6 @@ def saveBank(request):
         new_quality.save()
         messages.success(request,"Bank account added")
     return redirect('/addbank')
-
 
 def deleteBank(request,id):
     try:
@@ -5744,9 +5739,9 @@ def editBank(request,id):
     quality.save()
     messages.success(request,"Account edited")
     return redirect('/addbank')
+############## BANK MASTER END ############
 
-
-
+########### PAYMENT TO EMPLOYEE FORM ###############
 def renderGeneratorForm(request):
     emps = Employee.objects.all().order_by('name')
     banks = CompanyAccounts.objects.all().order_by('bank_name')
@@ -5773,7 +5768,6 @@ def generatePayment(request):
 
     
     return render(request,'./employee/payemployee.html',{'idlist':selected_emps,'employee':selected_employee,'bank':bank,'d':payment_date})
-
 
 def makePayment(request):
     selected_emp=request.POST.get("selected-emp-id")
@@ -5802,10 +5796,13 @@ def makePayment(request):
         new_payment.save()
     return redirect('/banksheet')
 
+
+########### SHOW BANK SHEET ################
 def bankSheet(request):
     payments=MonthlyPayment.objects.all().order_by('-payment_date')
     return render(request,'./employee/banksheet.html',{'payments':payments})
 
+########### SHOW BANK SHEET W.R.T. DATE################
 def bankSheet2(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
@@ -5829,10 +5826,12 @@ def bankSheet2(request):
 
         return render(request,'./employee/banksheet.html',{'payments':payments,'begin':begin,'end':end})
 
+################# DISPLAY SALARY SHEET ################
 def salarySheet(request):
     payments=MonthlyPayment.objects.all().order_by('-payment_date')
     return render(request,'./employee/salarysheet.html',{'payments':payments})
 
+################# DISPLAY SALARY SHEET W.R.T. Date ################
 def salarySheet2(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
