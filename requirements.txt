@@ -24,7 +24,7 @@ kombu==5.0.2
 lazy-object-proxy==1.4.3
 MarkupPy==1.14
 mccabe==0.6.1
-numpy==1.19.2
+numpy==1.20.1
 odfpy==1.4.1
 openpyxl==3.0.5
 pandas==1.1.3

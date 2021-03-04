@@ -1,14 +1,15 @@
-{% extends 'nav.html' %}
+{% extends './nav.html' %}
 
 {% block title%} Transit {% endblock %}
 {% block content%}
 {% load widget_tweaks %}
 {% load my_tags %}
-      <div class="page-title">
-        <h3 class="title-text">GODOWN - REQUEST</h3>
-      </div>
-      <br>
+<div class="page-title">
+  <h3 class="title-text">Intransit Stock</h3>
+</div>
+
       <!-- Filter Start -->
+
       <form method="GET">
           <div class="form-row filter-form">
             <div class="form-group col-sm-4">
@@ -16,64 +17,107 @@
               {% render_field filter.form.party_name class="form-control" %}
             </div>
             <div class="form-group col-sm-2">
-              {{ filter.form.lr_no.label_tag }}
-              {% render_field filter.form.lr_no class="form-control" %}
+              {{ filter.form.lot_no.label_tag }}
+              {% render_field filter.form.lot_no class="form-control" %}
             </div>
-            <div class="form-group col-sm-4">
+            <!-- <div class="form-group col-sm-4">
               {{ filter.form.quality.label_tag }}
               {% render_field filter.form.quality class="form-control" %}
             </div>
-            <div class="form-group col-sm-2 filter-button">
+            <input type="text" name="quality"> -->
+
+            <div class="form-group col-sm-4">
+              <label for="new-quality">Quality</label>
+              <select class="form-control" name="quality" onchange="this.form.submit()">
+                <option value="">--</option>
+                  {% for q in qualities %}
+
+                      <option value="{{ q.id}}">{{ q.qualities }}</option>
+
+                  {% endfor %}
+              </select>
+          </div>
+            <div class="form-group col-sm-2 filter-button hide-filter">
               <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
             </div>
           </div>
       </form>
       <!-- Filter End -->
 
+      <!-- Download Button Start-->
+      <div class="download">
+        <!-- <a class="download-button" href="{% url 'excel_page' %}">Print This Page</a> -->
+        <a class="download-button" href="{% url 'excel_filter_all' %}">Print</a>
+        <!-- <a class="download-button" href="{% url 'excel_all' %}">Print All Data</a> -->
+      </div>
+      <!-- Download Button End-->
+
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            
+
             <th scope="col">Sr.No</th>
-            <th scope="col">Party Name</th>
+            <th class="td-text" scope="col">Party Name</th>
             <th scope="col">Bill No</th>
             <th scope="col">Bill Date</th>
             <th scope="col">Bill Amt</th>
             <th scope="col">Lot No</th>
-            <th scope="col">Quality</th>
+            <th class="td-text" scope="col">Quality</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
             <th scope="col">Bale</th>
             <th scope="col">Rate</th>
             <th scope="col">LR No</th>
             <th scope="col">Order No</th>
-            <th scope="col">State</th>
+            <!--<th scope="col">State</th>-->
+            <th scope="col"></th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
         {% for record in records %}
           <tr>
-            
+
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{record.party_name}}</td>
             <td>{{record.bill_no}}</td>
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
             <td>{{record.lot_no}}</td>
-            <td class="td-text">{{record.quality}}</td>
+            <td class="td-text">{{record.quality.qualities}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.bale}}</td>
             <td>{{record.rate}}</td>
             <td>{{record.lr_no}}</td>
             <td>{{record.order_no}}</td>
-            <td class="td-text">{{record.state}}</td>
+            <!--<td class="td-text">{{record.state}}</td>-->
+            <td><a class ="anchor-button button-small-text" href="{% url 'record' record.id %}">Edit</a></td>
             <td><a class ="anchor-button button-small-text" href="{% url 'godownapprove' record.id %}">Move To Godown</a></td>
-          
+
+
           </tr>
         {% endfor %}
+        <tr>
+
+          <td scope="row"><strong>Total</strong></td>
+          <td class="td-text">-</td>
+          <td>-</td>
+          <td>-</td>
+          <td><strong>{{sums.0}}</strong></td>
+          <td>-</td>
+          <td class="td-text">-</td>
+          <td><strong>{{sums.1}}</strong></td>
+          <td><strong>{{sums.2}}</strong></td>
+          <td><strong>{{sums.3}}</strong></td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <!--<td>-</td>
+          <td>-</td>-->
+
+        </tr>
         </tbody>
       </table>
       <!-- Display Table End -->
@@ -86,13 +130,13 @@
           {% for num in records.paginator.page_range %}
             {%if records.number == num%}
               &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
-            
+
             {% endif %}
           {%endfor%}
           {% if records.has_next %}
             <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
           {% endif%}
-        </div>  
+        </div>
       </div>
 
       <br>

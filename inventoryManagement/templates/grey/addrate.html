@@ -1,46 +1,52 @@
-{% extends 'nav.html' %}
+{% extends './grey/nav.html' %}
 
-{% block title%} Add Quality {% endblock %}
+{% block title%} Add Checker {% endblock %}
 {% block content%}
 {% load widget_tweaks %}
 {% load my_tags %}
-      <!-- Add Party Start-->
-      <form method="POST" action="{% url 'saveparty' %}" class="md-form upload-file" enctype="multipart/form-data">
+      <!-- Add Quality Start-->
+      <form method="POST" class="md-form upload-file" action="{% url 'saverange' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Processing House Party name</h1>
+            <h1>Add Cut Rate</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="addparty" placeholder="Processing House Party name" name="processing-party" autofocus required>
-
+            <input type="number" step="0.01" class="form-control" id="range1" placeholder="Starting Range" name="range_1" autofocus required>
             <br>
-
-            <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Add</button>
+            <input type="number" step="0.01" class="form-control" id="range2" placeholder="Ending Range" name="range_2" required>
+            <br>
+            <input type="number" step="0.01" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+            <br>
+            <button class="upload-btn btn-primary" type="submit">Add</button>
         </div>
       </form>
+      <!-- Add Quality End -->
 
       <table class="table">
         <thead class="thead-dark">
           <tr>
             
             <th scope="col">Sr-no</th>
-            <th scope="col">Processing House Party name</th>
+            <th class="td-text" scope="col">Starting Cut</th>
+            <th class="td-text" scope="col">Ending Cut</th>
+            <th class="td-text" scope="col">Rate</th>
             <th></th>
-            
             
             
           </tr>
         </thead>
         <tbody>
         
-        {% for p in records %}
+        {% for q in records %}
           <tr>
             
             <td scope="row">{{ forloop.counter }}</td>
-            <td>{{p.processing_party}}</td>
+            <td class="td-text">{{q.range1}}</td>
+            <td class="td-text">{{q.range2}}</td>
+            <td class="td-text">{{q.rate}}</td>
             <td>
-              <a class ="anchor-button float-right danger" onclick="return confirm('Are you sure you want to delete this record with Processing Party Name - {{p.processing_party}} ?')" href="{% url 'deleteprocessingparty' p.id %}">Delete</a>
-              <a class ="anchor-button float-right space" href="{% url 'rendereditparty' p.id %}">Edit</a>
+              <a class ="anchor-button float-right danger" onclick="return confirm('Are you sure you want to delete this?')" href="{% url 'deleterange' q.id%}">Delete</a>
+              <!--<a class ="anchor-button float-right space" href="">Edit</a>-->
             </td>
             
             
@@ -49,7 +55,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <!-- Add Party End -->
+
       <div class="pagination">
         <div class="number-line">
           {% if records.has_previous %}
@@ -66,6 +72,5 @@
           {% endif%}
         </div>  
       </div>
-
 
 {% endblock %}

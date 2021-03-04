@@ -21,28 +21,28 @@ from django.template.loader import render_to_string
 ####### EVENT HANDLERS ########
 # Bad Request 400
 def bad_request(request, exception):
-    response = render('400.html', context_instance=RequestContext(request))
+    response = render('./error/400.html', context_instance=RequestContext(request))
     response.status_code = 400
 
     return response
 
 # Permission Denied 403
 def permission_denied(request, exception):
-    response = render('403.html', context_instance=RequestContext(request))
+    response = render('./error/403.html', context_instance=RequestContext(request))
     response.status_code = 403
 
     return response
 
 # Page Not Found 404
 def page_not_found(request, exception):
-    response = render('404.html', context_instance=RequestContext(request))
+    response = render('./error/404.html', context_instance=RequestContext(request))
     response.status_code = 404
 
     return response
 
 # HTTP Error 500
 def server_error(request):
-    response = render('500.html', context_instance=RequestContext(request))
+    response = render('./error/500.html', context_instance=RequestContext(request))
     response.status_code = 500
 
     return response
@@ -63,7 +63,7 @@ def index(request):
                     idlist.append(d.id)
 
         except:
-            pass  
+            pass
 
     colrecs=ColorRecord.objects.all()
     idlist2=[]
@@ -78,8 +78,8 @@ def index(request):
                     idlist2.append(d.id)
 
         except:
-            pass             
-    
+            pass
+
     for i in idlist:
         ChemicalsAllOrders.objects.filter(id=i).delete()
     for i in idlist2:
@@ -88,7 +88,7 @@ def index(request):
     return render(request, 'index.html')
 
 def greyhome(request):
-    return render(request, 'greyhome.html')
+    return render(request, './grey/greyhome.html')
 
 ###### BACK BUTTONS ######
 def back1(request):
@@ -109,28 +109,28 @@ def back(request,state):
         return redirect('/inprocess')
     elif state == "Ordered" or state == "In Transit":
         return redirect('/ordergeneration')
-    
+
 def backtoorders(request,state):
     godowns=ChemicalsGodownsMaster.objects.all()
-    
+
     g_list=[]
-    
+
     for g in godowns:
         g_list.append(g.godown)
     lease=ChemicalsLooseGodownMaster.objects.all()
-    
+
     l_list=[]
-    
+
     for g in lease:
         l_list.append(g.lease)
-    
+
     if state == "Ordered" or state == "In Transit" or state == "Godown":
         return redirect('/ordergeneration')
     elif state in g_list:
         return redirect('/goodsreceived')
     elif state in l_list:
         return redirect('/goodslease')
-    
+
 ###### GREY UPLOAD EXCEL SHEET ######
 def upload(request):
     counter = 0
@@ -155,7 +155,7 @@ def upload(request):
         except:
             messages.error(request, "Please Select Proper File")
             return redirect('/greyhome')
-            
+
         for data in imported_data:
             try:
                 q_object=get_object_or_404(GreyQualityMaster,
@@ -167,8 +167,8 @@ def upload(request):
                 q_object.save()
             quality_object=get_object_or_404(GreyQualityMaster,qualities=data[6])
             try:
-                
-                rec=get_list_or_404(Record, 
+
+                rec=get_list_or_404(Record,
                     party_name=data[1],
                     bill_no=data[2],
                     lot_no=data[5],
@@ -206,7 +206,7 @@ def upload(request):
                 #         qualities=data[6]
                 #         )
                 #     new_quality.save()
-                
+
         if (counter > 0):
             messages.success(request,str(counter)+ " Records were Inserted")
         else:
@@ -218,10 +218,10 @@ def upload(request):
 ###### GREY - INTRANSIT STOCK ######
 def showIntransit(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')
-    
+
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -237,14 +237,14 @@ def showIntransit(request):
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
 
-    return render(request, 'intransit.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
-    
+    return render(request, './grey/intransit.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+
 ###### GREY - GODOWN STOCK ######
 def showGodown(request):
     records_list=Record.objects.filter(state="Godown").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -259,25 +259,25 @@ def showGodown(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, 'godown.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './grey/godown.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 ###### GREY - REQUEST GODOWN STOCK ######
 def showGodownRequest(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, 'godownrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './grey/godownrequest.html',{'records':records,'filter':records_filter})
 
 ###### Edit form for intransit record ######
-def record(request,id):                             
+def record(request,id):
     rec=get_object_or_404(Record, id=id)
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, 'record.html', {'record':rec,'qualities':qualities})
+    return render(request, './grey/record.html', {'record':rec,'qualities':qualities})
 
 ###### GODOWN APPROVE FORM ######
 def goDownApprove(request,id):
@@ -287,10 +287,10 @@ def goDownApprove(request,id):
     qualities = GreyQualityMaster.objects.all()
     d=datetime.date.today()
     d=str(d)
-    return render(request, 'godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
+    return render(request, './grey/godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
 
  ###### Edit in transit record ######
-def edit(request,id):                                      
+def edit(request,id):
     if request.method=="POST":
         record = get_object_or_404(Record,id=id)
         prevBale=record.bale
@@ -328,14 +328,14 @@ def edit(request,id):
 ##### NEXT AND PREVIOUS BUTTONS #####
 def nextRec(request,id):
     rec=get_object_or_404(Record, id=id+1)
-    return render(request, 'record.html', {'record':rec})
+    return render(request, './grey/record.html', {'record':rec})
 
 def prevRec(request,id):
     rec=get_object_or_404(Record, id=id-1)
-    return render(request, 'record.html', {'record':rec})
+    return render(request, './grey/record.html', {'record':rec})
 
 ##### Intransit To Godown #####
-def approveBale(request,id): 
+def approveBale(request,id):
     prevRec = get_object_or_404(Record,id=id)
     bale_recieved=request.POST.get("bale_recieved")
     bale_recieved = int(bale_recieved)
@@ -355,11 +355,11 @@ def approveBale(request,id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         bale_in_transit = prevRec.bale - bale_recieved
-        
-        than_in_transit = prevRec.than/prevRec.bale 
+
+        than_in_transit = prevRec.than/prevRec.bale
         than_in_transit = than_in_transit * bale_in_transit
         than_in_godown = prevRec.than - than_in_transit
-        
+
         mtrs_in_transit = prevRec.mtrs/prevRec.bale
         mtrs_in_transit = mtrs_in_transit * bale_in_transit
         mtrs_in_transit = round(mtrs_in_transit,2)
@@ -408,8 +408,8 @@ def approveBale(request,id):
 def showChecked(request):
     records_list=Record.objects.filter(state="Checked").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -422,18 +422,18 @@ def showChecked(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, 'checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './grey/checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showCheckingRequest(request):
     records_list=Record.objects.filter(state="Godown").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, 'checkingrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './grey/checkingrequest.html',{'records':records,'filter':records_filter})
 
 def checkingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -445,7 +445,7 @@ def checkingApprove(request,id):
     transports=GreyTransportMaster.objects.all().order_by('transport')
     d=datetime.date.today()
     d=str(d)
-    return render(request, 'checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './grey/checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -467,14 +467,14 @@ def approveCheck(request,id):
     cost_per_than=total_amount/totalthan
     cost_per_than=round(cost_per_than,2)
     if(defect=="no defect"):
-    
+
         if(prevRec.than == than_recieved):
             prevRec.state="Checked"
             prevRec.quality=quality_object
             prevRec.checking_date=str(request.POST["checking_date"])
             prevRec.checker=checker
             prevRec.transport=transport
-            
+
             if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
@@ -486,11 +486,11 @@ def approveCheck(request,id):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             than_un_checked = prevRec.than - than_recieved
-        
+
             bale_per_than = prevRec.bale/prevRec.than
             bale_un_checked = than_un_checked * bale_per_than
             bale_checked = prevRec.bale - bale_un_checked
-        
+
             mtrs_un_checked = prevRec.mtrs/prevRec.than
             mtrs_un_checked = mtrs_un_checked * than_un_checked
             mtrs_un_checked = round(mtrs_un_checked,2)
@@ -524,7 +524,7 @@ def approveCheck(request,id):
                 checking_date=str(request.POST["checking_date"]),
                 checker=checker,
                 transport=transport
-            
+
                 )
             if than_recieved == 0 :
                 messages.error(request,"Than Recieved cannot be Zero (0)")
@@ -537,7 +537,7 @@ def approveCheck(request,id):
                 prevRec.bill_amount = round(cost_per_than * than_un_checked,2)
                 prevRec.save()
                 messages.success(request,"Data Updated Successfully")
-                
+
     else:
         if(prevRec.than == than_recieved):
             prevRec.state=request.POST.get("defect")
@@ -555,14 +555,14 @@ def approveCheck(request,id):
         elif(prevRec.than<than_recieved):
             messages.error(request,"Than Recieved cannot be more than Original Amount of Than")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-            
+
         else:
             than_un_checked = prevRec.than - than_recieved
-        
+
             bale_per_than = prevRec.bale/prevRec.than
             bale_un_checked = than_un_checked * bale_per_than
             bale_checked = prevRec.bale - bale_un_checked
-        
+
             mtrs_un_checked = prevRec.mtrs/prevRec.than
             mtrs_un_checked = mtrs_un_checked * than_un_checked
             mtrs_un_checked = round(mtrs_un_checked,2)
@@ -596,7 +596,7 @@ def approveCheck(request,id):
                 checking_date=str(request.POST["checking_date"]),
                 checker=checker,
                 transport=transport
-            
+
                 )
             if than_recieved == 0 :
                 messages.error(request,"Than Recieved cannot be Zero (0)")
@@ -624,13 +624,13 @@ def changeStateBack(request,id):
         rec.save()
         return redirect('/inprocess')
     else:
-        rec.state="In Process" 
+        rec.state="In Process"
         rec.save()
         return redirect('/readytoprint')
-    
+
 def editChecked(request,id):
     rec=get_object_or_404(Record, id=id)
-    return render(request, 'editchecked.html', {'record':rec})
+    return render(request, './grey/editchecked.html', {'record':rec})
 
 def checkedEdit(request,id):
     if request.method=="POST":
@@ -660,12 +660,12 @@ def checkedEdit(request,id):
 ############ GREY: Checker(EMPLOYEE), Quality and Processing party master ##########
 def renderAddChecker(request):
     all_checker = GreyCheckerMaster.objects.all().order_by('checker')
-    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
 
-    return render(request,'addchecker.html',{'records':checkers})
+    return render(request,'./grey/addchecker.html',{'records':checkers})
 
 def saveChecker(request):
     q=request.POST.get("add_checker")
@@ -694,7 +694,7 @@ def deleteChecker(request,id):
 
 def renderEditChecker(request,id):
     quality=get_object_or_404(GreyCheckerMaster,id=id)
-    return render(request,'editchecker.html',{'id':id,'name':quality.checker})
+    return render(request,'./grey/editchecker.html',{'id':id,'name':quality.checker})
 
 def editChecker(request,id):
     quality=get_object_or_404(GreyCheckerMaster,id=id)
@@ -710,12 +710,12 @@ def editChecker(request,id):
 
 def renderAddRange(request):
     all_checker = GreyCutRange.objects.all().order_by('range1')
-    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
 
-    return render(request,'addrate.html',{'records':checkers})
+    return render(request,'./grey/addrate.html',{'records':checkers})
 
 def saveRange(request):
     r1=float(request.POST.get("range_1"))
@@ -723,7 +723,7 @@ def saveRange(request):
     existingrange=GreyCutRange.objects.all()
     flag=0
     for i in existingrange:
-        
+
         if i.range1<r1<i.range2 or i.range1<r2<i.range2:
             flag=flag+1
             break
@@ -742,7 +742,7 @@ def saveRange(request):
         print("else")
         messages.error(request,'Range collided')
         return redirect('/addrate')
-    
+
 def deleteRange(request,id):
     GreyCutRange.objects.filter(id=id).delete()
     messages.success(request,"Range deleted")
@@ -753,12 +753,12 @@ def deleteRange(request,id):
 
 def renderAddQuality(request):
     all_qualities = GreyQualityMaster.objects.all().order_by('qualities')
-    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_qualities,10)
     page = request.GET.get('page')
     qualities = paginator.get_page(page)
 
-    return render(request,'addquality.html',{'records':qualities})
+    return render(request,'./grey/addquality.html',{'records':qualities})
 
 def saveQuality(request):
     q=request.POST.get("newer_quality")
@@ -788,7 +788,7 @@ def deleteQuality(request,id):
 
 def renderEditQuality(request,id):
     quality=get_object_or_404(GreyQualityMaster,id=id)
-    return render(request,'editquality.html',{'id':id,'name':quality.qualities})
+    return render(request,'./grey/editquality.html',{'id':id,'name':quality.qualities})
 
 def editQuality(request,id):
     quality=get_object_or_404(GreyQualityMaster,id=id)
@@ -804,12 +804,12 @@ def editQuality(request,id):
 
 def renderAddLocation(request):
     location_all = GreyArrivalLocationMaster.objects.all().order_by('location')
-    #return render(request,'addparty.html',{'parties':parties_all})
+    #return render(request,'./grey/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(location_all,10)
     page = request.GET.get('page')
     locations = paginator.get_page(page)
-    return render(request,'addlocation.html',{'records':locations})
+    return render(request,'./grey/addlocation.html',{'records':locations})
 
 def saveLocation(request):
     p = request.POST.get("location")
@@ -839,7 +839,7 @@ def deleteLocation(request,id):
 
 def renderEditLocation(request,id):
     loc=get_object_or_404(GreyArrivalLocationMaster,id=id)
-    return render(request,'editlocation.html',{'id':id,'name':loc.location})
+    return render(request,'./grey/editlocation.html',{'id':id,'name':loc.location})
 
 def editArrivalLocation(request,id):
     party=get_object_or_404(GreyArrivalLocationMaster,id=id)
@@ -856,12 +856,12 @@ def editArrivalLocation(request,id):
 
 def renderAddParty(request):
     parties_all = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
-    #return render(request,'addparty.html',{'parties':parties_all})
+    #return render(request,'./grey/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'addparty.html',{'records':parties})
+    return render(request,'./grey/addparty.html',{'records':parties})
 
 def saveParty(request):
     p = request.POST.get("processing-party")
@@ -891,7 +891,7 @@ def deleteProcessingParty(request,id):
 
 def renderEditParty(request,id):
     party=get_object_or_404(ProcessingPartyNameMaster,id=id)
-    return render(request,'editparty.html',{'id':id,'name':party.processing_party})
+    return render(request,'./grey/editparty.html',{'id':id,'name':party.processing_party})
 
 def editProcessingParty(request,id):
     party=get_object_or_404(ProcessingPartyNameMaster,id=id)
@@ -908,12 +908,12 @@ def editProcessingParty(request,id):
 
 def renderAddTransport(request):
     parties_all = GreyTransportMaster.objects.all().order_by('transport')
-    #return render(request,'addparty.html',{'parties':parties_all})
+    #return render(request,'./grey/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'addtransport.html',{'records':parties})
+    return render(request,'./grey/addtransport.html',{'records':parties})
 
 def saveTransport(request):
     p = request.POST.get("transport")
@@ -944,7 +944,7 @@ def deleteTransport(request,id):
 
 def renderEditTransport(request,id):
     party=get_object_or_404(GreyTransportMaster,id=id)
-    return render(request,'edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
+    return render(request,'./grey/edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
 
 def editTransport(request,id):
     party=get_object_or_404(GreyTransportMaster,id=id)
@@ -964,8 +964,8 @@ def editTransport(request,id):
 def showProcessing(request):
     records_list=Record.objects.filter(state="In Process").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -978,18 +978,18 @@ def showProcessing(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, 'processing.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './grey/processing.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showProcessingRequest(request):
     records_list=Record.objects.filter(state="Checked").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, 'processingrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './grey/processingrequest.html',{'records':records,'filter':records_filter})
 
 def processingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -998,7 +998,7 @@ def processingApprove(request,id):
     processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     d=datetime.date.today()
     d=str(d)
-    return render(request, 'processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './grey/processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
 
 def sendInProcess(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -1025,11 +1025,11 @@ def sendInProcess(request,id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         than_un_checked = prevRec.than - than_recieved
-        
+
         bale_per_than = prevRec.bale/prevRec.than
         bale_un_checked = than_un_checked * bale_per_than
         bale_checked = prevRec.bale - bale_un_checked
-        
+
         mtrs_un_checked = prevRec.mtrs/prevRec.than
         mtrs_un_checked = mtrs_un_checked * than_un_checked
         mtrs_un_checked = round(mtrs_un_checked,2)
@@ -1063,7 +1063,7 @@ def sendInProcess(request,id):
             gate_pass = int(request.POST.get('gatepass')),
             checker=prevRec.checker,
             transport=prevRec.transport
-            
+
             )
         if than_recieved == 0 :
             messages.error(request,"Than Recieved cannot be Zero (0)")
@@ -1086,8 +1086,8 @@ def sendInProcess(request,id):
 def showReadyToPrint(request):
     records_list=Record.objects.filter(state="Ready to print").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -1100,18 +1100,18 @@ def showReadyToPrint(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, 'readytoprint.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './grey/readytoprint.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showReadyRequest(request):
     records_list=Record.objects.filter(state="In Process").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, 'readytoprintrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './grey/readytoprintrequest.html',{'records':records,'filter':records_filter})
 
 def readyApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -1121,7 +1121,7 @@ def readyApprove(request,id):
 
     d=datetime.date.today()
     d=str(d)
-    return render(request, 'readyapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'parties':locations})
+    return render(request, './grey/readypprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'parties':locations})
 
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -1157,11 +1157,11 @@ def readyToPrint(request,id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         than_un_checked = prevRec.than - than_recieved
-        
+
         bale_per_than = prevRec.bale/prevRec.than
         bale_un_checked = than_un_checked * bale_per_than
         bale_checked = prevRec.bale - bale_un_checked
-        
+
         mtrs_un_checked = prevRec.mtrs/prevRec.than
         mtrs_un_checked = mtrs_un_checked * than_un_checked
         mtrs_un_checked = round(mtrs_un_checked,2)
@@ -1230,7 +1230,7 @@ def reportFilter(request):
             pass
         else:
             partyname.append(rec.party_name)
-    return render(request,'reportfilter.html',{'date':d,'parties':processing_parties,'sendingparty':partyname})
+    return render(request,'./grey/reportfilter.html',{'date':d,'parties':processing_parties,'sendingparty':partyname})
 
 
 def generateReport(request):
@@ -1241,7 +1241,7 @@ def generateReport(request):
         lot=None
     else:
         lot=int(lot)
-    
+
     s = request.POST.get("checkbox")
     if s!=None:
         selected_parties.append(s)
@@ -1259,7 +1259,7 @@ def generateReport(request):
                 break
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
-        
+
         begin1=begin
         end1=end
         begin=begin.strftime("%d/%m/%Y")                ######date string format change
@@ -1292,8 +1292,8 @@ def generateReport(request):
                 pass
             else:
                 lot_list.append(r.lot_no)
-        
-        
+
+
         data_row=[]
         data_block=[]
         for l in lot_list:
@@ -1320,11 +1320,11 @@ def generateReport(request):
                 else:
                     rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
                     rec_lists.append(rec)
-                
+
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
             data_block.append(data_row)
-        
-        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':h2,'lot_no':lot,'party':s,'begin':str(begin1),'end':str(end1)})    
+
+        return render(request,'./grey/ledgerreport.html',{'data':data_block,'h1':h1,'h2':h2,'lot_no':lot,'party':s,'begin':str(begin1),'end':str(end1)})
     else:
         flag=0
         if(lot==None and selected_parties!=[]):
@@ -1341,7 +1341,7 @@ def generateReport(request):
             flag=3
         else:
             messages.error(request,'Please enter valid input')
-            return redirect('/reportfilter')  
+            return redirect('/reportfilter')
         lot_list=[]
         for r in rec:
             if r.lot_no in lot_list:
@@ -1349,10 +1349,10 @@ def generateReport(request):
             else:
                 lot_list.append(r.lot_no)
         print(lot_list)
-        
+
         data_row=[]
         data_block=[]
-        
+
         for l in lot_list:
             totalthan=0
             pendingthan=0
@@ -1372,10 +1372,10 @@ def generateReport(request):
                 else:
                     rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
                     rec_lists.append(rec)
-                
+
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
             data_block.append(data_row)
-        return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
+        return render(request,'./grey/ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
 
 ############# PRINT LEDGER REPORT ###########
 def printLedgerExcel(request):
@@ -1386,7 +1386,7 @@ def printLedgerExcel(request):
         lot=None
     else:
         lot=int(lot)
-    
+
     s = request.POST.get("processing_party")
     if s!="None":
         selected_parties.append(s)
@@ -1404,7 +1404,7 @@ def printLedgerExcel(request):
                 break
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
-        
+
         begin1=begin
         end1=end
         begin=begin.strftime("%d/%m/%Y")                ######date string format change
@@ -1437,8 +1437,8 @@ def printLedgerExcel(request):
                 pass
             else:
                 lot_list.append(r.lot_no)
-        
-        
+
+
         data_row=[]
         data_block=[]
         for l in lot_list:
@@ -1492,36 +1492,36 @@ def printLedgerExcel(request):
         response['Content-Disposition'] = 'attachment; filename=Ledger.xls'   #"Intransit-all.xls"
 
         wb = xlwt.Workbook(encoding='utf-8')
-        ws = wb.add_sheet('Data') 
+        ws = wb.add_sheet('Data')
 
         row_num = 0
 
         font_style = xlwt.XFStyle()
         font_style.font.bold = True
 
-        
+
         for col_num in range(len(columns)):
-            ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+            ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column
 
         # Sheet body, remaining rows
         font_style = xlwt.XFStyle()
-        
-        #prev url req string to dict to querydict
-        
 
-        
+        #prev url req string to dict to querydict
+
+
+
         # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
         for row in data_block:
             row_num += 1
             for col_num in range(len(row)):
-                
+
                 ws.write(row_num, col_num, str(row[col_num]), font_style)
 
         wb.save(response)
-        
+
         return response
 
-       
+
     else:
         flag=0
         if(lot==None and selected_parties!=[]):
@@ -1538,7 +1538,7 @@ def printLedgerExcel(request):
             flag=3
         else:
             messages.error(request,'Please enter valid input')
-            return redirect('/reportfilter')  
+            return redirect('/reportfilter')
         lot_list=[]
         for r in rec:
             if r.lot_no in lot_list:
@@ -1546,10 +1546,10 @@ def printLedgerExcel(request):
             else:
                 lot_list.append(r.lot_no)
         print(lot_list)
-        
+
         data_row=[]
         data_block=[]
-        
+
         for l in lot_list:
             totalthan=0
             pendingthan=0
@@ -1569,7 +1569,7 @@ def printLedgerExcel(request):
                 else:
                     rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
                     rec_lists.append(rec)
-            
+
             if len(rec_lists)!=0:
                 flag=0
                 for a in rec_lists:
@@ -1605,30 +1605,30 @@ def printLedgerExcel(request):
         font_style = xlwt.XFStyle()
         font_style.font.bold = True
 
-        
+
         for col_num in range(len(columns)):
-            ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+            ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column
 
         # Sheet body, remaining rows
         font_style = xlwt.XFStyle()
-        
-        #prev url req string to dict to querydict
-        
 
-        
+        #prev url req string to dict to querydict
+
+
+
         # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
         for row in data_block:
             row_num += 1
             for col_num in range(len(row)):
-                
+
                 ws.write(row_num, col_num, str(row[col_num]), font_style)
 
         wb.save(response)
-        
+
         return response
             # data_row=[l,totalthan,pendingthan,rec_lists,rate]
             # data_block.append(data_row)
-        #return render(request,'ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
+        #return render(request,'./grey/ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
 
 
 # def generateReport1(request):
@@ -1653,8 +1653,8 @@ def printLedgerExcel(request):
 #     # end_date=request.POST.get("end_date")
 #     # end_date=datetime.datetime.strptime(str(end_date), '%Y-%m-%d').strftime('%b %d,%Y')
 # # jjjj
-# ##  Date filter  
-    
+# ##  Date filter
+
 #     records = Record.objects.all()
 #     for rec in records:
 #         if(rec.party_name in partyname):
@@ -1665,7 +1665,7 @@ def printLedgerExcel(request):
 #     for p in partyname:
 #         if(request.POST.get(p)!=None):
 #             send_parties.append(request.POST.get(p))
-    
+
 #     # for p in parties:
 #     #     if(request.POST.get(p.processing_party)!=None):
 #     #         selected_parties.append(request.POST.get(p.processing_party))
@@ -1676,35 +1676,35 @@ def printLedgerExcel(request):
 #     begin = request.POST.get("start_date")
 #     end = request.POST.get("end_date")
 #     if(begin!="" or end!=""):
-        
+
 #         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
 #         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
 #         selected_dates=[]
-        
+
 #     # selected_qualities=[]
 #         next_day = begin
 #         while True:
 #             if next_day > end:
 #                 break
-    
-        
-    
+
+
+
 #             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
 #             next_day += datetime.timedelta(days=1)
 
-            
-        
+
+
 #         begin=begin.strftime("%d/%m/%Y")
 #         end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
 #         if(lot==None):
 #             if(selected_parties!=[] and send_parties!=[]):
 #                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','')
-                
+
 #             elif(selected_parties!=[] and send_parties==[]):
 #                 rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no')
 #             elif(selected_parties==[] and send_parties!=[]):
-                
-                
+
+
 #                 for s in send_parties:
 #                     transit_than=0
 #                     godown_than=0
@@ -1738,19 +1738,19 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
+#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
 #             else:
-#                 rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('lot_no')          
-            
+#                 rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('lot_no')
+
 #         else:
-        
+
 #             if(selected_parties!=[] and send_parties!=[]):
 #                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
 #             elif(selected_parties!=[] and send_parties==[]):
 #                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
 #             elif(selected_parties==[] and send_parties!=[]):
-                
-                
+
+
 #                 for s in send_parties:
 #                     transit_than=0
 #                     godown_than=0
@@ -1784,7 +1784,7 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
+#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
 #             else:
 #                 rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
 #                 if(len(rec) == 0):
@@ -1820,31 +1820,31 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data = [send_list]
-#                     return render(request, 'reportlot.html',{'data':send_data,'begin':begin,'end':end})
+#                     return render(request, './grey/reportlot.html',{'data':send_data,'begin':begin,'end':end})
 
 #         try:
-#             return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0],'begin':begin,'end':end })
+#             return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0],'begin':begin,'end':end })
 #         except:
 #             if lot!=None:
-#                 return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot),'begin':begin,'end':end })
+#                 return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot),'begin':begin,'end':end })
 #             else:
-#                 return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':"Date",'begin':begin,'end':end })
-            
-            
+#                 return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':"Date",'begin':begin,'end':end })
+
+
 #     else:
 #         print("no date")
 #         if(lot==None):
 #             print("lot none")
 #             if(selected_parties!=[] and send_parties!=[]):
 #                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties).order_by('lot_no')
-#                 return render(request,'reportall.html',{'records':rec,'party':selected_parties[0]})
+#                 return render(request,'./grey/reportall.html',{'records':rec,'party':selected_parties[0]})
 #             elif(selected_parties!=[] and send_parties==[]):
 #                 rec = Record.objects.filter(processing_party_name__in=selected_parties).order_by('lot_no')
-#                 return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
-            
+#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+
 #             elif(selected_parties==[] and send_parties!=[]):
-                
-                
+
+
 #                 for s in send_parties:
 #                     transit_than=0
 #                     godown_than=0
@@ -1878,21 +1878,21 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0]})
+#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0]})
 #             else:
-#                 rec= Record.objects.filter(state__in=selected_states).order_by('lot_no')         
-            
+#                 rec= Record.objects.filter(state__in=selected_states).order_by('lot_no')
+
 #         else:
 #             print("got lot")
 #             if(selected_parties!=[] and send_parties!=[]):
 #                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
 #             elif(selected_parties!=[] and send_parties==[]):
 #                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties)
-#                 return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
-            
+#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+
 #             elif(selected_parties==[] and send_parties!=[]):
-                
-                
+
+
 #                 for s in send_parties:
 #                     transit_than=0
 #                     godown_than=0
@@ -1926,7 +1926,7 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'reportparty.html',{'data':send_data,'party':selected_parties[0]})
+#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0]})
 #             else:
 #                 rec= Record.objects.filter(lot_no=lot,state__in=selected_states)
 #                 print("got here")
@@ -1963,16 +1963,16 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data = [send_list]
-#                     return render(request, 'reportlot.html',{'data':send_data,'party':selected_parties[0]})
+#                     return render(request, './grey/reportlot.html',{'data':send_data,'party':selected_parties[0]})
 #         try:
-#             return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+#             return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
 #         except:
 #             if lot!=None:
-#                 return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot)})
+#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot)})
 #             else:
-#                 return render(request,'reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Date" })
-            
-#         #return render(request,'report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Date" })
+
+#         #return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
 
 
 
@@ -1984,14 +1984,14 @@ def showDefective(request):
     page = request.GET.get('page')
     records = paginator.get_page(page)
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request,'defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
+    return render(request,'./grey/defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
 
 
 ################## GREY -  REPORT BY CHECKER BASED ##############
 def checkerReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     checkers=Employee.objects.all().order_by('name')
-    return render(request,'checkerfilter.html',{'d':d,'checkers':checkers})
+    return render(request,'./grey/checkerfilter.html',{'d':d,'checkers':checkers})
 
 def checkerReport(request):
     c_id=int(request.POST.get('checker'))
@@ -1999,11 +1999,11 @@ def checkerReport(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
-        
+
         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
         selected_dates=[]
-        
+
     # selected_qualities=[]
         next_day = begin
         while True:
@@ -2019,7 +2019,7 @@ def checkerReport(request):
         #     than=0
         #     mtrs=0
         total=[]
-        totalthans=0    
+        totalthans=0
         totaltotal=0
         recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates).order_by('lot_no','quality','checking_date')
         for r in recs:
@@ -2035,7 +2035,7 @@ def checkerReport(request):
             try:
                 range=GreyCutRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
                 l.append(range.rate)
-            
+
                 l.append(round((mt*range.rate),2))
                 totaltotal=totaltotal+round((mt*range.rate),2)
             except:
@@ -2051,7 +2051,7 @@ def checkerReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'checkerreport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'./grey/checkerreport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 
 ################### Transport Report ######################
@@ -2059,7 +2059,7 @@ def checkerReport(request):
 def transportReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     transport=GreyTransportMaster.objects.all().order_by('transport')
-    return render(request,'transportfilter.html',{'d':d,'checkers':transport})
+    return render(request,'./grey/transportfilter.html',{'d':d,'checkers':transport})
 
 
 def transportReport(request):
@@ -2068,11 +2068,11 @@ def transportReport(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
-        
+
         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
         selected_dates=[]
-        
+
     # selected_qualities=[]
         next_day = begin
         while True:
@@ -2082,9 +2082,9 @@ def transportReport(request):
             next_day += datetime.timedelta(days=1)
 
         datalist=[]
- 
-        total=[]   
-        totalbales=0 
+
+        total=[]
+        totalbales=0
         totaltotal=0
 
         recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
@@ -2120,7 +2120,7 @@ def transportReport(request):
         #     try:
         #         # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
         #         l.append(r.transport.rate)
-            
+
         #         l.append(round((mt*r.transport.rate),2))
         #         totaltotal=totaltotal+round((mt*r.transport.rate),2)
         #     except:
@@ -2130,19 +2130,19 @@ def transportReport(request):
         #     datalist.append(l)
         total.append(round(totalbales,2))
         total.append(round(totaltotal,2))
-        
+
         begin = str(begin)
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'transportreport.html',{'records':datalist,'total':total,'t':transport.transport,'checker':transport.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'./grey/transportreport.html',{'records':datalist,'total':total,'t':transport.transport,'checker':transport.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 
 
 ################### QUALITY WISE REPORT ########################
 def qualityReportFilter(request):
     qualities= GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request,'qualityreportfilter.html',{'qualities':qualities})
+    return render(request,'./grey/qualityreportfilter.html',{'qualities':qualities})
 
 def qualityReport(request):
     # qualities=[]
@@ -2163,7 +2163,7 @@ def qualityReport(request):
     qualities= GreyQualityMaster.objects.all()
     selected_qualities=[]
     for q in qualities:
-        
+
         if(request.POST.get(q.qualities)!=None):
             selected_qualities.append(request.POST.get(q.qualities))
             rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
@@ -2171,7 +2171,7 @@ def qualityReport(request):
             tally_mtrs=0
             total_than_in_transit=0
             total_mtrs_in_transit=0
-            
+
             for r in rec_transit:
                 total_than_in_transit=total_than_in_transit+r.than
                 total_mtrs_in_transit=total_mtrs_in_transit+r.mtrs
@@ -2186,7 +2186,7 @@ def qualityReport(request):
                 total_mtrs_in_godown=total_mtrs_in_godown+r.mtrs
             gothan=gothan+total_than_in_godown
             gomtrs=gomtrs+total_mtrs_in_godown
-            
+
             rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_checked=0
             total_mtrs_in_checked=0
@@ -2216,7 +2216,7 @@ def qualityReport(request):
 
             tally_mtrs=total_mtrs_in_transit+total_mtrs_in_godown+total_mtrs_in_checked+total_mtrs_in_process+total_mtrs_in_ready
             tally_than=total_than_in_transit+total_than_in_godown+total_than_in_checked+total_than_in_process+total_than_in_ready
-            
+
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
@@ -2228,7 +2228,7 @@ def qualityReport(request):
             total_than_in_ready,round(total_mtrs_in_ready,2),
             tally_than,round(tally_mtrs,2)
             ]
-            
+
             final_qs.append(d1)
     total_all=[round(trthan,2),round(trmtrs,2),
             round(gothan,2),round(gomtrs,2),
@@ -2238,25 +2238,25 @@ def qualityReport(request):
             round(tothan,2),round(tomtrs,2),
     ]
             # d=[d1,[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
-    return render(request,'qualityreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities})
+    return render(request,'./grey/qualityreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities})
 ################### QUALITY WISE REPORT END########################
 
 ################### QUALITY WISE LEDGER ########################
 def qualityReport2filter(request):
     party=ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request,'qualityreport2filter.html',{'qualities':qualities,'parties':party})
+    return render(request,'./grey/qualityreport2filter.html',{'qualities':qualities,'parties':party})
 
 
 def qualityReport2(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
-        
+
         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
         selected_dates=[]
-        
+
     # selected_qualities=[]
         next_day = begin
         while True:
@@ -2269,21 +2269,21 @@ def qualityReport2(request):
     party_ob=get_object_or_404(ProcessingPartyNameMaster,id=party_id)
     final_qs=[]
     total_all=[]
-    
+
     prthan=0
     prmtrs=0
     rethan=0
     remtrs=0
     tothan=0
     tomtrs=0
-    
+
     qualities= GreyQualityMaster.objects.all().order_by('qualities')
     selected_qualities=[]
     for q in qualities:
-        
+
         if(request.POST.get(q.qualities)!=None):
             selected_qualities.append(request.POST.get(q.qualities))
-            
+
             if(begin!="" or end!=""):
                 rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
             else:
@@ -2311,7 +2311,7 @@ def qualityReport2(request):
 
             tally_mtrs=total_mtrs_in_process+total_mtrs_in_ready
             tally_than=total_than_in_process+total_than_in_ready
-            
+
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
@@ -2324,7 +2324,7 @@ def qualityReport2(request):
             if(d1[1]==0 and d1[2]==0 and d1[3]==0 and d1[4]==0):
                 pass
             else:
-                final_qs.append(d1) 
+                final_qs.append(d1)
     total_all=[round(prthan,2),round(prmtrs,2),
             round(rethan,2),round(remtrs,2),
             round(tothan,2),round(tomtrs,2),
@@ -2334,9 +2334,9 @@ def qualityReport2(request):
         messages.error(request,"Please select atleast one grey quality")
         return redirect('/qualitypartyreportfilter')
     if(begin!="" or end!=""):
-        return render(request,'qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
+        return render(request,'./grey/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
     else:
-        return render(request,'qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
+        return render(request,'./grey/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
 ################### QUALITY WISE LEDGER END########################
 
 ############################# Download Records in Excel Files (GREY, COLOR & CHEMICAL) #######################################
@@ -2351,7 +2351,7 @@ def export_page_xls(request):
         file_name="Intransit"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
         records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
-    
+
     elif(stateur=="godown"):
         file_name="Godown"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
@@ -2377,7 +2377,7 @@ def export_page_xls(request):
         for g in godowns:
             godowns_list.append(g)
         records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color__color','quantity','unit__unit','rate','state__godown')
-    
+
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
@@ -2393,7 +2393,7 @@ def export_page_xls(request):
 
 
     # ur=request.META.get('HTTP_REFERER')
-    
+
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s.xls'%file_name
 
@@ -2406,13 +2406,13 @@ def export_page_xls(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    
+
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column
 
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
-    
+
     #prev url req string to dict to querydict
     # ur=ur.split('?')
     if(len(ur)==2):
@@ -2455,34 +2455,34 @@ def export_page_xls(request):
 
     else:
         dic1={'page':'1','party_name':'','lot_no':'','quality':''}
-    
+
     d=QueryDict('',mutable=True)
     d.update(dic1)
 
     print(d)
 
     records_filter = RecordFilter(d,queryset=records_list)
-    # return render(request,'intransit.html',{'records':records_filter})
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
     paginator = Paginator(records_filter.qs,20)
     page = d.get('page')
     page=int(page)
-    
+
     records = paginator.get_page(page)
     # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     for row in records:
         row_num += 1
         for col_num in range(len(row)):
-            
+
             ws.write(row_num, col_num, str(row[col_num]), font_style)
 
     wb.save(response)
-    
+
     return response
 
 
 def export_filter_all_xls(request):
     ur=request.META.get('HTTP_REFERER')
-    
+
     ur=ur.split('?')
     stateur=ur[0]
     stateur=stateur.split('/')
@@ -2491,7 +2491,7 @@ def export_filter_all_xls(request):
         file_name="Intransit-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
         records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
-    
+
     elif(stateur=="godown"):
         file_name="Godown-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
@@ -2517,7 +2517,7 @@ def export_filter_all_xls(request):
         for g in godowns:
             godowns_list.append(g)
         records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color__color','quantity','unit__unit','rate','state__godown')
-    
+
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
         columns=['chemical','quantity','unit','average rate(Rs)','loose godown name']
@@ -2538,7 +2538,7 @@ def export_filter_all_xls(request):
             begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
-            
+
             next_day = begin
             while True:
                 if next_day > end:
@@ -2549,16 +2549,16 @@ def export_filter_all_xls(request):
             # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
             columns = [ 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Mobile No']
             records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no').order_by('payment_date')
-    elif(stateur=="banksheet"): 
-        
-        file_name="Bank Sheet"   
+    elif(stateur=="banksheet"):
+
+        file_name="Bank Sheet"
         # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
         columns = [ 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Mobile No']
         records_list=MonthlyPayment.objects.all().values_list('amount', 'payment_date', 'company_account__branch_code', 'company_account__account_type', 'company_account__company_account', 'employee__ifsc', 'employee__account_type', 'employee__account_no', 'employee__name', 'employee__phone_no').order_by('payment_date')
 
-    elif(stateur=="salarysheet"): 
-        
-        file_name="Salary Sheet"   
+    elif(stateur=="salarysheet"):
+
+        file_name="Salary Sheet"
         # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
         columns = [ 'Name', 'Father Name', 'Bank Name', 'Account No', 'IFSC Code', 'Amount', 'Aadhar No','Contractor Name','Phone No','Address','City','Payment date']
         records_list=MonthlyPayment.objects.all().values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date').order_by('payment_date')
@@ -2571,7 +2571,7 @@ def export_filter_all_xls(request):
             begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
-            
+
             next_day = begin
             while True:
                 if next_day > end:
@@ -2579,8 +2579,8 @@ def export_filter_all_xls(request):
                 selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
                 next_day += datetime.timedelta(days=1)
 
-            
-            
+
+
             # columns = ['Ref No', 'Amount', 'Value Date', 'Branch Code', 'Sender Account type', 'Remitter account no', 'IFSC Code', 'Debit Account', 'Benificiary Account type', 'Bank Account No','Benificiary Name','Remittance Details','Debit Account System','Originator of Remittance','Mobile No']
             columns = [ 'Name', 'Father Name', 'Bank Name', 'Account No', 'IFSC Code', 'Amount', 'Aadhar No','Contractor Name','Phone No','Address','City','Payment date']
             records_list=MonthlyPayment.objects.filter(payment_date__in=selected_dates).values_list('employee__name', 'employee__father_name', 'employee__bank_name', 'employee__account_no', 'employee__ifsc', 'amount', 'employee__aadhar_no', 'employee__contractor_name', 'employee__phone_no','employee__address','employee__city','payment_date').order_by('payment_date')
@@ -2598,13 +2598,13 @@ def export_filter_all_xls(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    
+
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column
 
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
-    
+
     #prev url req string to dict to querydict
     # ur=ur.split('?')
     if(len(ur)==2):
@@ -2647,7 +2647,7 @@ def export_filter_all_xls(request):
 
     else:
         dic1={'page':'1','party_name':'','lot_no':'','quality':''}
-    
+
     d=QueryDict('',mutable=True)
     d.update(dic1)
 
@@ -2659,16 +2659,16 @@ def export_filter_all_xls(request):
         records_filter = GodownLeaseFilter(d,queryset=records_list)
     else:
         records_filter = RecordFilter(d,queryset=records_list)
-    
+
     # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     for row in records_filter.qs:
         row_num += 1
         for col_num in range(len(row)):
-            
+
             ws.write(row_num, col_num, str(row[col_num]), font_style)
 
     wb.save(response)
-    
+
     return response
 
 
@@ -2684,7 +2684,7 @@ def export_all_xls(request):
         file_name="Intransit-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
         records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
-    
+
     elif(stateur=="godown"):
         file_name="Godown-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
@@ -2712,7 +2712,7 @@ def export_all_xls(request):
             godowns_list.append(g)
         records_list = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0).values_list('color__color','quantity','unit__unit','rate','state__godown')
 
-    
+
 
     elif(stateur=="goodslease"):
         file_name="Loose Godown Stock"
@@ -2727,8 +2727,8 @@ def export_all_xls(request):
         columns = ['Supplier Name', 'order no', 'order Date', 'chemical', 'quantity', 'quantity remaining', 'unit', 'rate', 'order amount', 'Bill verify','state']
         records_list=ChemicalsAllOrders.objects.all().values_list('supplier__supplier', 'order_no', 'order_date', 'color__color', 'quantity', 'rem_quantity', 'unit__unit', 'rate', 'amount', 'validation', 'state')
 
-    
-    
+
+
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s.xls'%file_name   #"Intransit-all.xls"
 
@@ -2741,26 +2741,26 @@ def export_all_xls(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    
+
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column
 
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
-    
-    #prev url req string to dict to querydict
-    
 
-    
+    #prev url req string to dict to querydict
+
+
+
     # rows = Record.objects.filter(state="godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     for row in records_list:
         row_num += 1
         for col_num in range(len(row)):
-            
+
             ws.write(row_num, col_num, str(row[col_num]), font_style)
 
     wb.save(response)
-    
+
     return response
 ###################################### RECORD DOWNLOAD END ###################################
 
@@ -2780,11 +2780,11 @@ def export_report_xls(request):
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
-            
+
             begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
-            
+
         # selected_qualities=[]
             next_day = begin
             while True:
@@ -2793,7 +2793,7 @@ def export_report_xls(request):
                 selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
                 next_day += datetime.timedelta(days=1)
         datalist=[]
-        totalbales=0 
+        totalbales=0
         totaltotal=0
 
         recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
@@ -2817,9 +2817,9 @@ def export_report_xls(request):
                 datalist.append(row_list)
 
             # datalist=[]
-    
+
             # total=[]
-            # totalthans=0    
+            # totalthans=0
             # totaltotal=0
             # recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
             # for r in recs:
@@ -2836,15 +2836,15 @@ def export_report_xls(request):
             #     try:
             #         # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
             #         l.append(r.transport.rate)
-                
+
             #         l.append(round((mt*r.transport.rate),2))
             #         totaltotal=totaltotal+round((mt*r.transport.rate),2)
             #     except:
             #         l.append("rate not defined")
             #         l.append("rate not defined")
-                
+
             #     datalist.append(l)
-        
+
     if(stateur=="checkerreport"):
         file_name="Checker-Report"
         columns = ['lot No','Quality', 'Checking Date', 'Thans Checked', 'Average cut', 'Rate(Rs)', 'Total(Rs)']
@@ -2855,11 +2855,11 @@ def export_report_xls(request):
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
-            
+
             begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
-            
+
         # selected_qualities=[]
             next_day = begin
             while True:
@@ -2875,7 +2875,7 @@ def export_report_xls(request):
             #     than=0
             #     mtrs=0
             total=[]
-            totalthans=0    
+            totalthans=0
             totaltotal=0
             recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates).order_by('quality','checking_date')
             for r in recs:
@@ -2892,13 +2892,13 @@ def export_report_xls(request):
                 try:
                     trange=GreyCutRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
                     l.append(trange.rate)
-            
+
                     l.append(round((mt*trange.rate),2))
                     totaltotal=totaltotal+round((mt*trange.rate),2)
                 except:
                     l.append("rate not defined")
                     l.append("rate not defined")
-                
+
                 datalist.append(l)
     elif (stateur=="qualityreport"):
         file_name="Quality-Report"
@@ -2921,7 +2921,7 @@ def export_report_xls(request):
         tothan=0
         tomtrs=0
         for q in qualities:
-        
+
         # if(request.POST.get(q.qualities)!=None):
         #     selected_qualities.append(request.POST.get(q.qualities))
             rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
@@ -2929,7 +2929,7 @@ def export_report_xls(request):
             tally_mtrs=0
             total_than_in_transit=0
             total_mtrs_in_transit=0
-            
+
             for r in rec_transit:
                 total_than_in_transit=total_than_in_transit+r.than
                 total_mtrs_in_transit=total_mtrs_in_transit+r.mtrs
@@ -2944,7 +2944,7 @@ def export_report_xls(request):
                 total_mtrs_in_godown=total_mtrs_in_godown+r.mtrs
             gothan=gothan+total_than_in_godown
             gomtrs=gomtrs+total_mtrs_in_godown
-            
+
             rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             total_than_in_checked=0
             total_mtrs_in_checked=0
@@ -2974,7 +2974,7 @@ def export_report_xls(request):
 
             tally_mtrs=total_mtrs_in_transit+total_mtrs_in_godown+total_mtrs_in_checked+total_mtrs_in_process+total_mtrs_in_ready
             tally_than=total_than_in_transit+total_than_in_godown+total_than_in_checked+total_than_in_process+total_than_in_ready
-            
+
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
             qual=get_object_or_404(GreyQualityMaster,id=int(q))
@@ -2986,7 +2986,7 @@ def export_report_xls(request):
             total_than_in_ready,round(total_mtrs_in_ready,2),
             tally_than,round(tally_mtrs,2)
             ]
-            
+
             datalist.append(d1)
         total_all=["Total",
             round(trthan,2),round(trmtrs,2),
@@ -3008,11 +3008,11 @@ def export_report_xls(request):
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
-            
+
             begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
-            
+
         # selected_qualities=[]
             next_day = begin
             while True:
@@ -3020,24 +3020,24 @@ def export_report_xls(request):
                     break
                 selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
                 next_day += datetime.timedelta(days=1)
-            
+
         party_id=(request.POST.get('party'))
         party_ob=get_object_or_404(ProcessingPartyNameMaster,processing_party=party_id)
         final_qs=[]
         total_all=[]
-        
+
         prthan=0
         prmtrs=0
         rethan=0
         remtrs=0
         tothan=0
         tomtrs=0
-        
+
         selected_qualities=[]
         for q in qualities:
-            
-            
-                
+
+
+
             if(begin!="" or end!=""):
                 rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             else:
@@ -3065,7 +3065,7 @@ def export_report_xls(request):
 
             tally_mtrs=total_mtrs_in_process+total_mtrs_in_ready
             tally_than=total_than_in_process+total_than_in_ready
-                
+
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
@@ -3074,18 +3074,18 @@ def export_report_xls(request):
             total_than_in_ready,round(total_mtrs_in_ready,2),
             tally_than,round(tally_mtrs,2)
             ]
-                
+
             if(d1[1]==0 and d1[2]==0 and d1[3]==0 and d1[4]==0):
                 pass
             else:
-                final_qs.append(d1) 
+                final_qs.append(d1)
         total_all=["-",round(prthan,2),round(prmtrs,2),
             round(rethan,2),round(remtrs,2),
             round(tothan,2),round(tomtrs,2),
         ]
         final_qs.append(total_all)
         datalist=final_qs
-        
+
 
     elif (stateur=="colorreport"):
         file_name="Color-Report"
@@ -3094,23 +3094,23 @@ def export_report_xls(request):
         columns = ['Color', 'unit', 'opening stock on %s'%str(begin), 'stock purchased', 'total stock', 'quantity Consumed/Moved','closing stock on %s'%str(end)]
 
         print(begin)
-        
+
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
-            
+
             begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
-            
+
         # selected_qualities=[]
             next_day = begin
             while True:
                 if next_day > end:
                     break
-        
-            
-        
+
+
+
                 selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
                 next_day += datetime.timedelta(days=1)
         datalist=[]
@@ -3134,7 +3134,7 @@ def export_report_xls(request):
         for g in selected_loose_id:
             selected_loose.append(get_object_or_404(ChemicalsLooseGodownMaster,id=int(g)))
 
-        
+
         if selected_loose==[] and selected_godowns == []:
             for g in loose_godowns:
                 selected_loose.append(g)
@@ -3149,7 +3149,7 @@ def export_report_xls(request):
             for u in units:
                 try:
                     l=[]
-                    
+
         ######################### opening stock #########################################
                     try:
                         l.append(c.color)
@@ -3161,44 +3161,44 @@ def export_report_xls(request):
                                 quan=quan+first_record.quantity
                             except:
                                 pass
-                        
+
                         for lg in selected_loose:
                             first_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
                             try:
                                 quan=quan+first_record.quantity
                             except:
                                 pass
-                        
+
                         l.append(quan)
                     except:
 
                         l.append(0)
-                    
+
     ################################### new stock ##################################
                     new_stock=0
                     if selected_loose==[] and selected_godowns!=[]:
                         try:
-                            
+
                             #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
                             neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
-                            
+
                             for i in neworders:
-                                
+
                                 new_stock=new_stock+i.quantity
-                            
+
                         except:
                             pass
                     elif selected_godowns==[] and selected_loose!=[]:
                         try:
                             records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
-                            
-                            
+
+
                             quantity = 0
                             for rec in records:
                                 quantity = quantity+rec.quantity
-                        
+
                             consumed_stock=quantity
-                            
+
                         except:
                             consumed_stock=0
                         try:
@@ -3208,26 +3208,26 @@ def export_report_xls(request):
                                 fstock = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
                                 print(fstock)
                                 if fstock:
-                                    
+
                                     q= q+lstock.quantity - fstock.quantity
                                 else:
                                     q=q+lstock.quantity
-                            
+
                             new_stock=q+consumed_stock
                         except:
                             pass
 
-                    
+
                     else:
                         try:
-                            
+
                             #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
                             neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
-                            
+
                             for i in neworders:
-                                
+
                                 new_stock=new_stock+i.quantity
-                            
+
                         except:
                             pass
                     l.append(new_stock)
@@ -3262,24 +3262,24 @@ def export_report_xls(request):
                     elif selected_loose!=[] and selected_godowns==[]:
                         try:
                             records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
-                            
-                            
+
+
                             quantity = 0
                             for rec in records:
                                 quantity = quantity+rec.quantity
-                        
+
                             l.append(quantity)
                         except:
                             l.append(0)
                     else:
                         try:
                             records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
-                            
-                            
+
+
                             quantity = 0
                             for rec in records:
                                 quantity = quantity+rec.quantity
-                        
+
                             l.append(quantity)
                         except:
                             l.append(0)
@@ -3300,10 +3300,10 @@ def export_report_xls(request):
                                 pass
                     except:
                         pass
-                    
-                    
+
+
                     l.append(lquan)
-                    
+
                     if l[2]==0 and l[3]==0 and l[5]==0:
                         pass
                     else:
@@ -3311,19 +3311,19 @@ def export_report_xls(request):
                     # print(first_record.quantity,first_record.con_date)
                 except:
                     pass
-        
+
     #     begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
     #     end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
     #     selected_dates=[]
-        
+
     # # selected_qualities=[]
     #     next_day = begin
     #     while True:
     #         if next_day > end:
     #             break
-    
-        
-    
+
+
+
     #         selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
     #         next_day += datetime.timedelta(days=1)
     #     datalist=[]
@@ -3341,7 +3341,7 @@ def export_report_xls(request):
     #                 except:
 
     #                     l.append(0)
-                    
+
     #                 new_stock=0
     #                 try:
     #                     neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
@@ -3356,30 +3356,30 @@ def export_report_xls(request):
     #                     last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
     #                 except:
     #                     last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
-                    
-                    
+
+
     #                 try:
     #                     records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
-                        
-                        
+
+
     #                     quantity = 0
     #                     for rec in records:
     #                         quantity = quantity+rec.quantity
-                    
+
     #                     l.append(quantity)
     #                 except:
     #                     l.append(0)
-                    
+
     #                 l.append(last_record.quantity)
     #                 # new_stock=(l[4]-l[3])
     #                 # if(new_stock>0):
     #                 #     l.append(new_stock)
-                    
+
     #                 datalist.append(l)
     #                 # print(first_record.quantity,first_record.con_date)
     #             except:
     #                 pass
-        
+
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s.xls'%file_name   #"Intransit-all.xls"
 
@@ -3392,20 +3392,20 @@ def export_report_xls(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    
+
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column
 
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
     for row in datalist:
         row_num += 1
         for col_num in range(len(row)):
-            
+
             ws.write(row_num, col_num, row[col_num], font_style)
 
     wb.save(response)
-    
+
     return response
 
 
@@ -3674,7 +3674,7 @@ def placeOrder(request):
     color=Color.objects.all().order_by("color")
     suppliers=ColorAndChemicalsSupplier.objects.all().order_by('supplier')
     units=ChemicalsUnitsMaster.objects.all().order_by('unit')
-    
+
     d=datetime.date.today()
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     d=str(d)
@@ -3833,7 +3833,7 @@ def saveOrder(request):
                     rem_quantity=request.POST.get('quantity4')
                 )
                 new_order.save()
-    
+
                 if(request.POST.get('rate5')!='' and request.POST.get('quantity5')!='' and request.POST.get('color5')!=''):
                     q=float(request.POST.get('quantity5'))
                     r=float(request.POST.get('rate5'))
@@ -3945,7 +3945,7 @@ def saveOrder(request):
                                 state="Ordered",
                                 unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit7'))),
                                 rem_quantity=request.POST.get('quantity7')
-                        
+
                             )
                             new_order.save()
 
@@ -4033,7 +4033,7 @@ def saveOrder(request):
                                         if l in color_unit:
                                             messages.error(request,"Color Repeated. Order placed partially till ninth color")
                                             return redirect('/placeorder')
-                                        
+
                                         new_order=ColorRecord(
                                             color=get_object_or_404(Color,id=int(request.POST.get('color10'))),
                                             supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier'))),
@@ -4080,7 +4080,7 @@ def orderGeneration(request):
                     idlist.append(d.id)
 
         except:
-            pass  
+            pass
 
     colrecs=ColorRecord.objects.all()
     idlist2=[]
@@ -4095,8 +4095,8 @@ def orderGeneration(request):
                     idlist2.append(d.id)
 
         except:
-            pass             
-    
+            pass
+
     for i in idlist:
         ChemicalsAllOrders.objects.filter(id=i).delete()
     for i in idlist2:
@@ -4105,8 +4105,8 @@ def orderGeneration(request):
 
     rec=ChemicalsAllOrders.objects.all().order_by('-state','order_no')
     records_filter = ColorOrderFilter(request.GET,queryset=rec)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -4119,7 +4119,7 @@ def orderEdit(request,id):
     rec=get_object_or_404(ChemicalsAllOrders, id=id)
     try:
         #rec2=get_object_or_404(ColorRecord,rate=rec.rate,order_no=rec.order_no,color=rec.color,unit=rec.unit,state="Ordered")
-    
+
         orderdate=str(rec.order_date)
         color = Color.objects.all().order_by('color')
         supplier = ColorAndChemicalsSupplier.objects.all().order_by('supplier')
@@ -4150,22 +4150,22 @@ def orderEditSave(request,id):
         rec=get_object_or_404(ColorRecord, rate=rate,order_no=orderno,color=color,unit=unit,state="Ordered")
         rec.supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier')))
         rec.color=get_object_or_404(Color,id=int(request.POST.get('color')))
-        rec.order_date=str(request.POST.get('order_date'))                  
-        rec.rate=request.POST.get('rate')                               
-        rec.amount=a                              
-        rec.quantity=request.POST.get('quantity')               
-        rec.total_quantity = request.POST.get('quantity') 
-        rec.unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit')))         
+        rec.order_date=str(request.POST.get('order_date'))
+        rec.rate=request.POST.get('rate')
+        rec.amount=a
+        rec.quantity=request.POST.get('quantity')
+        rec.total_quantity = request.POST.get('quantity')
+        rec.unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit')))
         rec.save()
     finally:
         rec_order.supplier=get_object_or_404(ColorAndChemicalsSupplier,id=int(request.POST.get('supplier')))
         rec_order.color=get_object_or_404(Color,id=int(request.POST.get('color')))
-        rec_order.order_date=str(request.POST.get('order_date'))                  
-        rec_order.rate=request.POST.get('rate')                               
-        rec_order.amount=a                              
+        rec_order.order_date=str(request.POST.get('order_date'))
+        rec_order.rate=request.POST.get('rate')
+        rec_order.amount=a
         rec_order.quantity=request.POST.get('quantity')
-        rec_order.rem_quantity=request.POST.get('quantity')      
-        rec_order.unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit')))         
+        rec_order.rem_quantity=request.POST.get('quantity')
+        rec_order.unit = get_object_or_404(ChemicalsUnitsMaster,id=int(request.POST.get('unit')))
         rec_order.save()
     return redirect('/ordergeneration')
 
@@ -4177,25 +4177,25 @@ def goodsReceived(request):
     godowns_list=[]
     for g in godowns:
         godowns_list.append(g)
-    
+
     godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
     chemicals=Color.objects.all().order_by('color')
     godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
 
-    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})    
+    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})
 
 def goodsRequest(request):
     rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
     records_filter = ColorFilter(request.GET,queryset=rec)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -4229,9 +4229,9 @@ def viewOrder(request,id):
     godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
     print(billdate)
     remaining_order = 0
-    
+
     for r in recieved_recs:
-        
+
         remaining_order = remaining_order + r.quantity
     remaining_order = ogorder.quantity - remaining_order
     return render(request, './color/vieworder.html', {'d':d,'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
@@ -4241,15 +4241,15 @@ def renderValidate(request,id):
     rec=get_object_or_404(ChemicalsAllOrders, id=id)
     mindate=str(rec.order_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    
+
 
     return render(request, './color/validateorder.html', {'record':rec,'mindate':mindate,'maxdate':maxdate})
 
 def validate(request,id):
     rec = get_object_or_404(ColorRecord,id=id)
     rec.bill_no=int(request.POST.get('billno'+str(rec.id)))
-    rec.bill_date = request.POST.get('billdate'+str(rec.id)) 
-    
+    rec.bill_date = request.POST.get('billdate'+str(rec.id))
+
     rec.save()
     all_recs = ColorRecord.objects.filter(order_no=rec.order_no,color=rec.color,unit=rec.unit).exclude(bill_date=None)
     q=0
@@ -4259,7 +4259,7 @@ def validate(request,id):
     if(q==ogorder.quantity):
         ogorder.validation="Yes"
         ogorder.save()
-    
+
     messages.success(request,"Order Validated")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -4287,7 +4287,7 @@ def goodsApprove(request,id):
         ogorder.save()
         try:
 
-            
+
             try:
                 try:
                     closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(godown=godown,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
@@ -4313,12 +4313,12 @@ def goodsApprove(request,id):
                 closing_stock = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()    ####loophole solved
                 closing_stock.quantity=round(closing_stock.quantity + quantity_recieved,2)
                 closing_stock.save()
-            
-            
+
+
 
             except:
                 closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate__lt = recieve_date).order_by('-dailydate').first()
- 
+
                 closing_stock= ChemicalsClosingStock(
                     color = get_object_or_404(Color,id=int(prevRec.color.id)),
                     quantity = round(closing_stock_prev.quantity + quantity_recieved,2),
@@ -4355,7 +4355,7 @@ def goodsApprove(request,id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         quantity_remaining = round(prevRec.quantity - quantity_recieved)
-        
+
         amount_per_quant = prevRec.amount/prevRec.quantity
         amount_recieved = amount_per_quant * quantity_recieved
         amount_remain = prevRec.amount - amount_recieved
@@ -4380,20 +4380,20 @@ def goodsApprove(request,id):
             total_quantity = prevRec.total_quantity,
             godown = godown,
             chalan_no=int(request.POST.get('chalan')),
-            
-            
+
+
         )
-        
+
         new_value.save()
-           
-        
+
+
         print(recieving_date)
         if quantity_recieved == 0 :
             messages.error(request,"Quantity Recieved cannot be Zero (0)")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
 
-            
+
             prevRec.quantity = round(prevRec.quantity - quantity_recieved,2)
             prevRec.amount = round(amount_remain,2)
             prevRec.save()
@@ -4402,7 +4402,7 @@ def goodsApprove(request,id):
             ogorder.rem_quantity= round(ogorder.rem_quantity - quantity_recieved,2)
             ogorder.save()
             try:
-                
+
                 try:
                     try:
                         print("11")
@@ -4419,8 +4419,8 @@ def goodsApprove(request,id):
                             pq=closing_stock_prev_pg.quantity
                         except:
                             pq=0
-                        
-    
+
+
                         newpg= ChemicalsClosingStockperGodown(
                             color = get_object_or_404(Color,id=int(prevRec.color.id)),
                             quantity = round(pq + quantity_recieved,2),
@@ -4436,7 +4436,7 @@ def goodsApprove(request,id):
                     print("same rec",closing_stock.quantity)
                 except:
                     closing_stock_prev = ChemicalsClosingStock.objects.filter(color=prevRec.color,unit=prevRec.unit,dailydate__lt=recieve_date).order_by('-dailydate').first()
- 
+
                     closing_stock= ChemicalsClosingStock(
                         color = get_object_or_404(Color,id=int(prevRec.color.id)),
                         quantity = round(closing_stock_prev.quantity + quantity_recieved,2),
@@ -4491,14 +4491,14 @@ def goodsLease(request):
     godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list,state=None).exclude(quantity=0).order_by('color')
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
     # html = render_to_string('./color/lease.html',{'filter':records_filter,'colors':records})
     # text = htmltoText(html)
-    # print(text) 
+    # print(text)
     chemicals=Color.objects.all().order_by('color')
     loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
     return render(request,'./color/lease.html',{'filter':records_filter,'colors':records,'chemicals':chemicals,'loose_godowns':loose_godowns})
@@ -4511,8 +4511,8 @@ def leaseRequest(request):
     godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
@@ -4558,7 +4558,7 @@ def leaseApprove(request,id):
             newpg.save()
             print("h3")
         try:
-            
+
             print("1")
             closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
             print(closing_stock_pg)
@@ -4589,8 +4589,8 @@ def leaseApprove(request,id):
                 pq=closing_stock_prev_pg.quantity
             except:
                 pq=0
-                        
-    
+
+
             newpg= ChemicalsClosingStockperGodown(
                 color = get_object_or_404(Color,id=int(prevRec.color.id)),
                 quantity = round(pq + quantity_recieved,2),
@@ -4600,7 +4600,7 @@ def leaseApprove(request,id):
                 loose_godown=loose_godown
                 )
             newpg.save()
-          ####################3  
+          ####################3
         try:
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
@@ -4649,7 +4649,7 @@ def leaseApprove(request,id):
             closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown,color=prevRec.color,unit=prevRec.unit,dailydate = recieve_date).order_by('-dailydate').first()
             closing_stock_pg.quantity=round(closing_stock_pg.quantity + quantity_recieved,2)
             closing_stock_pg.save()
-            
+
 
         except:
             # try:
@@ -4672,8 +4672,8 @@ def leaseApprove(request,id):
                 pq=closing_stock_prev_pg.quantity
             except:
                 pq=0
-                        
-    
+
+
             newpg= ChemicalsClosingStockperGodown(
                 color = get_object_or_404(Color,id=int(prevRec.color.id)),
                 quantity = round(pq + quantity_recieved,2),
@@ -4687,7 +4687,7 @@ def leaseApprove(request,id):
             godown_color = get_object_or_404(ChemicalsGodownLooseMergeStock,color=prevRec.color,unit=prevRec.unit,loose_godown_state=loose_godown)
             godown_color.quantity = round(godown_color.quantity + quantity_recieved,2)
             # godown_color.rate = prevRec.rate
-            
+
         except:
             godown_color = ChemicalsGodownLooseMergeStock(
                 color = prevRec.color,
@@ -4706,8 +4706,8 @@ def leaseApprove(request,id):
             prevRec.save()
             godown_color.save()
             messages.success(request,"Data Updated Successfully")
-            
-            
+
+
     return redirect('/goodsreceived')
 
 def changeLooseGodown(request,id):
@@ -4716,7 +4716,7 @@ def changeLooseGodown(request,id):
     #units=ChemicalsUnitsMaster.objects.all().order_by('unit')
     #godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
     loose_godown=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request,'./color/editloosestocklg.html',{'record':leasestock,'loose':loose_godown})   
+    return render(request,'./color/editloosestocklg.html',{'record':leasestock,'loose':loose_godown})
 
 def savechangeLooseGodown(request,id):
     if(float(request.POST.get('move-quantity'))==0):
@@ -4725,7 +4725,7 @@ def savechangeLooseGodown(request,id):
     l_id=request.POST.get('loosename')
     loose_object=get_object_or_404(ChemicalsLooseGodownMaster,id=int(l_id))
     move_quantity=round(float(request.POST.get('move-quantity')),2)
-    
+
     merge_stock=get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
     if(loose_object==merge_stock.loose_godown_state):
         messages.error(request,"Cannot update because loose godown you selected is same as previous")
@@ -4752,7 +4752,7 @@ def savechangeLooseGodown(request,id):
     prevlg.quantity = round(prevlg.quantity - move_quantity,2)
     prevlg.save()
     try:
-            
+
         print("1")
         closing_stock_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_object,color=merge_stock.color,unit=merge_stock.unit,dailydate=prevlg.dailydate).order_by('-dailydate').first()
         print(closing_stock_pg)
@@ -4763,14 +4763,14 @@ def savechangeLooseGodown(request,id):
 
     except:
         print("here")
-            
+
         try:
             closing_stock_prev_pg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_object,color=merge_stock.color,unit=merge_stock.unit,dailydate__lt = prevlg.dailydate).order_by('-dailydate').first()
             pq=closing_stock_prev_pg.quantity
         except:
             pq=0
-                        
-    
+
+
         newpg= ChemicalsClosingStockperGodown(
             color = get_object_or_404(Color,id=int(merge_stock.color.id)),
             quantity = round(pq + move_quantity,2),
@@ -4792,15 +4792,15 @@ def leaseedit(request,id):
     units=ChemicalsUnitsMaster.objects.all().order_by('unit')
     godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
     loose_godown=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'loose':loose_godown,'godowns':godowns})   
+    return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'loose':loose_godown,'godowns':godowns})
 
 def savelease(request,id):
     g_id=request.POST.get('godownname')
     godown_object=get_object_or_404(ChemicalsGodownsMaster,id=int(g_id))
     act_quantity=round(float(request.POST.get('act-quantity')),2)
-    
+
     stock=get_object_or_404(ChemicalsGodownLooseMergeStock,id=id)
-    
+
     old_quantity=stock.quantity
     diff=old_quantity-act_quantity
     if(diff<0):
@@ -4816,7 +4816,7 @@ def savelease(request,id):
         stock.save()
         stockgodown.quantity=round(stockgodown.quantity+diff,2)
         stockgodown.save()
-    
+
     prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=stock.loose_godown_state,color=stock.color,unit=stock.unit).order_by('-dailydate').first()
     prevlg.quantity = round(prevlg.quantity - diff,2)
     prevlg.save()
@@ -4830,7 +4830,7 @@ def savelease(request,id):
 ########################### COLOR CHEMICAL LOOSE END ################################
 
 ########################### COLOR CHEMICAL DAILY CONSUMPTION ################################
-def renderDailyConsumptionLease1(request):                                                      
+def renderDailyConsumptionLease1(request):
     lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
     first_lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease').first()
     try:
@@ -4874,8 +4874,8 @@ def editDailyConsumption(request,id):
 def saveDailyConsumption(request,id):
     rec=get_object_or_404(ChemicalsDailyConsumption,id=id)
     new_q=float(request.POST.get('new-quantity'))
-    
-    
+
+
     if(new_q>rec.quantity):
         messages.error(request,"Quantity cannot exceed original quantity")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -4886,7 +4886,7 @@ def saveDailyConsumption(request,id):
     begin=datetime.datetime.strptime(str(rec.con_date),"%Y-%m-%d").date()
     end=datetime.date.today()
     selected_dates=[]
-        
+
     # selected_qualities=[]
     next_day = begin
     while True:
@@ -4894,7 +4894,7 @@ def saveDailyConsumption(request,id):
             break
         selected_dates.append((datetime.datetime.strptime(str(next_day), '%Y-%m-%d')))#.strftime('%b %d,%Y'))
         next_day += datetime.timedelta(days=1)
-    
+
     #loose_godown_object=get_object_or_404(ChemicalsLooseGodownMaster,lease=rec.loose_godown.lease)
     #colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object,).order_by('color')
     merge_color=get_object_or_404(ChemicalsGodownLooseMergeStock,color=rec.color,unit=rec.unit,loose_godown_state=rec.loose_godown)
@@ -4903,20 +4903,20 @@ def saveDailyConsumption(request,id):
 
     try:
         all_closingstocks=ChemicalsClosingStock.objects.filter(color=rec.color,unit=rec.unit,dailydate__in=selected_dates)
-        
+
         for a in all_closingstocks:
             a.quantity=round((a.quantity + rec.quantity - new_q),2)
             a.save()
-            
-        
+
+
     except:
         pass
 
     try:
         all_prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=rec.loose_godown,color=rec.color,unit=rec.unit,dailydate__in=selected_dates).order_by('dailydate')
-                
+
         for a in all_prevlg:
-           
+
             a.quantity=round((a.quantity + rec.quantity - new_q),2)
             a.save()
     except:
@@ -4938,7 +4938,7 @@ def consume(request,name):
     begin=datetime.datetime.strptime(consumingdate,"%Y-%m-%d").date()
     end=datetime.date.today()
     selected_dates=[]
-        
+
     # selected_qualities=[]
     next_day = begin
     while True:
@@ -4950,7 +4950,7 @@ def consume(request,name):
     print(selected_dates)
     for c in colors:
         if(request.POST.get(str(c.id))==""):
-            
+
             continue
         if(float(request.POST.get(str(c.id)))>c.quantity):
             flag = flag + 1
@@ -4958,17 +4958,17 @@ def consume(request,name):
 
         try:
             prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown_object,color=c.color,unit=c.unit,dailydate__lte=str(consumingdate)).order_by('-dailydate').first()
-            
+
 
             if(str(datetime.date.today()) != consumingdate):
                 print("diff")
                 all_prevlg = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown_object,color=c.color,unit=c.unit,dailydate__in=selected_dates).order_by('dailydate')
-                
+
                 for a in all_prevlg:
                     print("d")
                     a.quantity=round(a.quantity - float(request.POST.get(str(c.id))),2)
                     a.save()
-                recbefore = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown_object,color=c.color,unit=c.unit,dailydate__in=selected_dates).order_by('-dailydate').first()   
+                recbefore = ChemicalsClosingStockperGodown.objects.filter(loose_godown=loose_godown_object,color=c.color,unit=c.unit,dailydate__in=selected_dates).order_by('-dailydate').first()
                 if(str(datetime.date.today()) != str(recbefore.dailydate)):
                     new_lg = ChemicalsClosingStockperGodown(
                         color=c.color,
@@ -4990,7 +4990,7 @@ def consume(request,name):
                         loose_godown = loose_godown_object
                     )
                     new_lg.save()
-                else:    
+                else:
                     prevlg.quantity = round(prevlg.quantity - float(request.POST.get(str(c.id))),2)
                     prevlg.save()
 
@@ -5016,8 +5016,8 @@ def consume(request,name):
                 closing_stock.save()
                 print("done")
             new_dates=selected_dates[1:]
-            
-            
+
+
             all_closingstocks = ChemicalsClosingStock.objects.filter(color=c.color,unit=c.unit,dailydate__in=new_dates)
             #print("got all")
             #print(new_dates)
@@ -5029,9 +5029,9 @@ def consume(request,name):
         except:
             #print("ec")
             pass
-            
-            
-            
+
+
+
         c.quantity=round((c.quantity - float(request.POST.get(str(c.id)))),2)
         c.save()
         stored_color = ChemicalsGodownLooseMergeStock.objects.filter(color=c.color,unit=c.unit)
@@ -5048,7 +5048,7 @@ def consume(request,name):
             loose_godown= loose_godown_object
         )
         daily_consump.save()
-   
+
     if (flag != 0):
         messages.error(request,"%s Quantity entered exceeded the quantities available in Loose" %(flag))
     return redirect('/dailyconsumption1')
@@ -5076,7 +5076,7 @@ def renderClosingStock(request):
                 recsl=get_list_or_404(ChemicalsGodownLooseMergeStock,color=c,unit=u,loose_godown_state__in=lease_list)
                 for i in recsl:
                     lq=lq+i.quantity
-                
+
                 recsg=get_list_or_404(ChemicalsGodownLooseMergeStock,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
                 lg=0
                 for i in recsg:
@@ -5091,7 +5091,7 @@ def renderClosingStock(request):
             except:
                 try:
                     recsg=get_list_or_404(ChemicalsGodownLooseMergeStock,color=c,unit=u,state__in=godowns_list,loose_godown_state=None)
-   
+
                     lg=0
                     for i in recsg:
                         lg=lg+i.quantity
@@ -5105,7 +5105,7 @@ def renderClosingStock(request):
 
                 except:
                     pass
-    
+
 
     return render(request,'./color/closingstock.html',{'colors':datalist})
 
@@ -5120,19 +5120,19 @@ def renderColorReportFilter(request):
 #     begin = request.POST.get("start_date")
 #     end = request.POST.get("end_date")
 #     if(begin!="" or end!=""):
-        
+
 #         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
 #         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
 #         selected_dates=[]
-        
+
 #     # selected_qualities=[]
 #         next_day = begin
 #         while True:
 #             if next_day > end:
 #                 break
-    
-        
-    
+
+
+
 #             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
 #             next_day += datetime.timedelta(days=1)
 #     datalist=[]
@@ -5148,7 +5148,7 @@ def renderColorReportFilter(request):
 #                     quantity = quantity+rec.quantity
 #                 l.append(c.color)
 #                 l.append(u.unit)
-               
+
 #                 try:
 #                     first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
 #                 except:
@@ -5166,7 +5166,7 @@ def renderColorReportFilter(request):
 #                 l=[]
 #                 l.append(c.color)
 #                 l.append(u.unit)
-               
+
 #                 try:
 #                     first_record = ClosingStock.objects.filter(dailydate__lt=selected_dates[0],color = c.color,unit = u.unit).order_by('-dailydate').first()
 #                 except:
@@ -5179,7 +5179,7 @@ def renderColorReportFilter(request):
 #                 l.append(0)
 #                 l.append(0)
 #                 datalist.append(l)
-        
+
 #     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
 
 
@@ -5189,19 +5189,19 @@ def renderColorReportFilter(request):
 #     begin = request.POST.get("start_date")
 #     end = request.POST.get("end_date")
 #     if(begin!="" or end!=""):
-        
+
 #         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
 #         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
 #         selected_dates=[]
-        
+
 #     # selected_qualities=[]
 #         next_day = begin
 #         while True:
 #             if next_day > end:
 #                 break
-    
-        
-    
+
+
+
 #             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
 #             next_day += datetime.timedelta(days=1)
 #     datalist=[]
@@ -5223,31 +5223,31 @@ def renderColorReportFilter(request):
 #                     last_record = get_object_or_404(ChemicalsClosingStock,dailydate=selected_dates[-1],color = c,unit = u)
 #                 except:
 #                     last_record = ChemicalsClosingStock.objects.filter(dailydate__lt=selected_dates[-1],color = c,unit = u).order_by('-dailydate').first()
-                
-                
+
+
 #                 try:
 #                     records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u)
-                    
-                    
+
+
 #                     quantity = 0
 #                     for rec in records:
 #                         quantity = quantity+rec.quantity
-                
+
 #                     l.append(quantity)
 #                 except:
 #                     l.append(0)
-                
+
 #                 l.append(last_record.quantity)
 #                 new_stock=0
 #                 try:
-                    
+
 #                     #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
 #                     neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u)
 #                     print(neworders)
 #                     for i in neworders:
-                        
+
 #                         new_stock=new_stock+i.quantity
-                    
+
 #                 except:
 #                     pass
 
@@ -5267,19 +5267,19 @@ def colorReport(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
-        
+
         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
         selected_dates=[]
-        
+
     # selected_qualities=[]
         next_day = begin
         while True:
             if next_day > end:
                 break
-    
-        
-    
+
+
+
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
     datalist=[]
@@ -5301,7 +5301,7 @@ def colorReport(request):
         if(request.POST.get(g.lease)!=None):
             selected_loose.append(get_object_or_404(ChemicalsLooseGodownMaster,id=int(request.POST.get(g.lease))))
             selected_loose_id.append(int(request.POST.get(g.lease)))
-    
+
     if selected_loose==[] and selected_godowns == []:
         for g in loose_godowns:
             selected_loose.append(g)
@@ -5316,7 +5316,7 @@ def colorReport(request):
         for u in units:
             try:
                 l=[]
-                
+
     ######################### opening stock ##################################
                 try:
                     l.append(c.color)
@@ -5328,44 +5328,44 @@ def colorReport(request):
                             quan=quan+first_record.quantity
                         except:
                             pass
-                    
+
                     for lg in selected_loose:
                         first_record = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
                         try:
                             quan=quan+first_record.quantity
                         except:
                             pass
-                    
+
                     l.append(quan)
                 except:
 
                     l.append(0)
-                
+
 ###################### new stock #################################
                 new_stock=0
                 if selected_loose==[] and selected_godowns!=[]:
                     try:
-                        
+
                         #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
                         neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
-                        
+
                         for i in neworders:
-                            
+
                             new_stock=new_stock+i.quantity
-                        
+
                     except:
                         pass
                 elif selected_godowns==[] and selected_loose!=[]:
                     try:
                         records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
-                        
-                        
+
+
                         quantity = 0
                         for rec in records:
                             quantity = quantity+rec.quantity
-                    
+
                         consumed_stock=quantity
-                        
+
                     except:
                         consumed_stock=0
                     try:
@@ -5375,26 +5375,26 @@ def colorReport(request):
                             fstock = ChemicalsClosingStockperGodown.objects.filter(dailydate__lt=selected_dates[0],color = c,unit = u,loose_godown=lg).order_by('-dailydate').first()
                             print(fstock)
                             if fstock:
-                                
+
                                 q= q+lstock.quantity - fstock.quantity
                             else:
                                 q=q+lstock.quantity
-                        
+
                         new_stock=q+consumed_stock
                     except:
                         pass
 
-                
+
                 else:
                     try:
-                        
+
                         #neworders = get_list_or_404(ColorRecord,recieving_date__in=selected_dates,color=c,unit=u)
                         neworders=ColorRecord.objects.filter(recieving_date__in=selected_dates,color=c,unit=u,godown__in=selected_godowns)
-                        
+
                         for i in neworders:
-                            
+
                             new_stock=new_stock+i.quantity
-                        
+
                     except:
                         pass
                 l.append(new_stock)
@@ -5405,24 +5405,24 @@ def colorReport(request):
                 elif selected_loose!=[] and selected_godowns==[]:
                     try:
                         records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
-                        
-                        
+
+
                         quantity = 0
                         for rec in records:
                             quantity = quantity+rec.quantity
-                    
+
                         l.append(quantity)
                     except:
                         l.append(0)
                 else:
                     try:
                         records=get_list_or_404(ChemicalsDailyConsumption,con_date__in=selected_dates,color=c,unit=u,loose_godown__in=selected_loose)
-                        
-                        
+
+
                         quantity = 0
                         for rec in records:
                             quantity = quantity+rec.quantity
-                    
+
                         l.append(quantity)
                     except:
                         l.append(0)
@@ -5443,10 +5443,10 @@ def colorReport(request):
                             pass
                 except:
                     pass
-                
-                
+
+
                 l.append(lquan)
-                
+
                 if l[2]==0 and l[3]==0 and l[5]==0:
                     pass
                 else:
@@ -5621,8 +5621,8 @@ def saveEmployee(request):
 def employeedetails(request):
     employees = Employee.objects.all().order_by('name')
     records_filter = EmployeeFilter(request.GET,queryset=employees)
-    # return render(request,'intransit.html',{'records':records_filter})
-    
+    # return render(request,'./grey/intransit.html',{'records':records_filter})
+
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     emps = paginator.get_page(page)
@@ -5667,7 +5667,7 @@ def saveEditEmployee(request,id):
 ############## BANK MASTER #############
 def renderAddBankAc(request):
     all_checker = CompanyAccounts.objects.all().order_by('bank_name')
-    #return render(request,'addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
@@ -5678,7 +5678,7 @@ def saveBank(request):
     q=request.POST.get("bank_name")
     q = q.strip()
     l=(request.POST.get("account_no"))
-    
+
     m=request.POST.get("ifsc")
     m = m.strip()
     n=request.POST.get("account_name")
@@ -5723,7 +5723,7 @@ def editBank(request,id):
     q=request.POST.get("bank_name")
     q = q.strip()
     l=request.POST.get("account_no")
-    
+
     m=request.POST.get("ifsc")
     m = m.strip()
     n=request.POST.get("account_name")
@@ -5766,7 +5766,7 @@ def generatePayment(request):
 
     selected_employee = Employee.objects.filter(id__in=selected_emps).order_by('name')
 
-    
+
     return render(request,'./employee/payemployee.html',{'idlist':selected_emps,'employee':selected_employee,'bank':bank,'d':payment_date})
 
 def makePayment(request):
@@ -5807,11 +5807,11 @@ def bankSheet2(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
-        
+
         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
         selected_dates=[]
-        
+
         next_day = begin
         while True:
             if next_day > end:
@@ -5819,7 +5819,7 @@ def bankSheet2(request):
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
 
-        
+
         payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates).order_by('payment_date')
         begin=str(begin)
         end=str(end)
@@ -5836,11 +5836,11 @@ def salarySheet2(request):
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
-        
+
         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
         selected_dates=[]
-        
+
         next_day = begin
         while True:
             if next_day > end:
@@ -5848,7 +5848,7 @@ def salarySheet2(request):
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
 
-        
+
         payments=MonthlyPayment.objects.filter(payment_date__in=selected_dates).order_by('payment_date')
 
         begin=str(begin)

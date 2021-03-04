@@ -1,17 +1,17 @@
-{% extends 'nav.html' %}
+{% extends './grey/nav.html' %}
 
 {% block title%} Add Quality {% endblock %}
 {% block content%}
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Party Start-->
-      <form method="POST" action="{% url 'editquality' id %}" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'editprocessingparty' id %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Edit Grey Quality name</h1>
+            <h1>Edit Processing House Party name</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="addquality" placeholder="Grey Quality" value="{{name}}" name="edit-quality" required>
+            <input type="text" class="form-control" id="addparty" placeholder="Processing House Party name" value="{{name}}" name="edit-party" required>
 
             <br>
 

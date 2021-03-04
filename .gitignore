@@ -3,6 +3,7 @@ db.sqlite3
 **/__pycache__
 **/migrations
 InventoryM
+.idea*
 .idea\*
 env\*
 env*
