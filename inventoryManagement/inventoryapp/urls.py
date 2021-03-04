@@ -5,7 +5,7 @@ from . import views
 from django.conf.urls import (
     handler400,
     handler403,
-    handler404, 
+    handler404,
     handler500,
 )
 
@@ -17,6 +17,7 @@ handler500 = 'inventoryapp.views.server_error'
 
 urlpatterns = [
     path('index', views.index,name='index'),
+    path('', views.index,name='index'),
     path('greyhome', views.greyhome,name='greyhome'),
     path('insert', views.upload,name='insert'),
     path('intransit',views.showIntransit, name='intransit'),
