@@ -88,7 +88,7 @@ def index(request):
     return render(request, 'index.html')
 
 def greyhome(request):
-    return render(request, './grey/greyhome.html')
+    return render(request, './GreyModule/greyhome.html')
 
 ###### BACK BUTTONS ######
 def back1(request):
@@ -220,7 +220,7 @@ def showIntransit(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')
 
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
@@ -237,13 +237,13 @@ def showIntransit(request):
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
 
-    return render(request, './grey/intransit.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './GreyModule/intransit.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 ###### GREY - GODOWN STOCK ######
 def showGodown(request):
     records_list=Record.objects.filter(state="Godown").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
@@ -259,25 +259,25 @@ def showGodown(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, './grey/godown.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './GreyModule/godown.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 ###### GREY - REQUEST GODOWN STOCK ######
 def showGodownRequest(request):
     records_list=Record.objects.filter(state="Transit").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, './grey/godownrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './GreyModule/godownrequest.html',{'records':records,'filter':records_filter})
 
 ###### Edit form for intransit record ######
 def record(request,id):
     rec=get_object_or_404(Record, id=id)
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, './grey/record.html', {'record':rec,'qualities':qualities})
+    return render(request, './GreyModule/record.html', {'record':rec,'qualities':qualities})
 
 ###### GODOWN APPROVE FORM ######
 def goDownApprove(request,id):
@@ -287,7 +287,7 @@ def goDownApprove(request,id):
     qualities = GreyQualityMaster.objects.all()
     d=datetime.date.today()
     d=str(d)
-    return render(request, './grey/godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
+    return render(request, './GreyModule/godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
 
  ###### Edit in transit record ######
 def edit(request,id):
@@ -328,11 +328,11 @@ def edit(request,id):
 ##### NEXT AND PREVIOUS BUTTONS #####
 def nextRec(request,id):
     rec=get_object_or_404(Record, id=id+1)
-    return render(request, './grey/record.html', {'record':rec})
+    return render(request, './GreyModule/record.html', {'record':rec})
 
 def prevRec(request,id):
     rec=get_object_or_404(Record, id=id-1)
-    return render(request, './grey/record.html', {'record':rec})
+    return render(request, './GreyModule/record.html', {'record':rec})
 
 ##### Intransit To Godown #####
 def approveBale(request,id):
@@ -408,7 +408,7 @@ def approveBale(request,id):
 def showChecked(request):
     records_list=Record.objects.filter(state="Checked").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
@@ -422,18 +422,18 @@ def showChecked(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, './grey/checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './GreyModule/checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showCheckingRequest(request):
     records_list=Record.objects.filter(state="Godown").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, './grey/checkingrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './GreyModule/checkingrequest.html',{'records':records,'filter':records_filter})
 
 def checkingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -445,7 +445,7 @@ def checkingApprove(request,id):
     transports=GreyTransportMaster.objects.all().order_by('transport')
     d=datetime.date.today()
     d=str(d)
-    return render(request, './grey/checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './GreyModule/checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -630,7 +630,7 @@ def changeStateBack(request,id):
 
 def editChecked(request,id):
     rec=get_object_or_404(Record, id=id)
-    return render(request, './grey/editchecked.html', {'record':rec})
+    return render(request, './GreyModule/editchecked.html', {'record':rec})
 
 def checkedEdit(request,id):
     if request.method=="POST":
@@ -660,12 +660,12 @@ def checkedEdit(request,id):
 ############ GREY: Checker(EMPLOYEE), Quality and Processing party master ##########
 def renderAddChecker(request):
     all_checker = GreyCheckerMaster.objects.all().order_by('checker')
-    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
 
-    return render(request,'./grey/addchecker.html',{'records':checkers})
+    return render(request,'./GreyModule/addchecker.html',{'records':checkers})
 
 def saveChecker(request):
     q=request.POST.get("add_checker")
@@ -694,7 +694,7 @@ def deleteChecker(request,id):
 
 def renderEditChecker(request,id):
     quality=get_object_or_404(GreyCheckerMaster,id=id)
-    return render(request,'./grey/editchecker.html',{'id':id,'name':quality.checker})
+    return render(request,'./GreyModule/editchecker.html',{'id':id,'name':quality.checker})
 
 def editChecker(request,id):
     quality=get_object_or_404(GreyCheckerMaster,id=id)
@@ -710,12 +710,12 @@ def editChecker(request,id):
 
 def renderAddRange(request):
     all_checker = GreyCutRange.objects.all().order_by('range1')
-    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
 
-    return render(request,'./grey/addrate.html',{'records':checkers})
+    return render(request,'./GreyModule/addrate.html',{'records':checkers})
 
 def saveRange(request):
     r1=float(request.POST.get("range_1"))
@@ -753,12 +753,12 @@ def deleteRange(request,id):
 
 def renderAddQuality(request):
     all_qualities = GreyQualityMaster.objects.all().order_by('qualities')
-    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_qualities,10)
     page = request.GET.get('page')
     qualities = paginator.get_page(page)
 
-    return render(request,'./grey/addquality.html',{'records':qualities})
+    return render(request,'./GreyModule/addquality.html',{'records':qualities})
 
 def saveQuality(request):
     q=request.POST.get("newer_quality")
@@ -788,7 +788,7 @@ def deleteQuality(request,id):
 
 def renderEditQuality(request,id):
     quality=get_object_or_404(GreyQualityMaster,id=id)
-    return render(request,'./grey/editquality.html',{'id':id,'name':quality.qualities})
+    return render(request,'./GreyModule/editquality.html',{'id':id,'name':quality.qualities})
 
 def editQuality(request,id):
     quality=get_object_or_404(GreyQualityMaster,id=id)
@@ -804,12 +804,12 @@ def editQuality(request,id):
 
 def renderAddLocation(request):
     location_all = GreyArrivalLocationMaster.objects.all().order_by('location')
-    #return render(request,'./grey/addparty.html',{'parties':parties_all})
+    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(location_all,10)
     page = request.GET.get('page')
     locations = paginator.get_page(page)
-    return render(request,'./grey/addlocation.html',{'records':locations})
+    return render(request,'./GreyModule/addlocation.html',{'records':locations})
 
 def saveLocation(request):
     p = request.POST.get("location")
@@ -839,7 +839,7 @@ def deleteLocation(request,id):
 
 def renderEditLocation(request,id):
     loc=get_object_or_404(GreyArrivalLocationMaster,id=id)
-    return render(request,'./grey/editlocation.html',{'id':id,'name':loc.location})
+    return render(request,'./GreyModule/editlocation.html',{'id':id,'name':loc.location})
 
 def editArrivalLocation(request,id):
     party=get_object_or_404(GreyArrivalLocationMaster,id=id)
@@ -856,12 +856,12 @@ def editArrivalLocation(request,id):
 
 def renderAddParty(request):
     parties_all = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
-    #return render(request,'./grey/addparty.html',{'parties':parties_all})
+    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./grey/addparty.html',{'records':parties})
+    return render(request,'./GreyModule/addparty.html',{'records':parties})
 
 def saveParty(request):
     p = request.POST.get("processing-party")
@@ -891,7 +891,7 @@ def deleteProcessingParty(request,id):
 
 def renderEditParty(request,id):
     party=get_object_or_404(ProcessingPartyNameMaster,id=id)
-    return render(request,'./grey/editparty.html',{'id':id,'name':party.processing_party})
+    return render(request,'./GreyModule/editparty.html',{'id':id,'name':party.processing_party})
 
 def editProcessingParty(request,id):
     party=get_object_or_404(ProcessingPartyNameMaster,id=id)
@@ -908,12 +908,12 @@ def editProcessingParty(request,id):
 
 def renderAddTransport(request):
     parties_all = GreyTransportMaster.objects.all().order_by('transport')
-    #return render(request,'./grey/addparty.html',{'parties':parties_all})
+    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./grey/addtransport.html',{'records':parties})
+    return render(request,'./GreyModule/addtransport.html',{'records':parties})
 
 def saveTransport(request):
     p = request.POST.get("transport")
@@ -944,7 +944,7 @@ def deleteTransport(request,id):
 
 def renderEditTransport(request,id):
     party=get_object_or_404(GreyTransportMaster,id=id)
-    return render(request,'./grey/edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
+    return render(request,'./GreyModule/edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
 
 def editTransport(request,id):
     party=get_object_or_404(GreyTransportMaster,id=id)
@@ -964,7 +964,7 @@ def editTransport(request,id):
 def showProcessing(request):
     records_list=Record.objects.filter(state="In Process").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
@@ -978,18 +978,18 @@ def showProcessing(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, './grey/processing.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './GreyModule/processing.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showProcessingRequest(request):
     records_list=Record.objects.filter(state="Checked").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, './grey/processingrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './GreyModule/processingrequest.html',{'records':records,'filter':records_filter})
 
 def processingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -998,7 +998,7 @@ def processingApprove(request,id):
     processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     d=datetime.date.today()
     d=str(d)
-    return render(request, './grey/processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './GreyModule/processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
 
 def sendInProcess(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -1086,7 +1086,7 @@ def sendInProcess(request,id):
 def showReadyToPrint(request):
     records_list=Record.objects.filter(state="Ready to print").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
@@ -1100,18 +1100,18 @@ def showReadyToPrint(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request, './grey/readytoprint.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './GreyModule/readytoprint.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showReadyRequest(request):
     records_list=Record.objects.filter(state="In Process").order_by('lot_no')
     records_filter = RecordFilter(request.GET,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, './grey/readytoprintrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './GreyModule/readytoprintrequest.html',{'records':records,'filter':records_filter})
 
 def readyApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -1121,7 +1121,7 @@ def readyApprove(request,id):
 
     d=datetime.date.today()
     d=str(d)
-    return render(request, './grey/readypprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'parties':locations})
+    return render(request, './GreyModule/readypprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'parties':locations})
 
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -1230,7 +1230,7 @@ def reportFilter(request):
             pass
         else:
             partyname.append(rec.party_name)
-    return render(request,'./grey/reportfilter.html',{'date':d,'parties':processing_parties,'sendingparty':partyname})
+    return render(request,'./GreyModule/reportfilter.html',{'date':d,'parties':processing_parties,'sendingparty':partyname})
 
 
 def generateReport(request):
@@ -1324,7 +1324,7 @@ def generateReport(request):
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
             data_block.append(data_row)
 
-        return render(request,'./grey/ledgerreport.html',{'data':data_block,'h1':h1,'h2':h2,'lot_no':lot,'party':s,'begin':str(begin1),'end':str(end1)})
+        return render(request,'./GreyModule/ledgerreport.html',{'data':data_block,'h1':h1,'h2':h2,'lot_no':lot,'party':s,'begin':str(begin1),'end':str(end1)})
     else:
         flag=0
         if(lot==None and selected_parties!=[]):
@@ -1375,7 +1375,7 @@ def generateReport(request):
 
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
             data_block.append(data_row)
-        return render(request,'./grey/ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
+        return render(request,'./GreyModule/ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
 
 ############# PRINT LEDGER REPORT ###########
 def printLedgerExcel(request):
@@ -1628,7 +1628,7 @@ def printLedgerExcel(request):
         return response
             # data_row=[l,totalthan,pendingthan,rec_lists,rate]
             # data_block.append(data_row)
-        #return render(request,'./grey/ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
+        #return render(request,'./GreyModule/ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
 
 
 # def generateReport1(request):
@@ -1738,7 +1738,7 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
+#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
 #             else:
 #                 rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('lot_no')
 
@@ -1784,7 +1784,7 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
+#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
 #             else:
 #                 rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
 #                 if(len(rec) == 0):
@@ -1820,15 +1820,15 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data = [send_list]
-#                     return render(request, './grey/reportlot.html',{'data':send_data,'begin':begin,'end':end})
+#                     return render(request, './GreyModule/reportlot.html',{'data':send_data,'begin':begin,'end':end})
 
 #         try:
-#             return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0],'begin':begin,'end':end })
+#             return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0],'begin':begin,'end':end })
 #         except:
 #             if lot!=None:
-#                 return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot),'begin':begin,'end':end })
+#                 return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot),'begin':begin,'end':end })
 #             else:
-#                 return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':"Date",'begin':begin,'end':end })
+#                 return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':"Date",'begin':begin,'end':end })
 
 
 #     else:
@@ -1837,10 +1837,10 @@ def printLedgerExcel(request):
 #             print("lot none")
 #             if(selected_parties!=[] and send_parties!=[]):
 #                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties).order_by('lot_no')
-#                 return render(request,'./grey/reportall.html',{'records':rec,'party':selected_parties[0]})
+#                 return render(request,'./GreyModule/reportall.html',{'records':rec,'party':selected_parties[0]})
 #             elif(selected_parties!=[] and send_parties==[]):
 #                 rec = Record.objects.filter(processing_party_name__in=selected_parties).order_by('lot_no')
-#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
 
 #             elif(selected_parties==[] and send_parties!=[]):
 
@@ -1878,7 +1878,7 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0]})
+#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0]})
 #             else:
 #                 rec= Record.objects.filter(state__in=selected_states).order_by('lot_no')
 
@@ -1888,7 +1888,7 @@ def printLedgerExcel(request):
 #                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
 #             elif(selected_parties!=[] and send_parties==[]):
 #                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties)
-#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
 
 #             elif(selected_parties==[] and send_parties!=[]):
 
@@ -1926,7 +1926,7 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data.append(send_list)
-#                 return render(request,'./grey/reportparty.html',{'data':send_data,'party':selected_parties[0]})
+#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0]})
 #             else:
 #                 rec= Record.objects.filter(lot_no=lot,state__in=selected_states)
 #                 print("got here")
@@ -1963,16 +1963,16 @@ def printLedgerExcel(request):
 #                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
 #                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
 #                     send_data = [send_list]
-#                     return render(request, './grey/reportlot.html',{'data':send_data,'party':selected_parties[0]})
+#                     return render(request, './GreyModule/reportlot.html',{'data':send_data,'party':selected_parties[0]})
 #         try:
-#             return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+#             return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
 #         except:
 #             if lot!=None:
-#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot)})
+#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot)})
 #             else:
-#                 return render(request,'./grey/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Date" })
+#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Date" })
 
-#         #return render(request,'./grey/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
+#         #return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
 
 
 
@@ -1984,14 +1984,14 @@ def showDefective(request):
     page = request.GET.get('page')
     records = paginator.get_page(page)
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request,'./grey/defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
+    return render(request,'./GreyModule/defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
 
 
 ################## GREY -  REPORT BY CHECKER BASED ##############
 def checkerReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     checkers=Employee.objects.all().order_by('name')
-    return render(request,'./grey/checkerfilter.html',{'d':d,'checkers':checkers})
+    return render(request,'./GreyModule/checkerfilter.html',{'d':d,'checkers':checkers})
 
 def checkerReport(request):
     c_id=int(request.POST.get('checker'))
@@ -2051,7 +2051,7 @@ def checkerReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'./grey/checkerreport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'./GreyModule/checkerreport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 
 ################### Transport Report ######################
@@ -2059,7 +2059,7 @@ def checkerReport(request):
 def transportReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     transport=GreyTransportMaster.objects.all().order_by('transport')
-    return render(request,'./grey/transportfilter.html',{'d':d,'checkers':transport})
+    return render(request,'./GreyModule/transportfilter.html',{'d':d,'checkers':transport})
 
 
 def transportReport(request):
@@ -2135,14 +2135,14 @@ def transportReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'./grey/transportreport.html',{'records':datalist,'total':total,'t':transport.transport,'checker':transport.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'./GreyModule/transportreport.html',{'records':datalist,'total':total,'t':transport.transport,'checker':transport.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 
 
 ################### QUALITY WISE REPORT ########################
 def qualityReportFilter(request):
     qualities= GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request,'./grey/qualityreportfilter.html',{'qualities':qualities})
+    return render(request,'./GreyModule/qualityreportfilter.html',{'qualities':qualities})
 
 def qualityReport(request):
     # qualities=[]
@@ -2238,14 +2238,14 @@ def qualityReport(request):
             round(tothan,2),round(tomtrs,2),
     ]
             # d=[d1,[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
-    return render(request,'./grey/qualityreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities})
+    return render(request,'./GreyModule/qualityreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities})
 ################### QUALITY WISE REPORT END########################
 
 ################### QUALITY WISE LEDGER ########################
 def qualityReport2filter(request):
     party=ProcessingPartyNameMaster.objects.all().order_by('processing_party')
     qualities=GreyQualityMaster.objects.all().order_by('qualities')
-    return render(request,'./grey/qualityreport2filter.html',{'qualities':qualities,'parties':party})
+    return render(request,'./GreyModule/qualityreport2filter.html',{'qualities':qualities,'parties':party})
 
 
 def qualityReport2(request):
@@ -2334,9 +2334,9 @@ def qualityReport2(request):
         messages.error(request,"Please select atleast one grey quality")
         return redirect('/qualitypartyreportfilter')
     if(begin!="" or end!=""):
-        return render(request,'./grey/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
+        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
     else:
-        return render(request,'./grey/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
+        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
 ################### QUALITY WISE LEDGER END########################
 
 ############################# Download Records in Excel Files (GREY, COLOR & CHEMICAL) #######################################
@@ -2462,7 +2462,7 @@ def export_page_xls(request):
     print(d)
 
     records_filter = RecordFilter(d,queryset=records_list)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
     paginator = Paginator(records_filter.qs,20)
     page = d.get('page')
     page=int(page)
@@ -3418,10 +3418,10 @@ def renderAddColorSupplier(request):
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./color/colorsupplier.html',{'suppliers':parties})
+    return render(request,'./ColorChemicalModule/colorsupplier.html',{'suppliers':parties})
 
 def colorhome(request):
-    return render(request, './color/colorhome.html')
+    return render(request, './ColorChemicalModule/colorhome.html')
 
 def saveSupplier(request):
     p = request.POST.get("supplier")
@@ -3461,7 +3461,7 @@ def deleteSupplier(request,id):
 
 def renderEditSupplier(request,id):
     party=get_object_or_404(ColorAndChemicalsSupplier,id=id)
-    return render(request,'./color/editsupplier.html',{'id':id,'name':party.supplier})
+    return render(request,'./ColorChemicalModule/editsupplier.html',{'id':id,'name':party.supplier})
 
 def editSupplier(request,id):
     party=get_object_or_404(ColorAndChemicalsSupplier,id=id)
@@ -3480,7 +3480,7 @@ def renderAddColor(request):
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./color/addcolor.html',{'suppliers':parties})
+    return render(request,'./ColorChemicalModule/addcolor.html',{'suppliers':parties})
 
 def saveColor(request):
     p = request.POST.get("color")
@@ -3510,7 +3510,7 @@ def deleteColor(request,id):
 
 def renderEditColor(request,id):
     party=get_object_or_404(Color,id=id)
-    return render(request,'./color/editcolor.html',{'id':id,'name':party.color})
+    return render(request,'./ColorChemicalModule/editcolor.html',{'id':id,'name':party.color})
 
 def editColor(request,id):
     party=get_object_or_404(Color,id=id)
@@ -3528,7 +3528,7 @@ def renderAddGodown(request):
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./color/addgodown.html',{'suppliers':parties})
+    return render(request,'./ColorChemicalModule/addgodown.html',{'suppliers':parties})
 
 def saveGodown(request):
     p = request.POST.get("godown")
@@ -3558,7 +3558,7 @@ def deleteGodown(request,id):
 
 def renderEditGodown(request,id):
     party=get_object_or_404(ChemicalsGodownsMaster,id=id)
-    return render(request,'./color/editgodown.html',{'id':id,'name':party.godown})
+    return render(request,'./ColorChemicalModule/editgodown.html',{'id':id,'name':party.godown})
 
 def editGodown(request,id):
     party=get_object_or_404(ChemicalsGodownsMaster,id=id)
@@ -3577,7 +3577,7 @@ def renderAddLease(request):
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./color/addlease.html',{'suppliers':parties})
+    return render(request,'./ColorChemicalModule/addlease.html',{'suppliers':parties})
 
 def saveLease(request):
     p = request.POST.get("lease")
@@ -3607,7 +3607,7 @@ def deleteLease(request,id):
 
 def renderEditLease(request,id):
     party=get_object_or_404(ChemicalsLooseGodownMaster,id=id)
-    return render(request,'./color/editlease.html',{'id':id,'name':party.lease})
+    return render(request,'./ColorChemicalModule/editlease.html',{'id':id,'name':party.lease})
 
 def editLease(request,id):
     party=get_object_or_404(ChemicalsLooseGodownMaster,id=id)
@@ -3626,7 +3626,7 @@ def renderAddUnit(request):
     paginator = Paginator(suppliers,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./color/addunit.html',{'suppliers':parties})
+    return render(request,'./ColorChemicalModule/addunit.html',{'suppliers':parties})
 
 def saveUnit(request):
     p = request.POST.get("unit")
@@ -3656,7 +3656,7 @@ def deleteUnit(request,id):
 
 def renderEditUnit(request,id):
     party=get_object_or_404(ChemicalsUnitsMaster,id=id)
-    return render(request,'./color/editunit.html',{'id':id,'name':party.unit})
+    return render(request,'./ColorChemicalModule/editunit.html',{'id':id,'name':party.unit})
 
 def editUnit(request,id):
     party=get_object_or_404(ChemicalsUnitsMaster,id=id)
@@ -3683,7 +3683,7 @@ def placeOrder(request):
         order_no=rec.order_no + 1
     except:
         order_no = 1
-    return render(request,'./color/placeorder.html',{'color':color,'suppliers':suppliers,'units':units,'date':d,'maxdate':maxdate,'orderno':order_no})
+    return render(request,'./ColorChemicalModule/placeorder.html',{'color':color,'suppliers':suppliers,'units':units,'date':d,'maxdate':maxdate,'orderno':order_no})
 
 def saveOrder(request):
     color_unit=[]
@@ -4105,7 +4105,7 @@ def orderGeneration(request):
 
     rec=ChemicalsAllOrders.objects.all().order_by('-state','order_no')
     records_filter = ColorOrderFilter(request.GET,queryset=rec)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
@@ -4113,7 +4113,7 @@ def orderGeneration(request):
     suppliers=ColorAndChemicalsSupplier.objects.all().order_by('supplier')
     colors=Color.objects.all().order_by('color')
 
-    return render(request,'./color/ordergeneration.html',{'records':records,'filter':records_filter,'suppliers':suppliers,'colors':colors})
+    return render(request,'./ColorChemicalModule/ordergeneration.html',{'records':records,'filter':records_filter,'suppliers':suppliers,'colors':colors})
 
 def orderEdit(request,id):
     rec=get_object_or_404(ChemicalsAllOrders, id=id)
@@ -4124,7 +4124,7 @@ def orderEdit(request,id):
         color = Color.objects.all().order_by('color')
         supplier = ColorAndChemicalsSupplier.objects.all().order_by('supplier')
         unit = ChemicalsUnitsMaster.objects.all().order_by('unit')
-        return render(request, './color/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier,'units':unit})
+        return render(request, './ColorChemicalModule/editorder.html',{'record':rec,'orderdate':orderdate,'color':color,'suppliers':supplier,'units':unit})
     except:
         messages.error(request,"This order has been recieved")
         return redirect('/ordergeneration')
@@ -4181,7 +4181,7 @@ def goodsReceived(request):
     godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list,loose_godown_state=None).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
@@ -4189,18 +4189,18 @@ def goodsReceived(request):
     chemicals=Color.objects.all().order_by('color')
     godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
 
-    return render(request,'./color/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})
+    return render(request,'./ColorChemicalModule/goodsreceived.html',{'filter':records_filter,'colors':records,'Godown':"Godown Containing",'chemicals':chemicals,'godowns':godowns})
 
 def goodsRequest(request):
     rec=ColorRecord.objects.filter(state='Ordered').order_by('order_no')
     records_filter = ColorFilter(request.GET,queryset=rec)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request,'./color/goodsrequest.html',{'records':records,'filter':records_filter})
+    return render(request,'./ColorChemicalModule/goodsrequest.html',{'records':records,'filter':records_filter})
 
 def goods(request,id):
     ogorder=get_object_or_404(ChemicalsAllOrders, id=id)
@@ -4212,7 +4212,7 @@ def goods(request,id):
     d=str(d)
     orderdate=str(rec.order_date)
     godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
-    return render(request, './color/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
+    return render(request, './ColorChemicalModule/goodsapprove.html', {'date':d,'record':rec,'mindate':mindate,'maxdate':maxdate,'orderdate':orderdate,'godowns':godowns})
 
 def viewOrder(request,id):
     ogorder = get_object_or_404(ChemicalsAllOrders, id=id)
@@ -4234,7 +4234,7 @@ def viewOrder(request,id):
 
         remaining_order = remaining_order + r.quantity
     remaining_order = ogorder.quantity - remaining_order
-    return render(request, './color/vieworder.html', {'d':d,'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
+    return render(request, './ColorChemicalModule/vieworder.html', {'d':d,'billdate':billdate,'record':ogorder,'orderdate':orderdate,'godowns':godowns,'recieved_recs':recieved_recs,'remaining':remaining_order})
 
 ######################### validate order ##########################
 def renderValidate(request,id):
@@ -4243,7 +4243,7 @@ def renderValidate(request,id):
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
 
 
-    return render(request, './color/validateorder.html', {'record':rec,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './ColorChemicalModule/validateorder.html', {'record':rec,'mindate':mindate,'maxdate':maxdate})
 
 def validate(request,id):
     rec = get_object_or_404(ColorRecord,id=id)
@@ -4491,17 +4491,17 @@ def goodsLease(request):
     godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state__in=lease_list,state=None).exclude(quantity=0).order_by('color')
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
-    # html = render_to_string('./color/lease.html',{'filter':records_filter,'colors':records})
+    # html = render_to_string('./ColorChemicalModule/lease.html',{'filter':records_filter,'colors':records})
     # text = htmltoText(html)
     # print(text)
     chemicals=Color.objects.all().order_by('color')
     loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request,'./color/lease.html',{'filter':records_filter,'colors':records,'chemicals':chemicals,'loose_godowns':loose_godowns})
+    return render(request,'./ColorChemicalModule/lease.html',{'filter':records_filter,'colors':records,'chemicals':chemicals,'loose_godowns':loose_godowns})
 
 def leaseRequest(request):
     godowns=ChemicalsGodownsMaster.objects.all()
@@ -4511,13 +4511,13 @@ def leaseRequest(request):
     godown_colors = ChemicalsGodownLooseMergeStock.objects.filter(state__in=godowns_list).exclude(quantity=0)
     # rec=ColorRecord.objects.filter(state='Godown').order_by('godown','color')
     records_filter = GodownLeaseFilter(request.GET,queryset=godown_colors)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request,'./color/leaserequest.html',{'filter':records_filter,'colors':records})
+    return render(request,'./ColorChemicalModule/leaserequest.html',{'filter':records_filter,'colors':records})
 
 def viewGood(request,id):
     rec=get_object_or_404(ChemicalsGodownLooseMergeStock, id=id)
@@ -4527,7 +4527,7 @@ def viewGood(request,id):
     d=str(d)
     # recievedate=str(rec.recieving_date)
     lease = ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request, './color/leaseapprove.html', {'d':d,'record':rec,'lease':lease})
+    return render(request, './ColorChemicalModule/leaseapprove.html', {'d':d,'record':rec,'lease':lease})
 
 
 def leaseApprove(request,id):
@@ -4716,7 +4716,7 @@ def changeLooseGodown(request,id):
     #units=ChemicalsUnitsMaster.objects.all().order_by('unit')
     #godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
     loose_godown=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request,'./color/editloosestocklg.html',{'record':leasestock,'loose':loose_godown})
+    return render(request,'./ColorChemicalModule/editloosestocklg.html',{'record':leasestock,'loose':loose_godown})
 
 def savechangeLooseGodown(request,id):
     if(float(request.POST.get('move-quantity'))==0):
@@ -4792,7 +4792,7 @@ def leaseedit(request,id):
     units=ChemicalsUnitsMaster.objects.all().order_by('unit')
     godowns=ChemicalsGodownsMaster.objects.all().order_by('godown')
     loose_godown=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request,'./color/editloosestock.html',{'record':leasestock,'color':color,'units':units,'loose':loose_godown,'godowns':godowns})
+    return render(request,'./ColorChemicalModule/editloosestock.html',{'record':leasestock,'color':color,'units':units,'loose':loose_godown,'godowns':godowns})
 
 def savelease(request,id):
     g_id=request.POST.get('godownname')
@@ -4841,7 +4841,7 @@ def renderDailyConsumptionLease1(request):
         color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=new_value.id).exclude(quantity=0).order_by('color')
     todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
-    return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':lease,'name':first_lease.lease})
+    return render(request,'./ColorChemicalModule/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':lease,'name':first_lease.lease})
 
 def renderDailyConsumptionLease2(request):
     l_id= request.POST.get('lease')
@@ -4850,7 +4850,7 @@ def renderDailyConsumptionLease2(request):
     color = ChemicalsGodownLooseMergeStock.objects.filter(loose_godown_state=loose_godown_object).exclude(quantity=0).order_by('color')
     todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()))
     todaydate=str(datetime.date.today())
-    return render(request,'./color/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':loose_godown_object.lease})
+    return render(request,'./ColorChemicalModule/dailyconsumption.html',{'colors':color,'today':todaydate,'lease':leases,'name':loose_godown_object.lease})
 
 def backToDailyConsumption(request):
     return redirect('/dailyconsumptiondetails')
@@ -4858,18 +4858,18 @@ def backToDailyConsumption(request):
 def dailyconsumptionDetails(request):
     l=ChemicalsLooseGodownMaster.objects.all().first()
     todays = ChemicalsDailyConsumption.objects.filter(con_date=str(datetime.date.today()),loose_godown=l).exclude(quantity=0)
-    return render(request,'./color/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today()),'date':str(datetime.date.today())})
+    return render(request,'./ColorChemicalModule/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today()),'date':str(datetime.date.today())})
 
 def dailyconsumptionDetails2(request):
     date_c=request.POST.get('consumingdate')
     # date_c=datetime.datetime.strptime(date_c,"%Y-%m-%d").date()
     todays = ChemicalsDailyConsumption.objects.filter(con_date=date_c).exclude(quantity=0)
-    return render(request,'./color/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today()),'date':date_c})
+    return render(request,'./ColorChemicalModule/dailyconsumptiondetails.html',{'records':todays,'d':str(datetime.date.today()),'date':date_c})
 
 def editDailyConsumption(request,id):
     rec=get_object_or_404(ChemicalsDailyConsumption,id=id)
     d=str(rec.con_date)
-    return render(request,'./color/editdailyconsumption.html',{'record':rec,'d':d})
+    return render(request,'./ColorChemicalModule/editdailyconsumption.html',{'record':rec,'d':d})
 
 def saveDailyConsumption(request,id):
     rec=get_object_or_404(ChemicalsDailyConsumption,id=id)
@@ -5107,14 +5107,14 @@ def renderClosingStock(request):
                     pass
 
 
-    return render(request,'./color/closingstock.html',{'colors':datalist})
+    return render(request,'./ColorChemicalModule/closingstock.html',{'colors':datalist})
 
 ########################### COLOR REPORT FILTER #################################
 def renderColorReportFilter(request):
     d=str(datetime.date.today())
     godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
     loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request,'./color/reportfilter.html',{'d':d,'godowns':godowns,'loose':loose_godowns})
+    return render(request,'./ColorChemicalModule/reportfilter.html',{'d':d,'godowns':godowns,'loose':loose_godowns})
 
 # def colorReport(request):
 #     begin = request.POST.get("start_date")
@@ -5180,7 +5180,7 @@ def renderColorReportFilter(request):
 #                 l.append(0)
 #                 datalist.append(l)
 
-#     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end})
+#     return render(request,'./ColorChemicalModule/report.html',{'data':datalist,'begin':begin,'end':end})
 
 
 ########### previous working color report
@@ -5260,7 +5260,7 @@ def renderColorReportFilter(request):
 #     end=str(end)
 #     display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
 #     display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-#     return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
+#     return render(request,'./ColorChemicalModule/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end})
 
 ########################### COLOR REPORT MAIN FUNCTION #################################
 def colorReport(request):
@@ -5458,7 +5458,7 @@ def colorReport(request):
     end=str(end)
     display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
     display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-    return render(request,'./color/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end,'selected_godowns_id':selected_godowns_id,'selected_loose_id':selected_loose_id})
+    return render(request,'./ColorChemicalModule/report.html',{'data':datalist,'begin':begin,'end':end, 'display_begin': display_begin, 'display_end': display_end,'selected_godowns_id':selected_godowns_id,'selected_loose_id':selected_loose_id})
 
 
 
@@ -5471,7 +5471,7 @@ def renderAddCity(request):
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     cities = paginator.get_page(page)
-    return render(request,'./employee/addcity.html',{'records':cities})
+    return render(request,'./EmployeeModule/addcity.html',{'records':cities})
 
 def saveCity(request):
     p = request.POST.get("city_name")
@@ -5501,7 +5501,7 @@ def deleteCity(request,id):
 
 def renderEditCity(request,id):
     party=get_object_or_404(CityMaster,id=id)
-    return render(request,'./employee/editcity.html',{'id':id,'name':party.city})
+    return render(request,'./EmployeeModule/editcity.html',{'id':id,'name':party.city})
 
 def editCity(request,id):
     party=get_object_or_404(CityMaster,id=id)
@@ -5521,7 +5521,7 @@ def renderAddEmpCategory(request):
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     cities = paginator.get_page(page)
-    return render(request,'./employee/addemployeecategory.html',{'records':cities})
+    return render(request,'./EmployeeModule/addemployeecategory.html',{'records':cities})
 
 def saveEmpCategory(request):
     q=request.POST.get("ada")
@@ -5552,7 +5552,7 @@ def deleteEmpCategory(request,id):
 
 def renderEditEmpCategory(request,id):
     party=get_object_or_404(EmployeeCategoryMaster,id=id)
-    return render(request,'./employee/editemployeecategory.html',{'id':id,'name':party.category})
+    return render(request,'./EmployeeModule/editemployeecategory.html',{'id':id,'name':party.category})
 
 def editEmpCategory(request,id):
     party=get_object_or_404(EmployeeCategoryMaster,id=id)
@@ -5570,7 +5570,7 @@ def employeehome(request):
     emp=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
     cities = CityMaster.objects.all().order_by('city')
     empcat=EmployeeCategoryMaster.objects.all().order_by('category')
-    return render(request, './employee/employeehome.html',{'city':cities,'emp':emp,'empcat':empcat})
+    return render(request, './EmployeeModule/employeehome.html',{'city':cities,'emp':emp,'empcat':empcat})
 
 ################### ADD NEW EMPLOYEE ####################
 def saveEmployee(request):
@@ -5621,13 +5621,13 @@ def saveEmployee(request):
 def employeedetails(request):
     employees = Employee.objects.all().order_by('name')
     records_filter = EmployeeFilter(request.GET,queryset=employees)
-    # return render(request,'./grey/intransit.html',{'records':records_filter})
+    # return render(request,'./GreyModule/intransit.html',{'records':records_filter})
 
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     emps = paginator.get_page(page)
     categories=EmployeeCategoryMaster.objects.all().order_by('category')
-    return render(request, './employee/employeedetails.html',{'records':emps,'filter':records_filter,'categories':categories})
+    return render(request, './EmployeeModule/employeedetails.html',{'records':emps,'filter':records_filter,'categories':categories})
 
 ########## DELETE EMPLOYEE ############
 def deleteEmployee(request,id):
@@ -5641,7 +5641,7 @@ def renderEditEmployee(request,id):
     employees=Employee.objects.filter(employee_category='Contractor staff').order_by('name')
     cities = CityMaster.objects.all().order_by('city')
     empcat=EmployeeCategoryMaster.objects.all().order_by('category')
-    return render(request,'./employee/editemployee.html',{'emp':emp,'employees':employees,'city':cities,'empcat':empcat})
+    return render(request,'./EmployeeModule/editemployee.html',{'emp':emp,'employees':employees,'city':cities,'empcat':empcat})
 
 def saveEditEmployee(request,id):
     c_id = int(request.POST.get('city'))
@@ -5667,12 +5667,12 @@ def saveEditEmployee(request,id):
 ############## BANK MASTER #############
 def renderAddBankAc(request):
     all_checker = CompanyAccounts.objects.all().order_by('bank_name')
-    #return render(request,'./grey/addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
 
-    return render(request,'./employee/addbank.html',{'records':checkers})
+    return render(request,'./EmployeeModule/addbank.html',{'records':checkers})
 
 def saveBank(request):
     q=request.POST.get("bank_name")
@@ -5716,7 +5716,7 @@ def deleteBank(request,id):
 
 def renderEditBank(request,id):
     quality=get_object_or_404(CompanyAccounts,id=id)
-    return render(request,'./employee/editbank.html',{'id':id,'record':quality})
+    return render(request,'./EmployeeModule/editbank.html',{'id':id,'record':quality})
 
 def editBank(request,id):
     quality=get_object_or_404(CompanyAccounts,id=id)
@@ -5751,7 +5751,7 @@ def renderGeneratorForm(request):
     # pay=MonthlyPayment.objects.all()
     # for p in pay:
     #     print(p.employee.name,p.company_account.bank_name)
-    return render(request,'./employee/generatorform.html',{'emps':emps,'banks':banks,'d':d})
+    return render(request,'./EmployeeModule/generatorform.html',{'emps':emps,'banks':banks,'d':d})
 
 def generatePayment(request):
     payment_date = str(request.POST.get('payment_date'))
@@ -5767,7 +5767,7 @@ def generatePayment(request):
     selected_employee = Employee.objects.filter(id__in=selected_emps).order_by('name')
 
 
-    return render(request,'./employee/payemployee.html',{'idlist':selected_emps,'employee':selected_employee,'bank':bank,'d':payment_date})
+    return render(request,'./EmployeeModule/payemployee.html',{'idlist':selected_emps,'employee':selected_employee,'bank':bank,'d':payment_date})
 
 def makePayment(request):
     selected_emp=request.POST.get("selected-emp-id")
@@ -5800,7 +5800,7 @@ def makePayment(request):
 ########### SHOW BANK SHEET ################
 def bankSheet(request):
     payments=MonthlyPayment.objects.all().order_by('-payment_date')
-    return render(request,'./employee/banksheet.html',{'payments':payments})
+    return render(request,'./EmployeeModule/banksheet.html',{'payments':payments})
 
 ########### SHOW BANK SHEET W.R.T. DATE################
 def bankSheet2(request):
@@ -5824,12 +5824,12 @@ def bankSheet2(request):
         begin=str(begin)
         end=str(end)
 
-        return render(request,'./employee/banksheet.html',{'payments':payments,'begin':begin,'end':end})
+        return render(request,'./EmployeeModule/banksheet.html',{'payments':payments,'begin':begin,'end':end})
 
 ################# DISPLAY SALARY SHEET ################
 def salarySheet(request):
     payments=MonthlyPayment.objects.all().order_by('-payment_date')
-    return render(request,'./employee/salarysheet.html',{'payments':payments})
+    return render(request,'./EmployeeModule/salarysheet.html',{'payments':payments})
 
 ################# DISPLAY SALARY SHEET W.R.T. Date ################
 def salarySheet2(request):
@@ -5853,4 +5853,4 @@ def salarySheet2(request):
 
         begin=str(begin)
         end=str(end)
-        return render(request,'./employee/salarysheet.html',{'payments':payments,'begin':begin,'end':end})
+        return render(request,'./EmployeeModule/salarysheet.html',{'payments':payments,'begin':begin,'end':end})
