@@ -1,50 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>OrderGeneration</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% extends './colornav.html' %}
 
-</head>
-<body>
-  {% url 'index' as index %}
-  {% url 'colorhome' as colorhome %}
-  {% url 'ordergeneration' as ordergeneration %}
-  {% url 'placeorder' as placeorder %}
-  {% url 'goodsreceived' as goodsreceived %}
-  {% url 'goodsrequest' as goodsrequest %}
-  {% url 'goodslease' as goodslease %}
-  {% url 'leaserequest' as leaserequest %}
-    <!-- Nav Bar Start-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarColor03">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
-              <a class="nav-link {%if request.path == colorhome %} active {%endif%}" href="{% url 'colorhome' %}">Color - Home</a>
-              <a class="nav-link {%if request.path == ordergeneration %} active {%elif request.path == placeorder %} active {%endif%}" href="{% url 'ordergeneration' %}">Order Generation</a>
-              <a class="nav-link {%if request.path == goodsreceived %} active {%elif request.path == goodsrequest %} active {%endif%}" href="{% url 'goodsreceived' %}">Godown Stock</a>
-                <a class="nav-link {%if request.path == goodslease %} active {%elif request.path == leaserequest %} active {%endif%}" href="{% url 'goodslease' %}">Loose Godown Stock</a>
-              <a class="nav-link {%if request.path == dailyconsumption %} active {%endif%}" href="{% url 'dailyconsumption' %}">Daily Consumption</a>
-              <a class="nav-link {%if request.path == closingstock %} active {%endif%}" href="{% url 'closingstock' %}">Closing Stock</a>
-            </li>
-          </ul>
-          <!-- Approval Start -->
-            
-            <a class ="btn-request float-right" href="{% url 'placeorder' %}">Place Order</a>
-          <!-- Approval End-->
-        </div>
-      </nav>
-      <!-- Nav Bar End-->
+{% block content%}
 
       <!-- Messages Start -->
     {% for message in messages %}
@@ -64,7 +20,7 @@
     </div>
     {% endfor %}
     <!-- Messages End -->
-    
+
     {% load widget_tweaks %}
     {% load my_tags %}
     {% load mathfilters %}
@@ -85,9 +41,9 @@
               <select class="form-control" name="supplier" onchange="this.form.submit()">
                 <option value="">--</option>
                   {% for q in suppliers %}
-                      
+
                       <option value="{{ q.id}}">{{ q.supplier }}</option>
-                      
+
                   {% endfor %}
               </select>
           </div>
@@ -102,12 +58,12 @@
             <div class="form-group col-sm-4">
               <label for="new-quality">Color</label>
               <select class="form-control" name="color" onchange="this.form.submit()">
-                
+
                 <option value="">--</option>
                   {% for q in colors %}
-                      
+
                       <option value="{{ q.id}}">{{ q.color }}</option>
-                      
+
                   {% endfor %}
               </select>
           </div>
@@ -117,7 +73,7 @@
           </div>
       </form>
       <!-- Filter End -->
-      
+
       <!-- Download Button Start-->
       <div class="download">
         <!-- <a class="download-button" href="{% url 'excel_page' %}">Print This Page</a> -->
@@ -131,7 +87,7 @@
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            
+
             <th scope="col">Sr. No</th>
             <th class="td-text" scope="col">Supplier Name</th>
             <th scope="col">Order No</th>
@@ -154,7 +110,7 @@
         <tbody>
         {% for record in records %}
           <tr>
-            
+
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{record.supplier.supplier}}</td>
             <td><a href="{% url 'vieworder' record.id %}">{{record.order_no}}</a></td>
@@ -168,7 +124,7 @@
             <td>{{record.amount}}</td>
             <td>{{record.validation}}</td>
             <!-- <td>{{record.state}}</td> -->
-            
+
             <td>{% ifnotequal record.state "Godown" %}<a class ="anchor-button button-small-text" href="{% url 'goodsapprove' record.id %}">Move To Godown</a>{% endifnotequal %}</td>
 
             <td>
@@ -177,20 +133,20 @@
               {% else %}
                 <a class ="disabled" href="#">Edit</a>
               {% endif %}
-            </td> 
+            </td>
             <td>
               {% if record.state == "Ordered" %}
                 <a class ="anchor-button button-small-text danger" onclick="return confirm('Are you sure you want to delete this record with Order No - {{record.order_no}} Party Name - {{record.supplier.supplier}} & Chemical Name - {{record.color.color}}?')" href="{% url 'orderdelete' record.id %}">Delete</a>
               {% else %}
                 <a class ="disabled" href="#">Delete</a>
               {% endif %}
-            </td> 
+            </td>
                        <!--<td>{% if record.state == "Godown" %}{% ifnotequal record.validation "Yes" %}<a class ="anchor-button button-small-text" href="{% url 'validateorder' record.id %}">Validate</a>{% endifnotequal %}{% endif %}</td>-->
 
           </tr>
         {% endfor %}
-          
-          
+
+
         </tbody>
       </table>
       </div>
@@ -204,19 +160,18 @@
           {% for num in records.paginator.page_range %}
             {%if records.number == num%}
               &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
-            
+
             {% endif %}
           {%endfor%}
           {% if records.has_next %}
             <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
           {% endif%}
-        </div>  
+        </div>
       </div>
 
       <br>
 
-</body>
-
+{% endblock %}
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}
