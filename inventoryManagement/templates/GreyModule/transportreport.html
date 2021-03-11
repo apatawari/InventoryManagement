@@ -24,13 +24,13 @@
           <input type="date" name="end_date" value="{{end}}" hidden/>
           <button class="download-button">Print</button>
         </form>
-        
+
       </div>
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            
+
             <th scope="col">Sr. No</th>
             <th scope="col">Lot No</th>
             <th scope="col">Lr No</th>
@@ -39,16 +39,16 @@
             <th scope="col">Bales Received</th>
             <th scope="col">Rate(Rs)</th>
             <th scope="col">Total Amount(Rs)</th>
-            
-            
-            
+
+
+
           </tr>
         </thead>
         <tbody>
         {% for d in records %}
             <tr>
-            
-            
+
+
               <td scope="row">{{ forloop.counter }}</td>
               <td>{{d.0}}</td>
               <td >{{d.1}}</td>
@@ -58,10 +58,10 @@
               <td>{{d.5}}</td>
               <td>{{d.6}}</td>
               <!-- <td>{{d.6}}</td> -->
-              
-              
+
+
             </tr>
-            
+
         {% endfor %}
         <tr>
           <td scope="row"><strong>Total</strong></td>
@@ -71,16 +71,16 @@
           <td>-</td>
           <td ><strong>{{total.0}}</strong></td>
           <td>-</td>
-          
+
           <td><strong>{{total.1}}</strong></td>
-          
-          
+
+
         </tr>
         </tbody>
       </table>
       <!-- Display Table End -->
 
-      
+
 
       <br>
 

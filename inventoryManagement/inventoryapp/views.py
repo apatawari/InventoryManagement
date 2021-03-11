@@ -90,6 +90,15 @@ def index(request):
 def greyhome(request):
     return render(request, './GreyModule/greyhome.html')
 
+def greyorders(request):
+    return render(request, './GreyModule/greyorders.html')
+
+def greylots(request):
+    return render(request, './GreyModule/greylots.html')
+
+def greyPlaceOrder(request):
+    return render(request, './GreyModule/greyPlaceOrder.html')
+
 ###### BACK BUTTONS ######
 def back1(request):
     return redirect('/intransit')

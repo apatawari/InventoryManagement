@@ -1,55 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ready To Print</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% extends './nav.html' %}
 
-</head>
-<body>
-  {% url 'index' as index %}
-  {% url 'greyhome' as greyhome %}
-  {% url 'intransit' as intransit %}
-  {% url 'godown' as godown %}
-  {% url 'godownrequest' as godownrequest %}
-  {% url 'checking' as checking %}
-  {% url 'checkingrequest' as checkingrequest %}
-  {% url 'inprocess' as inprocess %}
-  {% url 'processingrequest' as processingrequest %}
-  {% url 'readytoprint' as readytoprint %}
-  {% url 'readytoprintrequest' as readytoprintrequest %}
-    <!-- Nav Bar Start-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarColor03">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
-              <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
-              <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
-              <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
-              <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
-              <a class="nav-link {%if request.path == inprocess %} active {%elif request.path == processingrequest %} active {%endif%}" href="{% url 'inprocess' %}">Processing</a>
-              <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
-            </li>
-          </ul>
-          <!-- Approval Start -->
-          <!--
-            <a class ="btn-request float-right" href="{% url 'readytoprintrequest' %}">Recieve Processed Grey</a>
-          -->
-          <!-- Approval End-->
-        </div>
-      </nav>
-      <!-- Nav Bar End-->
-
+{% block content %}
       <!-- Messages Start -->
     {% for message in messages %}
     <div
@@ -68,7 +19,7 @@
     </div>
     {% endfor %}
     <!-- Messages End -->
-    
+
     {% load widget_tweaks %}
     {% load my_tags %}
     <div class="page-title">
@@ -94,9 +45,9 @@
               <select class="form-control" name="quality" onchange="this.form.submit()">
                 <option value="">--</option>
                   {% for q in qualities %}
-                      
+
                       <option value="{{ q.id}}">{{ q.qualities }}</option>
-                      
+
                   {% endfor %}
               </select>
           </div>
@@ -114,12 +65,12 @@
         <!-- <a class="download-button" href="{% url 'excel_all' %}">Print All Data</a> -->
       </div>
       <!-- Download Button End-->
-      
+
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            
+
             <th scope="col">Sr.No</th>
             <th class="td-text" scope="col">Party Name</th>
             <th scope="col">Lot No</th>
@@ -136,17 +87,17 @@
             <th scope="col">Gate Pass No</th>
             <th scope="col">Chalan No</th>
             <th></th>
-            
-            
+
+
           </tr>
         </thead>
         <tbody>
         {% for record in records %}
           <tr>
-            
+
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{record.party_name}}</td>
-            
+
             <td>{{record.lot_no}}</td>
             <td class="td-text">{{record.quality.qualities}}</td>
             <td>{{record.than}}</td>
@@ -165,12 +116,12 @@
           </tr>
         {% endfor %}
         <tr>
-            
+
           <td scope="row"><strong>Total</strong></td>
           <td class="td-text">-</td>
           <td>-</td>
           <td>-</td>
-          
+
           <td><strong>{{sums.1}}</strong></td>
           <td><strong>{{sums.2}}</strong></td>
           <td>-</td>
@@ -182,8 +133,8 @@
           <td>-</td>
           <td>-</td>
           <!--<td>-</td>-->
-          
-        
+
+
         </tr>
         </tbody>
       </table>
@@ -197,18 +148,19 @@
           {% for num in records.paginator.page_range %}
             {%if records.number == num%}
               &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
-            
+
             {% endif %}
           {%endfor%}
           {% if records.has_next %}
             <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
           {% endif%}
-        </div>  
+        </div>
       </div>
 
       <br>
 
-</body>
+{% endblock %}
+
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

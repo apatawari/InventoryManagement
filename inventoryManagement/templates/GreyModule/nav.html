@@ -8,12 +8,23 @@
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+    <style>
+        h1 {
+          font-size: 200%;
+          font-weight: 400;
+        }
+    </style>
 
 </head>
 <body>
   {% url 'index' as index %}
   {% url 'greyhome' as greyhome %}
+  {% url 'greyorders' as greyorders %}
+  {% url 'greylots' as greylots %}
   {% url 'intransit' as intransit %}
   {% url 'godown' as godown %}
   {% url 'godownrequest' as godownrequest %}
@@ -28,12 +39,14 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-      
+
         <div class="collapse navbar-collapse" id="navbarColor03">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
                 <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
+                <a class="nav-link {%if request.path == greyorders %} active {%endif%}" href="{% url 'greyorders' %}">Order</a>
+                <a class="nav-link {%if request.path == greylots %} active {%endif%}" href="{% url 'greylots' %}">Lot Detail</a>
                 <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
                 <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
                 <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
@@ -66,6 +79,9 @@
 
     {% block content %}
     {% endblock %}
+
+
+
 
 </body>
 {% load static %}

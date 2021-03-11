@@ -1,54 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Defective</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% extends './nav.html' %}
 
-</head>
-<body>
-  {% url 'index' as index %}
-  {% url 'greyhome' as greyhome %}
-  {% url 'intransit' as intransit %}
-  {% url 'godown' as godown %}
-  {% url 'godownrequest' as godownrequest %}
-  {% url 'checking' as checking %}
-  {% url 'checkingrequest' as checkingrequest %}
-  {% url 'inprocess' as inprocess %}
-  {% url 'processingrequest' as processingrequest %}
-  {% url 'readytoprint' as readytoprint %}
-  {% url 'readytoprintrequest' as readytoprintrequest %}
-    <!-- Nav Bar Start-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarColor03">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
-              <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
-              <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
-              <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
-              <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
-              <a class="nav-link {%if request.path == inprocess %} active {%elif request.path == processingrequest %} active {%endif%}" href="{% url 'inprocess' %}">Processing</a>
-              <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
-            </li>
-          </ul>
-          <!-- Approval Start -->
-            
-          <!-- Approval End-->
-        </div>
-      </nav>
-      <!-- Nav Bar End-->
-
-      <!-- Messages Start -->
+{% block content %}
+<!--Messages Start -->
     {% for message in messages %}
     <div
       class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show"
@@ -66,7 +19,7 @@
     </div>
     {% endfor %}
     <!-- Messages End -->
-    
+
     {% load widget_tweaks %}
     {% load my_tags %}
       <!-- Filter Start -->
@@ -83,15 +36,15 @@
            <div class="form-group col-sm-4">
             {{ filter.form.quality.label_tag }}
             {% render_field filter.form.quality class="form-control" %}
-          </div> 
+          </div>
           <div class="form-group col-sm-4">
             <label for="new-quality">Quality</label>
             <select class="form-control" name="quality">
               <option value="">--</option>
                 {% for q in qualities %}
-                    
+
                     <option value="{{ q.id}}">{{ q.qualities }}</option>
-                    
+
                 {% endfor %}
             </select>
         </div>
@@ -106,7 +59,7 @@
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            
+
             <th scope="col">ID</th>
             <th scope="col">Party Name</th>
             <th scope="col">Bill No</th>
@@ -123,14 +76,14 @@
             <th scope="col">Order No</th>
             <th scope="col">Recieving Date</th>
             <th scope="col">Defect Type</th>
-            
-            
+
+
           </tr>
         </thead>
         <tbody>
         {% for record in records %}
           <tr>
-            
+
             <td scope="row">{{ forloop.counter }}</td>
             <td>{{record.party_name}}</td>
             <td>{{record.bill_no}}</td>
@@ -147,7 +100,7 @@
             <td>{{record.order_no}}</td>
             <td>{{record.recieving_date}}</td>
             <td>{{record.state}}</td>
-            
+
           </tr>
         {% endfor %}
         </tbody>
@@ -162,18 +115,18 @@
           {% for num in records.paginator.page_range %}
             {%if records.number == num%}
               &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
-            
+
             {% endif %}
           {%endfor%}
           {% if records.has_next %}
             <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
           {% endif%}
-        </div>  
+        </div>
       </div>
 
       <br>
 
-</body>
+{% endblock %}
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

@@ -1,57 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>GreyHome</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% extends './nav.html' %}
 
-</head>
-<body>
-  {% url 'index' as index %}
-  {% url 'greyhome' as greyhome %}
-  {% url 'intransit' as intransit %}
-  {% url 'godown' as godown %}
-  {% url 'godownrequest' as godownrequest %}
-  {% url 'checking' as checking %}
-  {% url 'checkingrequest' as checkingrequest %}
-  {% url 'inprocess' as inprocess %}
-  {% url 'processingrequest' as processingrequest %}
-  {% url 'readytoprint' as readytoprint %}
-  {% url 'readytoprintrequest' as readytoprintrequest %}
-    <!-- Nav Bar Start-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarColor03">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
-                <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
-                <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
-                <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
-                <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
-                <a class="nav-link {%if request.path == inprocess %} active {%elif request.path == processingrequest %} active {%endif%}" href="{% url 'inprocess' %}">Processing</a>
-                <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
-            </li>
-          </ul>
-          
-          <!--
-          <a class ="btn-request float-right" href="{% url 'reportfilter' %}">Ledger</a>
-          <a class ="btn-request float-right" href="{% url 'qualityreportfilter' %}">Report</a>
-          <a class ="btn-request float-right" href="{% url 'transportreportfilter' %}">Transport Report</a>
-          <a class ="btn-request float-right" href="{% url 'checkerreportfilter' %}">Checker Report</a>
-          <a class ="btn-request float-right" href="{% url 'qualityreport2filter' %}">Quality Report</a>
-          -->
-        </div>
-      </nav>
-      <!-- Nav Bar End-->
+{% block content %}
 
       <!-- Messages Start -->
     {% for message in messages %}
@@ -98,7 +47,71 @@
         <a class ="btn-add" href="{% url 'qualityreport2filter' %}">Quality - Processing Party Report</a>
         <a class ="btn-add" href="{% url 'qualityreportfilter' %}">Quality Report</a>
       </div>
-</body>
+
+
+      <div>
+          <div id="greyOrder" class="modal fade" tabindex="-1">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title">Grey Order</h5>
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <!-- Grey order form starts here -->
+                        <!-- Filter Start -->
+                        <form method="GET">
+                            <div class="form-row filter-form">
+
+                              <div class="form-group col-sm-4">
+                                <label for="new-quality">Supplier</label>
+                                <select class="form-control" name="supplier" onchange="this.form.submit()">
+                                  <option value="">--</option>
+                                    {% for q in suppliers %}
+
+                                        <option value="{{ q.id}}">{{ q.supplier }}</option>
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                              <div class="form-group col-sm-2">
+                                {{ filter.form.order_no.label_tag }}
+
+                              </div>
+
+                              <div class="form-group col-sm-4">
+                                <label for="new-quality">Color</label>
+                                <select class="form-control" name="color" onchange="this.form.submit()">
+
+                                  <option value="">--</option>
+                                    {% for q in colors %}
+
+                                        <option value="{{ q.id}}">{{ q.color }}</option>
+
+                                    {% endfor %}
+                                </select>
+                            </div>
+                              <div class="form-group col-sm-2 filter-button">
+                                <!-- <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button> -->
+                              </div>
+                            </div>
+                        </form>
+                        <!-- Filter End -->
+                        <!-- grey order form ends here -->
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                          <button type="button" class="btn btn-primary">Save Order</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+
+
+
+{% endblock %}
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

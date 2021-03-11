@@ -1,56 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Report</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
-    <!-- <script src="jquery.table2excel.js"></script> -->
-    <!-- <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script> -->
-</head>
-<body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-  <script src="static/scripts/table2excel.js"></script>
-  {% url 'index' as index %}
-  {% url 'greyhome' as greyhome %}
-  {% url 'intransit' as intransit %}
-  {% url 'godown' as godown %}
-  {% url 'godownrequest' as godownrequest %}
-  {% url 'checking' as checking %}
-  {% url 'checkingrequest' as checkingrequest %}
-  {% url 'inprocess' as inprocess %}
-  {% url 'processingrequest' as processingrequest %}
-  {% url 'readytoprint' as readytoprint %}
-  {% url 'readytoprintrequest' as readytoprintrequest %}
-    <!-- Nav Bar Start-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarColor03">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
-              <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
-              <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
-              <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
-              <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
-              <a class="nav-link {%if request.path == inprocess %} active {%elif request.path == processingrequest %} active {%endif%}" href="{% url 'inprocess' %}">Processing</a>
-              <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
-          </li>
-          </ul>
-          <!-- Approval Start -->
-            
-          <!-- Approval End-->
-        </div>
-      </nav>
-      <!-- Nav Bar End-->
+{% extends './nav.html' %}
+
+{% block content %}
 
       <!-- Messages Start -->
     {% for message in messages %}
@@ -70,7 +20,7 @@
     </div>
     {% endfor %}
     <!-- Messages End -->
-    
+
     {% load widget_tweaks %}
     {% load my_tags %}
       <br>
@@ -123,7 +73,7 @@
         <tbody>
         {% for d in data %}
           <tr>
-            
+
             <td scope="row">{{ forloop.counter }}</td>
             <td class="td-text">{{d.0}}</td>
             <td>{{d.1}}</td>
@@ -142,7 +92,7 @@
         {% endfor %}
 
         <tr>
-            
+
           <td scope="row"></td>
           <td class="td-text"><strong>Total</strong></td>
           <td><strong>{{total.0}}</strong></td>
@@ -162,12 +112,12 @@
       </table>
       <!-- Display Table End -->
 
-      
+
 
       <br>
-      
 
-</body>
+
+{% endblock %}
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}

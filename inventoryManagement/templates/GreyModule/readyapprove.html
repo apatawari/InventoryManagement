@@ -1,53 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ready To Print Approve</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% extends './nav.html' %}
 
-</head>
-<body>
-  {% url 'index' as index %}
-  {% url 'greyhome' as greyhome %}
-  {% url 'intransit' as intransit %}
-  {% url 'godown' as godown %}
-  {% url 'godownrequest' as godownrequest %}
-  {% url 'checking' as checking %}
-  {% url 'checkingrequest' as checkingrequest %}
-  {% url 'inprocess' as inprocess %}
-  {% url 'processingrequest' as processingrequest %}
-  {% url 'readytoprint' as readytoprint %}
-  {% url 'readytoprintrequest' as readytoprintrequest %}
-    <!-- Nav Bar Start-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarColor03">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
-              <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'greyhome' %}">Grey - Home</a>
-              <a class="nav-link {%if request.path == intransit %} active {%endif%}" href="{% url 'intransit' %}">Transit</a>
-              <a class="nav-link {%if request.path == godown %} active {%elif request.path == godownrequest %} active {%endif%}" href="{% url 'godown' %}">Godown</a>
-              <a class="nav-link {%if request.path == checking %} active {%elif request.path == checkingrequest %} active {%endif%}" href="{% url 'checking' %}">Checking</a>
-              <a class="nav-link {%if request.path == inprocess %} active {%elif request.path == processingrequest %} active {%endif%}" href="{% url 'inprocess' %}">Processing</a>
-              <a class="nav-link {%if request.path == readytoprint %} active {%elif request.path == readytoprintrequest %} active {%endif%}" href="{% url 'readytoprint' %}">Processed Grey</a>
-            </li>
-          </ul>
-          <!-- Approval Start -->
-            
-          <!-- Approval End-->
-        </div>
-      </nav>
-      <!-- Nav Bar End-->
-
+{% block content %}
       <!-- Messages Start -->
     {% for message in messages %}
     <div
@@ -73,7 +26,7 @@
       <div class="page-title">
         <h3 class="title-text">PROCESSED GREY - APPROVE RECORD</h3>
       </div>
-      
+
       <!-- Display Table End -->
       <form class = "md-form view-file" method="POST" action="{% url 'sendreadytoprint' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
@@ -90,7 +43,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="Bill Date">Bill Date</label>
-                <input type="text" class="form-control" id="bill_date" placeholder="Bill Date"  
+                <input type="text" class="form-control" id="bill_date" placeholder="Bill Date"
                 value="{{record.bill_date}}" name="bill_date" readonly/>
             </div>
             <div class="form-group col-md-4">
@@ -153,7 +106,7 @@
                 <label for="new-quality">Processing Party</label>
                 <input type="text" class="form-control" id="processing-party" name="processing_party" value="{{record.processing_party_name.processing_party}}" readonly/>
 
-                
+
             </div>
         </div>
         <div class="form-row">
@@ -162,13 +115,13 @@
                 <select class="form-control" name="arrival-location" required>
                   <option></option>
                   {% for party in parties %}
-                      
+
                       <option value="{{ party.id }}">{{ party.location }}</option>
-                      
+
                   {% endfor %}
                 </select>
 
-              
+
             </div>
             <div class="form-group col-md-4">
               <label for="chalan">Chalan No</label>
@@ -178,7 +131,7 @@
 
         <div class="form-row">
           <div class="form-group col-md-3 next-previous">
-            <a class ="anchor-button" href="{% url 'back' record.state %}">Back</a>  
+            <a class ="anchor-button" href="{% url 'back' record.state %}">Back</a>
           </div>
             <div class="form-group col-md-9">
                 <button type="submit" class="btn btn-success button float-right">Recieve Processed Grey</button>
@@ -190,10 +143,7 @@
         </div>
       </form>
 
-      
-
-
-</body>
+{% endblock %}
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {% load static %}
@@ -201,10 +151,3 @@
 {% load static %}
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </html>
-
-
-
-
-
-
-
