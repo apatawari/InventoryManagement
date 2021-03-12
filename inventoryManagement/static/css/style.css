@@ -328,6 +328,11 @@ hr {
   display: block;
 }
 
+.float-right {
+  text-align: right;
+  display: block;
+}
+
 .filter-button {
   margin-top: 30px;
 }

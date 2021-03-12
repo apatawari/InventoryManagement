@@ -14,6 +14,9 @@
 <body>
   {% url 'index' as index %}
   {% url 'greyhome' as greyhome %}
+
+  {% url 'greyhome' as greyhome %}
+  {% url 'greyorders' as greyorders %}
   {% url 'intransit' as intransit %}
   {% url 'godown' as godown %}
   {% url 'godownrequest' as godownrequest %}
@@ -29,26 +32,30 @@
   {% url 'goodslease' as goodslease %}
   {% url 'dailyconsumption' as dailyconsumption %}
   {% url 'closingstock' as closingstock %}
-  
+
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-      
+
         <div class="collapse navbar-collapse" id="navbarColor03">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item {%if request.path == index %} active {%endif%}">
                 <a class="nav-link" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
             </li>
-            <li class="nav-item dropdown {%if request.path == intransit %}active {%elif request.path == godown %} active
+            <li class="nav-item dropdown {%if request.path == greylots %} active {%elif request.path == greyorders %} active {%elif request.path == intransit %}active {%elif request.path == godown %} active
             {%elif request.path == godownrequest %} active {%elif request.path == checking %} active
             {%elif request.path == checkingrequest %} active {%elif request.path == inprocess %} active
             {%elif request.path == processingrequest %} active {%elif request.path == readytoprint %} active
             {%elif request.path == readytoprintrequest %} active
             {%endif%}">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {%if request.path == intransit %}
+                {%if request.path == greyorders %}
+                  Orders
+                {%elif request.path == greylots %}
+                  Lots
+                {%elif request.path == intransit %}
                   Transit
                 {%elif request.path == greyhome %}
                   Grey - Home
@@ -74,6 +81,8 @@
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'greyhome' %}">Grey - Home</a>
+                <a class="dropdown-item" href="{% url 'greyorders' %}">Orders</a>
+                <a class="dropdown-item" href="{% url 'greylots' %}">Lots</a>
                 <a class="dropdown-item" href="{% url 'intransit' %}">Transit</a>
                 <a class="dropdown-item" href="{% url 'godown' %}">Godown</a>
                 <a class="dropdown-item" href="{% url 'checking' %}">Checking</a>
@@ -119,7 +128,7 @@
                 {%elif request.path == banksheet %}
                   Bank Sheet
                 {%elif request.path == salatysheet %}
-                  Salary Sheet               
+                  Salary Sheet
                 {% else %}
                   Employee
                 {% endif %}

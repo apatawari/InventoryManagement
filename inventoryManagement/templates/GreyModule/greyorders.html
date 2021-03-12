@@ -1,5 +1,178 @@
 {% extends './nav.html' %}
 
+
+{% block title %}
+<button type="button" class="btn-request float-right" data-toggle="modal" data-target="#greyOrder">Place Order</button>
+{% endblock %}
+
 {% block content %}
+{% load widget_tweaks %}
+{% load my_tags %}
+<div class="page-title">
+  <h3 class="title-text">Ordered Grey Stock</h3>
+</div>
+
+<!-- Filter Start -->
+
+<form method="GET">
+    <div class="form-row filter-form">
+      <div class="form-group col-sm-4">
+        {{ filter.form.party_name.label_tag }}
+        {% render_field filter.form.party_name class="form-control" %}
+      </div>
+      <div class="form-group col-sm-2">
+        {{ filter.form.lot_no.label_tag }}
+        {% render_field filter.form.lot_no class="form-control" %}
+      </div>
+      <!-- <div class="form-group col-sm-4">
+        {{ filter.form.quality.label_tag }}
+        {% render_field filter.form.quality class="form-control" %}
+      </div>
+      <input type="text" name="quality"> -->
+
+      <div class="form-group col-sm-4">
+        <label for="new-quality">Quality</label>
+        <select class="form-control" name="quality" onchange="this.form.submit()">
+          <option value="">--</option>
+            {% for q in qualities %}
+
+                <option value="{{ q.id}}">{{ q.qualities }}</option>
+
+            {% endfor %}
+        </select>
+    </div>
+      <div class="form-group col-sm-2 filter-button hide-filter">
+        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
+      </div>
+    </div>
+</form>
+
+      <!-- Download Button Start-->
+      <div class="download">
+        <!-- <a class="download-button" href="{% url 'excel_page' %}">Print This Page</a> -->
+        <a class="download-button" href="{% url 'excel_filter_all' %}">Print</a>
+        <!-- <a class="download-button" href="{% url 'excel_all' %}">Print All Data</a> -->
+      </div>
+      <!-- Download Button End-->
+
+      <!-- Display Table Start-->
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+
+
+            <th scope="col">Order No</th>
+            <th class="td-text" scope="col">Order Date</th>
+            <th class="td-text" scope="col">Supplier Name</th>
+            <th class="td-text" scope="col">Quality</th>
+            <th scope="col">Than</th>
+            <th scope="col">Rate</th>
+            <th scope="col">Remarks</th>
+            <!--<th scope="col">State</th>-->
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for record in records %}
+          <tr>
+
+            <td scope="row">{{ forloop.counter }}</td>
+            <td>{{record.order_number}}</td>
+            <td>{{record.order_date}}</td>
+            <td class="td-text">{{record.supplier_name}}</td>
+            <td class="td-text">{{record.quality.qualities}}</td>
+            <td>{{record.than}}</td>
+            <td>{{record.rate}}</td>
+
+            <td><a class ="anchor-button button-small-text" href="{% url 'record' record.id %}">Edit</a></td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'godownapprove' record.id %}">Assign Lot</a></td>
+
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Display Table End -->
+
+      <div class="pagination">
+        <div class="number-line">
+          {% if records.has_previous %}
+          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% endif%}
+          {% for num in records.paginator.page_range %}
+            {%if records.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+            {% endif %}
+          {%endfor%}
+          {% if records.has_next %}
+            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% endif%}
+        </div>
+      </div>
+
+      <br>
+
+<!-- Oder Modal -->
+<div>
+    <div id="greyOrder" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Grey Order</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <!-- Grey order form starts here -->
+                  <!-- Filter Start -->
+                  <form method="GET">
+                      <div class="form-row filter-form">
+
+                        <div class="form-group col-sm-4">
+                          <label for="new-quality">Supplier</label>
+                          <select class="form-control" name="supplier" onchange="this.form.submit()">
+                            <option value="">--</option>
+                              {% for q in suppliers %}
+                                  <option value="{{ q.id}}">{{ q.supplier }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                        <div class="form-group col-sm-2">
+                          {{ filter.form.order_no.label_tag }}
+
+                        </div>
+
+                        <div class="form-group col-sm-4">
+                          <label for="new-quality">Color</label>
+                          <select class="form-control" name="color" onchange="this.form.submit()">
+
+                            <option value="">--</option>
+                              {% for q in colors %}
+
+                                  <option value="{{ q.id}}">{{ q.color }}</option>
+
+                              {% endfor %}
+                          </select>
+                      </div>
+                        <div class="form-group col-sm-2 filter-button">
+                          <!-- <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button> -->
+                        </div>
+                      </div>
+                  </form>
+                  <!-- Filter End -->
+                  <!-- grey order form ends here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 {% endblock %}

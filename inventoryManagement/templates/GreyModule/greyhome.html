@@ -1,8 +1,11 @@
 {% extends './nav.html' %}
-
+{% block title %}
+<button type="button" class="btn-request float-right" data-toggle="modal" data-target="#greyOrder">Place Order</button>
+{% endblock %}
 {% block content %}
 
-      <!-- Messages Start -->
+
+    <!-- Messages Start -->
     {% for message in messages %}
     <div
       class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show"
