@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
-from inventoryapp.models import Employee,CompanyAccounts,ChemicalsClosingStockperGodown,MonthlyPayment,GreyTransportMaster,CityMaster,EmployeeCategoryMaster
+from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
+from inventoryapp.models import Employee,CompanyAccounts,ChemicalsClosingStockperGodown,MonthlyPayment,GreyTransportAgenciesMaster,CityMaster,EmployeeCategoryMaster
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
@@ -458,7 +458,7 @@ def export_report_xls(request):
         columns = ['Lot no','Lr No','Sending Party','Quality', 'Bales Received','Rate(Rs)', 'Total Amount(Rs)']
 
         t_id=int(request.POST.get('transport'))
-        transport=get_object_or_404(GreyTransportMaster,id=t_id)
+        transport=get_object_or_404(GreyTransportAgenciesMaster,id=t_id)
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
         if(begin!="" or end!=""):
@@ -572,7 +572,7 @@ def export_report_xls(request):
                 mt=round((r.mtrs/r.than),2)
                 l.append(mt)
                 try:
-                    trange=GreyCutRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                    trange=GreyCheckingCutRatesMaster.objects.filter(range1__lt=mt,range2__gt=mt).first()
                     l.append(trange.rate)
 
                     l.append(round((mt*trange.rate),2))
@@ -606,7 +606,7 @@ def export_report_xls(request):
 
         # if(request.POST.get(q.qualities)!=None):
         #     selected_qualities.append(request.POST.get(q.qualities))
-            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             tally_than=0
             tally_mtrs=0
             total_than_in_transit=0
@@ -618,7 +618,7 @@ def export_report_xls(request):
             trthan=trthan+total_than_in_transit
             trmtrs=trmtrs+total_mtrs_in_transit
 
-            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             total_than_in_godown=0
             total_mtrs_in_godown=0
             for r in rec_godown:
@@ -627,7 +627,7 @@ def export_report_xls(request):
             gothan=gothan+total_than_in_godown
             gomtrs=gomtrs+total_mtrs_in_godown
 
-            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             total_than_in_checked=0
             total_mtrs_in_checked=0
             for r in rec_checked:
@@ -636,7 +636,7 @@ def export_report_xls(request):
             chthan=chthan+total_than_in_checked
             chmtrs=chmtrs+total_mtrs_in_checked
 
-            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -645,7 +645,7 @@ def export_report_xls(request):
             prthan=prthan+total_than_in_process
             prmtrs=prmtrs+total_mtrs_in_process
 
-            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             total_than_in_ready=0
             total_mtrs_in_ready=0
             for r in rec_ready:
@@ -659,7 +659,7 @@ def export_report_xls(request):
 
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
-            qual=get_object_or_404(GreyQualityMaster,id=int(q))
+            qual=get_object_or_404(GreyQualitiesMaster,id=int(q))
             d1=[qual.qualities,
             total_than_in_transit,round(total_mtrs_in_transit,2),
             total_than_in_godown,round(total_mtrs_in_godown,2),
@@ -704,7 +704,7 @@ def export_report_xls(request):
                 next_day += datetime.timedelta(days=1)
 
         party_id=(request.POST.get('party'))
-        party_ob=get_object_or_404(ProcessingPartyNameMaster,processing_party=party_id)
+        party_ob=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=party_id)
         final_qs=[]
         total_all=[]
 
@@ -721,9 +721,9 @@ def export_report_xls(request):
 
 
             if(begin!="" or end!=""):
-                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             else:
-                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -733,9 +733,9 @@ def export_report_xls(request):
             prmtrs=prmtrs+total_mtrs_in_process
 
             if(begin!="" or end!=""):
-                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             else:
-                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
+                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
 
             total_than_in_ready=0
             total_mtrs_in_ready=0
@@ -751,7 +751,7 @@ def export_report_xls(request):
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
-            d1=[get_object_or_404(GreyQualityMaster,id=int(q)).qualities,
+            d1=[get_object_or_404(GreyQualitiesMaster,id=int(q)).qualities,
             total_than_in_process,round(total_mtrs_in_process,2),
             total_than_in_ready,round(total_mtrs_in_ready,2),
             tally_than,round(tally_mtrs,2)

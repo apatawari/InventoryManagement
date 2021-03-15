@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django_filters',
     'widget_tweaks',
     'mathfilters',
-    
+    'phonenumber_field',
+
 ]
 
 MIDDLEWARE = [

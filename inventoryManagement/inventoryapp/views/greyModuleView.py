@@ -2,8 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualityMaster,GreyCheckerMaster,GreyCutRange,ProcessingPartyNameMaster,GreyArrivalLocationMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
-from inventoryapp.models import Employee,CompanyAccounts,ChemicalsClosingStockperGodown,MonthlyPayment,GreyTransportMaster,CityMaster,EmployeeCategoryMaster
+from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
@@ -100,14 +99,14 @@ def upload(request):
 
         for data in imported_data:
             try:
-                q_object=get_object_or_404(GreyQualityMaster,
+                q_object=get_object_or_404(GreyQualitiesMaster,
                     qualities=data[6])
             except:
-                q_object = GreyQualityMaster(
+                q_object = GreyQualitiesMaster(
                     qualities=data[6]
                     )
                 q_object.save()
-            quality_object=get_object_or_404(GreyQualityMaster,qualities=data[6])
+            quality_object=get_object_or_404(GreyQualitiesMaster,qualities=data[6])
             try:
 
                 rec=get_list_or_404(Record,
@@ -177,7 +176,7 @@ def showIntransit(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
 
     return render(request, './GreyModule/intransit.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
@@ -200,7 +199,7 @@ def showGodown(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request, './GreyModule/godown.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 ###### GREY - REQUEST GODOWN STOCK ######
@@ -218,7 +217,7 @@ def showGodownRequest(request):
 ###### Edit form for intransit record ######
 def record(request,id):
     rec=get_object_or_404(Record, id=id)
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request, './GreyModule/record.html', {'record':rec,'qualities':qualities})
 
 ###### GODOWN APPROVE FORM ######
@@ -226,7 +225,7 @@ def goDownApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=datetime.datetime.strptime(rec.bill_date,'%b %d,%Y').strftime('%Y-%m-%d')
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    qualities = GreyQualityMaster.objects.all()
+    qualities = GreyQualitiesMaster.objects.all()
     d=datetime.date.today()
     d=str(d)
     return render(request, './GreyModule/godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
@@ -242,7 +241,7 @@ def edit(request,id):
         record.bill_amount=request.POST.get("bill_amount")
         record.lot_no=request.POST.get("lot_no")
         q_id=request.POST.get("quality")
-        quality_ob=get_object_or_404(GreyQualityMaster,id=int(q_id))
+        quality_ob=get_object_or_404(GreyQualitiesMaster,id=int(q_id))
         record.quality=quality_ob
         record.than=request.POST.get("than")
         record.mtrs=request.POST.get("mtrs")
@@ -363,7 +362,7 @@ def showChecked(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request, './GreyModule/checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showCheckingRequest(request):
@@ -382,9 +381,9 @@ def checkingApprove(request,id):
 
     mindate=str(rec.recieving_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    qualities_all = GreyQualityMaster.objects.all().order_by('qualities')
+    qualities_all = GreyQualitiesMaster.objects.all().order_by('qualities')
     checkers=Employee.objects.all().order_by('name')
-    transports=GreyTransportMaster.objects.all().order_by('transport')
+    transports=GreyTransportAgenciesMaster.objects.all().order_by('transport')
     d=datetime.date.today()
     d=str(d)
     return render(request, './GreyModule/checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
@@ -399,10 +398,10 @@ def approveCheck(request,id):
     checker_id=int(request.POST.get("checker"))
     checker=get_object_or_404(Employee,id=checker_id)
     t=int(request.POST.get("transport"))
-    transport=get_object_or_404(GreyTransportMaster,id=t)
+    transport=get_object_or_404(GreyTransportAgenciesMaster,id=t)
 
     q_id=int(request.POST.get("new-quality"))
-    quality_object=get_object_or_404(GreyQualityMaster,id=q_id)
+    quality_object=get_object_or_404(GreyQualitiesMaster,id=q_id)
 
     total_amount=prevRec.bill_amount
     totalthan=prevRec.than
@@ -599,307 +598,20 @@ def checkedEdit(request,id):
         return redirect('/checking')
 ############ GREY: CHECKING OF STOCKS END #################
 
-############ GREY: Checker(EMPLOYEE), Quality and Processing party master ##########
-def renderAddChecker(request):
-    all_checker = GreyCheckerMaster.objects.all().order_by('checker')
-    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
-    paginator = Paginator(all_checker,10)
-    page = request.GET.get('page')
-    checkers = paginator.get_page(page)
-
-    return render(request,'./GreyModule/addchecker.html',{'records':checkers})
-
-def saveChecker(request):
-    q=request.POST.get("add_checker")
-    q = q.strip()
-    try:
-        existing_quality=get_object_or_404(GreyCheckerMaster,checker=q.upper())
-        messages.error(request,"This checker already exists")
-    except:
-        if q.strip()=="":
-            messages.error(request,"please enter valid input")
-            return redirect('/addchecker')
-        new_quality = GreyCheckerMaster(
-            checker=q.upper()
-        )
-        new_quality.save()
-        messages.success(request,"Checker added")
-    return redirect('/addchecker')
-
-def deleteChecker(request,id):
-    try:
-        GreyCheckerMaster.objects.filter(id=id).delete()
-        messages.success(request,"Checker deleted")
-    except:
-        messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/addchecker')
-
-def renderEditChecker(request,id):
-    quality=get_object_or_404(GreyCheckerMaster,id=id)
-    return render(request,'./GreyModule/editchecker.html',{'id':id,'name':quality.checker})
-
-def editChecker(request,id):
-    quality=get_object_or_404(GreyCheckerMaster,id=id)
-    p=request.POST.get("edit-checker")
-    p = p.upper()
-    p = p.strip()
-    quality.checker = p
-    quality.save()
-    messages.success(request,"Checker edited")
-    return redirect('/addchecker')
-
-######### GREY - CUT RANGE MASTER ########
-
-def renderAddRange(request):
-    all_checker = GreyCutRange.objects.all().order_by('range1')
-    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
-    paginator = Paginator(all_checker,10)
-    page = request.GET.get('page')
-    checkers = paginator.get_page(page)
-
-    return render(request,'./GreyModule/addrate.html',{'records':checkers})
-
-def saveRange(request):
-    r1=float(request.POST.get("range_1"))
-    r2=float(request.POST.get("range_2"))
-    existingrange=GreyCutRange.objects.all()
-    flag=0
-    for i in existingrange:
-
-        if i.range1<r1<i.range2 or i.range1<r2<i.range2:
-            flag=flag+1
-            break
-    if flag==0:
-        print("if")
-        newR=GreyCutRange(
-            range1=r1,
-            range2=r2,
-            rate=float(request.POST.get('rate'))
-        )
-        newR.save()
-        messages.success(request,'Range added')
-        return redirect('/addrate')
-
-    else:
-        print("else")
-        messages.error(request,'Range collided')
-        return redirect('/addrate')
-
-def deleteRange(request,id):
-    GreyCutRange.objects.filter(id=id).delete()
-    messages.success(request,"Range deleted")
-    return redirect('/addrate')
 
 
-############ GREY : QUALITY MASTER ############
-
-def renderAddQuality(request):
-    all_qualities = GreyQualityMaster.objects.all().order_by('qualities')
-    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
-    paginator = Paginator(all_qualities,10)
-    page = request.GET.get('page')
-    qualities = paginator.get_page(page)
-
-    return render(request,'./GreyModule/addquality.html',{'records':qualities})
-
-def saveQuality(request):
-    q=request.POST.get("newer_quality")
-    q = q.strip()
-    q=q.replace('"','inch')
-    try:
-        existing_quality=get_object_or_404(GreyQualityMaster,qualities=q.upper())
-        messages.error(request,"This quality already exists")
-    except:
-        if q.strip()=="":
-            messages.error(request,"please enter valid input")
-            return redirect('/addquality')
-        new_quality = GreyQualityMaster(
-            qualities=q.upper()
-        )
-        new_quality.save()
-        messages.success(request,"Quality added")
-    return redirect('/addquality')
-
-def deleteQuality(request,id):
-    try:
-        GreyQualityMaster.objects.filter(id=id).delete()
-        messages.success(request,"Quality deleted")
-    except:
-        messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/addquality')
-
-def renderEditQuality(request,id):
-    quality=get_object_or_404(GreyQualityMaster,id=id)
-    return render(request,'./GreyModule/editquality.html',{'id':id,'name':quality.qualities})
-
-def editQuality(request,id):
-    quality=get_object_or_404(GreyQualityMaster,id=id)
-    p=request.POST.get("edit-quality")
-    p = p.upper()
-    p = p.strip()
-    quality.qualities = p
-    quality.save()
-    messages.success(request,"Grey Quality edited")
-    return redirect('/addquality')
-
-####### GREY : ARRIVAL LOCATION MASTER #######
-
-def renderAddLocation(request):
-    location_all = GreyArrivalLocationMaster.objects.all().order_by('location')
-    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
-
-    paginator = Paginator(location_all,10)
-    page = request.GET.get('page')
-    locations = paginator.get_page(page)
-    return render(request,'./GreyModule/addlocation.html',{'records':locations})
-
-def saveLocation(request):
-    p = request.POST.get("location")
-    p = p.upper()
-    p = p.strip()
-    try:
-        existing_party=get_object_or_404(GreyArrivalLocationMaster,location=p)
-        messages.error(request,"This arrival location already exists")
-    except:
-        if p.strip()=="":
-            messages.error(request,"please enter valid input")
-            return redirect('/addarrivallocation')
-        new_loc = GreyArrivalLocationMaster(
-            location= p
-        )
-        new_loc.save()
-        messages.success(request,"Arrival location added successfully")
-    return redirect('/addarrivallocation')
-
-def deleteLocation(request,id):
-    try:
-        GreyArrivalLocationMaster.objects.filter(id=id).delete()
-        messages.success(request,"Arrival location deleted")
-    except:
-        messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/addarrivallocation')
-
-def renderEditLocation(request,id):
-    loc=get_object_or_404(GreyArrivalLocationMaster,id=id)
-    return render(request,'./GreyModule/editlocation.html',{'id':id,'name':loc.location})
-
-def editArrivalLocation(request,id):
-    party=get_object_or_404(GreyArrivalLocationMaster,id=id)
-    p=request.POST.get("edit-location")
-    p = p.upper()
-    p = p.strip()
-    party.location = p
-    party.save()
-    messages.success(request,"Arrival location edited")
-    return redirect('/addarrivallocation')
 
 
-###### GREY : Processing House Party Master #######
-
-def renderAddParty(request):
-    parties_all = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
-    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
-
-    paginator = Paginator(parties_all,10)
-    page = request.GET.get('page')
-    parties = paginator.get_page(page)
-    return render(request,'./GreyModule/addparty.html',{'records':parties})
-
-def saveParty(request):
-    p = request.POST.get("processing-party")
-    p = p.upper()
-    p = p.strip()
-    try:
-        existing_party=get_object_or_404(ProcessingPartyNameMaster,processing_party=p)
-        messages.error(request,"This Processing Party already exists")
-    except:
-        if p.strip()=="":
-            messages.error(request,"please enter valid input")
-            return redirect('/addparty')
-        new_Party = ProcessingPartyNameMaster(
-            processing_party= p
-        )
-        new_Party.save()
-        messages.success(request,"Processing Party added successfully")
-    return redirect('/addparty')
-
-def deleteProcessingParty(request,id):
-    try:
-        ProcessingPartyNameMaster.objects.filter(id=id).delete()
-        messages.success(request,"Processing House Party deleted")
-    except:
-        messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/addparty')
-
-def renderEditParty(request,id):
-    party=get_object_or_404(ProcessingPartyNameMaster,id=id)
-    return render(request,'./GreyModule/editparty.html',{'id':id,'name':party.processing_party})
-
-def editProcessingParty(request,id):
-    party=get_object_or_404(ProcessingPartyNameMaster,id=id)
-    p=request.POST.get("edit-party")
-    p = p.upper()
-    p = p.strip()
-    party.processing_party = p
-    party.save()
-    messages.success(request,"Processing House Party edited")
-    return redirect('/addparty')
 
 
-########## Transport Agency Master ###########
 
-def renderAddTransport(request):
-    parties_all = GreyTransportMaster.objects.all().order_by('transport')
-    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
 
-    paginator = Paginator(parties_all,10)
-    page = request.GET.get('page')
-    parties = paginator.get_page(page)
-    return render(request,'./GreyModule/addtransport.html',{'records':parties})
 
-def saveTransport(request):
-    p = request.POST.get("transport")
-    p = p.upper()
-    p = p.strip()
-    try:
-        existing_party=get_object_or_404(GreyTransportMaster,transport=p)
-        messages.error(request,"This Transport Party already exists")
-    except:
-        if p.strip()=="":
-            messages.error(request,"please enter valid input")
-            return redirect('/addtransport')
-        new_Party = GreyTransportMaster(
-            transport= p,
-            rate=float(request.POST.get('rate'))
-        )
-        new_Party.save()
-        messages.success(request,"Transport Party added successfully")
-    return redirect('/addtransport')
 
-def deleteTransport(request,id):
-    try:
-        GreyTransportMaster.objects.filter(id=id).delete()
-        messages.success(request,"Transport Party deleted")
-    except:
-        messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/addtransport')
 
-def renderEditTransport(request,id):
-    party=get_object_or_404(GreyTransportMaster,id=id)
-    return render(request,'./GreyModule/edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
 
-def editTransport(request,id):
-    party=get_object_or_404(GreyTransportMaster,id=id)
-    p=request.POST.get("edit-transport")
-    p = p.upper()
-    p = p.strip()
-    party.transport = p
-    party.rate = float(request.POST.get('rate'))
-    party.save()
-    messages.success(request,"Transport Party edited")
-    return redirect('/addtransport')
 
-##################################### GREY MASTER END ###########################################
+
 
 ####### GREY - PROCESSING #######
 ####### GREY - Stock in Processing #######
@@ -919,7 +631,7 @@ def showProcessing(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request, './GreyModule/processing.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showProcessingRequest(request):
@@ -937,7 +649,7 @@ def processingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=str(rec.checking_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
+    processing_parties = GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
     d=datetime.date.today()
     d=str(d)
     return render(request, './GreyModule/processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
@@ -948,7 +660,7 @@ def sendInProcess(request,id):
     than_recieved = int(than_recieved)
     process_type = request.POST.get("processing-type")
     party_id=int(request.POST.get("processing-party"))
-    partyprocessing=get_object_or_404(ProcessingPartyNameMaster,id=party_id)
+    partyprocessing=get_object_or_404(GreyOutprocessAgenciesMaster,id=party_id)
     total_amount=prevRec.bill_amount
     totalthan=prevRec.than
     cost_per_than=total_amount/totalthan
@@ -1041,7 +753,7 @@ def showReadyToPrint(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request, './GreyModule/readytoprint.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showReadyRequest(request):
@@ -1059,7 +771,7 @@ def readyApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=str(rec.sent_to_processing_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    locations = GreyArrivalLocationMaster.objects.all().order_by('location')
+    locations = GreyGodownsMaster.objects.all().order_by('location')
 
     d=datetime.date.today()
     d=str(d)
@@ -1068,7 +780,7 @@ def readyApprove(request,id):
 def readyToPrint(request,id):
     prevRec = get_object_or_404(Record,id=id)
     loc_id = int(request.POST.get("arrival-location"))
-    location = get_object_or_404(GreyArrivalLocationMaster,id=loc_id)
+    location = get_object_or_404(GreyGodownsMaster,id=loc_id)
     tally_lot_no = prevRec.lot_no
     tally_total_thans=prevRec.total_thans
     than_recieved=request.POST.get("than_ready")
@@ -1163,7 +875,7 @@ def readyToPrint(request,id):
 
 ############### GREY - LEDGER REPORT #################
 def reportFilter(request):
-    processing_parties = ProcessingPartyNameMaster.objects.all().order_by('processing_party')
+    processing_parties = GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
     partyname =[]
     records = Record.objects.all().order_by('party_name')
     d=str(datetime.date.today())
@@ -1187,7 +899,7 @@ def generateReport(request):
     s = request.POST.get("checkbox")
     if s!=None:
         selected_parties.append(s)
-        selected_party_object=get_object_or_404(ProcessingPartyNameMaster,processing_party=selected_parties[0])
+        selected_party_object=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=selected_parties[0])
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
 
@@ -1332,7 +1044,7 @@ def printLedgerExcel(request):
     s = request.POST.get("processing_party")
     if s!="None":
         selected_parties.append(s)
-        selected_party_object=get_object_or_404(ProcessingPartyNameMaster,processing_party=selected_parties[0])
+        selected_party_object=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=selected_parties[0])
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
 
@@ -1568,355 +1280,6 @@ def printLedgerExcel(request):
         wb.save(response)
 
         return response
-            # data_row=[l,totalthan,pendingthan,rec_lists,rate]
-            # data_block.append(data_row)
-        #return render(request,'./GreyModule/ledgerreport.html',{'data':data_block,'h1':h1,'h2':"",'lot_no':lot,'party':s})
-
-
-# def generateReport1(request):
-#     selected_states=['In Process','Ready to print']
-#     selected_states_all=['Transit','Godown','Checked','In Process','Ready to print']
-#     selected_parties=[]
-#     partyname=[]
-#     send_parties=[]
-
-#     send_data=[]
-
-#     parties= ProcessingPartyName.objects.all()
-#     # qualities= Quality.objects.all()
-#     lot=request.POST.get("lot_no")
-#     if lot == "":
-#         lot=None
-#     else:
-#         lot=int(lot)
-#     print(lot)
-#     # start_date=request.POST.get("start_date")
-#     # start_date=datetime.datetime.strptime(str(start_date), '%Y-%m-%d').strftime('%b %d,%Y')
-#     # end_date=request.POST.get("end_date")
-#     # end_date=datetime.datetime.strptime(str(end_date), '%Y-%m-%d').strftime('%b %d,%Y')
-# # jjjj
-# ##  Date filter
-
-#     records = Record.objects.all()
-#     for rec in records:
-#         if(rec.party_name in partyname):
-#             pass
-#         else:
-#             partyname.append(rec.party_name)
-
-#     for p in partyname:
-#         if(request.POST.get(p)!=None):
-#             send_parties.append(request.POST.get(p))
-
-#     # for p in parties:
-#     #     if(request.POST.get(p.processing_party)!=None):
-#     #         selected_parties.append(request.POST.get(p.processing_party))
-#     s = request.POST.get("checkbox")
-#     if s!=None:
-#         selected_parties.append(s)
-#     print(selected_parties)
-#     begin = request.POST.get("start_date")
-#     end = request.POST.get("end_date")
-#     if(begin!="" or end!=""):
-
-#         begin=datetime.datetime.strptime(begin,"%Y-%m-%d").date()
-#         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
-#         selected_dates=[]
-
-#     # selected_qualities=[]
-#         next_day = begin
-#         while True:
-#             if next_day > end:
-#                 break
-
-
-
-#             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
-#             next_day += datetime.timedelta(days=1)
-
-
-
-#         begin=begin.strftime("%d/%m/%Y")
-#         end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-#         if(lot==None):
-#             if(selected_parties!=[] and send_parties!=[]):
-#                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no','')
-
-#             elif(selected_parties!=[] and send_parties==[]):
-#                 rec = Record.objects.filter(processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates).order_by('lot_no')
-#             elif(selected_parties==[] and send_parties!=[]):
-
-
-#                 for s in send_parties:
-#                     transit_than=0
-#                     godown_than=0
-#                     checked_than=0
-#                     processing_than=0
-#                     ready_than=0
-#                     transit_mtrs=0
-#                     godown_mtrs=0
-#                     checked_mtrs=0
-#                     processing_mtrs=0
-#                     ready_mtrs=0
-#                     send_list=[]
-#                     rec = Record.objects.filter(party_name=s).order_by('lot_no')
-#                     for r in rec:
-#                         if(r.state=='Transit'):
-#                             transit_mtrs=transit_mtrs+r.mtrs
-#                             transit_than=transit_than+r.than
-#                         elif(r.state=='Godown'):
-#                             godown_mtrs=godown_mtrs+r.mtrs
-#                             godown_than=godown_than+r.than
-#                         elif(r.state=='In Process'):
-#                             processing_mtrs=processing_mtrs+r.mtrs
-#                             processing_than=processing_than+r.than
-#                         elif(r.state=='Ready to print'):
-#                             ready_mtrs=ready_mtrs+r.mtrs
-#                             ready_than=ready_than+r.than
-#                         else:
-#                             checked_mtrs=checked_mtrs+r.mtrs
-#                             checked_than=checked_than+r.than
-#                     total_than = transit_than + godown_than + checked_than + processing_than + ready_than
-#                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
-#                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
-#                     send_data.append(send_list)
-#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
-#             else:
-#                 rec= Record.objects.filter(sent_to_processing_date__in=selected_dates,state__in=selected_states).order_by('lot_no')
-
-#         else:
-
-#             if(selected_parties!=[] and send_parties!=[]):
-#                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
-#             elif(selected_parties!=[] and send_parties==[]):
-#                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,sent_to_processing_date__in=selected_dates)
-#             elif(selected_parties==[] and send_parties!=[]):
-
-
-#                 for s in send_parties:
-#                     transit_than=0
-#                     godown_than=0
-#                     checked_than=0
-#                     processing_than=0
-#                     ready_than=0
-#                     transit_mtrs=0
-#                     godown_mtrs=0
-#                     checked_mtrs=0
-#                     processing_mtrs=0
-#                     ready_mtrs=0
-#                     send_list=[]
-#                     rec = Record.objects.filter(lot_no=lot,party_name=s)
-#                     for r in rec:
-#                         if(r.state=='Transit'):
-#                             transit_mtrs=transit_mtrs+r.mtrs
-#                             transit_than=transit_than+r.than
-#                         elif(r.state=='Godown'):
-#                             godown_mtrs=godown_mtrs+r.mtrs
-#                             godown_than=godown_than+r.than
-#                         elif(r.state=='In Process'):
-#                             processing_mtrs=processing_mtrs+r.mtrs
-#                             processing_than=processing_than+r.than
-#                         elif(r.state=='Ready to print'):
-#                             ready_mtrs=ready_mtrs+r.mtrs
-#                             ready_than=ready_than+r.than
-#                         else:
-#                             checked_mtrs=checked_mtrs+r.mtrs
-#                             checked_than=checked_than+r.than
-#                     total_than = transit_than + godown_than + checked_than + processing_than + ready_than
-#                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
-#                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
-#                     send_data.append(send_list)
-#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0],'begin':begin,'end':end})
-#             else:
-#                 rec= Record.objects.filter(lot_no=lot,sent_to_processing_date__in=selected_dates,state__in=selected_states)
-#                 if(len(rec) == 0):
-#                     rec = Record.objects.filter(lot_no=lot)
-#                     transit_than=0
-#                     godown_than=0
-#                     checked_than=0
-#                     processing_than=0
-#                     ready_than=0
-#                     transit_mtrs=0
-#                     godown_mtrs=0
-#                     checked_mtrs=0
-#                     processing_mtrs=0
-#                     ready_mtrs=0
-#                     send_list=[]
-#                     for r in rec:
-#                         if(r.state=='Transit'):
-#                             transit_mtrs=transit_mtrs+r.mtrs
-#                             transit_than=transit_than+r.than
-#                         elif(r.state=='Godown'):
-#                             godown_mtrs=godown_mtrs+r.mtrs
-#                             godown_than=godown_than+r.than
-#                         elif(r.state=='In Process'):
-#                             processing_mtrs=processing_mtrs+r.mtrs
-#                             processing_than=processing_than+r.than
-#                         elif(r.state=='Ready to print'):
-#                             ready_mtrs=ready_mtrs+r.mtrs
-#                             ready_than=ready_than+r.than
-#                         else:
-#                             checked_mtrs=checked_mtrs+r.mtrs
-#                             checked_than=checked_than+r.than
-#                     total_than = transit_than + godown_than + checked_than + processing_than + ready_than
-#                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
-#                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
-#                     send_data = [send_list]
-#                     return render(request, './GreyModule/reportlot.html',{'data':send_data,'begin':begin,'end':end})
-
-#         try:
-#             return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0],'begin':begin,'end':end })
-#         except:
-#             if lot!=None:
-#                 return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot),'begin':begin,'end':end })
-#             else:
-#                 return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':"Date",'begin':begin,'end':end })
-
-
-#     else:
-#         print("no date")
-#         if(lot==None):
-#             print("lot none")
-#             if(selected_parties!=[] and send_parties!=[]):
-#                 rec = Record.objects.filter(processing_party_name__in=selected_parties,party_name__in=send_parties).order_by('lot_no')
-#                 return render(request,'./GreyModule/reportall.html',{'records':rec,'party':selected_parties[0]})
-#             elif(selected_parties!=[] and send_parties==[]):
-#                 rec = Record.objects.filter(processing_party_name__in=selected_parties).order_by('lot_no')
-#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
-
-#             elif(selected_parties==[] and send_parties!=[]):
-
-
-#                 for s in send_parties:
-#                     transit_than=0
-#                     godown_than=0
-#                     checked_than=0
-#                     processing_than=0
-#                     ready_than=0
-#                     transit_mtrs=0
-#                     godown_mtrs=0
-#                     checked_mtrs=0
-#                     processing_mtrs=0
-#                     ready_mtrs=0
-#                     send_list=[]
-#                     rec = Record.objects.filter(party_name=s).order_by('lot_no')
-#                     for r in rec:
-#                         if(r.state=='Transit'):
-#                             transit_mtrs=transit_mtrs+r.mtrs
-#                             transit_than=transit_than+r.than
-#                         elif(r.state=='Godown'):
-#                             godown_mtrs=godown_mtrs+r.mtrs
-#                             godown_than=godown_than+r.than
-#                         elif(r.state=='In Process'):
-#                             processing_mtrs=processing_mtrs+r.mtrs
-#                             processing_than=processing_than+r.than
-#                         elif(r.state=='Ready to print'):
-#                             ready_mtrs=ready_mtrs+r.mtrs
-#                             ready_than=ready_than+r.than
-#                         else:
-#                             checked_mtrs=checked_mtrs+r.mtrs
-#                             checked_than=checked_than+r.than
-#                     total_than = transit_than + godown_than + checked_than + processing_than + ready_than
-#                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
-#                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
-#                     send_data.append(send_list)
-#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0]})
-#             else:
-#                 rec= Record.objects.filter(state__in=selected_states).order_by('lot_no')
-
-#         else:
-#             print("got lot")
-#             if(selected_parties!=[] and send_parties!=[]):
-#                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties,party_name__in=send_parties) #bill_date__range=[start_date,end_date]
-#             elif(selected_parties!=[] and send_parties==[]):
-#                 rec = Record.objects.filter(lot_no=lot,processing_party_name__in=selected_parties)
-#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
-
-#             elif(selected_parties==[] and send_parties!=[]):
-
-
-#                 for s in send_parties:
-#                     transit_than=0
-#                     godown_than=0
-#                     checked_than=0
-#                     processing_than=0
-#                     ready_than=0
-#                     transit_mtrs=0
-#                     godown_mtrs=0
-#                     checked_mtrs=0
-#                     processing_mtrs=0
-#                     ready_mtrs=0
-#                     send_list=[]
-#                     rec = Record.objects.filter(lot_no=lot,party_name=s)
-#                     for r in rec:
-#                         if(r.state=='Transit'):
-#                             transit_mtrs=transit_mtrs+r.mtrs
-#                             transit_than=transit_than+r.than
-#                         elif(r.state=='Godown'):
-#                             godown_mtrs=godown_mtrs+r.mtrs
-#                             godown_than=godown_than+r.than
-#                         elif(r.state=='In Process'):
-#                             processing_mtrs=processing_mtrs+r.mtrs
-#                             processing_than=processing_than+r.than
-#                         elif(r.state=='Ready to print'):
-#                             ready_mtrs=ready_mtrs+r.mtrs
-#                             ready_than=ready_than+r.than
-#                         else:
-#                             checked_mtrs=checked_mtrs+r.mtrs
-#                             checked_than=checked_than+r.than
-#                     total_than = transit_than + godown_than + checked_than + processing_than + ready_than
-#                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
-#                     send_list=[s,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
-#                     send_data.append(send_list)
-#                 return render(request,'./GreyModule/reportparty.html',{'data':send_data,'party':selected_parties[0]})
-#             else:
-#                 rec= Record.objects.filter(lot_no=lot,state__in=selected_states)
-#                 print("got here")
-#                 if(len(rec) == 0):
-#                     rec = Record.objects.filter(lot_no=lot)
-#                     transit_than=0
-#                     godown_than=0
-#                     checked_than=0
-#                     processing_than=0
-#                     ready_than=0
-#                     transit_mtrs=0
-#                     godown_mtrs=0
-#                     checked_mtrs=0
-#                     processing_mtrs=0
-#                     ready_mtrs=0
-#                     send_list=[]
-#                     for r in rec:
-#                         if(r.state=='Transit'):
-#                             transit_mtrs=transit_mtrs+r.mtrs
-#                             transit_than=transit_than+r.than
-#                         elif(r.state=='Godown'):
-#                             godown_mtrs=godown_mtrs+r.mtrs
-#                             godown_than=godown_than+r.than
-#                         elif(r.state=='In Process'):
-#                             processing_mtrs=processing_mtrs+r.mtrs
-#                             processing_than=processing_than+r.than
-#                         elif(r.state=='Ready to print'):
-#                             ready_mtrs=ready_mtrs+r.mtrs
-#                             ready_than=ready_than+r.than
-#                         else:
-#                             checked_mtrs=checked_mtrs+r.mtrs
-#                             checked_than=checked_than+r.than
-#                     total_than = transit_than + godown_than + checked_than + processing_than + ready_than
-#                     total_mtrs = transit_mtrs + godown_mtrs + checked_mtrs + processing_mtrs + ready_mtrs
-#                     send_list=[lot,round(transit_than, 2),round(transit_mtrs, 2),round(godown_than, 2),round(godown_mtrs, 2),round(checked_than, 2),round(checked_mtrs, 2),round(processing_than, 2),round(processing_mtrs, 2),round(ready_than, 2),round(ready_mtrs, 2), round(total_than, 2), round(total_mtrs, 2)]
-#                     send_data = [send_list]
-#                     return render(request, './GreyModule/reportlot.html',{'data':send_data,'party':selected_parties[0]})
-#         try:
-#             return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
-#         except:
-#             if lot!=None:
-#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Lot no - "+str(lot)})
-#             else:
-#                 return render(request,'./GreyModule/reportparty.html',{'records':rec,'send_parties':send_parties,'party':"Date" })
-
-#         #return render(request,'./GreyModule/report.html',{'records':rec,'send_parties':send_parties,'party':selected_parties[0]})
-
-
 
 ############## GREY - DEFECTIVE STOCK ###############
 def showDefective(request):
@@ -1925,7 +1288,7 @@ def showDefective(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request,'./GreyModule/defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
 
 
@@ -1956,10 +1319,7 @@ def checkerReport(request):
 
         # qualities = Quality.objects.all()
         datalist=[]
-        # for q in qualities:
-        #     recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates,quality=q.qualities)
-        #     than=0
-        #     mtrs=0
+
         total=[]
         totalthans=0
         totaltotal=0
@@ -1975,7 +1335,7 @@ def checkerReport(request):
             mt=round((r.mtrs/r.than),2)
             l.append(mt)
             try:
-                range=GreyCutRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
+                range=GreyCheckingCutRatesMaster.objects.filter(range1__lt=mt,range2__gt=mt).first()
                 l.append(range.rate)
 
                 l.append(round((mt*range.rate),2))
@@ -2000,13 +1360,13 @@ def checkerReport(request):
 
 def transportReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
-    transport=GreyTransportMaster.objects.all().order_by('transport')
+    transport=GreyTransportAgenciesMaster.objects.all().order_by('transport')
     return render(request,'./GreyModule/transportfilter.html',{'d':d,'checkers':transport})
 
 
 def transportReport(request):
     t_id=int(request.POST.get('transport'))
-    transport=get_object_or_404(GreyTransportMaster,id=t_id)
+    transport=get_object_or_404(GreyTransportAgenciesMaster,id=t_id)
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
@@ -2049,27 +1409,7 @@ def transportReport(request):
                 totaltotal=round(totaltotal + rec_one.transport.rate*bale_inlot,2)
                 datalist.append(row_list)
 
-        # for r in recs:
-        #     totalthans=totalthans+r.than
 
-        #     l=[]
-        #     l.append(r.quality.qualities)
-        #     l.append(r.checking_date)
-        #     l.append(r.than)
-        #     l.append(r.mtrs)
-        #     mt=r.than
-        #     # l.append(mt)
-        #     try:
-        #         # range=ThanRange.objects.filter(range1__lt=mt,range2__gt=mt).first()
-        #         l.append(r.transport.rate)
-
-        #         l.append(round((mt*r.transport.rate),2))
-        #         totaltotal=totaltotal+round((mt*r.transport.rate),2)
-        #     except:
-        #         l.append("rate not defined")
-        #         l.append("rate not defined")
-        #     l.append(r.lot_no)
-        #     datalist.append(l)
         total.append(round(totalbales,2))
         total.append(round(totaltotal,2))
 
@@ -2083,7 +1423,7 @@ def transportReport(request):
 
 ################### QUALITY WISE REPORT ########################
 def qualityReportFilter(request):
-    qualities= GreyQualityMaster.objects.all().order_by('qualities')
+    qualities= GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request,'./GreyModule/qualityreportfilter.html',{'qualities':qualities})
 
 def qualityReport(request):
@@ -2102,13 +1442,13 @@ def qualityReport(request):
     remtrs=0
     tothan=0
     tomtrs=0
-    qualities= GreyQualityMaster.objects.all()
+    qualities= GreyQualitiesMaster.objects.all()
     selected_qualities=[]
     for q in qualities:
 
         if(request.POST.get(q.qualities)!=None):
             selected_qualities.append(request.POST.get(q.qualities))
-            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             tally_than=0
             tally_mtrs=0
             total_than_in_transit=0
@@ -2120,7 +1460,7 @@ def qualityReport(request):
             trthan=trthan+total_than_in_transit
             trmtrs=trmtrs+total_mtrs_in_transit
 
-            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_godown=0
             total_mtrs_in_godown=0
             for r in rec_godown:
@@ -2129,7 +1469,7 @@ def qualityReport(request):
             gothan=gothan+total_than_in_godown
             gomtrs=gomtrs+total_mtrs_in_godown
 
-            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_checked=0
             total_mtrs_in_checked=0
             for r in rec_checked:
@@ -2138,7 +1478,7 @@ def qualityReport(request):
             chthan=chthan+total_than_in_checked
             chmtrs=chmtrs+total_mtrs_in_checked
 
-            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -2147,7 +1487,7 @@ def qualityReport(request):
             prthan=prthan+total_than_in_process
             prmtrs=prmtrs+total_mtrs_in_process
 
-            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_ready=0
             total_mtrs_in_ready=0
             for r in rec_ready:
@@ -2185,8 +1525,8 @@ def qualityReport(request):
 
 ################### QUALITY WISE LEDGER ########################
 def qualityReport2filter(request):
-    party=ProcessingPartyNameMaster.objects.all().order_by('processing_party')
-    qualities=GreyQualityMaster.objects.all().order_by('qualities')
+    party=GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
+    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request,'./GreyModule/qualityreport2filter.html',{'qualities':qualities,'parties':party})
 
 
@@ -2208,7 +1548,7 @@ def qualityReport2(request):
             next_day += datetime.timedelta(days=1)
         print(selected_dates)
     party_id=int(request.POST.get('checkbox'))
-    party_ob=get_object_or_404(ProcessingPartyNameMaster,id=party_id)
+    party_ob=get_object_or_404(GreyOutprocessAgenciesMaster,id=party_id)
     final_qs=[]
     total_all=[]
 
@@ -2219,7 +1559,7 @@ def qualityReport2(request):
     tothan=0
     tomtrs=0
 
-    qualities= GreyQualityMaster.objects.all().order_by('qualities')
+    qualities= GreyQualitiesMaster.objects.all().order_by('qualities')
     selected_qualities=[]
     for q in qualities:
 
@@ -2227,9 +1567,9 @@ def qualityReport2(request):
             selected_qualities.append(request.POST.get(q.qualities))
 
             if(begin!="" or end!=""):
-                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             else:
-                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -2239,9 +1579,9 @@ def qualityReport2(request):
             prmtrs=prmtrs+total_mtrs_in_process
 
             if(begin!="" or end!=""):
-                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             else:
-                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
 
             total_than_in_ready=0
             total_mtrs_in_ready=0
@@ -2280,3 +1620,257 @@ def qualityReport2(request):
     else:
         return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
 ################### QUALITY WISE LEDGER END########################
+
+
+
+
+######### GREY - CUT RANGE MASTER ########
+
+def renderGreyMasterCheckingCutRates(request):
+    all_cut_ranges = GreyCheckingCutRatesMaster.objects.all().order_by('cut_start_range')
+    paginator = Paginator(all_cut_ranges,10)
+    page = request.GET.get('page')
+    cut_ranges = paginator.get_page(page)
+    return render(request,'./GreyModule/masterGreyCutRates.html',{'records':cut_ranges})
+
+def saveGreyMasterCheckingCutRate(request):
+    start_range = float(request.POST.get("cut_start_range"))
+    end_range = float(request.POST.get("cut_end_range"))
+    rate = GreyCheckingCutRatesMaster.objects.all()
+    flag = 0
+
+    for i in existingrange:
+        if i.start_range<r1<i.end_range or i.start_range<r2<i.end_range:
+            flag = flag + 1
+            break
+
+    if flag == 0:
+
+        newRecord = GreyCheckingCutRatesMaster(
+            start_range = start_range,
+            end_range = end_range,
+            rate = float(request.POST.get('rate'))
+        )
+
+        newRecord.save()
+        messages.success(request,'Range added')
+        return redirect('/masterGreyCutRates')
+
+    else:
+
+        messages.error(request,'Range already exists')
+        return redirect('/masterGreyCutRates')
+
+def deleteGreyMasterCheckingCutRate(request,id):
+    GreyCheckingCutRatesMaster.objects.filter(id=id).delete()
+    messages.success(request,"Range deleted")
+    return redirect('/masterGreyCutRates')
+
+
+############ GREY : QUALITY MASTER ############
+
+def renderGreyMasterQuality(request):
+    all_qualities = GreyQualitiesMaster.objects.all().order_by('qualities')
+    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
+    paginator = Paginator(all_qualities,10)
+    page = request.GET.get('page')
+    qualities = paginator.get_page(page)
+
+    return render(request,'./GreyModule/masterGreyQualities.html',{'records':qualities})
+
+def saveGreyMasterQuality(request):
+    quality_name = request.POST.get("quality_name")
+    quality_name = quality_name.strip()
+
+    quality_name = quality_name.replace('"','inch')
+    try:
+        existing_quality=get_object_or_404(GreyQualitiesMaster,qualities=quality_name.upper())
+        messages.error(request,"This quality already exists")
+    except:
+        if quality_name.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/renderMasterQuality')
+        new_quality = GreyQualitiesMaster(
+            qualities=quality_name.upper()
+        )
+        new_quality.save()
+        messages.success(request,"Quality added")
+    return redirect('/renderGreyMasterQuality')
+
+def deleteGreyMasterQuality(request,id):
+    try:
+        GreyQualitiesMaster.objects.filter(id=id).delete()
+        messages.success(request,"Quality deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
+    return redirect('/renderGreyMasterQuality')
+
+def renderEditGreyMasterQuality(request,id):
+    quality=get_object_or_404(GreyQualitiesMaster,id=id)
+    return render(request,'./GreyModule/editGreyMasterQuality.html',{'id':id,'name':quality.qualities})
+
+def editGreyMasterQuality(request,id):
+    quality=get_object_or_404(GreyQualitiesMaster,id=id)
+    p=request.POST.get("edit-quality")
+    p = p.upper()
+    p = p.strip()
+    quality.qualities = p
+    quality.save()
+    messages.success(request,"Grey Quality edited")
+    return redirect('/renderGreyMasterQuality')
+
+
+###### GREY : Processing House Party Master #######
+
+def renderGreyMasterOutprocessAgencies(request):
+    parties_all = GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
+    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
+
+    paginator = Paginator(parties_all,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'./GreyModule/masterGreyOutprocessAgencies.html',{'records':parties})
+
+def saveGreyMasterOutprocessAgencies(request):
+    p = request.POST.get("processing-party")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=p)
+        messages.error(request,"This Processing Party already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/renderGreyMasterOutprocessAgencies')
+        new_Party = GreyOutprocessAgenciesMaster(
+            processing_party= p
+        )
+        new_Party.save()
+        messages.success(request,"Processing Party added successfully")
+    return redirect('/renderGreyMasterOutprocessAgencies')
+
+def deleteGreyMasterOutprocessAgencies(request,id):
+    try:
+        GreyOutprocessAgenciesMaster.objects.filter(id=id).delete()
+        messages.success(request,"Processing House Party deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
+    return redirect('/renderGreyMasterOutprocessAgencies')
+
+def renderEditGreyMasterOutprocessAgencies(request,id):
+    party=get_object_or_404(GreyOutprocessAgenciesMaster,id=id)
+    return render(request,'./GreyModule/editparty.html',{'id':id,'name':party.processing_party})
+
+def editGreyMasterOutprocessAgencies(request,id):
+    party=get_object_or_404(GreyOutprocessAgenciesMaster,id=id)
+    p=request.POST.get("edit-party")
+    p = p.upper()
+    p = p.strip()
+    party.processing_party = p
+    party.save()
+    messages.success(request,"Processing House Party edited")
+    return redirect('/addparty')
+
+
+########## Transport Agency Master ###########
+
+def renderGreyMasterTransportAgencies(request):
+    parties_all = GreyTransportAgenciesMaster.objects.all().order_by('transport')
+    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
+
+    paginator = Paginator(parties_all,10)
+    page = request.GET.get('page')
+    parties = paginator.get_page(page)
+    return render(request,'./GreyModule/addtransport.html',{'records':parties})
+
+def saveTransportAgency(request):
+    p = request.POST.get("transport")
+    p = p.upper()
+    p = p.strip()
+    try:
+        existing_party=get_object_or_404(GreyTransportAgenciesMaster,transport=p)
+        messages.error(request,"This Transport Party already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/addtransport')
+        new_Party = GreyTransportAgenciesMaster(
+            transport= p,
+            rate=float(request.POST.get('rate'))
+        )
+        new_Party.save()
+        messages.success(request,"Transport Party added successfully")
+    return redirect('/addtransport')
+
+def deleteTransportAgency(request,id):
+    try:
+        GreyTransportAgenciesMaster.objects.filter(id=id).delete()
+        messages.success(request,"Transport Party deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
+    return redirect('/addtransport')
+
+def renderEditTransportAgency(request,id):
+    party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
+    return render(request,'./GreyModule/edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
+
+def editTransportAgency(request,id):
+    party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
+    p=request.POST.get("edit-transport")
+    p = p.upper()
+    p = p.strip()
+    party.transport = p
+    party.rate = float(request.POST.get('rate'))
+    party.save()
+    messages.success(request,"Transport Party edited")
+    return redirect('/addtransport')
+
+
+####### GREY : ARRIVAL LOCATION MASTER #######
+
+def renderGreyMasterGodowns(request):
+    location_all = GreyGodownsMaster.objects.all().order_by('location')
+    paginator = Paginator(location_all,10)
+    page = request.GET.get('page')
+    locations = paginator.get_page(page)
+    return render(request,'./GreyModule/masterGreyGodowns.html',{'records':locations})
+
+def saveGreyMasterGodown(request):
+    p = request.POST.get("location")
+    p = p.strip().upper()
+    try:
+        existing_party=get_object_or_404(GreyGodownsMaster,location=p)
+        messages.error(request,"This arrival location already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/masterGreyGodowns')
+        new_loc = GreyGodownsMaster(
+            location= p
+        )
+        new_loc.save()
+        messages.success(request,"Arrival location added successfully")
+    return redirect('/masterGreyGodowns')
+
+def deleteGreyMasterGodown(request,id):
+    try:
+        GreyGodownsMaster.objects.filter(id=id).delete()
+        messages.success(request,"Arrival location deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
+    return redirect('/masterGreyGodowns')
+
+def renderEditGreyMasterGodown(request,id):
+    grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
+    return render(request,'./GreyModule/editlocation.html',{'id':id,'name':grey_godown.location})
+
+def editGreyMasterGodown(request,id):
+    grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
+    godown_name = request.POST.get("edit-location")
+    grey_godown.location = godown_name.upper().strip()
+    grey_godown.save()
+    messages.success(request, "Arrival location edited")
+    return redirect('/masterGreyGodowns')
+
+
+##################################### GREY MASTER END ###########################################
