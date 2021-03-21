@@ -1631,40 +1631,40 @@ def renderGreyMasterCheckingCutRates(request):
     paginator = Paginator(all_cut_ranges,10)
     page = request.GET.get('page')
     cut_ranges = paginator.get_page(page)
-    return render(request,'./GreyModule/masterGreyCutRates.html',{'records':cut_ranges})
+    return render(request,'./GreyModule/masterGreyCheckingCutRates.html',{'records':cut_ranges})
 
 def saveGreyMasterCheckingCutRate(request):
     start_range = float(request.POST.get("cut_start_range"))
     end_range = float(request.POST.get("cut_end_range"))
-    rate = GreyCheckingCutRatesMaster.objects.all()
+    existingrange = GreyCheckingCutRatesMaster.objects.all()
     flag = 0
 
     for i in existingrange:
-        if i.start_range<r1<i.end_range or i.start_range<r2<i.end_range:
+        if i.cut_start_range<start_range<i.cut_end_range or i.cut_start_range<end_range<i.cut_end_range:
             flag = flag + 1
             break
 
     if flag == 0:
 
         newRecord = GreyCheckingCutRatesMaster(
-            start_range = start_range,
-            end_range = end_range,
-            rate = float(request.POST.get('rate'))
+            cut_start_range = start_range,
+            cut_end_range = end_range,
+            checking_rate = float(request.POST.get('rate'))
         )
 
         newRecord.save()
         messages.success(request,'Range added')
-        return redirect('/masterGreyCutRates')
+        return redirect('/renderGreyMasterCheckingCutRates')
 
     else:
 
         messages.error(request,'Range already exists')
-        return redirect('/masterGreyCutRates')
+        return redirect('/renderGreyMasterCheckingCutRates')
 
 def deleteGreyMasterCheckingCutRate(request,id):
     GreyCheckingCutRatesMaster.objects.filter(id=id).delete()
     messages.success(request,"Range deleted")
-    return redirect('/masterGreyCutRates')
+    return redirect('/renderGreyMasterCheckingCutRates')
 
 
 ############ GREY : QUALITY MASTER ############
@@ -1774,55 +1774,55 @@ def editGreyMasterOutprocessAgency(request,id):
 ########## Transport Agency Master ###########
 
 def renderGreyMasterTransportAgencies(request):
-    parties_all = GreyTransportAgenciesMaster.objects.all().order_by('transport')
+    parties_all = GreyTransportAgenciesMaster.objects.all().order_by('transport_agency_name')
     #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./GreyModule/addtransport.html',{'records':parties})
+    return render(request,'./GreyModule/masterGreyTransportAgencies.html',{'records':parties})
 
 def saveTransportAgency(request):
-    p = request.POST.get("transport")
+    p = request.POST.get("transport_agency_name")
     p = p.upper()
     p = p.strip()
     try:
         existing_party=get_object_or_404(GreyTransportAgenciesMaster,transport=p)
-        messages.error(request,"This Transport Party already exists")
+        messages.error(request,"This Transport Agency already exists")
     except:
         if p.strip()=="":
             messages.error(request,"please enter valid input")
-            return redirect('/addtransport')
+            return redirect('/renderGreyMasterTransportAgencies')
         new_Party = GreyTransportAgenciesMaster(
-            transport= p,
+            transport_agency_name= p,
             rate=float(request.POST.get('rate'))
         )
         new_Party.save()
-        messages.success(request,"Transport Party added successfully")
-    return redirect('/addtransport')
+        messages.success(request,"Transport Agency added successfully")
+    return redirect('/renderGreyMasterTransportAgencies')
 
 def deleteTransportAgency(request,id):
     try:
         GreyTransportAgenciesMaster.objects.filter(id=id).delete()
-        messages.success(request,"Transport Party deleted")
+        messages.success(request,"Transport Agency deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/addtransport')
+    return redirect('/renderGreyMasterTransportAgencies')
 
 def renderEditTransportAgency(request,id):
     party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
-    return render(request,'./GreyModule/edittransport.html',{'id':id,'name':party.transport,'rate':party.rate})
+    return render(request,'./GreyModule/edittransport.html',{'id':id,'name':party.transport_agency_name,'rate':party.rate})
 
 def editTransportAgency(request,id):
     party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
-    p=request.POST.get("edit-transport")
+    p=request.POST.get("transport_agency_name")
     p = p.upper()
     p = p.strip()
-    party.transport = p
+    party.transport_agency_name = p
     party.rate = float(request.POST.get('rate'))
     party.save()
-    messages.success(request,"Transport Party edited")
-    return redirect('/addtransport')
+    messages.success(request,"Transport Agency edited")
+    return redirect('/renderGreyMasterTransportAgencies')
 
 
 ####### GREY : Godown MASTER #######

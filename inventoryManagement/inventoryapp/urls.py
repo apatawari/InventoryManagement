@@ -67,10 +67,10 @@ urlpatterns = [
 
     # Grey Transport Mater
     path('renderGreyMasterTransportAgencies',views.renderGreyMasterTransportAgencies, name="renderGreyMasterTransportAgencies"),
-    path('savetransportagency',views.saveTransportAgency, name="savetransport"),
-    path('deletetransportagency/<int:id>',views.deleteTransportAgency, name="deletetransport"),
-    path('edittransportagency/<int:id>',views.renderEditTransportAgency,name="renderedittransport"),
-    path('editgreytransportagency/<int:id>',views.editTransportAgency,name="edittransport"),
+    path('saveTransportAgency',views.saveTransportAgency, name="saveTransportAgency"),
+    path('deleteTransportAgency/<int:id>',views.deleteTransportAgency, name="deleteTransportAgency"),
+    path('renderEditTransportAgency/<int:id>',views.renderEditTransportAgency,name="renderEditTransportAgency"),
+    path('editTransportAgency/<int:id>',views.editTransportAgency,name="editTransportAgency"),
 
     # Grey Gowdown Location Master #done
     path('renderGreyMasterGodowns',views.renderGreyMasterGodowns, name="renderGreyMasterGodowns"),
