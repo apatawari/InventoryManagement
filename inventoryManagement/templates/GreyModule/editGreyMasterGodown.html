@@ -1,0 +1,30 @@
+{% extends './nav.html' %}
+
+
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Add Party Start-->
+      <form method="POST" action="{% url 'editGreyMasterGodown' id %}" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Edit Grey Godown</h1>
+        </div>
+        <div class="upload-container">
+            <input type="text" class="form-control" id="editGreyGodown" placeholder="Grey Godown Name" value="{{name}}" name="edit-grey-godown" required>
+
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit">Save</button>
+        </div>
+      </form>
+
+
+
+
+
+      <!-- Add Party End -->
+
+
+
+{% endblock %}

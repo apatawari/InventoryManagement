@@ -1,0 +1,564 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"ocr",
+				"ocrtext"
+			],
+			[
+				"pdf",
+				"pdftext"
+			],
+			[
+				"fi",
+				"filesize"
+			],
+			[
+				"uploaded",
+				"uploadedAt"
+			],
+			[
+				"A",
+				"APP_ROOT"
+			],
+			[
+				"file",
+				"filename"
+			],
+			[
+				"re",
+				"required\tAttr"
+			],
+			[
+				"creae",
+				"createddatetime"
+			],
+			[
+				"Fro",
+				"ForeignKey"
+			],
+			[
+				"notif",
+				"notification_sent_count"
+			],
+			[
+				"correc",
+				"correct_selfie"
+			],
+			[
+				"not",
+				"notification_sent_count"
+			],
+			[
+				"pix",
+				"pixon_master_id"
+			],
+			[
+				"mobile",
+				"mobile_number"
+			],
+			[
+				"enroll",
+				"enrollment_image"
+			],
+			[
+				"enr",
+				"enrolled_image"
+			],
+			[
+				"images",
+				"images_dir"
+			],
+			[
+				"selfie",
+				"selfie_image"
+			],
+			[
+				"su",
+				"supporting_json"
+			],
+			[
+				"em",
+				"email_recipients"
+			],
+			[
+				"ema",
+				"email_dict"
+			],
+			[
+				"in",
+				"initializer"
+			],
+			[
+				"ltm",
+				"lstm_cells"
+			],
+			[
+				"drop",
+				"drop_lstm_cells"
+			],
+			[
+				"num",
+				"num_unrollings"
+			],
+			[
+				"test",
+				"test_data"
+			],
+			[
+				"Min",
+				"MinMaxScaler"
+			],
+			[
+				"model",
+				"modelPath"
+			],
+			[
+				"db",
+				"db_connection"
+			],
+			[
+				"mont",
+				"monthlyIncome"
+			],
+			[
+				"months",
+				"monthlySavings"
+			],
+			[
+				"YEAR",
+				"yearly_summary"
+			],
+			[
+				"Recomm",
+				"recommend"
+			],
+			[
+				"recommen",
+				"recommendations"
+			],
+			[
+				"final",
+				"final_report"
+			],
+			[
+				"sim",
+				"similar_list"
+			],
+			[
+				"simil",
+				"similar_list"
+			],
+			[
+				"Tr",
+				"TransactionType"
+			],
+			[
+				"Tra",
+				"TransactionDate"
+			],
+			[
+				"cle",
+				"cleaned_description"
+			],
+			[
+				"state",
+				"statement_test"
+			],
+			[
+				"statement",
+				"statement_test"
+			],
+			[
+				"des",
+				"destination_csv"
+			],
+			[
+				"expense",
+				"expense_categories"
+			],
+			[
+				"income",
+				"income_categories"
+			],
+			[
+				"Trans",
+				"TransactionType"
+			],
+			[
+				"user",
+				"user_mentions"
+			],
+			[
+				"bag",
+				"bag_of_words"
+			],
+			[
+				"ba",
+				"batch_size"
+			],
+			[
+				"clas",
+				"classifiedLabel"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 329.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"HTML",
+				"Set Syntax: HTML"
+			],
+			[
+				"htm",
+				"HTML: Wrap Selection With Tag"
+			],
+			[
+				"json",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"prettt",
+				"Pretty JSON: Validate"
+			],
+			[
+				"prett",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"pret",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"prin",
+				"Pretty JSON: Minify (compress) JSON"
+			],
+			[
+				"JSO",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"JSON",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"Json",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"JSON va",
+				"Pretty JSON: Validate"
+			],
+			[
+				"JSON ",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"vali",
+				"Pretty JSON: Validate"
+			],
+			[
+				"jso",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"pretty",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"Js",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"Install Package",
+				"Package Control: Install Package"
+			],
+			[
+				"j",
+				"Set Syntax: JSON"
+			]
+		],
+		"width": 444.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/macbookpro/Documents/GitHub/UploadTool/project/templates/base.html",
+		"/Users/macbookpro/Documents/GitHub/avery/payroll-data/json/01 17 2020 Payroll Reports.json",
+		"/Users/macbookpro/Downloads/data 2/payroll/PayrollCostsforPPPLoan ForgivenessDetermination_1.pdf.html.json",
+		"/Users/macbookpro/Documents/GitHub/avery/payroll-data/html/1.html",
+		"/Users/macbookpro/Documents/GitHub/avery/data/payroll/Paycom-April Payroll.html",
+		"/Users/macbookpro/Documents/GitHub/avery/payroll-data/pdf/07 - Q2 2020 EXCEL SUI.html",
+		"/Users/macbookpro/Documents/GitHub/avery/payroll-data/pdf/NIELSEN ENTERPRISES - EZ FILE PPP DOCUMENTATION.html",
+		"/Users/macbookpro/Documents/GitHub/avery/payroll-data/pdf/01 17 2020 Payroll Reports.html01 17 2020 Payroll Reports.html",
+		"/Users/macbookpro/Documents/GitHub/avery/PPP/PdfToHtml/parsehtml.py",
+		"/Users/macbookpro/Documents/GitHub/avery/data/payroll/xx5-21-20 Payroll.html",
+		"/Users/macbookpro/Documents/GitHub/avery/data/payroll/PayrollJournal 6-3-20.html",
+		"/Users/macbookpro/Documents/GitHub/avery/data/payroll/xx1030FH16_Payroll_Journal_Thu_Jun_11_09_41_00_EDT_2020.html",
+		"/Users/macbookpro/Downloads/data/SBA-PPP Loan Forgiveness Employee Wage Comparison.pdf.html.json",
+		"/Users/macbookpro/Downloads/data/payroll/Payrollregister.pdf.html.json",
+		"/Users/macbookpro/Downloads/data/payroll/PayrollJournal 6-3-20.pdf.html",
+		"/Users/macbookpro/Documents/GitHub/avery/PPP/spacy-EE/payrollregister.txt",
+		"/Users/macbookpro/Downloads/tnega.key",
+		"/Users/macbookpro/Downloads/fullchain.pem",
+		"/Users/macbookpro/Desktop/tnega.crt",
+		"/Users/macbookpro/staging-server-code/vendor/swiftmailer/swiftmailer/tests/_samples/smime/intermediate.crt",
+		"/Users/macbookpro/Documents/GitHub/avery/PdfToHtml/requirements.txt",
+		"/Users/macbookpro/Documents/GitHub/avery/tesseract-ocr.py",
+		"/Users/macbookpro/Documents/GitHub/avery/requirements.txt",
+		"/Users/macbookpro/Documents/GitHub/avery/tika-pdf.py",
+		"/Users/macbookpro/Downloads/videoScript/dtronTest.py",
+		"/Users/macbookpro/Desktop/Factory/Notes-OnElevator",
+		"/Users/macbookpro/Desktop/Factory/Utility/app/models.py",
+		"/Users/macbookpro/Desktop/Factory/Utility/app/templates/pages/register.html",
+		"/Users/macbookpro/Desktop/Factory/Utility/app/dashboard_controller.py",
+		"/Users/macbookpro/Desktop/Factory/Utility/app/forms.py",
+		"/Users/macbookpro/Desktop/Factory/Utility/app/__init__.py",
+		"/Users/macbookpro/Desktop/Factory/Utility/README.md",
+		"/Users/macbookpro/Desktop/Factory/UploadTool/project/templates/base.html",
+		"/Users/macbookpro/Desktop/Factory/UploadTool/project/templates/index.html",
+		"/Users/macbookpro/Downloads/Simple_Inventory PYTHON/Simple Inventory System/index.py",
+		"/Users/macbookpro/Documents/TNeGA/ChatBot/ApacheTomcatRestartScript.sh",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/bankbot/js/webchat2.js",
+		"/Users/macbookpro/Downloads/microphone.svg",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/domain.yml",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/bankbot/index.html",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/bankbot/css/templatemo-style.css",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/bankbot/js/bootstrap.min.js",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/bankbot/js/jquery-1.11.3.min.js",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/data/core/greet.md",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/data/core/locate_menu.md",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/data/core/login.md",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/data/core/account_transaction.md",
+		"/Users/macbookpro/Documents/FileUpload/main.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/actions.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/new_bank_bot/data/core/BodOrEod.md",
+		"/Users/macbookpro/Documents/GitHub/UploadTool/project/main.py",
+		"/Users/macbookpro/Desktop/match.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/flow-banking",
+		"/Users/macbookpro/Documents/TNeGA/DailyStatus/Status-25th-August.txt",
+		"/Users/macbookpro/Documents/TNeGA/DailyStatus/Status-24th-August.txt",
+		"/var/folders/pn/z0mj1mnx2816nkqw14yrywtr0000gn/T/com.apple.mail/com.apple.mail.drag-T0x6000001e2d40.tmp.xr94aJ/RASA_BOT Q&A-Feedback-Saraswati.xlsx",
+		"/Users/macbookpro/Documents/TNeGA/Agriculture/PMA-AgricultureAI/YoutubeLink.txt",
+		"/Users/macbookpro/Documents/GitHub/chatbot/Flask App/source/app/dashboard_controller.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/Flask App/source/app/models.py",
+		"/Users/macbookpro/Documents/GitHub/UploadTool/project/templates/uploadhistory.html",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/app/Http/Controllers/DashboardController.php",
+		"/Users/macbookpro/Documents/GitHub/chatbot/bot-cms/project/templates/base.html",
+		"/Users/macbookpro/Documents/GitHub/chatbot/.gitignore",
+		"/Users/macbookpro/Documents/GitHub/UploadTool/project/auth.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/bot-cms/install_steps.txt",
+		"/Users/macbookpro/Documents/GitHub/chatbot/bot-cms/bot-cms/.gitignore",
+		"/Users/macbookpro/Documents/GitHub/chatbot/bot-cms/project/auth.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/bot-cms/project/main.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/bot-cms/project/templates/upload.html",
+		"/Users/macbookpro/Documents/GitHub/chatbot/frontend/project/templates/base.html",
+		"/Users/macbookpro/Documents/GitHub/chatbot/frontend/project/templates/index.html",
+		"/Users/macbookpro/Documents/GitHub/chatbot/frontend/project/main.py",
+		"/Users/macbookpro/Documents/GitHub/chatbot/frontend/install_steps.txt",
+		"/Users/macbookpro/Documents/GitHub/chatbot/frontend/project/requirements.txt",
+		"/Users/macbookpro/Documents/GitHub/chatbot/frontend/project/__init__.py",
+		"/Users/macbookpro/Documents/GitHub/UploadTool/project/__init__.py",
+		"/Users/macbookpro/Documents/GitHub/pdf-reader/Instructions.txt",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/templates/base.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/templates/pdf-utility.html",
+		"/Users/macbookpro/Documents/GitHub/pdf-reader/requirements.txt",
+		"/Users/macbookpro/Documents/GitHub/pdf-reader/PDFConversionUtility/convert_pdf_csv.py",
+		"/Users/macbookpro/Documents/GitHub/pdf-reader/pdf_read_tabula.py",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/FileUploadSystem/uploadr/templates/files.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/templates/uploadhistory.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/templates/signup.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/models.py",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/templates/profile.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/templates/index.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/__init__.py",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/FileUploadSystem/uploadr/templates/index.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/main.py",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/auth.py",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/flask_auth_app/project/templates/login.html",
+		"/Users/macbookpro/Documents/GitHub/InfiniteSense/FileUploadSystem/.gitignore",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/resources/views/themes/inspinia/dashboard/index.blade.php",
+		"/Users/macbookpro/Documents/GitHub/rasa-chatbots/DPHBot/config.yml",
+		"/Users/macbookpro/Downloads/TNeGA-SMS/sendBulkSMS.py",
+		"/Users/macbookpro/Downloads/TNeGA-SMS/otpV&NV.txt",
+		"/Users/macbookpro/Downloads/TNeGA-SMS/otpnotverifiedmessage.txt",
+		"/Users/macbookpro/Downloads/sendBulkSMS.py",
+		"/Users/macbookpro/Desktop/ALPR/alpr-video.py",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/database/migrations/2020_04_08_141600_create_optional_tables_table.php",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/app/.DS_Store",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/database/migrations/2020_04_08_190952_create_person_locations_table.php",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/database/migrations/2020_04_08_210514_create_districts_table.php",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/database/migrations/2020_04_09_083857_add_distict_id_column_to_count_master_table.php",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/database/migrations/2020_04_09_073907_add_distict_id_to_mobile_numbers_master.php",
+		"/Users/macbookpro/Documents/GitHub/TracerApp/staging-server-code/database/migrations/2020_04_08_111741_count_master.php",
+		"/Users/macbookpro/Documents/GitHub/rasa-chatbots/DPHBot/data/stories.md",
+		"/Users/macbookpro/Downloads/tnega.csr",
+		"/Users/macbookpro/Documents/GitHub/SQMS/message.properties",
+		"/Users/macbookpro/Documents/GitHub/FakeNewsIdentifier/.gitignore",
+		"/Users/macbookpro/Documents/GitHub/FakeNewsIdentifier/gmail-python/send.py",
+		"/Users/macbookpro/Documents/GitHub/FakeNewsIdentifier/requirements.txt",
+		"/Users/macbookpro/Desktop/Apollo API Response Examples",
+		"/Users/macbookpro/Documents/GitHub/FakeNewsIdentifier/fakenews_internet_search.py",
+		"/Users/macbookpro/Desktop/curl_request.txt",
+		"/Users/macbookpro/Documents/GitHub/arihantpatawari/index.html",
+		"/Users/macbookpro/Downloads/all_sources_metadata_2020-03-13.readme",
+		"/Users/macbookpro/Documents/GitHub/AgricultureAI/code/main.py",
+		"/Users/macbookpro/Documents/GitHub/nlu/.gitignore",
+		"/Users/macbookpro/Documents/GitHub/AgricultureAI/dash_board.py",
+		"/Users/macbookpro/Documents/GitHub/StatementsAnalyzer/main.py",
+		"/Users/macbookpro/Documents/GitHub/AgricultureAI/main.py",
+		"/Users/macbookpro/Documents/TNeGA/Agriculture/agri-doc/main.py",
+		"/Users/macbookpro/Downloads/Mannai/Finance/AdvFinML_GitHub/README.md",
+		"/Users/macbookpro/Downloads/Mannai/StatementsAnalyzer/readme.md",
+		"/Users/macbookpro/Documents/GitHub/StatementsAnalyzer/readme.md"
+	],
+	"find":
+	{
+		"height": 24.0
+	},
+	"find_in_files":
+	{
+		"height": 101.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "im-tcm.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

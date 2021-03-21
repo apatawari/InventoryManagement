@@ -45,12 +45,12 @@ urlpatterns = [
     path('processingapprove/<int:id>',views.processingApprove, name='processingapprove'),
     path('sendinprocess/<int:id>',views.sendInProcess, name="sendinprocess"),
 
-    # Grey Outprocess Agencies
+    # Grey Outprocess Agency
     path('renderGreyMasterOutprocessAgencies',views.renderGreyMasterOutprocessAgencies, name="renderGreyMasterOutprocessAgencies"),
-    path('saveGreyMasterOutprocessAgencies',views.saveGreyMasterOutprocessAgencies, name="saveGreyMasterOutprocessAgencies"),
-    path('deleteGreyMasterOutprocessAgencies/<int:id>',views.deleteGreyMasterOutprocessAgencies,name="deleteGreyMasterOutprocessAgencies"),
-    path('renderEditGreyMasterOutprocessAgencies/<int:id>',views.renderEditGreyMasterOutprocessAgencies,name="renderEditGreyMasterOutprocessAgencies"),
-    path('editGreyMasterOutprocessAgencies/<int:id>',views.editGreyMasterOutprocessAgencies,name="editGreyMasterOutprocessAgencies"),
+    path('saveGreyMasterOutprocessAgency',views.saveGreyMasterOutprocessAgency, name="saveGreyMasterOutprocessAgency"),
+    path('deleteGreyMasterOutprocessAgency/<int:id>',views.deleteGreyMasterOutprocessAgency,name="deleteGreyMasterOutprocessAgency"),
+    path('renderEditGreyMasterOutprocessAgency/<int:id>',views.renderEditGreyMasterOutprocessAgency,name="renderEditGreyMasterOutprocessAgency"),
+    path('editGreyMasterOutprocessAgency/<int:id>',views.editGreyMasterOutprocessAgency,name="editGreyMasterOutprocessAgency"),
 
 
     #Grey Cut Rates

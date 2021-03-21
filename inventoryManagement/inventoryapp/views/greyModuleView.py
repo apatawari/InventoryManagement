@@ -771,7 +771,7 @@ def readyApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=str(rec.sent_to_processing_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    locations = GreyGodownsMaster.objects.all().order_by('location')
+    locations = GreyGodownsMaster.objects.all().order_by('godown_name')
 
     d=datetime.date.today()
     d=str(d)
@@ -793,7 +793,7 @@ def readyToPrint(request,id):
     if(prevRec.than == than_recieved):
         prevRec.state="Ready to print"
         prevRec.recieve_processed_date=str(request.POST.get("processing_date"))
-        prevRec.arrival_location = location
+        prevRec.godown_name = location
         prevRec.chalan_no = int(request.POST.get('chalan'))
         prevRec.save()
         tally_records = Record.objects.filter(state="Ready to print",lot_no=tally_lot_no)
@@ -845,7 +845,7 @@ def readyToPrint(request,id):
             recieve_processed_date=str(request.POST.get("processing_date")),
             total_mtrs=prevRec.total_mtrs,
             total_thans=prevRec.total_thans,
-            arrival_location=location,
+            godown_name=location,
             processing_type=prevRec.processing_type,
             gate_pass=prevRec.gate_pass,
             chalan_no = int(request.POST.get('chalan')),
@@ -1694,13 +1694,13 @@ def saveGreyMasterQuality(request):
             qualities=quality_name.upper()
         )
         new_quality.save()
-        messages.success(request,"Quality added")
+        messages.success(request,"Grey Quality added")
     return redirect('/renderGreyMasterQuality')
 
 def deleteGreyMasterQuality(request,id):
     try:
         GreyQualitiesMaster.objects.filter(id=id).delete()
-        messages.success(request,"Quality deleted")
+        messages.success(request,"Grey Quality deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/renderGreyMasterQuality')
@@ -1711,7 +1711,7 @@ def renderEditGreyMasterQuality(request,id):
 
 def editGreyMasterQuality(request,id):
     quality=get_object_or_404(GreyQualitiesMaster,id=id)
-    p=request.POST.get("edit-quality")
+    p=request.POST.get("edit-grey-quality")
     p = p.upper()
     p = p.strip()
     quality.qualities = p
@@ -1723,53 +1723,52 @@ def editGreyMasterQuality(request,id):
 ###### GREY : Processing House Party Master #######
 
 def renderGreyMasterOutprocessAgencies(request):
-    parties_all = GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
-    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
+    parties_all = GreyOutprocessAgenciesMaster.objects.all().order_by('agency_name')
 
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
     return render(request,'./GreyModule/masterGreyOutprocessAgencies.html',{'records':parties})
 
-def saveGreyMasterOutprocessAgencies(request):
-    p = request.POST.get("processing-party")
+def saveGreyMasterOutprocessAgency(request):
+    p = request.POST.get("outprocess-agency")
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=p)
-        messages.error(request,"This Processing Party already exists")
+        existing_party=get_object_or_404(GreyOutprocessAgenciesMaster,agency_name=p)
+        messages.error(request,"This Outprocess Agency already exists")
     except:
         if p.strip()=="":
-            messages.error(request,"please enter valid input")
+            messages.error(request,"Please enter valid input")
             return redirect('/renderGreyMasterOutprocessAgencies')
         new_Party = GreyOutprocessAgenciesMaster(
-            processing_party= p
+            agency_name= p
         )
         new_Party.save()
-        messages.success(request,"Processing Party added successfully")
+        messages.success(request,"Outprocess Agency added successfully")
     return redirect('/renderGreyMasterOutprocessAgencies')
 
-def deleteGreyMasterOutprocessAgencies(request,id):
+def deleteGreyMasterOutprocessAgency(request,id):
     try:
         GreyOutprocessAgenciesMaster.objects.filter(id=id).delete()
-        messages.success(request,"Processing House Party deleted")
+        messages.success(request,"Outprocess Agency Deleted")
     except:
-        messages.error(request,"Cannot delete this master since it is being used")
+        messages.error(request,"Cannot delete this Outprocess Agency since it is being used")
     return redirect('/renderGreyMasterOutprocessAgencies')
 
-def renderEditGreyMasterOutprocessAgencies(request,id):
+def renderEditGreyMasterOutprocessAgency(request,id):
     party=get_object_or_404(GreyOutprocessAgenciesMaster,id=id)
-    return render(request,'./GreyModule/editparty.html',{'id':id,'name':party.processing_party})
+    return render(request,'./GreyModule/editOutprocessAgency.html',{'id':id,'name':party.agency_name})
 
-def editGreyMasterOutprocessAgencies(request,id):
+def editGreyMasterOutprocessAgency(request,id):
     party=get_object_or_404(GreyOutprocessAgenciesMaster,id=id)
-    p=request.POST.get("edit-party")
+    p=request.POST.get("edit-outprocess-agency")
     p = p.upper()
     p = p.strip()
-    party.processing_party = p
+    party.agency_name = p
     party.save()
-    messages.success(request,"Processing House Party edited")
-    return redirect('/addparty')
+    messages.success(request,"Outprocess Agency edited")
+    return redirect('/renderGreyMasterOutprocessAgencies')
 
 
 ########## Transport Agency Master ###########
@@ -1826,51 +1825,51 @@ def editTransportAgency(request,id):
     return redirect('/addtransport')
 
 
-####### GREY : ARRIVAL LOCATION MASTER #######
+####### GREY : Godown MASTER #######
 
 def renderGreyMasterGodowns(request):
-    location_all = GreyGodownsMaster.objects.all().order_by('location')
-    paginator = Paginator(location_all,10)
+    all_grey_godowns = GreyGodownsMaster.objects.all().order_by('godown_name')
+    paginator = Paginator(all_grey_godowns,10)
     page = request.GET.get('page')
     locations = paginator.get_page(page)
     return render(request,'./GreyModule/masterGreyGodowns.html',{'records':locations})
 
 def saveGreyMasterGodown(request):
-    p = request.POST.get("location")
+    p = request.POST.get("grey-godown-name")
     p = p.strip().upper()
     try:
-        existing_party=get_object_or_404(GreyGodownsMaster,location=p)
-        messages.error(request,"This arrival location already exists")
+        existing_party=get_object_or_404(GreyGodownsMaster,godown_name=p)
+        messages.error(request,"This Grey Godown already exists")
     except:
         if p.strip()=="":
-            messages.error(request,"please enter valid input")
-            return redirect('/masterGreyGodowns')
+            messages.error(request,"Please enter valid input")
+            return redirect('/renderGreyMasterGodowns')
         new_loc = GreyGodownsMaster(
-            location= p
+            godown_name= p
         )
         new_loc.save()
-        messages.success(request,"Arrival location added successfully")
-    return redirect('/masterGreyGodowns')
+        messages.success(request,"Grey Added in master list successfully")
+    return redirect('/renderGreyMasterGodowns')
 
 def deleteGreyMasterGodown(request,id):
     try:
         GreyGodownsMaster.objects.filter(id=id).delete()
-        messages.success(request,"Arrival location deleted")
+        messages.success(request,"Grey Godown deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/masterGreyGodowns')
+    return redirect('/renderGreyMasterGodowns')
 
 def renderEditGreyMasterGodown(request,id):
     grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
-    return render(request,'./GreyModule/editlocation.html',{'id':id,'name':grey_godown.location})
+    return render(request,'./GreyModule/editGreyMasterGodown.html',{'id':id,'name':grey_godown.godown_name})
 
 def editGreyMasterGodown(request,id):
     grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
-    godown_name = request.POST.get("edit-location")
-    grey_godown.location = godown_name.upper().strip()
+    godown_name = request.POST.get("edit-grey-godown")
+    grey_godown.godown_name = godown_name.upper().strip()
     grey_godown.save()
-    messages.success(request, "Arrival location edited")
-    return redirect('/masterGreyGodowns')
+    messages.success(request, "Grey godown edited")
+    return redirect('/renderGreyMasterGodowns')
 
 
 ##################################### GREY MASTER END ###########################################
