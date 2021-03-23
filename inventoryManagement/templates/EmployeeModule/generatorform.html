@@ -18,19 +18,19 @@
             <input type="date" class="form-control" id="paymentdate" name="payment_date" placeholder="mm-dd-yyyy"/>
             <br>
             <label for="Quantity">Bank Name</label>
-            <select class="form-control" name="bank" required>    
+            <select class="form-control" name="bank" required>
                 {% for b in banks %}
-                    
+
                     <option value="{{ b.id }}" >{{ b.bank_name }}</option>
-                                           
+
                 {% endfor %}
-            </select> 
+            </select>
           </div>
 
-          
-        <!-- First Section End 
+
+        <!-- First Section End
         <div class="form-group col-md-4">
-          <label class="form-check-label pl-4" for="processing_party"><b>SELECT SENDING PARTY NAME</b></label>
+          <label class="form-check-label pl-4" for=""><b>SELECT SENDING PARTY NAME</b></label>
           <div class="form-group form-check ">
             <hr class="small">
             <input class="form-check-input-2" type="checkbox" onClick="togglesendingparty(this)" />
@@ -38,7 +38,7 @@
             <hr class="small">
           </div>
           <div class="form-group form-check scroll">
-              
+
             {% for p in sendingparty %}
             <input class="form-check-input-2" type="checkbox" value="{{p}}" name="{{p}}" id="partyname">
             <label class="form-check-label-2">
@@ -48,7 +48,7 @@
           </div>
         </div>-->
         <div class="form-group col-md-4">
-            <label class="form-check-label pl-4" for="processing_party"><b>SELECT EMPLOYEES</b></label>
+            <label class="form-check-label pl-4" for="employees"><b>SELECT EMPLOYEES</b></label>
             <div class="form-group form-check ">
               <hr class="small">
               <!-- <input class="form-check-input" type="checkbox" onClick="toggleprocessingparty(this)" />
@@ -56,14 +56,14 @@
               <!-- <hr class="small"> -->
             </div>
             <div class="form-group form-check scroll">
-                
+
                 {% for e in emps %}
                 <input class="form-check-input" type="checkbox" value="{{e.id}}" name="{{e.phone_no}}" id="{{e.phone_no}}">
                 <label class="form-check-label">
                     {{e.name}}
                 </label>
                 {% endfor %}
-       
+
             </div>
         </div>
             <div class="form-group form-check col-md-4"><!--Empty Div--></div>

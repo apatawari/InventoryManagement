@@ -32,7 +32,7 @@
         <form method="POST" action="{% url 'printledgerexcel' %}" enctype="multipart/form-data">
           {% csrf_token %}
           <input type="text" name="lot_no" value="{{lot_no}}" hidden>
-          <input type="text" name="processing_party" value="{{party}}" hidden>
+          <input type="text" name="agency_name" value="{{party}}" hidden>
           <input type="date" name="start_date" value="{{begin}}" hidden/>
           <input type="date" name="end_date" value="{{end}}" hidden/>
           <button class="download-button">Print</button>

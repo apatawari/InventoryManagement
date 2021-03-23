@@ -22,7 +22,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="Bill Date">Bill Date</label>
-                <input type="text" class="form-control" id="bill_date" placeholder="Bill Date"  
+                <input type="text" class="form-control" id="bill_date" placeholder="Bill Date"
                 value="{{record.bill_date}}" name="bill_date" readonly/>
             </div>
             <div class="form-group col-md-4">
@@ -94,7 +94,7 @@
                     {% endfor %}
                 </select>
 
-                
+
             </div>
         </div>
         <div class="form-row">
@@ -103,8 +103,8 @@
                 <select class="form-control" name="defect">
                     <option></option>
                     <option value="no defect">No defect</option>
-                    <option value="Defect- Transport defect">Defect due to transport</option>
-                    <option value="Defect- Manufacturing defect">Defect in manufacturing</option>
+                    <option value="Defect- Transport defect">Transportation Defect</option>
+                    <option value="Defect- Manufacturing defect">Manufacturing Defect</option>
                 </select>
             </div>
             <div class="form-group col-md-4">
@@ -117,33 +117,33 @@
                     <option></option>
                     {% for q in checkers %}
                         <option value="{{ q.id }}">{{ q.name }}</option>
-                        
-                        
+
+
                     {% endfor %}
                 </select>
 
-                
+
             </div>
 
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="checker">Transport Agency Name</label>
-                <select class="form-control" name="transport" required>
+                <select class="form-control" name="transport_agency_name" required>
                     <option></option>
                     {% for q in transport %}
-                        <option value="{{ q.id }}">{{ q.transport }}</option>
-                        
-                        
+                        <option value="{{ q.id }}">{{ q.transport_agency_name }}</option>
+
+
                     {% endfor %}
                 </select>
 
-                
+
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-3 next-previous">
-                <a class ="anchor-button" href="{% url 'back' record.state %}">Back</a> 
+                <a class ="anchor-button" href="{% url 'back' record.state %}">Back</a>
             </div>
             <div class="form-group col-md-9">
                 <button type="submit" class="btn btn-success button float-right" >Complete Checking</button>
@@ -155,7 +155,7 @@
         </div>
       </form>
       <!-- Display Record End
-    
+
     <div class="form-group col-md-4">
                 <label for="recievingdate">quality2</label>
                 <select name="quality2">
@@ -163,8 +163,7 @@
                         <option value="{{ q.qualities }}">{{ q.qualities }}</option>
                     {% endfor %}
                 </select>
-                
+
             </div>
         -->
 {% endblock %}
-

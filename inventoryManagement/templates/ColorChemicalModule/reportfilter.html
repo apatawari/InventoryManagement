@@ -20,19 +20,19 @@
             <input type="date" class="form-control" id="firstdate" name="start_date" max="{{d}}" placeholder="mm-dd-yyyy" required/>
             <label for="firstdate">End Date</label>
             <input type="date" class="form-control" id="enddate" name="end_date" max="{{d}}" placeholder="mm-dd-yyyy" required/>
-            
+
             <div class="form-group form-check ml-2">
               <hr class="small">
               <input class="form-check-input" type="checkbox" onClick="toggleall(this)" />
               <label class="form-check-label">SELECT ALL GODOWNS</label>
-              
+
             </div>
           </div>
 
-          
+
         <!-- First Section End -->
         <div class="form-group col-md-4">
-          <label class="form-check-label pl-4" for="processing_party"><b>SELECT MAIN GODOWN NAME</b></label>
+          <label class="form-check-label pl-4" for="GodownName"><b>SELECT MAIN GODOWN NAME</b></label>
           <hr class="small">
           <!-- <div class="form-group form-check ">
             <hr class="small">
@@ -41,7 +41,7 @@
             <hr class="small">
           </div> -->
           <div class="form-group form-check scroll">
-              
+
             {% for p in godowns %}
             <input class="form-check-input-2" type="checkbox" value="{{p.id}}" name="{{p.godown}}" id="partyname" onClick="toggleopp(this)">
             <label class="form-check-label-2">
@@ -51,7 +51,7 @@
           </div>
         </div>
         <div class="form-group col-md-4">
-            <label class="form-check-label pl-4" for="processing_party"><b>SELECT LOOSE GODOWN NAME</b></label>
+            <label class="form-check-label pl-4" for="GodownName"><b>SELECT LOOSE GODOWN NAME</b></label>
             <hr class="small">
             <!-- <div class="form-group form-check ">
               <hr class="small">
@@ -60,7 +60,7 @@
               <hr class="small">
             </div> -->
             <div class="form-group form-check scroll">
-                
+
                 {% for p in loose %}
                 <input class="form-check-input" type="checkbox" value="{{p.id}}" name="{{p.lease}}" id="partyname" onClick="toggleopp2()">
                 <label class="form-check-label">
@@ -92,7 +92,7 @@
           //   }
           // }
           function toggleopp(source) {
-            
+
             checkboxes = document.getElementsByClassName('form-check-input');
             for(var i=0, n=checkboxes.length;i<n;i++) {
               checkboxes[i].checked = false;
@@ -115,6 +115,6 @@
               checkboxes[i].checked = source.checked;
             }
           }
-          
+
         </script>
         {% endblock %}

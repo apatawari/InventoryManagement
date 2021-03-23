@@ -105,10 +105,10 @@ class Record(models.Model):    ########################   Main grey order
     state = models.CharField(max_length=30,default='Transit')
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(null=True, default=None)
-    processing_party_name = models.ForeignKey(GreyOutprocessAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
+    agency_name = models.ForeignKey(GreyOutprocessAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
     total_bale = models.IntegerField()
     checker=models.ForeignKey(Employee,blank=True,null=True,on_delete=models.PROTECT)
-    transport=models.ForeignKey(GreyTransportAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
+    transport_agency_id=models.ForeignKey(GreyTransportAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
     # transport_rate=models.FloatField(max_length=10,default=0)
     checking_date = models.DateField(null=True, default=None)
     processing_type = models.CharField(max_length=50,default="-")           #new

@@ -43,7 +43,7 @@ def export_page_xls(request):
     elif(stateur=="inprocess"):
         file_name="InProcess"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name__processing_party')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
     elif (stateur=="readytoprint"):
         file_name="ProcessedGrey"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
@@ -183,7 +183,7 @@ def export_filter_all_xls(request):
     elif(stateur=="inprocess"):
         file_name="InProcess-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name__processing_party')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
     elif (stateur=="readytoprint"):
         file_name="ProcessedGrey-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
@@ -376,7 +376,7 @@ def export_all_xls(request):
     elif(stateur=="inprocess"):
         file_name="InProcess-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'processing_party_name__processing_party')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
     elif(stateur=="readytoprint"):
         file_name="ProcessedGrey-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
@@ -704,7 +704,7 @@ def export_report_xls(request):
                 next_day += datetime.timedelta(days=1)
 
         party_id=(request.POST.get('party'))
-        party_ob=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=party_id)
+        party_ob=get_object_or_404(GreyOutprocessAgenciesMaster,agency_name=party_id)
         final_qs=[]
         total_all=[]
 
@@ -721,9 +721,9 @@ def export_report_xls(request):
 
 
             if(begin!="" or end!=""):
-                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             else:
-                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_process=Record.objects.filter(state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -733,9 +733,9 @@ def export_report_xls(request):
             prmtrs=prmtrs+total_mtrs_in_process
 
             if(begin!="" or end!=""):
-                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             else:
-                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_ready=Record.objects.filter(state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
 
             total_than_in_ready=0
             total_mtrs_in_ready=0

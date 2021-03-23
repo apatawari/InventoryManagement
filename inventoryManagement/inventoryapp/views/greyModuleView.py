@@ -20,7 +20,7 @@ from django.template.loader import render_to_string
 
 
 def greyhome(request):
-    return render(request, './GreyModule/greyhome.html')
+    return render(request, './GreyModule/GreyHome.html')
 
 def greyorders(request):
     return render(request, './GreyModule/greyorders.html')
@@ -363,7 +363,7 @@ def showChecked(request):
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
     qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request, './GreyModule/checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './GreyModule/Checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
 
 def showCheckingRequest(request):
     records_list=Record.objects.filter(state="Godown").order_by('lot_no')
@@ -374,7 +374,7 @@ def showCheckingRequest(request):
     page = request.GET.get('page')
     records = paginator.get_page(page)
 
-    return render(request, './GreyModule/checkingrequest.html',{'records':records,'filter':records_filter})
+    return render(request, './GreyModule/CheckingRequest',{'records':records,'filter':records_filter})
 
 def checkingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
@@ -386,7 +386,7 @@ def checkingApprove(request,id):
     transports=GreyTransportAgenciesMaster.objects.all().order_by('transport')
     d=datetime.date.today()
     d=str(d)
-    return render(request, './GreyModule/checkingapprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './GreyModule/checkingApprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -649,7 +649,7 @@ def processingApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=str(rec.checking_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    processing_parties = GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
+    processing_parties = GreyOutprocessAgenciesMaster.objects.all().order_by('agency_name')
     d=datetime.date.today()
     d=str(d)
     return render(request, './GreyModule/processingapprove.html', {'date':d,'record':rec,'parties':processing_parties,'mindate':mindate,'maxdate':maxdate})
@@ -667,7 +667,7 @@ def sendInProcess(request,id):
     cost_per_than=round(cost_per_than,2)
     if(prevRec.than == than_recieved):
         prevRec.state="In Process"
-        prevRec.processing_party_name=partyprocessing
+        prevRec.agency_name=partyprocessing
         prevRec.sent_to_processing_date=str(request.POST["sending_date"])
         prevRec.processing_type = process_type
         prevRec.gate_pass = int(request.POST.get('gatepass'))
@@ -708,7 +708,7 @@ def sendInProcess(request,id):
             state="In Process",
             recieving_date =prevRec.recieving_date,
             total_bale=prevRec.total_bale,
-            processing_party_name = partyprocessing,
+            agency_name = partyprocessing,
             processing_type = process_type,
             checking_date = prevRec.checking_date,
             sent_to_processing_date=str(request.POST["sending_date"]),
@@ -840,7 +840,7 @@ def readyToPrint(request,id):
             state="Ready to print",
             recieving_date =prevRec.recieving_date,
             total_bale=prevRec.total_bale,
-            processing_party_name = prevRec.processing_party_name,
+            agency_name = prevRec.agency_name,
             sent_to_processing_date = prevRec.sent_to_processing_date,
             recieve_processed_date=str(request.POST.get("processing_date")),
             total_mtrs=prevRec.total_mtrs,
@@ -875,7 +875,7 @@ def readyToPrint(request,id):
 
 ############### GREY - LEDGER REPORT #################
 def reportFilter(request):
-    processing_parties = GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
+    processing_parties = GreyOutprocessAgenciesMaster.objects.all().order_by('agency_name')
     partyname =[]
     records = Record.objects.all().order_by('party_name')
     d=str(datetime.date.today())
@@ -899,7 +899,7 @@ def generateReport(request):
     s = request.POST.get("checkbox")
     if s!=None:
         selected_parties.append(s)
-        selected_party_object=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=selected_parties[0])
+        selected_party_object=get_object_or_404(GreyOutprocessAgenciesMaster,agency_name=selected_parties[0])
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
 
@@ -921,7 +921,7 @@ def generateReport(request):
 
         flag=0
         if(lot==None and selected_parties!=[]):
-            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            rec = Record.objects.filter(state__in=selected_states,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
             h1=str(selected_parties[0])
             h2=str(begin) + " - "+str(end)
             flag=1
@@ -931,7 +931,7 @@ def generateReport(request):
             h2=str(begin) + " - "+str(end)
             flag=2
         elif(lot!=None and selected_parties!=[]):
-            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
             h1=str(selected_parties[0]) +" and lot no " +str(lot)
             h2=str(begin) + " - "+str(end)
             flag=3
@@ -955,13 +955,13 @@ def generateReport(request):
             pendingthan=0
             rec_lists=[]
             if(flag==1):
-                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==2):
                 rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==3):
-                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==4):
                 rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
@@ -982,7 +982,7 @@ def generateReport(request):
     else:
         flag=0
         if(lot==None and selected_parties!=[]):
-            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object).order_by('lot_no','state')
+            rec = Record.objects.filter(state__in=selected_states,agency_name=selected_party_object).order_by('lot_no','state')
             h1=str(selected_parties[0])
             flag=1
         elif(lot!=None and selected_parties==[]):
@@ -991,7 +991,7 @@ def generateReport(request):
             flag=2
         elif(lot!=None and selected_parties!=[]):
             h1=str(selected_parties[0]) +" and lot no " +str(lot)
-            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object).order_by('lot_no','state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,agency_name=selected_party_object).order_by('lot_no','state')
             flag=3
         else:
             messages.error(request,'Please enter valid input')
@@ -1011,11 +1011,11 @@ def generateReport(request):
             totalthan=0
             pendingthan=0
             if(flag==1):
-                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('state')
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object).order_by('state')
             elif(flag==2):
                 rec2= Record.objects.filter(state__in=selected_states,lot_no=l).order_by('state')
             else:
-                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('lot_no','state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object).order_by('lot_no','state')
 
             rec_lists=[]
             for r in rec2:
@@ -1041,10 +1041,10 @@ def printLedgerExcel(request):
     else:
         lot=int(lot)
 
-    s = request.POST.get("processing_party")
+    s = request.POST.get("agency_name")
     if s!="None":
         selected_parties.append(s)
-        selected_party_object=get_object_or_404(GreyOutprocessAgenciesMaster,processing_party=selected_parties[0])
+        selected_party_object=get_object_or_404(GreyOutprocessAgenciesMaster,agency_name=selected_parties[0])
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
 
@@ -1066,7 +1066,7 @@ def printLedgerExcel(request):
 
         flag=0
         if(lot==None and selected_parties!=[]):
-            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            rec = Record.objects.filter(state__in=selected_states,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
             h1=str(selected_parties[0])
             h2=str(begin) + " - "+str(end)
             flag=1
@@ -1076,7 +1076,7 @@ def printLedgerExcel(request):
             h2=str(begin) + " - "+str(end)
             flag=2
         elif(lot!=None and selected_parties!=[]):
-            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('lot_no','state')
             h1=str(selected_parties[0]) +" and lot no " +str(lot)
             h2=str(begin) + " - "+str(end)
             flag=3
@@ -1100,13 +1100,13 @@ def printLedgerExcel(request):
             pendingthan=0
             rec_lists=[]
             if(flag==1):
-                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==2):
                 rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==3):
-                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object,sent_to_processing_date__in=selected_dates).order_by('state')
 
             elif(flag==4):
                 rec2= Record.objects.filter(state__in=selected_states,lot_no=l,sent_to_processing_date__in=selected_dates).order_by('state')
@@ -1179,7 +1179,7 @@ def printLedgerExcel(request):
     else:
         flag=0
         if(lot==None and selected_parties!=[]):
-            rec = Record.objects.filter(state__in=selected_states,processing_party_name=selected_party_object).order_by('lot_no','state')
+            rec = Record.objects.filter(state__in=selected_states,agency_name=selected_party_object).order_by('lot_no','state')
             h1=str(selected_parties[0])
             flag=1
         elif(lot!=None and selected_parties==[]):
@@ -1188,7 +1188,7 @@ def printLedgerExcel(request):
             flag=2
         elif(lot!=None and selected_parties!=[]):
             h1=str(selected_parties[0]) +" and lot no " +str(lot)
-            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,processing_party_name=selected_party_object).order_by('lot_no','state')
+            rec= Record.objects.filter(state__in=selected_states,lot_no=lot,agency_name=selected_party_object).order_by('lot_no','state')
             flag=3
         else:
             messages.error(request,'Please enter valid input')
@@ -1208,11 +1208,11 @@ def printLedgerExcel(request):
             totalthan=0
             pendingthan=0
             if(flag==1):
-                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('state')
+                rec2 = Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object).order_by('state')
             elif(flag==2):
                 rec2= Record.objects.filter(state__in=selected_states,lot_no=l).order_by('state')
             else:
-                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,processing_party_name=selected_party_object).order_by('lot_no','state')
+                rec2= Record.objects.filter(state__in=selected_states,lot_no=l,agency_name=selected_party_object).order_by('lot_no','state')
 
             rec_lists=[]
             for r in rec2:
@@ -1296,7 +1296,7 @@ def showDefective(request):
 def checkerReportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     checkers=Employee.objects.all().order_by('name')
-    return render(request,'./GreyModule/checkerfilter.html',{'d':d,'checkers':checkers})
+    return render(request,'./GreyModule/checkerFilter.html',{'d':d,'checkers':checkers})
 
 def checkerReport(request):
     c_id=int(request.POST.get('checker'))
@@ -1353,7 +1353,7 @@ def checkerReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'./GreyModule/checkerreport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'./GreyModule/checkerReport.html',{'records':datalist,'total':total,'c':checker.name,'checker':checker.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 
 ################### Transport Report ######################
@@ -1525,7 +1525,7 @@ def qualityReport(request):
 
 ################### QUALITY WISE LEDGER ########################
 def qualityReport2filter(request):
-    party=GreyOutprocessAgenciesMaster.objects.all().order_by('processing_party')
+    party=GreyOutprocessAgenciesMaster.objects.all().order_by('agency_name')
     qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
     return render(request,'./GreyModule/qualityreport2filter.html',{'qualities':qualities,'parties':party})
 
@@ -1567,9 +1567,9 @@ def qualityReport2(request):
             selected_qualities.append(request.POST.get(q.qualities))
 
             if(begin!="" or end!=""):
-                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             else:
-                rec_process=Record.objects.filter(state="In Process",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -1579,9 +1579,9 @@ def qualityReport2(request):
             prmtrs=prmtrs+total_mtrs_in_process
 
             if(begin!="" or end!=""):
-                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             else:
-                rec_ready=Record.objects.filter(state="Ready to print",processing_party_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
 
             total_than_in_ready=0
             total_mtrs_in_ready=0
@@ -1616,9 +1616,9 @@ def qualityReport2(request):
         messages.error(request,"Please select atleast one grey quality")
         return redirect('/qualitypartyreportfilter')
     if(begin!="" or end!=""):
-        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party,'begin':str(begin),'end':str(end)})
+        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.agency_name,'begin':str(begin),'end':str(end)})
     else:
-        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.processing_party})
+        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.agency_name})
 ################### QUALITY WISE LEDGER END########################
 
 

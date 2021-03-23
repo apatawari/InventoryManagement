@@ -7,9 +7,6 @@
 {% load mathfilters %}
 
 
-
-
-
     <div class="page-title">
       <h3 class="title-text">Checker Report - {{display_begin}} to {{display_end}}</h3>
       <h3 class="title-text">Checker Name - {{c}}</h3>
@@ -24,32 +21,32 @@
           <input type="date" name="end_date" value="{{end}}" hidden/>
           <button class="download-button">Print</button>
         </form>
-        
+
       </div>
       <!-- Display Table Start-->
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            
+
             <th scope="col">Sr. No</th>
             <th scope="col">Lot No</th>
             <th scope="col" class="td-text">Quality</th>
             <th scope="col">Checking Date</th>
             <th scope="col">Thans Checked</th>
-            
+
             <th scope="col">Average Cut</th>
             <th scope="col">Rate(Rs)</th>
             <th scope="col">Total(Rs)</th>
-            
-            
-            
+
+
+
           </tr>
         </thead>
         <tbody>
         {% for d in records %}
             <tr>
-            
-            
+
+
               <td scope="row">{{ forloop.counter }}</td>
               <td>{{d.7}}</td>
               <td class="td-text">{{d.0}}</td>
@@ -58,10 +55,10 @@
               <td>{{d.4}}</td>
               <td>{{d.5}}</td>
               <td>{{d.6}}</td>
-              
-              
+
+
             </tr>
-            
+
         {% endfor %}
         <tr>
           <td scope="row"><strong>Total</strong></td>
@@ -72,14 +69,14 @@
           <td>-</td>
           <td>-</td>
           <td><strong>{{total.1}}</strong></td>
-          
-          
+
+
         </tr>
         </tbody>
       </table>
       <!-- Display Table End -->
 
-      
+
 
       <br>
 
