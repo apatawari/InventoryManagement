@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster
+from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
@@ -1870,6 +1870,103 @@ def editGreyMasterGodown(request,id):
     grey_godown.save()
     messages.success(request, "Grey godown edited")
     return redirect('/renderGreyMasterGodowns')
+
+
+
+
+############## SUPPLIER MASTER #############
+
+
+def greyMasterSupplier(request):
+    all_checker = GreySuppliersMaster.objects.all().order_by('supplier_name')
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+
+    return render(request,'./GreyModule/greyMasterSupplier.html',{'records':checkers})
+
+def saveGreySupplier(request):
+    q=request.POST.get("id")
+    # q = q.strip()
+    l=(request.POST.get("supplier_name"))
+
+    m=request.POST.get("address")
+    m = m.strip()
+    n=request.POST.get("city")
+    n = n.strip()
+    o=request.POST.get("contact_number")
+    o = o.strip()
+    p=request.POST.get("email")
+    p = p.strip()
+
+    r=request.POST.get("remarks")
+    r = r.strip()
+
+
+    try:
+        existing_quality=get_object_or_404(GreySuppliersMaster,id=q,supplier_name=l)
+        messages.error(request,"This checker already exists")
+    except:
+        if  m=="" or n=="" or o=="" or p=="" or q=="" or l=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/greyMasterSupplier')
+        new_quality = GreySuppliersMaster(
+            id = q,
+            supplier_name = l,
+            city = n.upper(),
+            address = m.upper(),
+            email=p,
+            contact_number=o,
+            remarks=r.upper()
+
+        )
+        new_quality.save()
+        messages.success(request,"Supplier added")
+    return redirect('/greyMasterSupplier')
+
+def deleteGreySupplier(request,id):
+    try:
+        GreySuppliersMaster.objects.filter(id=id).delete()
+        messages.success(request,"Supplier deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
+    return redirect('/greyMasterSupplier')
+
+def renderEditGreySupplier(request,id):
+    quality=get_object_or_404(GreySuppliersMaster,id=id)
+    return render(request,'./GreyModule/editGreySupplier.html',{'id':id,'record':quality})
+
+def editGreySupplier(request,id):
+    quality=get_object_or_404(GreySuppliersMaster,id=id)
+    q=request.POST.get("id")
+
+    l=request.POST.get("supplier_name")
+    # l = l.strip()
+
+    m=request.POST.get("city")
+    # m = m.strip()
+
+    o=request.POST.get("email")
+    # o = o.strip()
+
+    p=request.POST.get("contact_number")
+    # p = p.strip()
+
+    r=request.POST.get("remarks") 
+    # r = r.strip()  
+
+    if q=="" or m=="" or o=="" or p=="" or r=="":
+        messages.error(request,"please enter valid input")
+        return redirect('/greyMasterSupplier')
+    quality.id = q
+    quality.supplier_name = l
+    quality.city = m
+    quality.email = o
+    quality.contact_number = p
+    quality.remarks = r
+    quality.save()
+    messages.success(request,"Supplier information edited")
+    return redirect('/greyMasterSupplier')
 
 
 ##################################### GREY MASTER END ###########################################

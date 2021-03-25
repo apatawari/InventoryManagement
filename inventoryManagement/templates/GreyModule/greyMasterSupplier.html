@@ -1,0 +1,100 @@
+{% extends './nav.html' %}
+
+{% block content %}
+{% load widget_tweaks %}
+{% load my_tags %}
+
+<form method="POST" action="{% url 'saveGreySupplier' %}" class="md-form upload-file" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="upload-header">
+        <h1>Add Supplier</h1>
+    </div>
+    <div class="upload-container">
+        <input type="number" class="form-control" id="id" placeholder="Supplier id" name="id" autofocus required>
+
+        <br>
+        <input type="text" class="form-control" id="supplier_name" placeholder="Supplier Name" name="supplier_name" required>
+
+        <br>
+        <input type="text" class="form-control" id="address" placeholder="Address" name="address" required>
+
+        <br>
+        <input type="text" class="form-control" id="city" placeholder="City" name="city" required>
+
+        <br>
+        <input type="number" class="form-control" id="contact_number" placeholder="Contact Number" name="contact_number" required>
+
+        <br>
+        <input type="text" class="form-control" id="email" placeholder="Email" name="email" required>
+
+        <br>
+        <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks" required>
+        <br>
+
+        <br>
+
+        <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Add</button>
+    </div>
+  </form>
+  <!-- Add Quality End -->
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        
+        <th scope="col">Supplier ID</th>
+        <th class="td-text" scope="col">Supplier Name</th>
+        <th class="td-text" scope="col">Address</th>
+        <th class="td-text" scope="col">City</th>
+        <th class="td-text" scope="col">Contact Number</th>
+        <th class="td-text" scope="col">Email</th>
+        <th class="td-text" scope="col">Remarks</th>
+        
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    {% for q in records %}
+      <tr>
+        
+        <!-- <td scope="row">{{ forloop.counter }}</td> -->
+        <td class="td-text">{{q.id}}</td>
+        <td class="td-text">{{q.supplier_name}}</td>
+        <td class="td-text">{{q.address}}</td>
+        <td class="td-text">{{q.city}}</td>
+        <td class="td-text">{{q.contact_number}}</td>
+        <td class="td-text">{{q.email}}</td>
+        <td class="td-text">{{q.remarks}}</td>
+
+        <td>
+          <a class ="anchor-button float-right danger" onclick="return confirm('Are you sure you want to delete this?')" href="{% url 'deleteGreySupplier' q.id %}">Delete</a>
+          <a class ="anchor-button float-right space" href="{% url 'renderEditGreySupplier' q.id %}">Edit</a>
+        </td>
+        
+        
+      </tr>
+      
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <div class="number-line">
+      {% if records.has_previous %}
+      <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+      {% endif%}
+      {% for num in records.paginator.page_range %}
+        {%if records.number == num%}
+          &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+        
+        {% endif %}
+      {%endfor%}
+      {% if records.has_next %}
+        <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+      {% endif%}
+    </div>  
+  </div>
+
+{% endblock %}
+
