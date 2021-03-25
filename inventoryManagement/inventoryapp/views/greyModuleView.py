@@ -1782,7 +1782,7 @@ def renderGreyMasterTransportAgencies(request):
     parties = paginator.get_page(page)
     return render(request,'./GreyModule/masterGreyTransportAgencies.html',{'records':parties})
 
-def saveTransportAgency(request):
+def saveGreyMasterTransportAgency(request):
     p = request.POST.get("transport_agency_name")
     p = p.upper()
     p = p.strip()
@@ -1801,7 +1801,7 @@ def saveTransportAgency(request):
         messages.success(request,"Transport Agency added successfully")
     return redirect('/renderGreyMasterTransportAgencies')
 
-def deleteTransportAgency(request,id):
+def deleteGreyMasterTransportAgency(request,id):
     try:
         GreyTransportAgenciesMaster.objects.filter(id=id).delete()
         messages.success(request,"Transport Agency deleted")
@@ -1809,11 +1809,11 @@ def deleteTransportAgency(request,id):
         messages.error(request,"Cannot delete this master since it is being used")
     return redirect('/renderGreyMasterTransportAgencies')
 
-def renderEditTransportAgency(request,id):
+def renderEditGreyMasterTransportAgency(request,id):
     party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
     return render(request,'./GreyModule/edittransport.html',{'id':id,'name':party.transport_agency_name,'rate':party.rate})
 
-def editTransportAgency(request,id):
+def editGreyMasterTransportAgency(request,id):
     party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
     p=request.POST.get("transport_agency_name")
     p = p.upper()

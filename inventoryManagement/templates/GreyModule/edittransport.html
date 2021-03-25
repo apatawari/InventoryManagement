@@ -5,13 +5,13 @@
 {% load widget_tweaks %}
 {% load my_tags %}
       <!-- Add Party Start-->
-      <form method="POST" action="{% url 'editTransportAgency' id %}" class="md-form upload-file" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'editGreyMasterTransportAgency' id %}" class="md-form upload-file" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
             <h1>Edit Transport Agency name</h1>
         </div>
         <div class="upload-container">
-            <input type="text" class="form-control" id="editTransportAgency" placeholder="Transport Agency name" value="{{name}}" name="transport_agency_name" required>
+            <input type="text" class="form-control" id="editGreyMasterTransportAgency" placeholder="Transport Agency name" value="{{name}}" name="transport_agency_name" required>
 
             <br>
             <input type="float" class="form-control" id="editTransportRate" placeholder="Rate" value="{{rate}}" name="rate" required>

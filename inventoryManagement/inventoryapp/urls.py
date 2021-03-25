@@ -45,15 +45,14 @@ urlpatterns = [
     path('processingapprove/<int:id>',views.processingApprove, name='processingapprove'),
     path('sendinprocess/<int:id>',views.sendInProcess, name="sendinprocess"),
 
-    # Grey Outprocess Agency
+    # Grey Outprocess Agency Master
     path('renderGreyMasterOutprocessAgencies',views.renderGreyMasterOutprocessAgencies, name="renderGreyMasterOutprocessAgencies"),
     path('saveGreyMasterOutprocessAgency',views.saveGreyMasterOutprocessAgency, name="saveGreyMasterOutprocessAgency"),
     path('deleteGreyMasterOutprocessAgency/<int:id>',views.deleteGreyMasterOutprocessAgency,name="deleteGreyMasterOutprocessAgency"),
     path('renderEditGreyMasterOutprocessAgency/<int:id>',views.renderEditGreyMasterOutprocessAgency,name="renderEditGreyMasterOutprocessAgency"),
     path('editGreyMasterOutprocessAgency/<int:id>',views.editGreyMasterOutprocessAgency,name="editGreyMasterOutprocessAgency"),
 
-
-    #Grey Cut Rates
+    #Grey Checking Cut Rates Master
     path('renderGreyMasterCheckingCutRates',views.renderGreyMasterCheckingCutRates, name="renderGreyMasterCheckingCutRates"),
     path('saveGreyMasterCheckingCutRate',views.saveGreyMasterCheckingCutRate, name="saveGreyMasterCheckingCutRate"),
     path('deleteGreyMasterCheckingCutRate/<int:id>',views.deleteGreyMasterCheckingCutRate, name="deleteGreyMasterCheckingCutRate"),
@@ -65,14 +64,14 @@ urlpatterns = [
     path('renderEditGreyMasterQuality/<int:id>',views.renderEditGreyMasterQuality,name="renderEditGreyMasterQuality"),
     path('editGreyMasterQuality/<int:id>',views.editGreyMasterQuality,name="editGreyMasterQuality"),
 
-    # Grey Transport Mater
+    # Grey Transport Master
     path('renderGreyMasterTransportAgencies',views.renderGreyMasterTransportAgencies, name="renderGreyMasterTransportAgencies"),
-    path('saveTransportAgency',views.saveTransportAgency, name="saveTransportAgency"),
-    path('deleteTransportAgency/<int:id>',views.deleteTransportAgency, name="deleteTransportAgency"),
-    path('renderEditTransportAgency/<int:id>',views.renderEditTransportAgency,name="renderEditTransportAgency"),
-    path('editTransportAgency/<int:id>',views.editTransportAgency,name="editTransportAgency"),
+    path('saveGreyMasterTransportAgency',views.saveGreyMasterTransportAgency, name="saveGreyMasterTransportAgency"),
+    path('deleteGreyMasterTransportAgency/<int:id>',views.deleteGreyMasterTransportAgency, name="deleteGreyMasterTransportAgency"),
+    path('renderEditGreyMasterTransportAgency/<int:id>',views.renderEditGreyMasterTransportAgency,name="renderEditGreyMasterTransportAgency"),
+    path('editGreyMasterTransportAgency/<int:id>',views.editGreyMasterTransportAgency,name="editGreyMasterTransportAgency"),
 
-    # Grey Gowdown Location Master #done
+    # Grey Gowdown Location Master
     path('renderGreyMasterGodowns',views.renderGreyMasterGodowns, name="renderGreyMasterGodowns"),
     path('saveGreyMasterGodown',views.saveGreyMasterGodown, name="saveGreyMasterGodown"),
     path('deleteGreyMasterGodown/<int:id>',views.deleteGreyMasterGodown,name="deleteGreyMasterGodown"),
