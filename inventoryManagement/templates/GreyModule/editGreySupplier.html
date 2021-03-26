@@ -1,0 +1,52 @@
+{% extends './nav.html' %}
+
+{% block title%} Add Supplier {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Add Suppler Start-->
+      <form method="POST" action="{% url 'EditGreySupplier' record.id %}" class="md-form upload-file" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Edit Supplier</h1>
+        </div>
+        <div class="upload-container">
+            <input type="number" class="form-control" id="addquality" placeholder="ID" value="{{record.id}}" name="id" autofocus required>
+
+            <br>
+            <input type="text" class="form-control" id="addquality" placeholder="Supplier Name" value="{{record.supplier_name}}" name="supplier_name" autofocus required>
+
+            <br>
+            <input type="text" class="form-control" id="addquality" placeholder="City" value="{{record.city}}" name="city" autofocus required>
+
+            <br>
+            <input type="text" class="form-control" id="addquality" placeholder="Address" value="{{record.address}}" name="address" autofocus required>
+            <br>
+            <input type="text" class="form-control" id="addquality" placeholder="Email" value="{{record.email}}" name="email" autofocus required>
+
+            <br>
+            <input type="text" class="form-control" id="addquality" placeholder="Contact Number" value="{{record.contact_number}}" name="contact_number" autofocus required>
+
+            <br>
+            <input type="text" class="form-control" id="remarks" placeholder="Remarks" value="{{record.remarks}}" name="remarks" autofocus required>
+
+
+            <br>
+            
+            
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Save</button>
+        </div>
+        
+      </form>
+
+      
+        
+        
+        
+      <!-- Add Supplier End -->
+      
+
+
+{% endblock %}

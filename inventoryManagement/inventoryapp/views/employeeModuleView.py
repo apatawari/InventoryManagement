@@ -281,7 +281,7 @@ def editBank(request,id):
     m=request.POST.get("ifsc")
     m = m.strip()
     n=request.POST.get("account_name")
-    n = n.strip()
+    # n = n.strip()
 
     if q.strip()=="" or m=="" or n=="":
         messages.error(request,"please enter valid input")
