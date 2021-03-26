@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster
+from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, GreyOrders
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
@@ -1873,6 +1873,44 @@ def editGreyMasterGodown(request,id):
 
 
 
+############## ORDERS #############
+def orderSupplier(request):
+    all_checker = GreyOrders.objects.all().order_by('order_number')
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+    return render(request,'./GreyModule/greyorders.html',{'records':checkers})
+
+def placeNewGreyOrder(request):
+    order_date=request.POST.get("order_date")
+    supplier=(request.POST.get("supplier_name"))
+    quality=request.POST.get("quality")
+    quality = quality.strip()
+    avg_cut=request.POST.get("avg_cut")
+    thans=request.POST.get("thans")
+    rate=request.POST.get("rate")
+    remarks=request.POST.get("remarks")
+    remarks = remarks.strip()
+
+    try:
+        existing_quality=get_object_or_404(GreyOrders,id=z)
+        messages.error(request,"Error, Order id repeating")
+    except:
+        if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
+            messages.error(request,"Please fill all the fields")
+            return redirect('/orderSupplier')
+        new_order = GreyOrders(
+            order_date = order_date,
+            grey_quality = quality,
+            thans =thans,
+            rate=rate,
+            remarks=remarks,
+            supplier = supplier,
+            avg_cut=avg_cut
+        )
+        new_order.save()
+        messages.success(request,"Order Placed")
+    return redirect('/orderSupplier')
 
 ############## SUPPLIER MASTER #############
 

@@ -116,13 +116,17 @@ urlpatterns = [
     path('export/report',views.export_report_xls,name='export_report_xls'),
     path('export/ledger',views.printLedgerExcel,name='printledgerexcel'),
 
+
+    #GREY ORDER
+    path('orderSupplier/', views.orderSupplier,name='orderSupplier'), 
+    path('placeNewGreyOrder/', views.placeNewGreyOrder,name='placeNewGreyOrder'),
+
     #ADD SUPPLIER (IN PROGRESS)
     path('greyMasterSupplier/', views.greyMasterSupplier,name='greyMasterSupplier'),
     path('saveGreySupplier', views.saveGreySupplier,name='saveGreySupplier'),
     path('deleteGreySupplier/<int:id>', views.deleteGreySupplier,name='deleteGreySupplier'),
     path('renderEditGreySupplier/<int:id>', views.renderEditGreySupplier,name='renderEditGreySupplier'),
     path('EditGreySupplier/<int:id>', views.editGreySupplier,name='EditGreySupplier'),
-
 
 
     #####################   COLOR    #############################################################

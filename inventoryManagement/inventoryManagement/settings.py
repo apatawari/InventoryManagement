@@ -93,7 +93,8 @@ DATABASES = {
         'PORT': '3306',
         'USER': 'admin',
         'PASSWORD': 'mysql123'
-           }
+        
+    }
 }
 
 
