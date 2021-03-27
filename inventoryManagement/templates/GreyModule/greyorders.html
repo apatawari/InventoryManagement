@@ -160,10 +160,23 @@
         <input type="date" class="form-control" id="order_date" placeholder="Order Date" name="order_date" autofocus required>
 
         <br>
-        <input type="text" class="form-control" id="supplier_name" placeholder="Supplier Name" name="supplier_name" required>
+                          <select class="form-control" name="supplier_name" onchange="">
+                            <option value="">Select Supplier</option>
+                              {% for q in suppliers %}
+                                  <option value="{{ q.supplier_name}}">{{ q.supplier_name }}</option>
+                              {% endfor %}
+                          </select>
+                          <br>
+                          <select class="form-control" name="quality" onchange="">
+                            <option value="">Select Quality</option>
+                              {% for q in quality %}
+                                  <option value="{{ q.qualities}}">{{ q.qualities }}</option>
+                              {% endfor %}
+                          </select>
+        <!-- <input type="text" class="form-control" id="supplier_name" placeholder="Supplier Name" name="supplier_name" required>
 
         <br>
-        <input type="text" class="form-control" id="quality" placeholder="Quality" name="quality" required>
+        <input type="text" class="form-control" id="quality" placeholder="Quality" name="quality" required> -->
 
         <br>
         <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required>
@@ -195,26 +208,5 @@
         </div>
     </div>
 </div>
-
-<!-- <script>
-  (function() {
-    $('form > input').keyup(function() {
-
-        var empty = false;
-        $('form > input').each(function() {
-            if ($(this).val() == '') {
-                empty = true;
-            }
-        });
-
-        if (empty) {
-            $('#add').attr('disabled', 'disabled');
-        } else {
-            $('#add').removeAttr('disabled');
-        }
-    });
-})()
-</script> -->
-
 
 {% endblock %}

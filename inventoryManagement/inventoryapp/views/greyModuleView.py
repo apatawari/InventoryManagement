@@ -23,7 +23,7 @@ def greyhome(request):
     return render(request, './GreyModule/GreyHome.html')
 
 def greyorders(request):
-    return render(request, './GreyModule/greyorders.html')
+    return redirect('/orderSupplier')
 
 def greylots(request):
     return render(request, './GreyModule/greylots.html')
@@ -1874,12 +1874,23 @@ def editGreyMasterGodown(request,id):
 
 
 ############## ORDERS #############
+
+def feedSupplier(request):
+    getSupplier = GreySuppliersMaster.objects.get('supplier_name')
+    # paginator = Paginator(all_checker,10)
+    # page = request.GET.get('page')
+    # checkers = paginator.get_page(page)
+    # return render(request,'./GreyModule/greyMasterSupplier.html',{'records':checkers})
+    return render_to_response('feeds/getSupplier.txt', {'supplier':getSupplier}, mimetype="text/plain")
+
 def orderSupplier(request):
     all_checker = GreyOrders.objects.all().order_by('order_number')
+    getSupplier = GreySuppliersMaster.objects.all()
+    getQuality = GreyQualitiesMaster.objects.all()
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
-    return render(request,'./GreyModule/greyorders.html',{'records':checkers})
+    return render(request,'./GreyModule/greyorders.html',{'records':checkers,'suppliers':getSupplier, 'quality':getQuality})
 
 def placeNewGreyOrder(request):
     order_date=request.POST.get("order_date")
