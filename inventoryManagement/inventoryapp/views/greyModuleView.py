@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster
+from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, Employee
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
@@ -383,10 +383,10 @@ def checkingApprove(request,id):
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
     qualities_all = GreyQualitiesMaster.objects.all().order_by('qualities')
     checkers=Employee.objects.all().order_by('name')
-    transports=GreyTransportAgenciesMaster.objects.all().order_by('transport')
+    transports=GreyTransportAgenciesMaster.objects.all().order_by('transport_agency')
     d=datetime.date.today()
     d=str(d)
-    return render(request, './GreyModule/checkingApprove.html', {'date':d,'record':rec,'transport':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './GreyModule/checkingApprove.html', {'date':d,'record':rec,'transport_agency':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -397,8 +397,8 @@ def approveCheck(request,id):
 
     checker_id=int(request.POST.get("checker"))
     checker=get_object_or_404(Employee,id=checker_id)
-    t=int(request.POST.get("transport"))
-    transport=get_object_or_404(GreyTransportAgenciesMaster,id=t)
+    t=int(request.POST.get("transport_agency"))
+    transport_agency=get_object_or_404(GreyTransportAgenciesMaster,id=t)
 
     q_id=int(request.POST.get("new-quality"))
     quality_object=get_object_or_404(GreyQualitiesMaster,id=q_id)
@@ -414,7 +414,7 @@ def approveCheck(request,id):
             prevRec.quality=quality_object
             prevRec.checking_date=str(request.POST["checking_date"])
             prevRec.checker=checker
-            prevRec.transport=transport
+            prevRec.transport_agency=transport_agency
 
             if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
@@ -464,7 +464,7 @@ def approveCheck(request,id):
                 total_thans=prevRec.total_thans,
                 checking_date=str(request.POST["checking_date"]),
                 checker=checker,
-                transport=transport
+                transport_agency=transport_agency
 
                 )
             if than_recieved == 0 :
@@ -485,7 +485,7 @@ def approveCheck(request,id):
             prevRec.quality=quality_object
             prevRec.checking_date=str(request.POST["checking_date"])
             prevRec.checker=checker
-            prevRec.transport=transport
+            prevRec.transport_agency=transport_agency
             if(mtrs_edit==""):
                 mtrs_edit=prevRec.mtrs
             prevRec.mtrs=mtrs_edit
@@ -536,7 +536,7 @@ def approveCheck(request,id):
                 total_thans=prevRec.total_thans,
                 checking_date=str(request.POST["checking_date"]),
                 checker=checker,
-                transport=transport
+                transport_agency=transport_agency
 
                 )
             if than_recieved == 0 :
@@ -716,7 +716,7 @@ def sendInProcess(request,id):
             total_mtrs=prevRec.total_mtrs,
             gate_pass = int(request.POST.get('gatepass')),
             checker=prevRec.checker,
-            transport=prevRec.transport
+            transport_agency=prevRec.transport_agency
 
             )
         if than_recieved == 0 :
@@ -850,7 +850,7 @@ def readyToPrint(request,id):
             gate_pass=prevRec.gate_pass,
             chalan_no = int(request.POST.get('chalan')),
             checker=prevRec.checker,
-            transport=prevRec.transport,
+            transport_agency=prevRec.transport_agency,
             checking_date=prevRec.checking_date,
             )
         if than_recieved == 0 :
@@ -884,7 +884,7 @@ def reportFilter(request):
             pass
         else:
             partyname.append(rec.party_name)
-    return render(request,'./GreyModule/reportfilter.html',{'date':d,'parties':processing_parties,'sendingparty':partyname})
+    return render(request,'./GreyModule/reportFilter.html',{'date':d,'parties':processing_parties,'sendingparty':partyname})
 
 
 def generateReport(request):
@@ -995,7 +995,7 @@ def generateReport(request):
             flag=3
         else:
             messages.error(request,'Please enter valid input')
-            return redirect('/reportfilter')
+            return redirect('/reportFilter')
         lot_list=[]
         for r in rec:
             if r.lot_no in lot_list:
@@ -1192,7 +1192,7 @@ def printLedgerExcel(request):
             flag=3
         else:
             messages.error(request,'Please enter valid input')
-            return redirect('/reportfilter')
+            return redirect('/reportFilter')
         lot_list=[]
         for r in rec:
             if r.lot_no in lot_list:
@@ -1293,7 +1293,7 @@ def showDefective(request):
 
 
 ################## GREY -  REPORT BY CHECKER BASED ##############
-def checkerReportFilter(request):
+def checkerreportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
     checkers=Employee.objects.all().order_by('name')
     return render(request,'./GreyModule/checkerFilter.html',{'d':d,'checkers':checkers})
@@ -1358,15 +1358,15 @@ def checkerReport(request):
 
 ################### Transport Report ######################
 
-def transportReportFilter(request):
+def transportreportFilter(request):
     d=str(datetime.date.today().strftime('%Y-%m-%d'))
-    transport=GreyTransportAgenciesMaster.objects.all().order_by('transport')
-    return render(request,'./GreyModule/transportfilter.html',{'d':d,'checkers':transport})
+    transport_agency=GreyTransportAgenciesMaster.objects.all().order_by('transport_agency_name')
+    return render(request,'./GreyModule/transportFilter.html',{'d':d,'checkers':transport_agency})
 
 
 def transportReport(request):
-    t_id=int(request.POST.get('transport'))
-    transport=get_object_or_404(GreyTransportAgenciesMaster,id=t_id)
+    t_id=int(request.POST.get('transport_agency_id'))
+    transport_agency=get_object_or_404(GreyTransportAgenciesMaster,id=t_id)
     begin = request.POST.get("start_date")
     end = request.POST.get("end_date")
     if(begin!="" or end!=""):
@@ -1389,24 +1389,24 @@ def transportReport(request):
         totalbales=0
         totaltotal=0
 
-        recs=Record.objects.filter(transport=transport,checking_date__in=selected_dates).order_by('lot_no','checking_date')
+        recs=Record.objects.filter(transport_agency=transport_agency,checking_date__in=selected_dates).order_by('lot_no','checking_date')
         lot_list=[]
         for r in recs:
             if r.lot_no not in lot_list:
                 lot_list.append(r.lot_no)
 
         for l in lot_list:
-            rec_one = Record.objects.filter(lot_no=l,transport=transport,checking_date__in=selected_dates).first()
+            rec_one = Record.objects.filter(lot_no=l,transport_agency=transport_agency,checking_date__in=selected_dates).first()
             than_inlot = rec_one.total_thans
             bale_inlot = rec_one.total_bale
-            records=get_list_or_404(Record,lot_no=l,transport=transport,checking_date__in=selected_dates)
+            records=get_list_or_404(Record,lot_no=l,transport_agency=transport_agency,checking_date__in=selected_dates)
             than_recieved=0
             for r in records:
                 than_recieved=than_recieved+r.than
             if than_inlot==than_recieved:
-                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
+                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.qualities,bale_inlot,rec_one.transport_agency.rate,round(rec_one.transport_agency.rate*bale_inlot,2)]
                 totalbales=totalbales+bale_inlot
-                totaltotal=round(totaltotal + rec_one.transport.rate*bale_inlot,2)
+                totaltotal=round(totaltotal + rec_one.transport_agency.rate*bale_inlot,2)
                 datalist.append(row_list)
 
 
@@ -1417,14 +1417,14 @@ def transportReport(request):
         end= str(end)
         display_begin=datetime.datetime.strptime(str(begin),"%Y-%m-%d").date().strftime("%d/%m/%Y")
         display_end=datetime.datetime.strptime(str(end),"%Y-%m-%d").date().strftime("%d/%m/%Y")
-        return render(request,'./GreyModule/transportreport.html',{'records':datalist,'total':total,'t':transport.transport,'checker':transport.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
+        return render(request,'./GreyModule/transportReport.html',{'records':datalist,'total':total,'t':transport_agency.transport_agency_name,'checker':transport_agency.id,'begin':begin,'end':end,'display_begin':display_begin,'display_end':display_end})
 
 
 
 ################### QUALITY WISE REPORT ########################
-def qualityReportFilter(request):
+def qualityreportFilter(request):
     qualities= GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request,'./GreyModule/qualityreportfilter.html',{'qualities':qualities})
+    return render(request,'./GreyModule/qualityreportFilter.html',{'qualities':qualities})
 
 def qualityReport(request):
     # qualities=[]
@@ -1548,7 +1548,7 @@ def qualityReport2(request):
             next_day += datetime.timedelta(days=1)
         print(selected_dates)
     party_id=int(request.POST.get('checkbox'))
-    party_ob=get_object_or_404(GreyOutprocessAgenciesMaster,id=party_id)
+    outprocess_agency=get_object_or_404(GreyOutprocessAgenciesMaster,id=party_id)
     final_qs=[]
     total_all=[]
 
@@ -1567,9 +1567,9 @@ def qualityReport2(request):
             selected_qualities.append(request.POST.get(q.qualities))
 
             if(begin!="" or end!=""):
-                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             else:
-                rec_process=Record.objects.filter(state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(state="In Process",agency=outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -1579,9 +1579,9 @@ def qualityReport2(request):
             prmtrs=prmtrs+total_mtrs_in_process
 
             if(begin!="" or end!=""):
-                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
             else:
-                rec_ready=Record.objects.filter(state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(state="Ready to print",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
 
             total_than_in_ready=0
             total_mtrs_in_ready=0
@@ -1614,11 +1614,11 @@ def qualityReport2(request):
     ]
     if selected_qualities==[]:
         messages.error(request,"Please select atleast one grey quality")
-        return redirect('/qualitypartyreportfilter')
+        return redirect('/qualitypartyreportFilter')
     if(begin!="" or end!=""):
-        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.agency_name,'begin':str(begin),'end':str(end)})
+        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':outprocess_agency.agency_name,'begin':str(begin),'end':str(end)})
     else:
-        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':party_ob.agency_name})
+        return render(request,'./GreyModule/qualitypartyreport.html',{'data':final_qs,'total':total_all,'select':selected_qualities,'party':outprocess_agency.agency_name})
 ################### QUALITY WISE LEDGER END########################
 
 
@@ -1787,7 +1787,7 @@ def saveGreyMasterTransportAgency(request):
     p = p.upper()
     p = p.strip()
     try:
-        existing_party=get_object_or_404(GreyTransportAgenciesMaster,transport=p)
+        existing_party=get_object_or_404(GreyTransportAgenciesMaster,transport_agency=p)
         messages.error(request,"This Transport Agency already exists")
     except:
         if p.strip()=="":
@@ -1952,8 +1952,8 @@ def editGreySupplier(request,id):
     p=request.POST.get("contact_number")
     # p = p.strip()
 
-    r=request.POST.get("remarks") 
-    # r = r.strip()  
+    r=request.POST.get("remarks")
+    # r = r.strip()
 
     if q=="" or m=="" or o=="" or p=="" or r=="":
         messages.error(request,"please enter valid input")

@@ -453,7 +453,7 @@ def export_report_xls(request):
     stateur=ur[0]
     stateur=stateur.split('/')
     stateur=stateur[-1]
-    if(stateur=="transportreport"):
+    if(stateur=="transportReport"):
         file_name="Transport-Report"
         columns = ['Lot no','Lr No','Sending Party','Quality', 'Bales Received','Rate(Rs)', 'Total Amount(Rs)']
 

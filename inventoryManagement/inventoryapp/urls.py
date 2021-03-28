@@ -94,20 +94,20 @@ urlpatterns = [
 
 
 
-    path('reportfilter',views.reportFilter, name='reportfilter'),
+    path('reportFilter',views.reportFilter, name='reportFilter'),
     path('report',views.generateReport,name='generatereport'),
     path('showdefective',views.showDefective,name='showdefective'),
 
-    path('qualityreportfilter',views.qualityReportFilter, name='qualityreportfilter'),
+    path('qualityreportFilter',views.qualityreportFilter, name='qualityreportFilter'),
     path('qualityreport',views.qualityReport,name='qualityreport'),
-    path('qualitypartyreportfilter',views.qualityReport2filter, name='qualityreport2filter'),
+    path('qualitypartyreportFilter',views.qualityReport2filter, name='qualityreport2filter'),
     path('qualitypartyreport',views.qualityReport2,name='qualityreport2'),
 
-    path('checkerreportfilter',views.checkerReportFilter,name="checkerreportfilter"),
+    path('checkerreportFilter',views.checkerreportFilter,name="checkerreportFilter"),
     path('checkerreport',views.checkerReport,name='checkerreport'),
 
-    path('transportreportfilter',views.transportReportFilter,name="transportreportfilter"),
-    path('transportreport',views.transportReport,name='transportreport'),
+    path('transportreportFilter',views.transportreportFilter,name="transportreportFilter"),
+    path('transportReport',views.transportReport,name='transportReport'),
 
     path('export/excelpage', views.export_page_xls, name='excel_page'),
     path('export/excelall', views.export_all_xls, name='excel_all'),
@@ -191,7 +191,7 @@ urlpatterns = [
     path('consume/<str:name>',views.consume,name='consume'),
     path('closingstock',views.renderClosingStock,name='closingstock'),
 
-    path('colorreportfilter',views.renderColorReportFilter,name='colorreportfilter'),
+    path('colorreportFilter',views.renderColorReportFilter,name='colorreportFilter'),
     path('colorreport',views.colorReport,name='colorreport'),
 
     ############################################# Module 3 - Employee ################################################

@@ -1724,7 +1724,7 @@ def renderColorReportFilter(request):
     d=str(datetime.date.today())
     godowns = ChemicalsGodownsMaster.objects.all().order_by('godown')
     loose_godowns=ChemicalsLooseGodownMaster.objects.all().order_by('lease')
-    return render(request,'./ColorChemicalModule/reportfilter.html',{'d':d,'godowns':godowns,'loose':loose_godowns})
+    return render(request,'./ColorChemicalModule/reportFilter.html',{'d':d,'godowns':godowns,'loose':loose_godowns})
 
 # def colorReport(request):
 #     begin = request.POST.get("start_date")
