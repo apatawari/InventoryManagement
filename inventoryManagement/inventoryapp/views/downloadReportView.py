@@ -493,7 +493,7 @@ def export_report_xls(request):
             for r in records:
                 than_recieved=than_recieved+r.than
             if than_inlot==than_recieved:
-                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.qualities,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
+                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.quality_name,bale_inlot,rec_one.transport.rate,round(rec_one.transport.rate*bale_inlot,2)]
                 totalbales=totalbales+bale_inlot
                 totaltotal=round(totaltotal + rec_one.transport.rate*bale_inlot,2)
                 datalist.append(row_list)
@@ -509,7 +509,7 @@ def export_report_xls(request):
 
             #     l=[]
             #     l.append(r.lot_no)
-            #     l.append(r.quality.qualities)
+            #     l.append(r.quality.quality_name)
             #     l.append(str(r.checking_date))
             #     l.append(r.than)
             #     l.append(r.mtrs)
@@ -550,10 +550,10 @@ def export_report_xls(request):
                 selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
                 next_day += datetime.timedelta(days=1)
 
-            # qualities = Quality.objects.all()
+            # quality_name = Quality.objects.all()
             datalist=[]
-            # for q in qualities:
-            #     recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates,quality=q.qualities)
+            # for q in quality_name:
+            #     recs=Record.objects.filter(checker=checker,checking_date__in=selected_dates,quality=q.quality_name)
             #     than=0
             #     mtrs=0
             total=[]
@@ -565,7 +565,7 @@ def export_report_xls(request):
 
                 l=[]
                 l.append(r.lot_no)
-                l.append(r.quality.qualities)
+                l.append(r.quality.quality_name)
                 print(r.checking_date)
                 l.append(str(r.checking_date))
                 l.append(r.than)
@@ -586,8 +586,8 @@ def export_report_xls(request):
         file_name="Quality-Report"
         columns = ['Quality', 'Intransit Than', 'Intransit mtrs', 'Godown than', 'Godown mtrs', 'checked than','checked mtrs','In process than','In process mtrs','processed than','processed mtrs','total than','total mtrs']
 
-        qual=(request.POST.get('qualities'))
-        qualities=ast.literal_eval(qual)
+        qual=(request.POST.get('quality_name'))
+        quality_name=ast.literal_eval(qual)
         datalist=[]
         total_all=[]
         trthan=0
@@ -602,10 +602,10 @@ def export_report_xls(request):
         remtrs=0
         tothan=0
         tomtrs=0
-        for q in qualities:
+        for q in quality_name:
 
-        # if(request.POST.get(q.qualities)!=None):
-        #     selected_qualities.append(request.POST.get(q.qualities))
+        # if(request.POST.get(q.quality_name)!=None):
+        #     selected_qualities.append(request.POST.get(q.quality_name))
             rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
             tally_than=0
             tally_mtrs=0
@@ -660,7 +660,7 @@ def export_report_xls(request):
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
             qual=get_object_or_404(GreyQualitiesMaster,id=int(q))
-            d1=[qual.qualities,
+            d1=[qual.quality_name,
             total_than_in_transit,round(total_mtrs_in_transit,2),
             total_than_in_godown,round(total_mtrs_in_godown,2),
             total_than_in_checked,round(total_mtrs_in_checked,2),
@@ -684,8 +684,8 @@ def export_report_xls(request):
         file_name="Quality-Report"
         columns = ['Quality','In process than','In process mtrs','processed than','processed mtrs','total than','total mtrs']
 
-        qual=(request.POST.get('qualities'))
-        qualities=ast.literal_eval(qual)
+        qual=(request.POST.get('quality_name'))
+        quality_name=ast.literal_eval(qual)
 
         begin = request.POST.get("start_date")
         end = request.POST.get("end_date")
@@ -716,7 +716,7 @@ def export_report_xls(request):
         tomtrs=0
 
         selected_qualities=[]
-        for q in qualities:
+        for q in quality_name:
 
 
 
@@ -751,7 +751,7 @@ def export_report_xls(request):
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
-            d1=[get_object_or_404(GreyQualitiesMaster,id=int(q)).qualities,
+            d1=[get_object_or_404(GreyQualitiesMaster,id=int(q)).quality_name,
             total_than_in_process,round(total_mtrs_in_process,2),
             total_than_in_ready,round(total_mtrs_in_ready,2),
             tally_than,round(tally_mtrs,2)

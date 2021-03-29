@@ -50,10 +50,10 @@
           </div>
           <div class="form-group form-check scroll checkboxqualities" >
 
-            {% for q in qualities %}
-            <input class="form-check-input-2" type="checkbox" value="{{q.id}}" name="{{q.qualities}}" id="qualities">
+            {% for q in quality_name %}
+            <input class="form-check-input-2" type="checkbox" value="{{q.id}}" name="{{q.quality_name}}" id="quality_name">
             <label class="form-check-label-2">
-                {{q.qualities}}
+                {{q.quality_name}}
             </label>
           {% endfor %}
           </div>

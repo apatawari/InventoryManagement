@@ -29,9 +29,9 @@
               <label for="new-quality">Quality</label>
               <select class="form-control" name="quality" onchange="this.form.submit()">
                 <option value="">--</option>
-                  {% for q in qualities %}
+                  {% for q in quality_name %}
 
-                      <option value="{{ q.id}}">{{ q.qualities }}</option>
+                      <option value="{{ q.id}}">{{ q.quality_name }}</option>
 
                   {% endfor %}
               </select>
@@ -84,7 +84,7 @@
             <td>{{record.bill_date}}</td>
             <td>{{record.bill_amount}}</td>
             <td>{{record.lot_no}}</td>
-            <td class="td-text">{{record.quality.qualities}}</td>
+            <td class="td-text">{{record.quality.quality_name}}</td>
             <td>{{record.than}}</td>
             <td>{{record.mtrs}}</td>
             <td>{{record.bale}}</td>

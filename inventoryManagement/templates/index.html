@@ -16,7 +16,7 @@
   {% url 'greyhome' as greyhome %}
 
   {% url 'greyhome' as greyhome %}
-  {% url 'greyorders' as greyorders %}
+  {% url 'greyOrders' as greyOrders %}
   {% url 'intransit' as intransit %}
   {% url 'godown' as godown %}
   {% url 'godownrequest' as godownrequest %}
@@ -44,14 +44,14 @@
             <li class="nav-item {%if request.path == index %} active {%endif%}">
                 <a class="nav-link" href="{% url 'index' %}">Master <!--<span class="sr-only">(current)</span>--></a>
             </li>
-            <li class="nav-item dropdown {%if request.path == greylots %} active {%elif request.path == greyorders %} active {%elif request.path == intransit %}active {%elif request.path == godown %} active
+            <li class="nav-item dropdown {%if request.path == greylots %} active {%elif request.path == greyOrders %} active {%elif request.path == intransit %}active {%elif request.path == godown %} active
             {%elif request.path == godownrequest %} active {%elif request.path == checking %} active
             {%elif request.path == checkingrequest %} active {%elif request.path == inprocess %} active
             {%elif request.path == processingrequest %} active {%elif request.path == readytoprint %} active
             {%elif request.path == readytoprintrequest %} active
             {%endif%}">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {%if request.path == greyorders %}
+                {%if request.path == greyOrders %}
                   Orders
                 {%elif request.path == greylots %}
                   Lots
@@ -81,7 +81,7 @@
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'greyhome' %}">Grey - Home</a>
-                <a class="dropdown-item" href="{% url 'greyorders' %}">Orders</a>
+                <a class="dropdown-item" href="{% url 'greyOrders' %}">Orders</a>
                 <a class="dropdown-item" href="{% url 'greyMasterSupplier' %}">Suppliers</a>
 
                 <a class="dropdown-item" href="{% url 'greylots' %}">Lots</a>

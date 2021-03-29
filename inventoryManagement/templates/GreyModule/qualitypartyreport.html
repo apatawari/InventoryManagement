@@ -31,7 +31,7 @@
       <div class="download">
         <form method="POST" action="{% url 'export_report_xls' %}" enctype="multipart/form-data">
           {% csrf_token %}
-          <input type="text" name="qualities" value="{{select}}" hidden>
+          <input type="text" name="quality_name" value="{{select}}" hidden>
           <input type="text" name="party" value="{{party}}" hidden>
           <input type="date" name="start_date" value="{{begin}}" hidden />
           <input type="date" name="end_date" value="{{end}}" hidden/>

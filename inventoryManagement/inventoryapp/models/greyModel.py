@@ -38,7 +38,7 @@ class GreyOutprocessAgenciesMaster(models.Model):
         db_table = 'Outprocess_Agencies_Master'
 
 class GreyQualitiesMaster(models.Model):
-    qualities = models.CharField(max_length=50)
+    quality_name = models.CharField(max_length=50)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
     created_by = models.CharField(null=True,max_length=50)
@@ -74,13 +74,11 @@ class GreyTransportAgenciesMaster(models.Model):
 class GreyOrders(models.Model):
     order_number = models.AutoField(primary_key=True)
     order_date = models.DateField(null=False, default=timezone.now)
-    grey_quality_name = models.CharField(max_length=256)
     grey_quality = models.ForeignKey(GreyQualitiesMaster,blank=False,null=False,on_delete=models.PROTECT)
     thans = models.IntegerField()
-    avg_cut = models.FloatField()
+    avg_cut = models.FloatField(default=0.0)
     rate = models.FloatField()
     remarks = models.CharField(max_length=256)
-    supplier_name = models.CharField(max_length=256)
     supplier = models.ForeignKey(GreySuppliersMaster,blank=False,null=False,on_delete=models.PROTECT)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
@@ -108,10 +106,10 @@ class Record(models.Model):    ########################   Main grey order
     state = models.CharField(max_length=30,default='Transit')
     bale_recieved = models.IntegerField(default=0)
     recieving_date = models.DateField(null=True, default=None)
-    agency_name = models.ForeignKey(GreyOutprocessAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
+    agency = models.ForeignKey(GreyOutprocessAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
     total_bale = models.IntegerField()
     checker=models.ForeignKey(Employee,blank=True,null=True,on_delete=models.PROTECT)
-    transport_agency_id=models.ForeignKey(GreyTransportAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
+    transport_agency=models.ForeignKey(GreyTransportAgenciesMaster,blank=True,null=True,on_delete=models.PROTECT)
     # transport_rate=models.FloatField(max_length=10,default=0)
     checking_date = models.DateField(null=True, default=None)
     processing_type = models.CharField(max_length=50,default="-")           #new

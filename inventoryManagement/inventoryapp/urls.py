@@ -19,7 +19,7 @@ urlpatterns = [
     path('index', views.index,name='index'),
     path('', views.index,name='index'),
     path('greyhome', views.greyhome,name='greyhome'),
-    path('greyorders', views.greyorders,name='greyorders'),
+    path('greyOrders', views.greyOrders,name='greyOrders'),
     path('greylots', views.greylots,name='greylots'),
     path('greyplaceorder',views.greyPlaceOrder,name='greyplaceorder'),
     path('insert', views.upload,name='insert'),
@@ -120,7 +120,7 @@ urlpatterns = [
     #GREY ORDER
     path('feedSupplier/', views.feedSupplier,name='feedSupplier'),
     path('editGreyOrder/', views.editGreyOrder,name='editGreyOrder'),
-    path('orderSupplier/', views.orderSupplier,name='orderSupplier'), 
+    path('getOrders/', views.getOrders,name='getOrders'), 
     path('placeNewGreyOrder/', views.placeNewGreyOrder,name='placeNewGreyOrder'),
 
     #ADD SUPPLIER (IN PROGRESS)

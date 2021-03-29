@@ -22,8 +22,8 @@ from django.template.loader import render_to_string
 def greyhome(request):
     return render(request, './GreyModule/GreyHome.html')
 
-def greyorders(request):
-    return redirect('/orderSupplier')
+def greyOrders(request):
+    return redirect('/getOrders')
 
 def greylots(request):
     return render(request, './GreyModule/greylots.html')
@@ -100,13 +100,13 @@ def upload(request):
         for data in imported_data:
             try:
                 q_object=get_object_or_404(GreyQualitiesMaster,
-                    qualities=data[6])
+                    quality_name=data[6])
             except:
                 q_object = GreyQualitiesMaster(
-                    qualities=data[6]
+                    quality_name=data[6]
                     )
                 q_object.save()
-            quality_object=get_object_or_404(GreyQualitiesMaster,qualities=data[6])
+            quality_object=get_object_or_404(GreyQualitiesMaster,quality_name=data[6])
             try:
 
                 rec=get_list_or_404(Record,
@@ -141,10 +141,10 @@ def upload(request):
                 counter = counter + 1
                 # try:
                 #     rec=get_object_or_404(Quality,
-                #         qualities=data[6])
+                #         quality_name=data[6])
                 # except:
                 #     new_quality = Quality(
-                #         qualities=data[6]
+                #         quality_name=data[6]
                 #         )
                 #     new_quality.save()
 
@@ -176,9 +176,9 @@ def showIntransit(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
 
-    return render(request, './GreyModule/intransit.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    return render(request, './GreyModule/intransit.html',{'records':records,'filter':records_filter,'sums':sums,'quality_name':quality_name})
 
 ###### GREY - GODOWN STOCK ######
 def showGodown(request):
@@ -199,8 +199,8 @@ def showGodown(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2),sum_bale]
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request, './GreyModule/godown.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request, './GreyModule/godown.html',{'records':records,'filter':records_filter,'sums':sums,'quality_name':quality_name})
 
 ###### GREY - REQUEST GODOWN STOCK ######
 def showGodownRequest(request):
@@ -217,18 +217,18 @@ def showGodownRequest(request):
 ###### Edit form for intransit record ######
 def record(request,id):
     rec=get_object_or_404(Record, id=id)
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request, './GreyModule/record.html', {'record':rec,'qualities':qualities})
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request, './GreyModule/record.html', {'record':rec,'quality_name':quality_name})
 
 ###### GODOWN APPROVE FORM ######
 def goDownApprove(request,id):
     rec=get_object_or_404(Record, id=id)
     mindate=datetime.datetime.strptime(rec.bill_date,'%b %d,%Y').strftime('%Y-%m-%d')
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    qualities = GreyQualitiesMaster.objects.all()
+    quality_name = GreyQualitiesMaster.objects.all()
     d=datetime.date.today()
     d=str(d)
-    return render(request, './GreyModule/godownapprove.html', {'record':rec,'qualities':qualities,'mindate':mindate,'maxdate':maxdate,'date':d})
+    return render(request, './GreyModule/godownapprove.html', {'record':rec,'quality_name':quality_name,'mindate':mindate,'maxdate':maxdate,'date':d})
 
  ###### Edit in transit record ######
 def edit(request,id):
@@ -362,8 +362,8 @@ def showChecked(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request, './GreyModule/Checking.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request, './GreyModule/Checking.html',{'records':records,'filter':records_filter,'sums':sums,'quality_name':quality_name})
 
 def showCheckingRequest(request):
     records_list=Record.objects.filter(state="Godown").order_by('lot_no')
@@ -381,12 +381,12 @@ def checkingApprove(request,id):
 
     mindate=str(rec.recieving_date)
     maxdate=datetime.date.today().strftime('%Y-%m-%d')
-    qualities_all = GreyQualitiesMaster.objects.all().order_by('qualities')
+    qualities_all = GreyQualitiesMaster.objects.all().order_by('quality_name')
     checkers=Employee.objects.all().order_by('name')
     transports=GreyTransportAgenciesMaster.objects.all().order_by('transport_agency')
     d=datetime.date.today()
     d=str(d)
-    return render(request, './GreyModule/checkingApprove.html', {'date':d,'record':rec,'transport_agency':transports,'checkers':checkers,'qualities':qualities_all,'mindate':mindate,'maxdate':maxdate})
+    return render(request, './GreyModule/checkingApprove.html', {'date':d,'record':rec,'transport_agency':transports,'checkers':checkers,'quality_name':qualities_all,'mindate':mindate,'maxdate':maxdate})
 
 def approveCheck(request,id):
     prevRec = get_object_or_404(Record,id=id)
@@ -631,8 +631,8 @@ def showProcessing(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request, './GreyModule/processing.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request, './GreyModule/processing.html',{'records':records,'filter':records_filter,'sums':sums,'quality_name':quality_name})
 
 def showProcessingRequest(request):
     records_list=Record.objects.filter(state="Checked").order_by('lot_no')
@@ -753,8 +753,8 @@ def showReadyToPrint(request):
         sum_than=sum_than+i.than
         sum_mtrs=sum_mtrs+i.mtrs
     sums=[round(sum_amount,2),sum_than,round(sum_mtrs,2)]
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request, './GreyModule/readytoprint.html',{'records':records,'filter':records_filter,'sums':sums,'qualities':qualities})
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request, './GreyModule/readytoprint.html',{'records':records,'filter':records_filter,'sums':sums,'quality_name':quality_name})
 
 def showReadyRequest(request):
     records_list=Record.objects.filter(state="In Process").order_by('lot_no')
@@ -972,7 +972,7 @@ def generateReport(request):
                 if r.state=="In Process":
                     pendingthan=pendingthan+r.than
                 else:
-                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.quality_name,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
                     rec_lists.append(rec)
 
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
@@ -1024,7 +1024,7 @@ def generateReport(request):
                 if r.state=="In Process":
                     pendingthan=pendingthan+r.than
                 else:
-                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.quality_name,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no,r.state ]
                     rec_lists.append(rec)
 
             data_row=[l,totalthan,pendingthan,rec_lists,rate]
@@ -1117,7 +1117,7 @@ def printLedgerExcel(request):
                 if r.state=="In Process":
                     pendingthan=pendingthan+r.than
                 else:
-                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.quality_name,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
                     rec_lists.append(rec)
             if len(rec_lists)!=0:
                 flag=0
@@ -1221,7 +1221,7 @@ def printLedgerExcel(request):
                 if r.state=="In Process":
                     pendingthan=pendingthan+r.than
                 else:
-                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.qualities,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
+                    rec=[r.sent_to_processing_date,r.gate_pass,r.quality.quality_name,r.than,r.mtrs,r.recieve_processed_date,r.chalan_no ]
                     rec_lists.append(rec)
 
             if len(rec_lists)!=0:
@@ -1288,8 +1288,8 @@ def showDefective(request):
     paginator = Paginator(records_filter.qs,20)
     page = request.GET.get('page')
     records = paginator.get_page(page)
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request,'./GreyModule/defective.html',{'records':records,'filter':records_filter,'qualities':qualities})
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request,'./GreyModule/defective.html',{'records':records,'filter':records_filter,'quality_name':quality_name})
 
 
 ################## GREY -  REPORT BY CHECKER BASED ##############
@@ -1317,7 +1317,7 @@ def checkerReport(request):
             selected_dates.append(datetime.datetime.strptime(str(next_day), '%Y-%m-%d'))#.strftime('%b %d,%Y'))
             next_day += datetime.timedelta(days=1)
 
-        # qualities = Quality.objects.all()
+        # quality_name = Quality.objects.all()
         datalist=[]
 
         total=[]
@@ -1328,7 +1328,7 @@ def checkerReport(request):
             totalthans=totalthans+r.than
 
             l=[]
-            l.append(r.quality.qualities)
+            l.append(r.quality.quality_name)
             l.append(r.checking_date)
             l.append(r.than)
             l.append(r.mtrs)
@@ -1404,7 +1404,7 @@ def transportReport(request):
             for r in records:
                 than_recieved=than_recieved+r.than
             if than_inlot==than_recieved:
-                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.qualities,bale_inlot,rec_one.transport_agency.rate,round(rec_one.transport_agency.rate*bale_inlot,2)]
+                row_list=[l,rec_one.lr_no,rec_one.party_name,rec_one.quality.quality_name,bale_inlot,rec_one.transport_agency.rate,round(rec_one.transport_agency.rate*bale_inlot,2)]
                 totalbales=totalbales+bale_inlot
                 totaltotal=round(totaltotal + rec_one.transport_agency.rate*bale_inlot,2)
                 datalist.append(row_list)
@@ -1423,11 +1423,11 @@ def transportReport(request):
 
 ################### QUALITY WISE REPORT ########################
 def qualityreportFilter(request):
-    qualities= GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request,'./GreyModule/qualityreportFilter.html',{'qualities':qualities})
+    quality_name= GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request,'./GreyModule/qualityreportFilter.html',{'quality_name':quality_name})
 
 def qualityReport(request):
-    # qualities=[]
+    # quality_name=[]
     final_qs=[]
     total_all=[]
     trthan=0
@@ -1442,13 +1442,13 @@ def qualityReport(request):
     remtrs=0
     tothan=0
     tomtrs=0
-    qualities= GreyQualitiesMaster.objects.all()
+    quality_name= GreyQualitiesMaster.objects.all()
     selected_qualities=[]
-    for q in qualities:
+    for q in quality_name:
 
-        if(request.POST.get(q.qualities)!=None):
-            selected_qualities.append(request.POST.get(q.qualities))
-            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+        if(request.POST.get(q.quality_name)!=None):
+            selected_qualities.append(request.POST.get(q.quality_name))
+            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             tally_than=0
             tally_mtrs=0
             total_than_in_transit=0
@@ -1460,7 +1460,7 @@ def qualityReport(request):
             trthan=trthan+total_than_in_transit
             trmtrs=trmtrs+total_mtrs_in_transit
 
-            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             total_than_in_godown=0
             total_mtrs_in_godown=0
             for r in rec_godown:
@@ -1469,7 +1469,7 @@ def qualityReport(request):
             gothan=gothan+total_than_in_godown
             gomtrs=gomtrs+total_mtrs_in_godown
 
-            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             total_than_in_checked=0
             total_mtrs_in_checked=0
             for r in rec_checked:
@@ -1478,7 +1478,7 @@ def qualityReport(request):
             chthan=chthan+total_than_in_checked
             chmtrs=chmtrs+total_mtrs_in_checked
 
-            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -1487,7 +1487,7 @@ def qualityReport(request):
             prthan=prthan+total_than_in_process
             prmtrs=prmtrs+total_mtrs_in_process
 
-            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             total_than_in_ready=0
             total_mtrs_in_ready=0
             for r in rec_ready:
@@ -1502,7 +1502,7 @@ def qualityReport(request):
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
-            d1=[q.qualities,
+            d1=[q.quality_name,
             total_than_in_transit,round(total_mtrs_in_transit,2),
             total_than_in_godown,round(total_mtrs_in_godown,2),
             total_than_in_checked,round(total_mtrs_in_checked,2),
@@ -1526,8 +1526,8 @@ def qualityReport(request):
 ################### QUALITY WISE LEDGER ########################
 def qualityReport2filter(request):
     party=GreyOutprocessAgenciesMaster.objects.all().order_by('agency_name')
-    qualities=GreyQualitiesMaster.objects.all().order_by('qualities')
-    return render(request,'./GreyModule/qualityreport2filter.html',{'qualities':qualities,'parties':party})
+    quality_name=GreyQualitiesMaster.objects.all().order_by('quality_name')
+    return render(request,'./GreyModule/qualityreport2filter.html',{'quality_name':quality_name,'parties':party})
 
 
 def qualityReport2(request):
@@ -1559,17 +1559,17 @@ def qualityReport2(request):
     tothan=0
     tomtrs=0
 
-    qualities= GreyQualitiesMaster.objects.all().order_by('qualities')
+    quality_name= GreyQualitiesMaster.objects.all().order_by('quality_name')
     selected_qualities=[]
-    for q in qualities:
+    for q in quality_name:
 
-        if(request.POST.get(q.qualities)!=None):
-            selected_qualities.append(request.POST.get(q.qualities))
+        if(request.POST.get(q.quality_name)!=None):
+            selected_qualities.append(request.POST.get(q.quality_name))
 
             if(begin!="" or end!=""):
-                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             else:
-                rec_process=Record.objects.filter(state="In Process",agency=outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_process=Record.objects.filter(state="In Process",agency=outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -1579,9 +1579,9 @@ def qualityReport2(request):
             prmtrs=prmtrs+total_mtrs_in_process
 
             if(begin!="" or end!=""):
-                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
             else:
-                rec_ready=Record.objects.filter(state="Ready to print",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.qualities))))
+                rec_ready=Record.objects.filter(state="Ready to print",agency = outprocess_agency,quality=get_object_or_404(GreyQualitiesMaster,id=int(request.POST.get(q.quality_name))))
 
             total_than_in_ready=0
             total_mtrs_in_ready=0
@@ -1597,7 +1597,7 @@ def qualityReport2(request):
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
-            d1=[q.qualities,
+            d1=[q.quality_name,
             total_than_in_process,round(total_mtrs_in_process,2),
             total_than_in_ready,round(total_mtrs_in_ready,2),
             tally_than,round(tally_mtrs,2),
@@ -1670,13 +1670,13 @@ def deleteGreyMasterCheckingCutRate(request,id):
 ############ GREY : QUALITY MASTER ############
 
 def renderGreyMasterQuality(request):
-    all_qualities = GreyQualitiesMaster.objects.all().order_by('qualities')
+    all_qualities = GreyQualitiesMaster.objects.all().order_by('quality_name')
     #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_qualities,10)
     page = request.GET.get('page')
-    qualities = paginator.get_page(page)
+    quality_name = paginator.get_page(page)
 
-    return render(request,'./GreyModule/masterGreyQualities.html',{'records':qualities})
+    return render(request,'./GreyModule/masterGreyQualities.html',{'records':quality_name})
 
 def saveGreyMasterQuality(request):
     quality_name = request.POST.get("quality_name")
@@ -1684,14 +1684,14 @@ def saveGreyMasterQuality(request):
 
     quality_name = quality_name.replace('"','inch')
     try:
-        existing_quality=get_object_or_404(GreyQualitiesMaster,qualities=quality_name.upper())
+        existing_quality=get_object_or_404(GreyQualitiesMaster,quality_name=quality_name.upper())
         messages.error(request,"This quality already exists")
     except:
         if quality_name.strip()=="":
             messages.error(request,"please enter valid input")
             return redirect('/renderMasterQuality')
         new_quality = GreyQualitiesMaster(
-            qualities=quality_name.upper()
+            quality_name=quality_name.upper()
         )
         new_quality.save()
         messages.success(request,"Grey Quality added")
@@ -1707,14 +1707,14 @@ def deleteGreyMasterQuality(request,id):
 
 def renderEditGreyMasterQuality(request,id):
     quality=get_object_or_404(GreyQualitiesMaster,id=id)
-    return render(request,'./GreyModule/editGreyMasterQuality.html',{'id':id,'name':quality.qualities})
+    return render(request,'./GreyModule/editGreyMasterQuality.html',{'id':id,'name':quality.quality_name})
 
 def editGreyMasterQuality(request,id):
     quality=get_object_or_404(GreyQualitiesMaster,id=id)
     p=request.POST.get("edit-grey-quality")
     p = p.upper()
     p = p.strip()
-    quality.qualities = p
+    quality.quality_name = p
     quality.save()
     messages.success(request,"Grey Quality edited")
     return redirect('/renderGreyMasterQuality')
@@ -1897,14 +1897,12 @@ def editGreyOrder(request):
     print(order_number)
     if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
         messages.error(request,"Please fill all the fields")
-        return redirect('/orderSupplier')
-    getQuality = GreyQualitiesMaster.objects.get(qualities=quality)
-    getSupplier = GreySuppliersMaster.objects.get(supplier_name=supplier)
+        return redirect('/getOrders')
+    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
+    supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
     old_order = GreyOrders.objects.get(order_number=order_number)
-    old_order.supplier_name = getSupplier.supplier_name
-    old_order.grey_quality_name = getQuality.qualities
-    old_order.grey_quality_id = getQuality.id
-    old_order.supplier_id = getSupplier.id
+    old_order.supplier_name = supplierObject
+    old_order.grey_quality_name = qualityObject
     old_order.order_date = order_date
     old_order.thans = thans
     old_order.rate = rate
@@ -1912,17 +1910,17 @@ def editGreyOrder(request):
     old_order.avg_cut = avg_cut
     old_order.save()
     messages.success(request,"Order Updated")
-    return redirect('/orderSupplier')
+    return redirect('/getOrders')
 
 
-def orderSupplier(request):
-    all_checker = GreyOrders.objects.all().order_by('order_number')
-    getSupplier = GreySuppliersMaster.objects.all()
-    getQuality = GreyQualitiesMaster.objects.all()
-    paginator = Paginator(all_checker,10)
+def getOrders(request):
+    orderList = GreyOrders.objects.all().order_by('order_number')
+    suppliers = GreySuppliersMaster.objects.all()
+    qualities = GreyQualitiesMaster.objects.all()
+    paginator = Paginator(orderList,10)
     page = request.GET.get('page')
-    checkers = paginator.get_page(page)
-    return render(request,'./GreyModule/greyorders.html',{'records':checkers,'suppliers':getSupplier, 'quality':getQuality})
+    orders = paginator.get_page(page)
+    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities})
 
 def placeNewGreyOrder(request):
     order_date=request.POST.get("order_date")
@@ -1937,23 +1935,21 @@ def placeNewGreyOrder(request):
 
     if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
         messages.error(request,"Please fill all the fields")
-        return redirect('/orderSupplier')
-    getQuality = GreyQualitiesMaster.objects.get(qualities=quality)
-    getSupplier = GreySuppliersMaster.objects.get(supplier_name=supplier)
+        return redirect('/getOrders')
+    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
+    supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
     new_order = GreyOrders(
             order_date = order_date,
             thans =thans,
-            grey_quality_name=getQuality.qualities,
-            supplier_name= getSupplier.supplier_name,
+            grey_quality=qualityObject,
+            supplier= supplierObject,
             rate=rate,
             remarks=remarks,
             avg_cut=avg_cut
         )
-    new_order.grey_quality_id = getQuality.id
-    new_order.supplier_id = getSupplier.id
     new_order.save()
     messages.success(request,"Order Placed")
-    return redirect('/orderSupplier')
+    return redirect('/getOrders')
 
 ############## SUPPLIER MASTER #############
 
