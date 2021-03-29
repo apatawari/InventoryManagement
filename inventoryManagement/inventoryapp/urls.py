@@ -119,6 +119,7 @@ urlpatterns = [
 
     #GREY ORDER
     path('feedSupplier/', views.feedSupplier,name='feedSupplier'),
+    path('editGreyOrder/', views.editGreyOrder,name='editGreyOrder'),
     path('orderSupplier/', views.orderSupplier,name='orderSupplier'), 
     path('placeNewGreyOrder/', views.placeNewGreyOrder,name='placeNewGreyOrder'),
 
