@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, Employee
+from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, Employee, GreyOrders
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
@@ -23,7 +23,7 @@ def greyhome(request):
     return render(request, './GreyModule/GreyHome.html')
 
 def greyorders(request):
-    return render(request, './GreyModule/greyorders.html')
+    return redirect('/orderSupplier')
 
 def greylots(request):
     return render(request, './GreyModule/greylots.html')
@@ -1873,6 +1873,87 @@ def editGreyMasterGodown(request,id):
 
 
 
+############## ORDERS #############
+
+def feedSupplier(request):
+    getSupplier = GreySuppliersMaster.objects.get('supplier_name')
+    # paginator = Paginator(all_checker,10)
+    # page = request.GET.get('page')
+    # checkers = paginator.get_page(page)
+    # return render(request,'./GreyModule/greyMasterSupplier.html',{'records':checkers})
+    return render_to_response('feeds/getSupplier.txt', {'supplier':getSupplier}, mimetype="text/plain")
+
+def editGreyOrder(request):
+    order_number=request.POST.get("order_number")
+    order_date=request.POST.get("order_date")
+    supplier=(request.POST.get("supplier_name"))
+    quality=request.POST.get("quality")
+    quality = quality.strip()
+    avg_cut=request.POST.get("avg_cut")
+    thans=request.POST.get("thans")
+    rate=request.POST.get("rate")
+    remarks=request.POST.get("remarks")
+    remarks = remarks.strip()
+    print(order_number)
+    if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
+        messages.error(request,"Please fill all the fields")
+        return redirect('/orderSupplier')
+    getQuality = GreyQualitiesMaster.objects.get(qualities=quality)
+    getSupplier = GreySuppliersMaster.objects.get(supplier_name=supplier)
+    old_order = GreyOrders.objects.get(order_number=order_number)
+    old_order.supplier_name = getSupplier.supplier_name
+    old_order.grey_quality_name = getQuality.qualities
+    old_order.grey_quality_id = getQuality.id
+    old_order.supplier_id = getSupplier.id
+    old_order.order_date = order_date
+    old_order.thans = thans
+    old_order.rate = rate
+    old_order.remarks = remarks
+    old_order.avg_cut = avg_cut
+    old_order.save()
+    messages.success(request,"Order Updated")
+    return redirect('/orderSupplier')
+
+
+def orderSupplier(request):
+    all_checker = GreyOrders.objects.all().order_by('order_number')
+    getSupplier = GreySuppliersMaster.objects.all()
+    getQuality = GreyQualitiesMaster.objects.all()
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+    return render(request,'./GreyModule/greyorders.html',{'records':checkers,'suppliers':getSupplier, 'quality':getQuality})
+
+def placeNewGreyOrder(request):
+    order_date=request.POST.get("order_date")
+    supplier=(request.POST.get("supplier_name"))
+    quality=request.POST.get("quality")
+    quality = quality.strip()
+    avg_cut=request.POST.get("avg_cut")
+    thans=request.POST.get("thans")
+    rate=request.POST.get("rate")
+    remarks=request.POST.get("remarks")
+    remarks = remarks.strip()
+
+    if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
+        messages.error(request,"Please fill all the fields")
+        return redirect('/orderSupplier')
+    getQuality = GreyQualitiesMaster.objects.get(qualities=quality)
+    getSupplier = GreySuppliersMaster.objects.get(supplier_name=supplier)
+    new_order = GreyOrders(
+            order_date = order_date,
+            thans =thans,
+            grey_quality_name=getQuality.qualities,
+            supplier_name= getSupplier.supplier_name,
+            rate=rate,
+            remarks=remarks,
+            avg_cut=avg_cut
+        )
+    new_order.grey_quality_id = getQuality.id
+    new_order.supplier_id = getSupplier.id
+    new_order.save()
+    messages.success(request,"Order Placed")
+    return redirect('/orderSupplier')
 
 ############## SUPPLIER MASTER #############
 
