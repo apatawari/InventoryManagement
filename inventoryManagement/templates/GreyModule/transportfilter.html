@@ -1,6 +1,9 @@
 {% extends './nav.html' %}
 
-{% block content %}
+
+{% block content%}
+
+
       <!-- Messages Start -->
     {% for message in messages %}
     <div
@@ -27,7 +30,7 @@
       <h3 class="title-text">Transport Report</h3>
     </div>
       <!-- Record Filter Start-->
-      <form class = "md-form view-report" method="POST" action="{% url 'transportreport' %}" enctype="multipart/form-data">
+      <form class = "md-form view-report" method="POST" action="{% url 'transportReport' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <!--First Section -->
         <div class="form-row form-group">
@@ -42,7 +45,7 @@
           <div class="form-group form-check scroll">
 
             <label for="checker">Transport Agency Name</label>
-                <select class="form-control" name="transport">
+                <select class="form-control" name="transport_agency_id">
                   <option></option>
                     {% for q in checkers %}
                         <option value="{{ q.id }}"]>{{ q.transport_agency_name }}</option>
@@ -59,7 +62,8 @@
     </div>
     </form>
     <!-- Record Filter End-->
-<% endblock %}
+    {% endblock %}
+
 
 {% load static %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
