@@ -32,9 +32,9 @@
         <label for="filterQuality">Quality</label>
         <select class="form-control" id="filterQuality" name="filterQuality" onchange="">
           {% if filterQuality%}
-          <option value="">{{filterQuality}}</option>
+          <option value="">Selected Quality: {{filterQuality}}</option>
           {%else%}
-          <option value="">All</option>
+          <option value="">---------</option>
           {%endif%}
             {% for q in quality %}
                 <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
