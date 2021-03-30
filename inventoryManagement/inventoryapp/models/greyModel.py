@@ -79,7 +79,7 @@ class GreyOrders(models.Model):
     avg_cut = models.FloatField(default=0.0)
     rate = models.FloatField()
     remarks = models.CharField(max_length=256)
-    supplier = models.ForeignKey(GreySuppliersMaster,blank=False,null=False,on_delete=models.PROTECT)
+    grey_supplier = models.ForeignKey(GreySuppliersMaster,blank=False,null=False,on_delete=models.PROTECT)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
     created_by = models.CharField(null=True,max_length=50)

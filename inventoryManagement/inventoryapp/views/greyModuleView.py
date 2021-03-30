@@ -1886,7 +1886,7 @@ def editGreyOrder(request):
     rate=request.POST.get("rate")
     remarks=request.POST.get("remarks")
     remarks = remarks.strip()
-    print(order_number)
+
     if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
@@ -1947,7 +1947,7 @@ def placeNewGreyOrder(request):
             order_date = order_date,
             thans =thans,
             grey_quality=qualityObject,
-            supplier= supplierObject,
+            grey_supplier= supplierObject,
             rate=rate,
             remarks=remarks,
             avg_cut=avg_cut
