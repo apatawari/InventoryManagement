@@ -23,7 +23,7 @@ def greyhome(request):
     return render(request, './GreyModule/GreyHome.html')
 
 def greyOrders(request):
-    return redirect('/getOrders')
+    return redirect('/ordersList')
 
 def greylots(request):
     return render(request, './GreyModule/greylots.html')
@@ -1875,14 +1875,6 @@ def editGreyMasterGodown(request,id):
 
 ############## ORDERS #############
 
-def feedSupplier(request):
-    getSupplier = GreySuppliersMaster.objects.get('supplier_name')
-    # paginator = Paginator(all_checker,10)
-    # page = request.GET.get('page')
-    # checkers = paginator.get_page(page)
-    # return render(request,'./GreyModule/greyMasterSupplier.html',{'records':checkers})
-    return render_to_response('feeds/getSupplier.txt', {'supplier':getSupplier}, mimetype="text/plain")
-
 def editGreyOrder(request):
     order_number=request.POST.get("order_number")
     order_date=request.POST.get("order_date")
@@ -1897,7 +1889,7 @@ def editGreyOrder(request):
     print(order_number)
     if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
         messages.error(request,"Please fill all the fields")
-        return redirect('/getOrders')
+        return redirect('/ordersList')
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
     supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
     old_order = GreyOrders.objects.get(order_number=order_number)
@@ -1910,17 +1902,30 @@ def editGreyOrder(request):
     old_order.avg_cut = avg_cut
     old_order.save()
     messages.success(request,"Order Updated")
-    return redirect('/getOrders')
+    return redirect('/ordersList')
 
-
-def getOrders(request):
+def ordersList(request):
     orderList = GreyOrders.objects.all().order_by('order_number')
     suppliers = GreySuppliersMaster.objects.all()
     qualities = GreyQualitiesMaster.objects.all()
     paginator = Paginator(orderList,10)
     page = request.GET.get('page')
     orders = paginator.get_page(page)
-    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities})
+    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'filterQuality':'------'})
+
+def filteredOrdersList(request):
+    quality=request.POST.get("filterQuality")
+    print(quality)
+    if quality == "":
+        return redirect('/ordersList')
+    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
+    orderList = GreyOrders.objects.filter(grey_quality=qualityObject).order_by('order_number')
+    suppliers = GreySuppliersMaster.objects.all()
+    qualities = GreyQualitiesMaster.objects.all()
+    paginator = Paginator(orderList,10)
+    page = request.GET.get('page')
+    orders = paginator.get_page(page)
+    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'filterQuality':quality})
 
 def placeNewGreyOrder(request):
     order_date=request.POST.get("order_date")
@@ -1935,7 +1940,7 @@ def placeNewGreyOrder(request):
 
     if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
         messages.error(request,"Please fill all the fields")
-        return redirect('/getOrders')
+        return redirect('/ordersList')
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
     supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
     new_order = GreyOrders(
@@ -1949,7 +1954,7 @@ def placeNewGreyOrder(request):
         )
     new_order.save()
     messages.success(request,"Order Placed")
-    return redirect('/getOrders')
+    return redirect('/ordersList')
 
 ############## SUPPLIER MASTER #############
 

@@ -2,7 +2,7 @@
 
 
 {% block title %}
-<button type="button" class="btn-request float-right" data-toggle="modal" data-target="#greyOrder">Place Order</button>
+<button type="button" class="btn-request float-right" data-toggle="modal" data-target="#greyOrder" onClick="setDate()">Place Order</button>
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,9 @@
 
 <!-- Filter Start -->
 
-<form method="GET">
+<!-- <form method="GET"> -->
+  <form method="POST" action="{% url 'filteredOrdersList' %}" enctype="multipart/form-data" name="filteredOrdersList">
+    {% csrf_token %}
     <div class="form-row filter-form">
       <div class="form-group col-sm-4">
         {{ filter.form.party_name.label_tag }}
@@ -25,18 +27,22 @@
         {% render_field filter.form.lot_no class="form-control" %}
       </div>
 
+      
       <div class="form-group col-sm-4">
-        <label for="new-quality">Quality</label>
-        <select class="form-control" name="quality" onchange="">
-          <option value="">--</option>
+        <label for="filterQuality">Quality</label>
+        <select class="form-control" id="filterQuality" name="filterQuality" onchange="">
+          <option value="">------</option>
             {% for q in quality %}
-                <option value="{{ q.id}}">{{ q.quality_name }}</option>
+                <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
             {% endfor %}
-        </select>
+        </select><br>
+        <div class="download">
+          <button class="download-button" type="submit" onclick="this.disabled=true,this.form.submit(), setFilterQuality('{{filterQuality}}');">Search</button>
+        </div>
+        
+
     </div>
-      <div class="form-group col-sm-2 filter-button hide-filter">
-        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button>
-      </div>
+
     </div>
 </form>
 <!-- Filter End -->
@@ -77,7 +83,7 @@
             <td>{{order.rate}}</td>
             <td>{{order.remarks}}</td>
 
-            <td><a class ="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#editGreyOrder" onclick="editGreyOrder('{{order.order_number}}','{{order.order_date}}','{{order.supplier_name}}','{{order.grey_quality_name}}','{{order.avg_cut}}','{{order.thans}}','{{order.rate}}','{{order.remarks}}')" href="">Edit</a></td>
+            <td><a class ="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#editGreyOrder" onclick="editGreyOrder('{{order.order_number}}','{{order.order_date}}','{{order.supplier.supplier_name}}','{{order.grey_quality.quality_name}}','{{order.avg_cut}}','{{order.thans}}','{{order.rate}}','{{order.remarks}}')" href="">Edit</a></td>
             <td><a class ="anchor-button button-small-text" href="">Assign Lot</a></td>
 
           </tr>
@@ -115,84 +121,49 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                  <!-- Grey order form starts here -->
-                  <!-- Filter Start -->
-                  <!-- <form method="GET">
-                      <div class="form-row filter-form">
-
-                        <div class="form-group col-sm-4">
-                          <label for="new-quality">Supplier</label>
-                          <select class="form-control" name="supplier" onchange="this.form.submit()">
-                            <option value="">--</option>
-                              {% for q in suppliers %}
-                                  <option value="{{ q.id}}">{{ q.supplier }}</option>
-                              {% endfor %}
-                          </select>
-                      </div>
-                        <div class="form-group col-sm-2">
-                          {{ filter.form.order_no.label_tag }}
-
-                        </div>
-
-                        <div class="form-group col-sm-4">
-                          <label for="new-quality">Color</label>
-                          <select class="form-control" name="color" onchange="this.form.submit()">
-
-                            <option value="">--</option>
-                              {% for q in colors %}
-
-                                  <option value="{{ q.id}}">{{ q.color }}</option>
-
-                              {% endfor %}
-                          </select>
-                      </div>
-                        <div class="form-group col-sm-2 filter-button">-->
-                          <!-- <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Search</button> -->
-                        <!-- </div>
-                      </div>
-                  </form>  -->
-                  <form method="POST" action="{% url 'placeNewGreyOrder' %}" class="md-form upload-file" enctype="multipart/form-data">
+                  <form method="POST" action="{% url 'placeNewGreyOrder' %}" class="md-form upload-file" enctype="multipart/form-data" name="placeOrder">
     {% csrf_token %}
     <div class="upload-header">
         <h1>Place New Order</h1>
     </div>
     <div class="upload-container">
+      <br>
+      <label for ="order_date">Order Date</label>
         <input type="date" class="form-control" id="order_date" placeholder="Order Date" name="order_date" autofocus required>
 
         <br>
-                          <select class="form-control" name="supplier_name" onchange="">
+        <label for ="supplier_name">Supplier Name</label>
+                          <select class="form-control" name="supplier_name" id="supplier_name" onchange="">
                             <option value="">Select Supplier</option>
                               {% for q in suppliers %}
                                   <option value="{{ q.supplier_name}}">{{ q.supplier_name }}</option>
                               {% endfor %}
                           </select>
                           <br>
-                          <select class="form-control" name="quality" onchange="">
+                          <label for ="quality_name">Quality</label>
+                          <select class="form-control" name="quality" id="quality_name" onchange="">
                             <option value="">Select Quality</option>
                               {% for q in quality %}
                                   <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
                               {% endfor %}
                           </select>
-        <!-- <input type="text" class="form-control" id="supplier_name" placeholder="Supplier Name" name="supplier_name" required>
 
         <br>
-        <input type="text" class="form-control" id="quality" placeholder="Quality" name="quality" required> -->
-
-        <br>
+        <label for ="avg_cut">Average Cut</label>
         <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required>
 
         <br>
+        <label for ="thans">Thans</label>
         <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
 
         <br>
+        <label for ="rate">Rate</label>
         <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required>
 
         <br>
+        <label for ="remarks">Remarks</label>
         <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks" required>
         <br>
-
-        <br>
-
         <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Add</button>
         <button type="button" class="upload-btn btn-primary" data-dismiss="modal">Cancel</button>
     </div>
@@ -200,10 +171,6 @@
                   <!-- Filter End -->
                   <!-- grey order form ends here -->
                 </div>
-                <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary">Save Order</button>
-                </div> -->
             </div>
         </div>
     </div>
@@ -215,17 +182,21 @@
                   <button type="button" class="close" data-dismiss="modal">&times;</button>
               </div>
               <div class="modal-body">
-                <form method="POST" action="{% url 'editGreyOrder' %}" class="md-form upload-file" enctype="multipart/form-data" name="ego">
+                <form method="POST" action="{% url 'editGreyOrder' %}" class="md-form upload-file" enctype="multipart/form-data" name="editOrder">
   {% csrf_token %}
   <div class="upload-header">
       <h1>Edit Order</h1>
   </div>
   <div class="upload-container">
+    <br>
+    <label for ="order_number">Order Number</label>
     <input type="text" class="form-control" id="order_number" placeholder="Order Number" name="order_number">
     <br>
+    <label for ="order_date">Order Date</label>
       <input type="date" class="form-control" id="order_date" placeholder="Order Date" name="order_date" autofocus required>
 
       <br>
+      <label for ="supplier_name">Supplier Name</label>
                         <select class="form-control" name="supplier_name" onchange="">
                           <option value="">Select Supplier</option>
                             {% for q in suppliers %}
@@ -233,31 +204,29 @@
                             {% endfor %}
                         </select>
                         <br>
+                        <label for ="quality_name">Quality</label>
                         <select class="form-control" name="quality" onchange="">
                           <option value="">Select Quality</option>
                             {% for q in quality %}
                                 <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
                             {% endfor %}
                         </select>
-      <!-- <input type="text" class="form-control" id="supplier_name" placeholder="Supplier Name" name="supplier_name" required>
+      <br>
+        <label for ="avg_cut">Average Cut</label>
+        <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required>
 
-      <br>
-      <input type="text" class="form-control" id="quality" placeholder="Quality" name="quality" required> -->
+        <br>
+        <label for ="thans">Thans</label>
+        <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
 
-      <br>
-      <input type="text" class="form-control" id="avg_cut" placeholder="{{suppliers.supplier_name}}" name="avg_cut" required>
+        <br>
+        <label for ="rate">Rate</label>
+        <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required>
 
-      <br>
-      <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
-
-      <br>
-      <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required>
-
-      <br>
-      <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks" required>
-      <br>
-
-      <br>
+        <br>
+        <label for ="remarks">Remarks</label>
+        <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks" required>
+        <br>
 
       <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Save</button>
       <button type="button" class="upload-btn btn-primary" data-dismiss="modal">Cancel</button>
@@ -274,14 +243,6 @@
       </div>
   </div>
 </div>
-<td>{{order.order_number}}</td>
-            <td>{{order.order_date}}</td>
-            <td class="td-text">{{order.supplier_name}}</td>
-            <td class="td-text">{{order.grey_quality_name}}</td>
-            <td>{{order.avg_cut}}</td>
-            <td>{{order.thans}}</td>
-            <td>{{order.rate}}</td>
-            <td>{{order.remarks}}</td>
 
 <script>
   function formatDate(date) {
@@ -296,17 +257,28 @@
     return [year, month, day].join('-');
 }
   function editGreyOrder(order_number,order_date,supplier_name, grey_quality_name, avg_cut, thans, rate, remarks){
-    console.log("In function");
-    document.forms['ego']['thans'].value = thans
-    document.forms['ego']['order_number'].value = order_number
-    document.forms['ego']['rate'].value = rate
-    document.forms['ego']['remarks'].value = remarks
-    document.forms['ego']['avg_cut'].value = avg_cut
-    document.forms['ego']['supplier_name'].value = supplier_name
-    document.forms['ego']['quality'].value = grey_quality_name
+    document.forms['editOrder']['thans'].value = thans
+    document.forms['editOrder']['order_number'].value = order_number
+    document.forms['editOrder']['rate'].value = rate
+    document.forms['editOrder']['remarks'].value = remarks
+    document.forms['editOrder']['avg_cut'].value = avg_cut
+    document.forms['editOrder']['supplier_name'].value = supplier_name
+    document.forms['editOrder']['quality'].value = grey_quality_name
     var offset = new Date(order_date)
     var tdate = formatDate(offset)
-    document.forms['ego']['order_date'].value = tdate
+    document.forms['editOrder']['order_date'].value = tdate
+  }
+  function setDate(){
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    today = yyyy +'-' + mm + '-' + dd;
+    document.forms['placeOrder']['order_date'].value = today
+  }
+  function setFilterQuality(filteredOrder){
+    console.log("in function")
+    document.forms['filteredOrdersList']['filterQuality'].value = filteredOrder
   }
 </script>
 {% endblock %}
