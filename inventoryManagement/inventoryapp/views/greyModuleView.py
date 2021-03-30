@@ -1911,7 +1911,7 @@ def ordersList(request):
     paginator = Paginator(orderList,10)
     page = request.GET.get('page')
     orders = paginator.get_page(page)
-    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'filterQuality':'------'})
+    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities})
 
 def filteredOrdersList(request):
     quality=request.POST.get("filterQuality")

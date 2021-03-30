@@ -31,13 +31,18 @@
       <div class="form-group col-sm-4">
         <label for="filterQuality">Quality</label>
         <select class="form-control" id="filterQuality" name="filterQuality" onchange="">
-          <option value="">------</option>
+          {% if filterQuality%}
+          <option value="">{{filterQuality}}</option>
+          {%else%}
+          <option value="">All</option>
+          {%endif%}
             {% for q in quality %}
                 <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
             {% endfor %}
         </select><br>
         <div class="download">
           <button class="download-button" type="submit" onclick="this.disabled=true,this.form.submit(), setFilterQuality('{{filterQuality}}');">Search</button>
+          <button class="download-button" href="{% url 'ordersList' %}">Clear Filter</a>
         </div>
         
 
