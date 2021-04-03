@@ -71,6 +71,12 @@ class GreyTransportAgenciesMaster(models.Model):
     class Meta:
         db_table = 'Grey_Transport_Agencies_Master'
 
+class OrderStatus(models.Model):
+    status_id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=20)
+    class Meta:
+        db_table = 'Order_Status'
+
 class GreyOrders(models.Model):
     order_number = models.AutoField(primary_key=True)
     order_date = models.DateField(null=False, default=timezone.now)
@@ -80,6 +86,7 @@ class GreyOrders(models.Model):
     rate = models.FloatField()
     remarks = models.CharField(max_length=256)
     grey_supplier = models.ForeignKey(GreySuppliersMaster,blank=False,null=False,on_delete=models.PROTECT)
+    ordering_status = models.ForeignKey(OrderStatus,blank=False,null=False,on_delete=models.PROTECT)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
     created_by = models.CharField(null=True,max_length=50)
@@ -87,6 +94,13 @@ class GreyOrders(models.Model):
     class Meta:
         db_table = 'Grey_Orders'
 
+class GreyGoods(models.Model):
+    grey_lot_number= models.AutoField(primary_key=True)
+    order_number = models.ForeignKey(GreyOrders,blank=False,null=False,on_delete=models.PROTECT)
+    created_date = models.DateField(null=False, default=timezone.now)
+    modified_date = models.DateField(null=True, default=timezone.now)
+    created_by = models.CharField(null=True,max_length=50)
+    modified_by = models.CharField(null=True,max_length=50)
 
 class Record(models.Model):    ########################   Main grey order
     sr_no= models.IntegerField()
