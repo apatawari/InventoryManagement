@@ -86,7 +86,7 @@ class GreyOrders(models.Model):
     rate = models.FloatField()
     remarks = models.CharField(max_length=256)
     grey_supplier = models.ForeignKey(GreySuppliersMaster,blank=False,null=False,on_delete=models.PROTECT)
-    ordering_status = models.ForeignKey(OrderStatus,blank=False,null=False,on_delete=models.PROTECT)
+    order_status = models.ForeignKey(OrderStatus,blank=False,null=False,on_delete=models.PROTECT)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
     created_by = models.CharField(null=True,max_length=50)
@@ -94,13 +94,38 @@ class GreyOrders(models.Model):
     class Meta:
         db_table = 'Grey_Orders'
 
-class GreyGoods(models.Model):
-    grey_lot_number= models.AutoField(primary_key=True)
+class LotStatus(models.Model):
+    status_id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=20)
+    class Meta:
+        db_table = 'Lot_Status'
+
+class GreyLots(models.Model):
+    grey_lot_number = models.AutoField(primary_key=True)
     order_number = models.ForeignKey(GreyOrders,blank=False,null=False,on_delete=models.PROTECT)
+    lot_status = models.ForeignKey(LotStatus,blank=False,null=False,on_delete=models.PROTECT)
+    bill_number = models.IntegerField()
+    bill_date = models.CharField(max_length=30)
+    bill_amount = models.FloatField(max_length=15)
+    lr_number = models.IntegerField()
+    meters = models.FloatField(max_length=15)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
     created_by = models.CharField(null=True,max_length=50)
     modified_by = models.CharField(null=True,max_length=50)
+    class Meta:
+        db_table = 'Grey_Lots'
+
+class Transactions(models.Model):
+    transaction_id = models.AutoField(primary_key=True)
+    grey_lot = models.ForeignKey(GreyLots,blank=False,null=False,on_delete=models.PROTECT)
+    lot_status = models.ForeignKey(LotStatus,blank=False,null=False,on_delete=models.PROTECT)
+    created_date = models.DateField(null=False, default=timezone.now)
+    modified_date = models.DateField(null=True, default=timezone.now)
+    created_by = models.CharField(null=True,max_length=50)
+    modified_by = models.CharField(null=True,max_length=50)
+    class Meta:
+        db_table = 'Transactions'
 
 class Record(models.Model):    ########################   Main grey order
     sr_no= models.IntegerField()
