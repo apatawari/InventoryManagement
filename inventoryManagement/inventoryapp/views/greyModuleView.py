@@ -1892,7 +1892,13 @@ def assignLot(request):
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
     order = GreyOrders.objects.get(order_number=order_number)
-    order.order_status.type = "Assigned Lot"
+    # order_status_obj= OrderStatus.objects.get(status_id=order.order_status.status_id)
+    order_status_obj = OrderStatus()
+    order_status_obj.order_status= "Assigned Lot"
+    print(order_status_obj.order_status)
+    order_status_obj.save()
+    order.order_status = order_status_obj
+    print(order.order_status.order_status)
     order.save()
     new_status = LotStatus(type="Initial State")
     new_status.save()
@@ -1942,6 +1948,7 @@ def editGreyOrder(request):
 
 def ordersList(request):
     orderList = GreyOrders.objects.all().order_by('order_number')
+    print(orderList[3].order_status.type)
     suppliers = GreySuppliersMaster.objects.all()
     qualities = GreyQualitiesMaster.objects.all()
     paginator = Paginator(orderList,10)
@@ -1980,7 +1987,8 @@ def placeNewGreyOrder(request):
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
     supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
-    new_status = OrderStatus(type="Initial State")
+    new_status = OrderStatus()
+    new_status.type="Initial State"
     new_status.save()
     new_order = GreyOrders(
             order_date = order_date,
