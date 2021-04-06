@@ -116,6 +116,9 @@ urlpatterns = [
     path('export/report',views.export_report_xls,name='export_report_xls'),
     path('export/ledger',views.printLedgerExcel,name='printledgerexcel'),
 
+    #Grey Lots
+    path('lotsList/', views.lotsList,name='lotsList'),
+    path('assignLot/', views.assignLot,name='assignLot'),
 
     #GREY ORDER
     path('editGreyOrder/', views.editGreyOrder,name='editGreyOrder'),

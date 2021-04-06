@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, Employee, GreyOrders
+from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, Employee, GreyOrders, OrderStatus, LotStatus, GreyLots
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
 from django.contrib import messages
@@ -1871,10 +1871,43 @@ def editGreyMasterGodown(request,id):
     messages.success(request, "Grey godown edited")
     return redirect('/renderGreyMasterGodowns')
 
+############## LOTS #############
+def lotsList(request):
+    lotsList = GreyLots.objects.all().order_by('grey_lot_number')
+    paginator = Paginator(lotsList,10)
+    page = request.GET.get('page')
+    lots = paginator.get_page(page)
+    print(lots)
+    return render(request,'./GreyModule/greylots.html')
 
+def assignLot(request):
+    bill_number=request.POST.get("bill_number")
+    bill_date=request.POST.get("bill_date")
+    bill_amount=request.POST.get("bill_amount")
+    # bale=request.POST.get("bale")
+    lr_number=request.POST.get("lr_number")
+    order_number = request.POST.get("order_number")
+    if  bill_date=="" or  bill_number=="" or bill_amount=="" or lr_number=="" or order_number=="":
+        messages.error(request,"Please fill all the fields")
+        return redirect('/ordersList')
+    order = GreyOrders.objects.get(order_number=order_number)
+    new_status = LotStatus(type="Initial State")
+    new_status.save()
+    new_lot = GreyLots(
+        bill_number = bill_number,
+        bill_date = bill_date,
+        bill_amount = bill_amount,
+        lr_number = lr_number,
+        # bale = bale,
+        order_number = order,
+        lot_status=new_status,
+        meters = order.avg_cut * order.thans
+        )
+    new_lot.save()
+    messages.success(request,"Lot Assigned")
+    return redirect('/lotsList')
 
 ############## ORDERS #############
-
 def editGreyOrder(request):
     order_number=request.POST.get("order_number")
     order_date=request.POST.get("order_date")
@@ -1943,6 +1976,9 @@ def placeNewGreyOrder(request):
         return redirect('/ordersList')
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
     supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
+    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
+    new_status = OrderStatus(type="Initial State")
+    new_status.save()
     new_order = GreyOrders(
             order_date = order_date,
             thans =thans,
@@ -1950,6 +1986,7 @@ def placeNewGreyOrder(request):
             grey_supplier= supplierObject,
             rate=rate,
             remarks=remarks,
+            order_status = new_status,
             avg_cut=avg_cut
         )
     new_order.save()

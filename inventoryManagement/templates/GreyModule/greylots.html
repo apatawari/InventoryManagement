@@ -55,50 +55,49 @@
       <table class="table">
         <thead class="thead-dark">
           <tr>
-
-            <th scope="col">Sr.No</th>
-            <th class="td-text" scope="col">Party Name</th>
+            <th scope="col">Lot No</th>
+            <th scope="col">Order No</th>
+            <th class="td-text" scope="col">Supplier Name</th>
             <th scope="col">Bill No</th>
             <th scope="col">Bill Date</th>
             <th scope="col">Bill Amt</th>
-            <th scope="col">Lot No</th>
             <th class="td-text" scope="col">Quality</th>
             <th scope="col">Than</th>
             <th scope="col">Mtrs</th>
-            <th scope="col">Bale</th>
+            <!-- <th scope="col">Bale</th> -->
             <th scope="col">Rate</th>
             <th scope="col">LR No</th>
-            <th scope="col">Order No</th>
+           
             <!--<th scope="col">State</th>-->
             <th scope="col"></th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
-        {% for record in records %}
+        {% for lot in lots %}
           <tr>
-
-            <td scope="row">{{ forloop.counter }}</td>
-            <td class="td-text">{{record.party_name}}</td>
-            <td>{{record.bill_no}}</td>
-            <td>{{record.bill_date}}</td>
-            <td>{{record.bill_amount}}</td>
-            <td>{{record.lot_no}}</td>
-            <td class="td-text">{{record.quality.quality_name}}</td>
-            <td>{{record.than}}</td>
-            <td>{{record.mtrs}}</td>
-            <td>{{record.bale}}</td>
-            <td>{{record.rate}}</td>
-            <td>{{record.lr_no}}</td>
-            <td>{{record.order_no}}</td>
-            <!--<td class="td-text">{{record.state}}</td>-->
-            <td><a class ="anchor-button button-small-text" href="{% url 'record' record.id %}">Edit</a></td>
-            <td><a class ="anchor-button button-small-text" href="{% url 'godownapprove' record.id %}">Move To Godown</a></td>
+            <td>{{lot.lot_number}}</td>
+            <td>{{lot.order_number.order_number}}</td>
+            <td>{{lot.order_number.grey_supplier.supplier_name}}</td>
+            <td>{{lot.bill_no}}</td>
+            <td>{{lot.bill_date}}</td>
+            <td>{{lot.bill_amount}}</td>
+            <td>{{lot.order_number.grey_supplier.supplier_name}}</td>
+            <td class="td-text">{{lot.grey_quality.quality_name}}</td>
+            <td>{{lot.order_number.thans}}</td>
+            <td>{{lot.meters}}</td>
+            <!-- <td>{{lot.bale}}</td> -->
+            <td>{{lot.order_number.rate}}</td>
+            <td>{{lot.lr_number}}</td>
+            
+            <!--<td class="td-text">{{lots.state}}</td>-->
+            <td><a class ="anchor-button button-small-text" href="{% url 'lots' lots.id %}">Edit</a></td>
+            <td><a class ="anchor-button button-small-text" href="{% url 'godownapprove' lots.id %}">Move To Godown</a></td>
 
 
           </tr>
         {% endfor %}
-        <tr>
+        <!-- <tr>
 
           <td scope="row"><strong>Total</strong></td>
           <td class="td-text">-</td>
@@ -113,27 +112,27 @@
           <td>-</td>
           <td>-</td>
           <td>-</td>
-          <!--<td>-</td>
-          <td>-</td>-->
+          <td>-</td>
+          <td>-</td>
 
-        </tr>
+        </tr> -->
         </tbody>
       </table>
       <!-- Display Table End -->
 
       <div class="pagination">
         <div class="number-line">
-          {% if records.has_previous %}
-          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% if lots.has_previous %}
+          <a class="page-no-text" href="{% my_url lot.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
           {% endif%}
-          {% for num in records.paginator.page_range %}
-            {%if records.number == num%}
-              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+          {% for num in lots.paginator.page_range %}
+            {%if lots.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ lotss.paginator.num_pages }}&nbsp
 
             {% endif %}
           {%endfor%}
-          {% if records.has_next %}
-            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% if lots.has_next %}
+            <a class="page-no-text" href="{% my_url lot.next_page_number 'page' request.GET.urlencode %}">Next page</a>
           {% endif%}
         </div>
       </div>
