@@ -26,7 +26,8 @@ def greyOrders(request):
     return redirect('/ordersList')
 
 def greylots(request):
-    return render(request, './GreyModule/greylots.html')
+    return redirect('/lotList')
+    # return render(request, './GreyModule/greylots.html')
 
 def greyPlaceOrder(request):
     return render(request, './GreyModule/greyPlaceOrder.html')
@@ -1872,13 +1873,13 @@ def editGreyMasterGodown(request,id):
     return redirect('/renderGreyMasterGodowns')
 
 ############## LOTS #############
-def lotsList(request):
+def lotList(request):
     lotsList = GreyLots.objects.all().order_by('grey_lot_number')
+    qualities = GreyQualitiesMaster.objects.all()
     paginator = Paginator(lotsList,10)
     page = request.GET.get('page')
     lots = paginator.get_page(page)
-    print(lots)
-    return render(request,'./GreyModule/greylots.html')
+    return render(request,'./GreyModule/greyLots.html',{'lots':lots, 'quality':qualities})
 
 def assignLot(request):
     bill_number=request.POST.get("bill_number")
@@ -1891,6 +1892,8 @@ def assignLot(request):
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
     order = GreyOrders.objects.get(order_number=order_number)
+    order.order_status.type = "Assigned Lot"
+    order.save()
     new_status = LotStatus(type="Initial State")
     new_status.save()
     new_lot = GreyLots(
@@ -1905,7 +1908,7 @@ def assignLot(request):
         )
     new_lot.save()
     messages.success(request,"Lot Assigned")
-    return redirect('/lotsList')
+    return redirect('/lotList')
 
 ############## ORDERS #############
 def editGreyOrder(request):

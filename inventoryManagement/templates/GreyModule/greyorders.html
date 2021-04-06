@@ -91,8 +91,12 @@
             <td>{{order.remarks}}</td>
 
             <td><a class ="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#editGreyOrder" onclick="editGreyOrder('{{order.order_number}}','{{order.order_date}}','{{order.grey_supplier.supplier_name}}','{{order.grey_quality.quality_name}}','{{order.avg_cut}}','{{order.thans}}','{{order.rate}}','{{order.remarks}}')" href="">Edit</a></td>
+            {% ifnotequal order.order_status.type "Assigned Lot" %}
             <td><a class ="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#assignLot" href="" onclick="setDate(),setOrder('{{order.order_number}}')">Assign Lot</a></td>
-
+            {% else %}
+            <td>Lot Assigned</td>
+            {% endifnotequal %}
+          
           </tr>
         {% endfor %}
         </tbody>

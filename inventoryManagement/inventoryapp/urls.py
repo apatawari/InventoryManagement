@@ -117,7 +117,7 @@ urlpatterns = [
     path('export/ledger',views.printLedgerExcel,name='printledgerexcel'),
 
     #Grey Lots
-    path('lotsList/', views.lotsList,name='lotsList'),
+    path('lotList/', views.lotList,name='lotList'),
     path('assignLot/', views.assignLot,name='assignLot'),
 
     #GREY ORDER
