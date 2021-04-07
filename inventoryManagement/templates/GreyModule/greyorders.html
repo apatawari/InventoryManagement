@@ -68,7 +68,7 @@
             <th class="td-text" scope="col">Quality</th>
             <th scope="col">Avg Cut</th>
             <th scope="col">Thans</th>
-            <th scope="col">Rate</th>
+            <!-- <th scope="col">Rate</th> -->
             <th scope="col">Status</th>
             <th scope="col">Remarks</th>
             <th scope="col"></th>
@@ -86,7 +86,7 @@
             <td class="td-text">{{order.grey_quality.quality_name}}</td>
             <td>{{order.avg_cut}}</td>
             <td>{{order.thans}}</td>
-            <td>{{order.rate}}</td>
+            <!-- <td>{{order.rate}}</td> -->
             <td>{{order.order_status.type}}</td>
             <td>{{order.remarks}}</td>
 
@@ -167,13 +167,13 @@
         <label for ="thans">Thans</label>
         <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
 
-        <br>
+        <!-- <br>
         <label for ="rate">Rate</label>
-        <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+        <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required> -->
 
         <br>
         <label for ="remarks">Remarks</label>
-        <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks" required>
+        <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks">
         <br>
         <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Add</button>
         <button type="button" class="upload-btn btn-primary" data-dismiss="modal">Cancel</button>
@@ -222,9 +222,9 @@
                                 <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
                             {% endfor %}
                         </select>
-      <br>
+      <!-- <br>
         <label for ="avg_cut">Average Cut</label>
-        <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required>
+        <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required> -->
 
         <br>
         <label for ="thans">Thans</label>
@@ -236,7 +236,7 @@
 
         <br>
         <label for ="remarks">Remarks</label>
-        <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks" required>
+        <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks">
         <br>
 
       <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Save</button>
@@ -284,11 +284,20 @@
   <br>
   <label for ="avg_cut">Bill Amount</label>
   <input type="text" class="form-control" id="bill_amount" placeholder="Bill Amount" name="bill_amount" required>
-
-
-    <!-- <br>
+  <br>
+  <label for ="quality_name">Transport Agency</label>
+    <select class="form-control" name="transport_agency" id="transport_agency" onchange="">
+                            <option value="">Select Transport Agency</option>
+                              {% for transport_agency in transport_agencies%}
+                                  <option value="{{ transport_agency.transport_agency_name }}">{{ transport_agency.transport_agency_name }}</option>
+                              {% endfor %}
+                          </select>
+  <br>
+  <label for ="rate">Meters</label>
+  <input type="text" class="form-control" id="meters" placeholder="Meters" name="meters" required>
+    <br>
     <label for ="rate">Bale</label>
-    <input type="text" class="form-control" id="bale" placeholder="Bale" name="bale" required> -->
+    <input type="text" class="form-control" id="bale" placeholder="Bale" name="bale" required>
 
     <br>
     <label for ="remarks">LR Number</label>

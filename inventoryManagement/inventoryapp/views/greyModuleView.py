@@ -1885,21 +1885,25 @@ def assignLot(request):
     bill_number=request.POST.get("bill_number")
     bill_date=request.POST.get("bill_date")
     bill_amount=request.POST.get("bill_amount")
-    # bale=request.POST.get("bale")
+    bale=request.POST.get("bale")
+    meters=request.POST.get("meters")
     lr_number=request.POST.get("lr_number")
     order_number = request.POST.get("order_number")
+    transport_agency = request.POST.get("transport_agency")
     if  bill_date=="" or  bill_number=="" or bill_amount=="" or lr_number=="" or order_number=="":
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
+    transport_agency = GreyTransportAgenciesMaster.objects.get(transport_agency_name=transport_agency)
     order = GreyOrders.objects.get(order_number=order_number)
     # order_status_obj= OrderStatus.objects.get(status_id=order.order_status.status_id)
     order_status_obj = OrderStatus()
     order_status_obj.order_status= "Assigned Lot"
-    print(order_status_obj.order_status)
+    # print(order_status_obj.order_status)
     order_status_obj.save()
     order.order_status = order_status_obj
-    print(order.order_status.order_status)
+    # print(order.order_status.order_status)
     order.save()
+    rate = float(float(meters)/float(order.thans))
     new_status = LotStatus(type="Initial State")
     new_status.save()
     new_lot = GreyLots(
@@ -1907,11 +1911,14 @@ def assignLot(request):
         bill_date = bill_date,
         bill_amount = bill_amount,
         lr_number = lr_number,
-        # bale = bale,
+        bale = bale,
+        rate = rate,
         order_number = order,
         lot_status=new_status,
-        meters = order.avg_cut * order.thans
+        meters = meters,
+        transport_agency = transport_agency 
         )
+    print(rate)
     new_lot.save()
     messages.success(request,"Lot Assigned")
     return redirect('/lotList')
@@ -1925,11 +1932,11 @@ def editGreyOrder(request):
     quality = quality.strip()
     avg_cut=request.POST.get("avg_cut")
     thans=request.POST.get("thans")
-    rate=request.POST.get("rate")
+    # rate=request.POST.get("rate")
     remarks=request.POST.get("remarks")
     remarks = remarks.strip()
 
-    if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
+    if  order_date=="" or supplier=="" or quality=="" or thans=="" or avg_cut=="":
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
@@ -1939,7 +1946,7 @@ def editGreyOrder(request):
     old_order.grey_quality_name = qualityObject
     old_order.order_date = order_date
     old_order.thans = thans
-    old_order.rate = rate
+    # old_order.rate = rate
     old_order.remarks = remarks
     old_order.avg_cut = avg_cut
     old_order.save()
@@ -1948,13 +1955,13 @@ def editGreyOrder(request):
 
 def ordersList(request):
     orderList = GreyOrders.objects.all().order_by('order_number')
-    print(orderList[3].order_status.type)
     suppliers = GreySuppliersMaster.objects.all()
     qualities = GreyQualitiesMaster.objects.all()
+    transport_agencies = GreyTransportAgenciesMaster.objects.all()
     paginator = Paginator(orderList,10)
     page = request.GET.get('page')
     orders = paginator.get_page(page)
-    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities})
+    return render(request,'./GreyModule/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'transport_agencies':transport_agencies})
 
 def filteredOrdersList(request):
     quality=request.POST.get("filterQuality")
@@ -1977,11 +1984,11 @@ def placeNewGreyOrder(request):
     quality = quality.strip()
     avg_cut=request.POST.get("avg_cut")
     thans=request.POST.get("thans")
-    rate=request.POST.get("rate")
+    # rate=request.POST.get("rate")
     remarks=request.POST.get("remarks")
     remarks = remarks.strip()
 
-    if  order_date=="" or supplier=="" or quality=="" or avg_cut=="" or thans=="" or rate=="" or remarks=="":
+    if  order_date=="" or supplier=="" or quality=="" or thans=="" or avg_cut=="":
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
@@ -1995,7 +2002,7 @@ def placeNewGreyOrder(request):
             thans =thans,
             grey_quality=qualityObject,
             grey_supplier= supplierObject,
-            rate=rate,
+            # rate=rate,
             remarks=remarks,
             order_status = new_status,
             avg_cut=avg_cut
