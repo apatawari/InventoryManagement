@@ -236,17 +236,17 @@
                 <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
                 {% endfor %}
               </select>
-              <!-- <br>
+              <br>
         <label for ="avg_cut">Average Cut</label>
-        <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required> -->
+        <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required>
 
               <br>
               <label for="thans">Thans</label>
               <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
 
-              <br>
+              <!-- <br>
               <label for="rate">Rate</label>
-              <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+              <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required> -->
 
               <br>
               <label for="remarks">Remarks</label>
@@ -351,7 +351,7 @@
   function editGreyOrder(order_number, order_date, supplier_name, grey_quality_name, avg_cut, thans, rate, remarks) {
     document.forms['editOrder']['thans'].value = thans
     document.forms['editOrder']['order_number'].value = order_number
-    document.forms['editOrder']['rate'].value = rate
+    // document.forms['editOrder']['rate'].value = rate
     document.forms['editOrder']['remarks'].value = remarks
     document.forms['editOrder']['avg_cut'].value = avg_cut
     document.forms['editOrder']['supplier_name'].value = supplier_name

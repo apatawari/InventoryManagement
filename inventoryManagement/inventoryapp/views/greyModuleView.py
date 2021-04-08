@@ -1935,15 +1935,16 @@ def editGreyOrder(request):
     # rate=request.POST.get("rate")
     remarks=request.POST.get("remarks")
     remarks = remarks.strip()
-
+    print(supplier)
     if  order_date=="" or supplier=="" or quality=="" or thans=="" or avg_cut=="":
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
     qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
     supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
+    print(supplierObject.supplier_name)
     old_order = GreyOrders.objects.get(order_number=order_number)
-    old_order.supplier_name = supplierObject
-    old_order.grey_quality_name = qualityObject
+    old_order.grey_supplier = supplierObject
+    old_order.grey_quality = qualityObject
     old_order.order_date = order_date
     old_order.thans = thans
     # old_order.rate = rate
