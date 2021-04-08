@@ -1916,7 +1916,7 @@ def assignLot(request):
         order_number = order,
         lot_status=new_status,
         meters = meters,
-        transport_agency = transport_agency 
+        transport_agency = transport_agency
         )
     print(rate)
     new_lot.save()
@@ -2014,13 +2014,13 @@ def placeNewGreyOrder(request):
 ############## SUPPLIER MASTER #############
 
 
-def greyMasterSupplier(request):
+def masterGreySuppliers(request):
     all_checker = GreySuppliersMaster.objects.all().order_by('supplier_name')
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
 
-    return render(request,'./GreyModule/greyMasterSupplier.html',{'records':checkers})
+    return render(request,'./GreyModule/masterGreySuppliers.html',{'records':checkers})
 
 def saveGreySupplier(request):
     q=request.POST.get("id")
@@ -2046,7 +2046,7 @@ def saveGreySupplier(request):
     except:
         if  m=="" or n=="" or o=="" or p=="" or q=="" or l=="":
             messages.error(request,"please enter valid input")
-            return redirect('/greyMasterSupplier')
+            return redirect('masterGreySuppliers')
         new_quality = GreySuppliersMaster(
             id = q,
             supplier_name = l,
@@ -2059,7 +2059,7 @@ def saveGreySupplier(request):
         )
         new_quality.save()
         messages.success(request,"Supplier added")
-    return redirect('/greyMasterSupplier')
+    return redirect('masterGreySuppliers')
 
 def deleteGreySupplier(request,id):
     try:
@@ -2067,7 +2067,7 @@ def deleteGreySupplier(request,id):
         messages.success(request,"Supplier deleted")
     except:
         messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('/greyMasterSupplier')
+    return redirect('masterGreySuppliers')
 
 def renderEditGreySupplier(request,id):
     quality=get_object_or_404(GreySuppliersMaster,id=id)
@@ -2094,7 +2094,7 @@ def editGreySupplier(request,id):
 
     if q=="" or m=="" or o=="" or p=="" or r=="":
         messages.error(request,"please enter valid input")
-        return redirect('/greyMasterSupplier')
+        return redirect('masterGreySuppliers')
     quality.id = q
     quality.supplier_name = l
     quality.city = m
@@ -2103,7 +2103,7 @@ def editGreySupplier(request,id):
     quality.remarks = r
     quality.save()
     messages.success(request,"Supplier information edited")
-    return redirect('/greyMasterSupplier')
+    return redirect('masterGreySuppliers')
 
 
 ##################################### GREY MASTER END ###########################################

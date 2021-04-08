@@ -78,6 +78,13 @@ urlpatterns = [
     path('renderEditGreyMasterGodown/<int:id>',views.renderEditGreyMasterGodown,name="renderEditGreyMasterGodown"),
     path('editGreyMasterGodown/<int:id>',views.editGreyMasterGodown,name="editGreyMasterGodown"),
 
+    #Add Grey Supplier Master
+    path('masterGreySuppliers', views.masterGreySuppliers,name='masterGreySuppliers'),
+    path('saveGreySupplier', views.saveGreySupplier,name='saveGreySupplier'),
+    path('deleteGreySupplier/<int:id>', views.deleteGreySupplier,name='deleteGreySupplier'),
+    path('renderEditGreySupplier/<int:id>', views.renderEditGreySupplier,name='renderEditGreySupplier'),
+    path('EditGreySupplier/<int:id>', views.editGreySupplier,name='EditGreySupplier'),
+
 
 
     path('readytoprint',views.showReadyToPrint, name='readytoprint'),
@@ -122,16 +129,9 @@ urlpatterns = [
 
     #GREY ORDER
     path('editGreyOrder/', views.editGreyOrder,name='editGreyOrder'),
-    path('filteredOrdersList/', views.filteredOrdersList,name='filteredOrdersList'), 
-    path('ordersList/', views.ordersList,name='ordersList'), 
+    path('filteredOrdersList/', views.filteredOrdersList,name='filteredOrdersList'),
+    path('ordersList/', views.ordersList,name='ordersList'),
     path('placeNewGreyOrder/', views.placeNewGreyOrder,name='placeNewGreyOrder'),
-
-    #ADD SUPPLIER (IN PROGRESS)
-    path('greyMasterSupplier/', views.greyMasterSupplier,name='greyMasterSupplier'),
-    path('saveGreySupplier', views.saveGreySupplier,name='saveGreySupplier'),
-    path('deleteGreySupplier/<int:id>', views.deleteGreySupplier,name='deleteGreySupplier'),
-    path('renderEditGreySupplier/<int:id>', views.renderEditGreySupplier,name='renderEditGreySupplier'),
-    path('EditGreySupplier/<int:id>', views.editGreySupplier,name='EditGreySupplier'),
 
 
     #####################   COLOR    #############################################################
