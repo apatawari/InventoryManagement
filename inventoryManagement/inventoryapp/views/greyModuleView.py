@@ -1713,11 +1713,19 @@ def renderEditGreyMasterQuality(request,id):
 def editGreyMasterQuality(request,id):
     quality=get_object_or_404(GreyQualitiesMaster,id=id)
     p=request.POST.get("edit-grey-quality")
-    p = p.upper()
-    p = p.strip()
-    quality.quality_name = p
-    quality.save()
-    messages.success(request,"Grey Quality edited")
+    try:
+        existing_quality=get_object_or_404(GreyQualitiesMaster,quality_name=p.upper())
+        messages.error(request,"This quality already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"please enter valid input")
+            return redirect('/renderMasterQuality')
+        p = p.upper()
+        p = p.strip()
+        quality.quality_name = p
+        quality.save()
+        messages.success(request,"Grey Quality Updated")
+
     return redirect('/renderGreyMasterQuality')
 
 
@@ -1764,11 +1772,20 @@ def renderEditGreyMasterOutprocessAgency(request,id):
 def editGreyMasterOutprocessAgency(request,id):
     party=get_object_or_404(GreyOutprocessAgenciesMaster,id=id)
     p=request.POST.get("edit-outprocess-agency")
-    p = p.upper()
-    p = p.strip()
-    party.agency_name = p
-    party.save()
-    messages.success(request,"Outprocess Agency edited")
+
+    try:
+        existing_party=get_object_or_404(GreyOutprocessAgenciesMaster,agency_name=p)
+        messages.error(request,"This Outprocess Agency already exists")
+    except:
+        if p.strip()=="":
+            messages.error(request,"Please enter valid input")
+            return redirect('/renderGreyMasterOutprocessAgencies')
+        p = p.upper()
+        p = p.strip()
+        party.agency_name = p
+        party.save()
+        messages.success(request,"Outprocess Agency edited")
+
     return redirect('/renderGreyMasterOutprocessAgencies')
 
 
@@ -1862,14 +1879,24 @@ def deleteGreyMasterGodown(request,id):
 
 def renderEditGreyMasterGodown(request,id):
     grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
+
     return render(request,'./GreyModule/editGreyMasterGodown.html',{'id':id,'name':grey_godown.godown_name})
 
 def editGreyMasterGodown(request,id):
     grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
     godown_name = request.POST.get("edit-grey-godown")
-    grey_godown.godown_name = godown_name.upper().strip()
-    grey_godown.save()
-    messages.success(request, "Grey godown edited")
+
+    try:
+        existing_party=get_object_or_404(GreyGodownsMaster,godown_name=godown_name)
+        messages.error(request,"This Grey Godown already exists")
+    except:
+        if godown_name.strip()=="":
+            messages.error(request,"Please enter valid input")
+            return redirect('/renderGreyMasterGodowns')
+        grey_godown.godown_name = godown_name
+        grey_godown.save()
+        messages.success(request,"Grey godown master is updated successfully")
+
     return redirect('/renderGreyMasterGodowns')
 
 ############## LOTS #############

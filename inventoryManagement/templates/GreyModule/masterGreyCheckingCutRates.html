@@ -1,6 +1,6 @@
 {% extends './nav.html' %}
 
-{% block title%} Add Checker {% endblock %}
+{% block title%} {% endblock %}
 {% block content%}
 {% load widget_tweaks %}
 {% load my_tags %}
@@ -8,7 +8,7 @@
       <form method="POST" class="md-form upload-file" action="{% url 'saveGreyMasterCheckingCutRate' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="upload-header">
-            <h1>Add Cut Rate</h1>
+            <h1>Add Rate for Checking</h1>
         </div>
         <div class="upload-container">
             <input type="number" step="0.01" class="form-control" id="range1" placeholder="Starting Range" name="cut_start_range" autofocus required>
