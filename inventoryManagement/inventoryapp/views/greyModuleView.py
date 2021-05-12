@@ -20,7 +20,7 @@ from django.template.loader import render_to_string
 
 
 def greyhome(request):
-    return render(request, './GreyModule/GreyHome.html')
+    return render(request, './GreyModule/GreyHome/greyHome.html')
 
 def greyOrders(request):
     return redirect('/ordersList')
