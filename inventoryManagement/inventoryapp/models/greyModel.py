@@ -63,7 +63,7 @@ class GreySuppliersMaster(models.Model):
 
 class GreyTransportAgenciesMaster(models.Model):
     transport_agency_name = models.CharField(max_length=50)
-    rate = models.FloatField(max_length=10)
+    freight = models.FloatField(max_length=10)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
     created_by = models.CharField(null=True,max_length=50)
@@ -109,8 +109,8 @@ class GreyLots(models.Model):
     bill_amount = models.FloatField(max_length=15)
     lr_number = models.IntegerField()
     meters = models.FloatField(max_length=15)
-    bale = models.IntegerField()
-    rate = models.FloatField(max_length=15)
+    bales = models.IntegerField(null=False, default=0)
+    rate = models.FloatField(max_length=15,null=False, default=0.0)
     transport_agency = models.ForeignKey(GreyTransportAgenciesMaster,blank=False,null=False,on_delete=models.PROTECT)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)

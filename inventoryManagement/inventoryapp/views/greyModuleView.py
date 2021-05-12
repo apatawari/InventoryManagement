@@ -1641,7 +1641,7 @@ def saveGreyMasterCheckingCutRate(request):
     flag = 0
 
     for i in existingrange:
-        if i.cut_start_range<start_range<i.cut_end_range or i.cut_start_range<end_range<i.cut_end_range:
+        if i.cut_start_range == start_range or end_range == i.cut_end_range or end_range == i.cut_start_range or i.cut_end_range == start_range :
             flag = flag + 1
             break
 
@@ -1666,6 +1666,99 @@ def deleteGreyMasterCheckingCutRate(request,id):
     GreyCheckingCutRatesMaster.objects.filter(id=id).delete()
     messages.success(request,"Range deleted")
     return redirect('/renderGreyMasterCheckingCutRates')
+
+
+############## SUPPLIER MASTER #############
+
+
+def masterGreySuppliers(request):
+    all_checker = GreySuppliersMaster.objects.all().order_by('supplier_name')
+    paginator = Paginator(all_checker,10)
+    page = request.GET.get('page')
+    checkers = paginator.get_page(page)
+
+    return render(request,'./GreyModule/masterGreySuppliers.html',{'records':checkers})
+
+def saveGreySupplier(request):
+
+    supplier_name=(request.POST.get("supplier_name"))
+    supplier_name.strip()
+    m=request.POST.get("address")
+    m = m.strip()
+    n=request.POST.get("city")
+    n = n.strip()
+    o=request.POST.get("contact_number")
+    o = o.strip()
+    p=request.POST.get("email")
+    p = p.strip()
+
+    r=request.POST.get("remarks")
+    r = r.strip()
+
+
+    try:
+        existing_supplier = get_object_or_404(GreySuppliersMaster,supplier_name=supplier_name.upper())
+        messages.error(request,"This grey supplier already exists")
+    except:
+        if  supplier_name=="":
+            messages.error(request,"please enter valid input")
+            return redirect('masterGreySuppliers')
+        new_quality = GreySuppliersMaster(
+            supplier_name = supplier_name.upper(),
+            city = n.upper(),
+            address = m.upper(),
+            email=p,
+            contact_number=o,
+            remarks=r.upper()
+
+        )
+        new_quality.save()
+        messages.success(request,"Supplier added")
+    return redirect('masterGreySuppliers')
+
+def deleteGreySupplier(request,id):
+    try:
+        GreySuppliersMaster.objects.filter(id=id).delete()
+        messages.success(request,"Supplier deleted")
+    except:
+        messages.error(request,"Cannot delete this master since it is being used")
+    return redirect('masterGreySuppliers')
+
+def renderEditGreySupplier(request,id):
+    quality=get_object_or_404(GreySuppliersMaster,id=id)
+    return render(request,'./GreyModule/editGreySupplier.html',{'id':id,'record':quality})
+
+def editGreySupplier(request,id):
+    quality=get_object_or_404(GreySuppliersMaster,id=id)
+    q=request.POST.get("id")
+
+    supplier_name=request.POST.get("supplier_name")
+    m=request.POST.get("city")
+    o=request.POST.get("email")
+    p=request.POST.get("contact_number")
+    r=request.POST.get("remarks")
+
+    try:
+        existing_supplier = get_object_or_404(GreySuppliersMaster,supplier_name=supplier_name.upper())
+        messages.error(request,"This grey supplier already exists")
+
+    except:
+        if supplier_name=="":
+            messages.error(request,"Please atleast input the supplier name")
+            return redirect('masterGreySuppliers')
+        quality.id = q
+        quality.supplier_name = supplier_name
+        quality.city = m
+        quality.email = o
+        quality.contact_number = p
+        quality.remarks = r
+        quality.save()
+        messages.success(request,"Supplier Details Updated")
+    return redirect('masterGreySuppliers')
+
+
+##################################### GREY Supplier  MASTER END ###########################################
+
 
 
 ############ GREY : QUALITY MASTER ############
@@ -1801,21 +1894,22 @@ def renderGreyMasterTransportAgencies(request):
     return render(request,'./GreyModule/masterGreyTransportAgencies.html',{'records':parties})
 
 def saveGreyMasterTransportAgency(request):
-    p = request.POST.get("transport_agency_name")
-    p = p.upper()
-    p = p.strip()
+    transport_agency_name = request.POST.get("transport_agency_name")
+    freight = request.POST.get("freight")
+    transport_agency_name = transport_agency_name.upper().strip()
+
     try:
-        existing_party=get_object_or_404(GreyTransportAgenciesMaster,transport_agency=p)
+        existing_transport_agency=get_object_or_404(GreyTransportAgenciesMaster,transport_agency_name=transport_agency_name)
         messages.error(request,"This Transport Agency already exists")
     except:
-        if p.strip()=="":
-            messages.error(request,"please enter valid input")
+        if transport_agency_name.strip()=="":
+            messages.error(request,"please enter valid transport agency name")
             return redirect('/renderGreyMasterTransportAgencies')
-        new_Party = GreyTransportAgenciesMaster(
-            transport_agency_name= p,
-            rate=float(request.POST.get('rate'))
+        new_transport = GreyTransportAgenciesMaster(
+            transport_agency_name = transport_agency_name ,
+            freight=float(freight)
         )
-        new_Party.save()
+        new_transport.save()
         messages.success(request,"Transport Agency added successfully")
     return redirect('/renderGreyMasterTransportAgencies')
 
@@ -1828,18 +1922,25 @@ def deleteGreyMasterTransportAgency(request,id):
     return redirect('/renderGreyMasterTransportAgencies')
 
 def renderEditGreyMasterTransportAgency(request,id):
-    party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
-    return render(request,'./GreyModule/edittransport.html',{'id':id,'name':party.transport_agency_name,'rate':party.rate})
+    transport_agency=get_object_or_404(GreyTransportAgenciesMaster,id=id)
+    return render(request,'./GreyModule/edittransport.html',{'id':id,'transport_agency_name':transport_agency.transport_agency_name,'freight':transport_agency.freight})
 
 def editGreyMasterTransportAgency(request,id):
-    party=get_object_or_404(GreyTransportAgenciesMaster,id=id)
-    p=request.POST.get("transport_agency_name")
-    p = p.upper()
-    p = p.strip()
-    party.transport_agency_name = p
-    party.rate = float(request.POST.get('rate'))
-    party.save()
-    messages.success(request,"Transport Agency edited")
+
+    transport_agency=get_object_or_404(GreyTransportAgenciesMaster,id=id)
+    transport_agency_name = request.POST.get("transport_agency_name")
+    transport_agency_name = transport_agency_name.upper().strip()
+
+    try:
+        existing_transport_agency=get_object_or_404(GreyTransportAgenciesMaster,transport_agency_name=transport_agency_name)
+        messages.error(request,"This Transport Agency already exists")
+    except:
+
+        transport_agency.transport_agency_name = transport_agency_name
+        transport_agency.freight = float(request.POST.get('freight'))
+        transport_agency.save()
+        messages.success(request,"Transport Agency Updated Successfully")
+
     return redirect('/renderGreyMasterTransportAgencies')
 
 
@@ -2038,100 +2139,3 @@ def placeNewGreyOrder(request):
     new_order.save()
     messages.success(request,"Order Placed")
     return redirect('/ordersList')
-
-############## SUPPLIER MASTER #############
-
-
-def masterGreySuppliers(request):
-    all_checker = GreySuppliersMaster.objects.all().order_by('supplier_name')
-    paginator = Paginator(all_checker,10)
-    page = request.GET.get('page')
-    checkers = paginator.get_page(page)
-
-    return render(request,'./GreyModule/masterGreySuppliers.html',{'records':checkers})
-
-def saveGreySupplier(request):
-    q=request.POST.get("id")
-    # q = q.strip()
-    l=(request.POST.get("supplier_name"))
-
-    m=request.POST.get("address")
-    m = m.strip()
-    n=request.POST.get("city")
-    n = n.strip()
-    o=request.POST.get("contact_number")
-    o = o.strip()
-    p=request.POST.get("email")
-    p = p.strip()
-
-    r=request.POST.get("remarks")
-    r = r.strip()
-
-
-    try:
-        existing_quality=get_object_or_404(GreySuppliersMaster,id=q,supplier_name=l)
-        messages.error(request,"This checker already exists")
-    except:
-        if  m=="" or n=="" or o=="" or p=="" or q=="" or l=="":
-            messages.error(request,"please enter valid input")
-            return redirect('masterGreySuppliers')
-        new_quality = GreySuppliersMaster(
-            id = q,
-            supplier_name = l,
-            city = n.upper(),
-            address = m.upper(),
-            email=p,
-            contact_number=o,
-            remarks=r.upper()
-
-        )
-        new_quality.save()
-        messages.success(request,"Supplier added")
-    return redirect('masterGreySuppliers')
-
-def deleteGreySupplier(request,id):
-    try:
-        GreySuppliersMaster.objects.filter(id=id).delete()
-        messages.success(request,"Supplier deleted")
-    except:
-        messages.error(request,"Cannot delete this master since it is being used")
-    return redirect('masterGreySuppliers')
-
-def renderEditGreySupplier(request,id):
-    quality=get_object_or_404(GreySuppliersMaster,id=id)
-    return render(request,'./GreyModule/editGreySupplier.html',{'id':id,'record':quality})
-
-def editGreySupplier(request,id):
-    quality=get_object_or_404(GreySuppliersMaster,id=id)
-    q=request.POST.get("id")
-
-    l=request.POST.get("supplier_name")
-    # l = l.strip()
-
-    m=request.POST.get("city")
-    # m = m.strip()
-
-    o=request.POST.get("email")
-    # o = o.strip()
-
-    p=request.POST.get("contact_number")
-    # p = p.strip()
-
-    r=request.POST.get("remarks")
-    # r = r.strip()
-
-    if q=="" or m=="" or o=="" or p=="" or r=="":
-        messages.error(request,"please enter valid input")
-        return redirect('masterGreySuppliers')
-    quality.id = q
-    quality.supplier_name = l
-    quality.city = m
-    quality.email = o
-    quality.contact_number = p
-    quality.remarks = r
-    quality.save()
-    messages.success(request,"Supplier information edited")
-    return redirect('masterGreySuppliers')
-
-
-##################################### GREY MASTER END ###########################################
