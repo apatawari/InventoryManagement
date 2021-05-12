@@ -1,0 +1,76 @@
+{% extends 'greyNav.html' %}
+
+{% block title%} {% endblock %}
+{% block content%}
+{% load widget_tweaks %}
+{% load my_tags %}
+      <!-- Add Quality Start-->
+      <form method="POST" class="md-form upload-file" action="{% url 'saveGreyMasterCheckingCutRate' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-header">
+            <h1>Add Rate for Checking</h1>
+        </div>
+        <div class="upload-container">
+            <input type="number" step="0.01" class="form-control" id="range1" placeholder="Starting Range" name="cut_start_range" autofocus required>
+            <br>
+            <input type="number" step="0.01" class="form-control" id="range2" placeholder="Ending Range" name="cut_end_range" required>
+            <br>
+            <input type="number" step="0.01" class="form-control" id="rate" placeholder="Rate" name="rate" required>
+            <br>
+            <button class="upload-btn btn-primary" type="submit">Add</button>
+        </div>
+      </form>
+      <!-- Add Quality End -->
+
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+
+            <th scope="col">Sr-no</th>
+            <th class="td-text" scope="col">Starting Cut</th>
+            <th class="td-text" scope="col">Ending Cut</th>
+            <th class="td-text" scope="col">Rate</th>
+            <th></th>
+
+
+          </tr>
+        </thead>
+        <tbody>
+
+        {% for q in records %}
+          <tr>
+
+            <td scope="row">{{ forloop.counter }}</td>
+            <td class="td-text">{{q.cut_start_range}}</td>
+            <td class="td-text">{{q.cut_end_range}}</td>
+            <td class="td-text">{{q.checking_rate}}</td>
+            <td>
+              <a class ="anchor-button float-right danger" onclick="return confirm('Are you sure you want to delete this?')" href="{% url 'deleteGreyMasterCheckingCutRate' q.id%}">Delete</a>
+              <!--<a class ="anchor-button float-right space" href="">Edit</a>-->
+            </td>
+
+
+          </tr>
+
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <div class="number-line">
+          {% if records.has_previous %}
+          <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+          {% endif%}
+          {% for num in records.paginator.page_range %}
+            {%if records.number == num%}
+              &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+
+            {% endif %}
+          {%endfor%}
+          {% if records.has_next %}
+            <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+          {% endif%}
+        </div>
+      </div>
+
+{% endblock %}

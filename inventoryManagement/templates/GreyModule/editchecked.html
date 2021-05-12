@@ -1,9 +1,9 @@
-{% extends './nav.html' %}
+{% extends 'greyNav.html' %}
 
 {% block title%} Record {% endblock %}
 {% block content%}
       <!-- Diplay Record Start -->
-     
+
       <form class = "md-form view-file" method="POST" action="{% url 'checkededit' record.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
@@ -19,7 +19,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="Bill Date">Bill Date</label>
-                <input type="text" class="form-control" id="bill_date" placeholder="Bill Date"  
+                <input type="text" class="form-control" id="bill_date" placeholder="Bill Date"
                 value="{{record.bill_date}}" name="bill_date" readonly/>
             </div>
             <div class="form-group col-md-4">

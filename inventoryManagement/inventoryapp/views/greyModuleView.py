@@ -1632,7 +1632,7 @@ def renderGreyMasterCheckingCutRates(request):
     paginator = Paginator(all_cut_ranges,10)
     page = request.GET.get('page')
     cut_ranges = paginator.get_page(page)
-    return render(request,'./GreyModule/masterGreyCheckingCutRates.html',{'records':cut_ranges})
+    return render(request,'./GreyModule/GreyMaster/masterGreyCheckingCutRates.html',{'records':cut_ranges})
 
 def saveGreyMasterCheckingCutRate(request):
     start_range = float(request.POST.get("cut_start_range"))
@@ -1677,7 +1677,7 @@ def masterGreySuppliers(request):
     page = request.GET.get('page')
     checkers = paginator.get_page(page)
 
-    return render(request,'./GreyModule/masterGreySuppliers.html',{'records':checkers})
+    return render(request,'./GreyModule/GreyMaster/masterGreySuppliers.html',{'records':checkers})
 
 def saveGreySupplier(request):
 
@@ -1726,7 +1726,7 @@ def deleteGreySupplier(request,id):
 
 def renderEditGreySupplier(request,id):
     quality=get_object_or_404(GreySuppliersMaster,id=id)
-    return render(request,'./GreyModule/editGreySupplier.html',{'id':id,'record':quality})
+    return render(request,'./GreyModule/GreyMaster/editGreyMasterSupplier.html',{'id':id,'record':quality})
 
 def editGreySupplier(request,id):
     quality=get_object_or_404(GreySuppliersMaster,id=id)
@@ -1765,12 +1765,12 @@ def editGreySupplier(request,id):
 
 def renderGreyMasterQuality(request):
     all_qualities = GreyQualitiesMaster.objects.all().order_by('quality_name')
-    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./GreyModule/GreyMaster/addquality.html',{'allqualities':all_qualities})
     paginator = Paginator(all_qualities,10)
     page = request.GET.get('page')
     quality_name = paginator.get_page(page)
 
-    return render(request,'./GreyModule/masterGreyQualities.html',{'records':quality_name})
+    return render(request,'./GreyModule/GreyMaster/masterGreyQualities.html',{'records':quality_name})
 
 def saveGreyMasterQuality(request):
     quality_name = request.POST.get("quality_name")
@@ -1801,7 +1801,7 @@ def deleteGreyMasterQuality(request,id):
 
 def renderEditGreyMasterQuality(request,id):
     quality=get_object_or_404(GreyQualitiesMaster,id=id)
-    return render(request,'./GreyModule/editGreyMasterQuality.html',{'id':id,'name':quality.quality_name})
+    return render(request,'./GreyModule/GreyMaster/editGreyMasterQuality.html',{'id':id,'name':quality.quality_name})
 
 def editGreyMasterQuality(request,id):
     quality=get_object_or_404(GreyQualitiesMaster,id=id)
@@ -1830,7 +1830,7 @@ def renderGreyMasterOutprocessAgencies(request):
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./GreyModule/masterGreyOutprocessAgencies.html',{'records':parties})
+    return render(request,'./GreyModule/GreyMaster/masterGreyOutprocessAgencies.html',{'records':parties})
 
 def saveGreyMasterOutprocessAgency(request):
     p = request.POST.get("outprocess-agency")
@@ -1860,7 +1860,7 @@ def deleteGreyMasterOutprocessAgency(request,id):
 
 def renderEditGreyMasterOutprocessAgency(request,id):
     party=get_object_or_404(GreyOutprocessAgenciesMaster,id=id)
-    return render(request,'./GreyModule/editOutprocessAgency.html',{'id':id,'name':party.agency_name})
+    return render(request,'./GreyModule/GreyMaster/editGreyMasterOutprocessAgency.html',{'id':id,'name':party.agency_name})
 
 def editGreyMasterOutprocessAgency(request,id):
     party=get_object_or_404(GreyOutprocessAgenciesMaster,id=id)
@@ -1886,12 +1886,12 @@ def editGreyMasterOutprocessAgency(request,id):
 
 def renderGreyMasterTransportAgencies(request):
     parties_all = GreyTransportAgenciesMaster.objects.all().order_by('transport_agency_name')
-    #return render(request,'./GreyModule/addparty.html',{'parties':parties_all})
+    #return render(request,'./GreyModule/GreyMaster/addparty.html',{'parties':parties_all})
 
     paginator = Paginator(parties_all,10)
     page = request.GET.get('page')
     parties = paginator.get_page(page)
-    return render(request,'./GreyModule/masterGreyTransportAgencies.html',{'records':parties})
+    return render(request,'./GreyModule/GreyMaster/masterGreyTransportAgencies.html',{'records':parties})
 
 def saveGreyMasterTransportAgency(request):
     transport_agency_name = request.POST.get("transport_agency_name")
@@ -1923,7 +1923,7 @@ def deleteGreyMasterTransportAgency(request,id):
 
 def renderEditGreyMasterTransportAgency(request,id):
     transport_agency=get_object_or_404(GreyTransportAgenciesMaster,id=id)
-    return render(request,'./GreyModule/edittransport.html',{'id':id,'transport_agency_name':transport_agency.transport_agency_name,'freight':transport_agency.freight})
+    return render(request,'./GreyModule/GreyMaster/editGreyMasterTransportAgencies.html',{'id':id,'transport_agency_name':transport_agency.transport_agency_name,'freight':transport_agency.freight})
 
 def editGreyMasterTransportAgency(request,id):
 
@@ -1951,7 +1951,7 @@ def renderGreyMasterGodowns(request):
     paginator = Paginator(all_grey_godowns,10)
     page = request.GET.get('page')
     locations = paginator.get_page(page)
-    return render(request,'./GreyModule/masterGreyGodowns.html',{'records':locations})
+    return render(request,'./GreyModule/GreyMaster/masterGreyGodowns.html',{'records':locations})
 
 def saveGreyMasterGodown(request):
     p = request.POST.get("grey-godown-name")
@@ -1981,7 +1981,7 @@ def deleteGreyMasterGodown(request,id):
 def renderEditGreyMasterGodown(request,id):
     grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
 
-    return render(request,'./GreyModule/editGreyMasterGodown.html',{'id':id,'name':grey_godown.godown_name})
+    return render(request,'./GreyModule/GreyMaster/editGreyMasterGodown.html',{'id':id,'name':grey_godown.godown_name})
 
 def editGreyMasterGodown(request,id):
     grey_godown = get_object_or_404(GreyGodownsMaster,id=id)
