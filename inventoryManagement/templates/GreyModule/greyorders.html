@@ -78,7 +78,6 @@
       <th class="td-text" scope="col">Order Date</th>
       <th class="td-text" scope="col">Supplier Name</th>
       <th class="td-text" scope="col">Quality</th>
-      <th scope="col">Avg Cut</th>
       <th scope="col">Thans</th>
       <!-- <th scope="col">Rate</th> -->
       <th scope="col">Status</th>
@@ -96,14 +95,13 @@
       <td>{{order.order_date}}</td>
       <td class="td-text">{{order.grey_supplier.supplier_name}}</td>
       <td class="td-text">{{order.grey_quality.quality_name}}</td>
-      <td>{{order.avg_cut}}</td>
       <td>{{order.thans}}</td>
       <!-- <td>{{order.rate}}</td> -->
       <td>{{order.order_status.type}}</td>
       <td>{{order.remarks}}</td>
 
       <td><a class="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#editGreyOrder"
-          onclick="editGreyOrder('{{order.order_number}}','{{order.order_date}}','{{order.grey_supplier.supplier_name}}','{{order.grey_quality.quality_name}}','{{order.avg_cut}}','{{order.thans}}','{{order.rate}}','{{order.remarks}}')"
+          onclick="editGreyOrder('{{order.order_number}}','{{order.order_date}}','{{order.grey_supplier.supplier_name}}','{{order.grey_quality.quality_name}}','{{order.thans}}','{{order.rate}}','{{order.remarks}}')"
           href="">Edit</a></td>
       {% ifnotequal order.order_status.type "Assigned Lot" %}
       <td><a class="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#assignLot" href="" onclick="setDate(),setOrder('{{order.order_number}}')">Assign Lot</a></td>
@@ -174,10 +172,6 @@
               </select>
 
               <br>
-              <label for="avg_cut">Average Cut</label>
-              <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required>
-
-              <br>
               <label for="thans">Thans</label>
               <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
 
@@ -237,10 +231,6 @@
                 {% endfor %}
               </select>
               <br>
-        <label for ="avg_cut">Average Cut</label>
-        <input type="text" class="form-control" id="avg_cut" placeholder="Avg Cut" name="avg_cut" required>
-
-              <br>
               <label for="thans">Thans</label>
               <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
 
@@ -288,7 +278,7 @@
             <label for="order_number">Order Number</label>
             <input type="text" class="form-control" id="order_number" placeholder="Order Number" name="order_number">
             <br>
-            <label for="avg_cut">Bill Number</label>
+            <label for="bill_number">Bill Number</label>
             <input type="text" class="form-control" id="bill_number" placeholder="Bill Number" name="bill_number" required>
 
             <br>
@@ -296,7 +286,7 @@
             <input type="date" class="form-control" id="bill_date" placeholder="Bill Date" name="bill_date" autofocus required>
 
             <br>
-            <label for="avg_cut">Bill Amount</label>
+            <label for="bill_amount">Bill Amount</label>
             <input type="text" class="form-control" id="bill_amount" placeholder="Bill Amount" name="bill_amount" required>
             <br>
             <label for="quality_name">Transport Agency</label>
@@ -348,12 +338,11 @@
     return [year, month, day].join('-');
   }
 
-  function editGreyOrder(order_number, order_date, supplier_name, grey_quality_name, avg_cut, thans, rate, remarks) {
+  function editGreyOrder(order_number, order_date, supplier_name, grey_quality_name, thans, rate, remarks) {
     document.forms['editOrder']['thans'].value = thans
     document.forms['editOrder']['order_number'].value = order_number
     // document.forms['editOrder']['rate'].value = rate
     document.forms['editOrder']['remarks'].value = remarks
-    document.forms['editOrder']['avg_cut'].value = avg_cut
     document.forms['editOrder']['supplier_name'].value = supplier_name
     document.forms['editOrder']['quality'].value = grey_quality_name
     var offset = new Date(order_date)
