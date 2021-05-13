@@ -24,29 +24,24 @@ def greyOrders(request):
 def editGreyOrder(request):
     order_number=request.POST.get("order_number")
     order_date=request.POST.get("order_date")
-    supplier=(request.POST.get("supplier_name"))
-    quality=request.POST.get("quality")
-    quality = quality.strip()
-    avg_cut=request.POST.get("avg_cut")
+    supplier_name=(request.POST.get("supplier_name"))
+    quality_name=request.POST.get("quality").strip()
     thans=request.POST.get("thans")
-    # rate=request.POST.get("rate")
-    remarks=request.POST.get("remarks")
-    remarks = remarks.strip()
-    print(supplier)
-    if  order_date=="" or supplier=="" or quality=="" or thans=="" or avg_cut=="":
+    remarks=request.POST.get("remarks").strip()
+
+    if  order_date=="" or supplier_name=="" or quality=="" or thans=="" or avg_cut=="":
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
-    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
-    supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
-    print(supplierObject.supplier_name)
+
+    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality_name)
+    supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier_name)
+
     old_order = GreyOrders.objects.get(order_number=order_number)
     old_order.grey_supplier = supplierObject
     old_order.grey_quality = qualityObject
     old_order.order_date = order_date
     old_order.thans = thans
-    # old_order.rate = rate
     old_order.remarks = remarks
-    old_order.avg_cut = avg_cut
     old_order.save()
     messages.success(request,"Order Updated")
     return redirect('/ordersList')
@@ -59,7 +54,7 @@ def ordersList(request):
     paginator = Paginator(orderList,10)
     page = request.GET.get('page')
     orders = paginator.get_page(page)
-    return render(request,'./GreyModule/GreyOrders/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'transport_agencies':transport_agencies})
+    return render(request,'./GreyModule/GreyOrderManagement/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'transport_agencies':transport_agencies})
 
 def filteredOrdersList(request):
     quality=request.POST.get("filterQuality")
@@ -73,7 +68,7 @@ def filteredOrdersList(request):
     paginator = Paginator(orderList,10)
     page = request.GET.get('page')
     orders = paginator.get_page(page)
-    return render(request,'./GreyModule/GreyOrders/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'filterQuality':quality})
+    return render(request,'./GreyModule/GreyOrderManagement/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'filterQuality':quality})
 
 def placeNewGreyOrder(request):
     order_date=request.POST.get("order_date")
