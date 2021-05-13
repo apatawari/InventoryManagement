@@ -21,7 +21,6 @@ urlpatterns = [
     path('greyhome', views.greyhome,name='greyhome'),
     path('greyOrders', views.greyOrders,name='greyOrders'),
     path('greylots', views.greylots,name='greylots'),
-    path('greyplaceorder',views.greyPlaceOrder,name='greyplaceorder'),
     path('insert', views.upload,name='insert'),
     path('intransit',views.showIntransit, name='intransit'),
     path('record/<int:id>',views.record, name='record'),
