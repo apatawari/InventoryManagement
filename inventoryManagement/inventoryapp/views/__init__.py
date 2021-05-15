@@ -4,3 +4,4 @@ from .employeeModuleView import *
 from .errorModuleView import *
 from .downloadReportView import *
 from .GreyModule import *
+from .Sales import *

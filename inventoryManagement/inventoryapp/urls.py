@@ -38,6 +38,15 @@ urlpatterns = [
     path('editchecked/<int:id>',views.editChecked, name="editchecked"),
     path('checkededit/<int:id>',views.checkedEdit, name="checkededit"),
 
+    #salesHome
+    path('salesHome', views.salesHome,name='salesHome'),
+
+    #Sales Quality Master
+    path('renderSalesMasterQuality',views.renderSalesMasterQuality, name="renderSalesMasterQuality"),
+    path('saveSalesMasterQuality',views.saveSalesMasterQuality, name="saveSalesMasterQuality"),
+    path('deleteSalesMasterQuality/<int:id>',views.deleteSalesMasterQuality,name="deleteSalesMasterQuality"),
+    path('renderEditSalesMasterQuality/<int:id>',views.renderEditSalesMasterQuality,name="renderEditSalesMasterQuality"),
+    path('editSalesMasterQuality/<int:id>',views.editSalesMasterQuality,name="editSalesMasterQuality"),
 
     path('inprocess',views.showProcessing, name='inprocess'),
     path('processingrequest',views.showProcessingRequest, name= "processingrequest"),
