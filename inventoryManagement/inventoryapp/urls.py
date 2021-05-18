@@ -41,6 +41,14 @@ urlpatterns = [
     #salesHome
     path('salesHome', views.salesHome,name='salesHome'),
 
+    #Ready Goods Module
+    #Lump Stock
+    path('renderLumpStock',views.renderLumpStock, name="renderLumpStock"),
+    path('saveLumpStock',views.saveLumpStock, name="saveLumpStock"),
+    path('deleteLumpStock/<int:id>',views.deleteLumpStock,name="deleteLumpStock"),
+    path('renderEditLumpStock/<int:id>',views.renderEditLumpStock,name="renderEditLumpStock"),
+    path('editLumpStock/<int:id>',views.editLumpStock,name="editLumpStock"),
+
     #Sales Quality Master
     path('renderSalesMasterQuality',views.renderSalesMasterQuality, name="renderSalesMasterQuality"),
     path('saveSalesMasterQuality',views.saveSalesMasterQuality, name="saveSalesMasterQuality"),

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ready Goods Navigation</title>
+    <title>Ready Goods - Navigation</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
@@ -22,7 +22,7 @@
 </head>
 <body>
   {% url 'index' as index %}
-  {% url 'salesHome' as salesHome %}
+  {% url 'lumpStockManagement' as lumpStockManagement %}
 
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -34,7 +34,7 @@
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master</a>
-                <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'salesHome' %}">Sales - Home</a>
+                <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'salesHome' %}">Lump Stock</a>
             </li>
           </ul>
 
