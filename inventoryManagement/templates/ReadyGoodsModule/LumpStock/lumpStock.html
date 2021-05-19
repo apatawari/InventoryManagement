@@ -1,0 +1,326 @@
+{% extends 'readyGoodsNav.html' %}
+
+
+{% block title %}
+<button type="button" class="btn-request float-right" data-toggle="modal" data-target="#addLumpStock" onClick="setDate()">Add Lump Stock</button>
+<button type="button" class="btn-request float-right" data-toggle="modal" data-target="#lessLumpStock" onClick="setDate()">Less Lump Stock</button>
+{% endblock %}
+
+{% block content %}
+{% load widget_tweaks %}
+{% load my_tags %}
+
+<div class="page-title">
+  <h3 class="title-text">Lump Stock</h3>
+</div>
+
+<style>
+  .modal-dialog {
+      max-width: 1000px;
+  }
+  .upload-file{
+    width: 900px;
+  }
+</style>
+
+<!-- Display Table Start-->
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Order No</th>
+      <th class="td-text" scope="col">Order Date</th>
+      <th class="td-text" scope="col">Supplier Name</th>
+      <th class="td-text" scope="col">Quality</th>
+      <th scope="col">Thans</th>
+      <!-- <th scope="col">Rate</th> -->
+      <th scope="col">Status</th>
+      <th scope="col">Remarks</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in records %}
+    <tr>
+
+      <!-- <td scope="row">{{ forloop.counter }}</td> -->
+      <td>{{order.order_number}}</td>
+      <td>{{order.order_date}}</td>
+      <td class="td-text">{{order.grey_supplier.supplier_name}}</td>
+      <td class="td-text">{{order.grey_quality.quality_name}}</td>
+      <td>{{order.thans}}</td>
+      <!-- <td>{{order.rate}}</td> -->
+      <td>{{order.order_status.type}}</td>
+      <td>{{order.remarks}}</td>
+
+      <td><a class="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#editGreyOrder"
+          onclick="editGreyOrder('{{order.order_number}}','{{order.order_date}}','{{order.grey_supplier.supplier_name}}','{{order.grey_quality.quality_name}}','{{order.thans}}','{{order.rate}}','{{order.remarks}}')"
+          href="">Edit</a></td>
+      {% ifnotequal order.order_status.type "Assigned Lot" %}
+      <td><a class="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#assignLot" href="" onclick="setDate(),setOrder('{{order.order_number}}')">Assign Lot</a></td>
+      {% else %}
+      <td>Lot Assigned</td>
+      {% endifnotequal %}
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Display Table End -->
+
+<div class="pagination">
+  <div class="number-line">
+    {% if records.has_previous %}
+    <a class="page-no-text" href="{% my_url records.previous_page_number 'page' request.GET.urlencode %}">Previous page</a>
+    {% endif%}
+    {% for num in records.paginator.page_range %}
+    {%if records.number == num%}
+    &nbsp Page &nbsp<span class="current-page page-no-text"><strong>{{ num  }}</strong></span>&nbsp of &nbsp{{ records.paginator.num_pages }}&nbsp
+    {% endif %}
+    {%endfor%}
+    {% if records.has_next %}
+    <a class="page-no-text" href="{% my_url records.next_page_number 'page' request.GET.urlencode %}">Next page</a>
+    {% endif%}
+  </div>
+</div>
+
+<br>
+
+<!-- Order Modal -->
+<div>
+  <div id="greyOrder" class="modal fade" tabindex="0">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Grey Order</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{% url 'placeNewGreyOrder' %}" class="md-form upload-file" enctype="multipart/form-data" name="placeOrder">
+            {% csrf_token %}
+            <div class="upload-header">
+              <h1>Place New Order</h1>
+            </div>
+            <div class="upload-container">
+              <br>
+              <label for="order_date">Order Date</label>
+              <input type="date" class="form-control" id="order_date" placeholder="Order Date" name="order_date" autofocus required>
+
+              <br>
+              <label for="supplier_name">Supplier Name</label>
+              <select class="form-control" name="supplier_name" id="supplier_name" onchange="">
+                <option value="">Select Supplier</option>
+                {% for q in suppliers %}
+                <option value="{{ q.supplier_name}}">{{ q.supplier_name }}</option>
+                {% endfor %}
+              </select>
+              <br>
+              <label for="quality_name">Quality</label>
+              <select class="form-control" name="quality" id="quality_name" onchange="">
+                <option value="">Select Quality</option>
+                {% for q in quality %}
+                <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
+                {% endfor %}
+              </select>
+
+              <br>
+              <label for="thans">Thans</label>
+              <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
+
+              <!-- <br>
+        <label for ="rate">Rate</label>
+        <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required> -->
+
+              <br>
+              <label for="remarks">Remarks</label>
+              <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks">
+              <br>
+              <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Add</button>
+              <button type="button" class="upload-btn btn-primary" data-dismiss="modal">Cancel</button>
+            </div>
+          </form>
+          <!-- Filter End -->
+          <!-- grey order form ends here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="editGreyOrder" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Grey Order</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{% url 'editGreyOrder' %}" class="md-form upload-file" enctype="multipart/form-data" name="editOrder">
+            {% csrf_token %}
+            <div class="upload-header">
+              <h1>Edit Order</h1>
+            </div>
+            <div class="upload-container">
+              <br>
+              <label for="order_number">Order Number</label>
+              <input type="text" class="form-control" id="order_number" placeholder="Order Number" name="order_number">
+              <br>
+              <label for="order_date">Order Date</label>
+              <input type="date" class="form-control" id="order_date" placeholder="Order Date" name="order_date" autofocus required>
+
+              <br>
+              <label for="supplier_name">Supplier Name</label>
+              <select class="form-control" name="supplier_name" onchange="">
+                <option value="">Select Supplier</option>
+                {% for q in suppliers %}
+                <option value="{{ q.supplier_name}}">{{ q.supplier_name }}</option>
+                {% endfor %}
+              </select>
+              <br>
+              <label for="quality_name">Quality</label>
+              <select class="form-control" name="quality" onchange="">
+                <option value="">Select Quality</option>
+                {% for q in quality %}
+                <option value="{{ q.quality_name}}">{{ q.quality_name }}</option>
+                {% endfor %}
+              </select>
+              <br>
+              <label for="thans">Thans</label>
+              <input type="number" class="form-control" id="thans" placeholder="Thans" name="thans" required>
+
+              <!-- <br>
+              <label for="rate">Rate</label>
+              <input type="text" class="form-control" id="rate" placeholder="Rate" name="rate" required> -->
+
+              <br>
+              <label for="remarks">Remarks</label>
+              <input type="text" class="form-control" id="remarks" placeholder="Remarks" name="remarks">
+              <br>
+
+              <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Save</button>
+              <button type="button" class="upload-btn btn-primary" data-dismiss="modal">Cancel</button>
+            </div>
+          </form>
+          <!-- Filter End -->
+          <!-- grey order form ends here -->
+        </div>
+        <!-- <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary">Save Order</button>
+              </div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="assignLot" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Grey Order</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'assignLot' %}" class="md-form upload-file" enctype="multipart/form-data" name="assignLot">
+          {% csrf_token %}
+          <div class="upload-header">
+            <h1>Assign Lot</h1>
+          </div>
+          <div class="upload-container">
+            <br>
+            <label for="order_number">Order Number</label>
+            <input type="text" class="form-control" id="order_number" placeholder="Order Number" name="order_number">
+            <br>
+            <label for="bill_number">Bill Number</label>
+            <input type="text" class="form-control" id="bill_number" placeholder="Bill Number" name="bill_number" required>
+
+            <br>
+            <label for="order_date">Bill Date</label>
+            <input type="date" class="form-control" id="bill_date" placeholder="Bill Date" name="bill_date" autofocus required>
+
+            <br>
+            <label for="bill_amount">Bill Amount</label>
+            <input type="text" class="form-control" id="bill_amount" placeholder="Bill Amount" name="bill_amount" required>
+            <br>
+            <label for="quality_name">Transport Agency</label>
+            <select class="form-control" name="transport_agency" id="transport_agency" onchange="">
+              <option value="">Select Transport Agency</option>
+              {% for transport_agency in transport_agencies%}
+              <option value="{{ transport_agency.transport_agency_name }}">{{ transport_agency.transport_agency_name }}</option>
+              {% endfor %}
+            </select>
+            <br>
+            <label for="rate">Meters</label>
+            <input type="text" class="form-control" id="meters" placeholder="Meters" name="meters" required>
+            <br>
+            <label for="rate">Bale</label>
+            <input type="text" class="form-control" id="bale" placeholder="Bale" name="bale" required>
+
+            <br>
+            <label for="remarks">LR Number</label>
+            <input type="text" class="form-control" id="lr_number" placeholder="LR Number" name="lr_number" required>
+            <br>
+
+            <button class="upload-btn btn-primary" type="submit" onclick="this.disabled=true,this.form.submit();">Assign</button>
+            <button type="button" class="upload-btn btn-primary" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+        <!-- Filter End -->
+        <!-- grey order form ends here -->
+      </div>
+      <!-- <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary">Save Order</button>
+          </div> -->
+    </div>
+  </div>
+</div>
+</div>
+
+
+<script>
+  function formatDate(date) {
+    var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+    return [year, month, day].join('-');
+  }
+
+  function editGreyOrder(order_number, order_date, supplier_name, grey_quality_name, thans, rate, remarks) {
+    document.forms['editOrder']['thans'].value = thans
+    document.forms['editOrder']['order_number'].value = order_number
+    // document.forms['editOrder']['rate'].value = rate
+    document.forms['editOrder']['remarks'].value = remarks
+    document.forms['editOrder']['supplier_name'].value = supplier_name
+    document.forms['editOrder']['quality'].value = grey_quality_name
+    var offset = new Date(order_date)
+    var tdate = formatDate(offset)
+    document.forms['editOrder']['order_date'].value = tdate
+  }
+
+  function setDate() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+    document.forms['placeOrder']['order_date'].value = today
+    document.forms['assignLot']['bill_date'].value = today
+  }
+
+  function setOrder(order_number) {
+    console.log("in function")
+    document.forms['assignLot']['order_number'].value = order_number
+  }
+
+  function setFilterQuality(filteredOrder) {
+    console.log("in function")
+    document.forms['filteredOrdersList']['filterQuality'].value = filteredOrder
+  }
+</script>
+{% endblock %}
