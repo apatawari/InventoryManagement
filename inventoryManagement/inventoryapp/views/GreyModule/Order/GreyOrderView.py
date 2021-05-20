@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, GreyOrders, OrderStatus
+from inventoryapp.models import Record,GreyQualityMaster, GreyTransportAgenciesMaster, GreySuppliersMaster, GreyOrders, OrderStatus
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter
 from django.contrib import messages
@@ -33,7 +33,7 @@ def editGreyOrder(request):
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
 
-    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality_name)
+    qualityObject = GreyQualityMaster.objects.get(quality_name=quality_name)
     supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier_name)
 
     old_order = GreyOrders.objects.get(order_number=order_number)
@@ -49,26 +49,26 @@ def editGreyOrder(request):
 def ordersList(request):
     orderList = GreyOrders.objects.all().order_by('order_number')
     suppliers = GreySuppliersMaster.objects.all()
-    qualities = GreyQualitiesMaster.objects.all()
+    quality = GreyQualityMaster.objects.all()
     transport_agencies = GreyTransportAgenciesMaster.objects.all()
     paginator = Paginator(orderList,10)
     page = request.GET.get('page')
     orders = paginator.get_page(page)
-    return render(request,'./GreyModule/GreyOrderManagement/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'transport_agencies':transport_agencies})
+    return render(request,'./GreyModule/GreyOrderManagement/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':quality, 'transport_agencies':transport_agencies})
 
 def filteredOrdersList(request):
     quality=request.POST.get("filterQuality")
     print(quality)
     if quality == "":
         return redirect('/ordersList')
-    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
+    qualityObject = GreyQualityMaster.objects.get(quality_name=quality)
     orderList = GreyOrders.objects.filter(grey_quality=qualityObject).order_by('order_number')
     suppliers = GreySuppliersMaster.objects.all()
-    qualities = GreyQualitiesMaster.objects.all()
+    quality = GreyQualityMaster.objects.all()
     paginator = Paginator(orderList,10)
     page = request.GET.get('page')
     orders = paginator.get_page(page)
-    return render(request,'./GreyModule/GreyOrderManagement/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':qualities, 'filterQuality':quality})
+    return render(request,'./GreyModule/GreyOrderManagement/greyOrders.html',{'records':orders,'suppliers':suppliers, 'quality':quality, 'filterQuality':quality})
 
 def placeNewGreyOrder(request):
     order_date=request.POST.get("order_date")
@@ -83,9 +83,9 @@ def placeNewGreyOrder(request):
         messages.error(request,"Please fill all the fields")
         return redirect('/ordersList')
 
-    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
+    qualityObject = GreyQualityMaster.objects.get(quality_name=quality)
     supplierObject = GreySuppliersMaster.objects.get(supplier_name=supplier)
-    qualityObject = GreyQualitiesMaster.objects.get(quality_name=quality)
+    qualityObject = GreyQualityMaster.objects.get(quality_name=quality)
     new_status = OrderStatus()
     new_status.type="Initial State"
     new_status.save()

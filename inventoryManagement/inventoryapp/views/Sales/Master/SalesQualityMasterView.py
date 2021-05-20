@@ -19,8 +19,8 @@ from django.template.loader import render_to_string
 ############ SALES : QUALITY MASTER ############
 def renderSalesMasterQuality(request):
 
-    all_qualities = SalesQualityMaster.objects.all().order_by('sales_quality_name')
-    paginator = Paginator(all_qualities,10)
+    all_quality = SalesQualityMaster.objects.all().order_by('sales_quality_name')
+    paginator = Paginator(all_quality,10)
     page = request.GET.get('page')
     quality_name = paginator.get_page(page)
 

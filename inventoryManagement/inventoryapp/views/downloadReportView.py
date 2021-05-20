@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
+from inventoryapp.models import Record,GreyQualityMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
 from inventoryapp.models import Employee,CompanyAccounts,ChemicalsClosingStockperGodown,MonthlyPayment,GreyTransportAgenciesMaster,CityMaster,EmployeeCategoryMaster
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
@@ -30,24 +30,24 @@ def export_page_xls(request):
     if(stateur=="intransit"):
         file_name="Intransit"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
-        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
 
     elif(stateur=="godown"):
         file_name="Godown"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     elif(stateur=="checking"):
         file_name="Checked"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State','Checker Name','Transport Agency' ]
-        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name','transport__transport')
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name','transport__transport')
     elif(stateur=="inprocess"):
         file_name="InProcess"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
     elif (stateur=="readytoprint"):
         file_name="ProcessedGrey"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
-        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
 ######################## color & chemical download #############################
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
@@ -170,24 +170,24 @@ def export_filter_all_xls(request):
     if(stateur=="intransit"):
         file_name="Intransit-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
-        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
 
     elif(stateur=="godown"):
         file_name="Godown-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     elif(stateur=="checking"):
         file_name="Checked-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ,'Checker name','Transport' ]
-        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name', 'transport__transport')
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name', 'transport__transport')
     elif(stateur=="inprocess"):
         file_name="InProcess-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
     elif (stateur=="readytoprint"):
         file_name="ProcessedGrey-filt"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
-        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
     ######color
     elif(stateur=="goodsreceived"):
         file_name="Godown Stock"
@@ -363,24 +363,24 @@ def export_all_xls(request):
     if(stateur=="intransit"):
         file_name="Intransit-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Total Bale', 'Rate', 'LR No', 'Order No', 'State' ]
-        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
+        records_list=Record.objects.filter(state="Transit").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'bale', 'total_bale', 'rate', 'lr_no', 'order_no', 'state')
 
     elif(stateur=="godown"):
         file_name="Godown-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Bale', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'State' ]
-        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
+        records_list=Record.objects.filter(state="Godown").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'bale', 'rate', 'lr_no', 'order_no', 'recieving_date', 'state')
     elif(stateur=="checking"):
         file_name="Checked-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'LR No', 'Order No', 'Recieving Date', 'Checking Date', 'State' ,'Checker name','Transport Agency']
-        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name','transport__transport')
+        records_list=Record.objects.filter(state="Checked").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'lr_no', 'order_no', 'recieving_date', 'checking_date', 'state','checker__name','transport__transport')
     elif(stateur=="inprocess"):
         file_name="InProcess-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Checking Date', 'Sent to Processing Date', 'State', 'Processing Type', 'Processing Party' ]
-        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
+        records_list=Record.objects.filter(state="In Process").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'checking_date', 'sent_to_processing_date', 'state', 'processing_type', 'agency_name__agency_name')
     elif(stateur=="readytoprint"):
         file_name="ProcessedGrey-all"
         columns = ['Party Name', 'Bill No', 'Bill Date', 'Bill Amount', 'Lot No', 'Quality', 'Than', 'Mtrs', 'Rate', 'Sent to Processing Date', 'Processed Date', 'Processing Type', 'Arrival location', 'State' ]
-        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__qualities', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
+        records_list=Record.objects.filter(state="Ready to print").values_list('party_name', 'bill_no', 'bill_date', 'bill_amount', 'lot_no', 'quality__quality', 'than', 'mtrs', 'rate', 'sent_to_processing_date', 'recieve_processed_date', 'processing_type', 'arrival_location__location', 'state')
 
 ######color
     elif(stateur=="goodsreceived"):
@@ -467,7 +467,7 @@ def export_report_xls(request):
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
 
-        # selected_qualities=[]
+        # selected_quality=[]
             next_day = begin
             while True:
                 if next_day > end:
@@ -542,7 +542,7 @@ def export_report_xls(request):
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
 
-        # selected_qualities=[]
+        # selected_quality=[]
             next_day = begin
             while True:
                 if next_day > end:
@@ -605,8 +605,8 @@ def export_report_xls(request):
         for q in quality_name:
 
         # if(request.POST.get(q.quality_name)!=None):
-        #     selected_qualities.append(request.POST.get(q.quality_name))
-            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+        #     selected_quality.append(request.POST.get(q.quality_name))
+            rec_transit=Record.objects.filter(state="Transit",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             tally_than=0
             tally_mtrs=0
             total_than_in_transit=0
@@ -618,7 +618,7 @@ def export_report_xls(request):
             trthan=trthan+total_than_in_transit
             trmtrs=trmtrs+total_mtrs_in_transit
 
-            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+            rec_godown=Record.objects.filter(state="Godown",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             total_than_in_godown=0
             total_mtrs_in_godown=0
             for r in rec_godown:
@@ -627,7 +627,7 @@ def export_report_xls(request):
             gothan=gothan+total_than_in_godown
             gomtrs=gomtrs+total_mtrs_in_godown
 
-            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+            rec_checked=Record.objects.filter(state="Checked",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             total_than_in_checked=0
             total_mtrs_in_checked=0
             for r in rec_checked:
@@ -636,7 +636,7 @@ def export_report_xls(request):
             chthan=chthan+total_than_in_checked
             chmtrs=chmtrs+total_mtrs_in_checked
 
-            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+            rec_process=Record.objects.filter(state="In Process",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -645,7 +645,7 @@ def export_report_xls(request):
             prthan=prthan+total_than_in_process
             prmtrs=prmtrs+total_mtrs_in_process
 
-            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+            rec_ready=Record.objects.filter(state="Ready to print",quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             total_than_in_ready=0
             total_mtrs_in_ready=0
             for r in rec_ready:
@@ -659,7 +659,7 @@ def export_report_xls(request):
 
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
-            qual=get_object_or_404(GreyQualitiesMaster,id=int(q))
+            qual=get_object_or_404(GreyQualityMaster,id=int(q))
             d1=[qual.quality_name,
             total_than_in_transit,round(total_mtrs_in_transit,2),
             total_than_in_godown,round(total_mtrs_in_godown,2),
@@ -695,7 +695,7 @@ def export_report_xls(request):
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
 
-        # selected_qualities=[]
+        # selected_quality=[]
             next_day = begin
             while True:
                 if next_day > end:
@@ -715,15 +715,15 @@ def export_report_xls(request):
         tothan=0
         tomtrs=0
 
-        selected_qualities=[]
+        selected_quality=[]
         for q in quality_name:
 
 
 
             if(begin!="" or end!=""):
-                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_process=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             else:
-                rec_process=Record.objects.filter(state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_process=Record.objects.filter(state="In Process",agency_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             total_than_in_process=0
             total_mtrs_in_process=0
             for r in rec_process:
@@ -733,9 +733,9 @@ def export_report_xls(request):
             prmtrs=prmtrs+total_mtrs_in_process
 
             if(begin!="" or end!=""):
-                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_ready=Record.objects.filter(sent_to_processing_date__in=selected_dates,state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
             else:
-                rec_ready=Record.objects.filter(state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualitiesMaster,id=int(q)))
+                rec_ready=Record.objects.filter(state="Ready to print",agency_name=party_ob,quality=get_object_or_404(GreyQualityMaster,id=int(q)))
 
             total_than_in_ready=0
             total_mtrs_in_ready=0
@@ -751,7 +751,7 @@ def export_report_xls(request):
             tothan=tothan+tally_than
             tomtrs=tomtrs+tally_mtrs
 
-            d1=[get_object_or_404(GreyQualitiesMaster,id=int(q)).quality_name,
+            d1=[get_object_or_404(GreyQualityMaster,id=int(q)).quality_name,
             total_than_in_process,round(total_mtrs_in_process,2),
             total_than_in_ready,round(total_mtrs_in_ready,2),
             tally_than,round(tally_mtrs,2)
@@ -785,7 +785,7 @@ def export_report_xls(request):
             end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
             selected_dates=[]
 
-        # selected_qualities=[]
+        # selected_quality=[]
             next_day = begin
             while True:
                 if next_day > end:
@@ -998,7 +998,7 @@ def export_report_xls(request):
     #     end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
     #     selected_dates=[]
 
-    # # selected_qualities=[]
+    # # selected_quality=[]
     #     next_day = begin
     #     while True:
     #         if next_day > end:

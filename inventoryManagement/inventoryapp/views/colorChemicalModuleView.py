@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record,GreyQualitiesMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
+from inventoryapp.models import Record,GreyQualityMaster,GreyCheckingCutRatesMaster,GreyOutprocessAgenciesMaster,GreyGodownsMaster,ColorAndChemicalsSupplier,Color,ColorRecord,ChemicalsDailyConsumption,ChemicalsAllOrders,ChemicalsGodownLooseMergeStock,ChemicalsGodownsMaster,ChemicalsLooseGodownMaster,ChemicalsUnitsMaster,ChemicalsClosingStock
 from inventoryapp.models import Employee,CompanyAccounts,ChemicalsClosingStockperGodown,MonthlyPayment,GreyTransportAgenciesMaster,CityMaster,EmployeeCategoryMaster
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter,ColorFilter,ColorOrderFilter,GodownLeaseFilter,EmployeeFilter
@@ -1497,7 +1497,7 @@ def saveDailyConsumption(request,id):
     end=datetime.date.today()
     selected_dates=[]
 
-    # selected_qualities=[]
+    # selected_quality=[]
     next_day = begin
     while True:
         if next_day > end:
@@ -1549,7 +1549,7 @@ def consume(request,name):
     end=datetime.date.today()
     selected_dates=[]
 
-    # selected_qualities=[]
+    # selected_quality=[]
     next_day = begin
     while True:
         if next_day > end:
@@ -1735,7 +1735,7 @@ def renderColorReportFilter(request):
 #         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
 #         selected_dates=[]
 
-#     # selected_qualities=[]
+#     # selected_quality=[]
 #         next_day = begin
 #         while True:
 #             if next_day > end:
@@ -1804,7 +1804,7 @@ def renderColorReportFilter(request):
 #         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
 #         selected_dates=[]
 
-#     # selected_qualities=[]
+#     # selected_quality=[]
 #         next_day = begin
 #         while True:
 #             if next_day > end:
@@ -1882,7 +1882,7 @@ def colorReport(request):
         end=datetime.datetime.strptime(end,"%Y-%m-%d").date()
         selected_dates=[]
 
-    # selected_qualities=[]
+    # selected_quality=[]
         next_day = begin
         while True:
             if next_day > end:

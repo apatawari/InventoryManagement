@@ -221,7 +221,7 @@ def saveEditEmployee(request,id):
 ############## BANK MASTER #############
 def renderAddBankAc(request):
     all_checker = CompanyAccounts.objects.all().order_by('bank_name')
-    #return render(request,'./GreyModule/addquality.html',{'allqualities':all_qualities})
+    #return render(request,'./GreyModule/addquality.html',{'allquality':all_quality})
     paginator = Paginator(all_checker,10)
     page = request.GET.get('page')
     checkers = paginator.get_page(page)

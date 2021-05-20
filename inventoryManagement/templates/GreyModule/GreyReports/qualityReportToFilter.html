@@ -48,7 +48,7 @@
             <label class="form-check-label-2">SELECT ALL</label>
             <hr class="small">
           </div>
-          <div class="form-group form-check scroll checkboxqualities" >
+          <div class="form-group form-check scroll checkboxquality" >
 
             {% for q in quality_name %}
             <input class="form-check-input-2" type="checkbox" value="{{q.id}}" name="{{q.quality_name}}" id="quality_name">
@@ -89,7 +89,7 @@
 <script>
 
   $(function(){
-    var requiredCheckboxes = $('.checkboxqualities :checkbox[required]');
+    var requiredCheckboxes = $('.checkboxquality :checkbox[required]');
     requiredCheckboxes.change(function(){
         if(requiredCheckboxes.is(':checked')) {
             requiredCheckboxes.removeAttr('required');
