@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from django.http import HttpResponse,QueryDict
 from django.core.paginator import Paginator
 from django.template import RequestContext
-from inventoryapp.models import Record, GreyQualityMaster, SalesQualityMaster
+from inventoryapp.models import Record, GreyQualityMaster, SalesQualityMaster, LumpStock
 from inventoryapp.resources import ItemResources
 from inventoryapp.filters import RecordFilter
 from django.contrib import messages
@@ -17,7 +17,7 @@ import ast
 from django.template.loader import render_to_string
 
 def renderLumpStock(request):
-    lumpStock = LumpStock.objects.all().order_by(SalesQualityMaster.sales_quality_name)
+    lumpStock = LumpStock.objects.all()
     paginator = Paginator(lumpStock,10)
     page = request.GET.get('page')
     lumpStock = paginator.get_page(page)

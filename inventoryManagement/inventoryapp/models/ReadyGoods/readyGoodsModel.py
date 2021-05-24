@@ -4,7 +4,7 @@ from inventoryapp.models.greyModel import *
 from inventoryapp.models.Sales.SalesMaster.SalesQualityMasterModel import *
 
 class LumpStock(models.Model):
-    felt_book_number = models.CharField(primary_key=True)
+    felt_book_number = models.CharField(primary_key=True,max_length=10)
     design_number = models.IntegerField(null=False, default = 0)
 
     from_felt_thans = models.IntegerField(null = False, default = 0)

@@ -37,14 +37,14 @@ class GreyOutprocessAgenciesMaster(models.Model):
     class Meta:
         db_table = 'Outprocess_Agencies_Master'
 
-class GreyQualitiesMaster(models.Model):
+class GreyQualityMaster(models.Model):
     quality_name = models.CharField(max_length=50)
     created_date = models.DateField(null=False, default=timezone.now)
     modified_date = models.DateField(null=True, default=timezone.now)
     created_by = models.CharField(null=True,max_length=50)
     modified_by = models.CharField(null=True,max_length=50)
     class Meta:
-        db_table = 'Grey_Qualities_Master'
+        db_table = 'Grey_Quality_Master'
 
 class GreySuppliersMaster(models.Model):
     id = models.AutoField(primary_key=True)
@@ -80,7 +80,7 @@ class OrderStatus(models.Model):
 class GreyOrders(models.Model):
     order_number = models.AutoField(primary_key=True)
     order_date = models.DateField(null=False, default=timezone.now)
-    grey_quality = models.ForeignKey(GreyQualitiesMaster,blank=False,null=False,on_delete=models.PROTECT)
+    grey_quality = models.ForeignKey(GreyQualityMaster,blank=False,null=False,on_delete=models.PROTECT)
     thans = models.IntegerField()
     # rate = models.FloatField()
     remarks = models.CharField(max_length=256)
@@ -136,7 +136,7 @@ class Record(models.Model):    ########################   Main grey order
     bill_date = models.CharField(max_length=30)
     bill_amount = models.FloatField(max_length=15)
     lot_no = models.IntegerField()
-    quality = models.ForeignKey(GreyQualitiesMaster,blank=True,null=True,on_delete=models.PROTECT)
+    quality = models.ForeignKey(GreyQualityMaster,blank=True,null=True,on_delete=models.PROTECT)
     than = models.IntegerField()
     mtrs = models.FloatField(max_length=15)
     bale = models.IntegerField()

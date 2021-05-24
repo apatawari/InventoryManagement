@@ -1,4 +1,4 @@
-{% extends 'readyGoodsNav.html' %}
+{% extends 'salesNav.html' %}
 
 
 {% block title %}
@@ -11,7 +11,7 @@
 {% load my_tags %}
 
 <div class="page-title">
-  <h3 class="title-text">Lump Stock</h3>
+  <h3 class="title-text">Daily Lump Stock</h3>
 </div>
 
 <style>
@@ -27,40 +27,27 @@
 <table class="table">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">Order No</th>
-      <th class="td-text" scope="col">Order Date</th>
-      <th class="td-text" scope="col">Supplier Name</th>
-      <th class="td-text" scope="col">Quality</th>
-      <th scope="col">Thans</th>
-      <!-- <th scope="col">Rate</th> -->
-      <th scope="col">Status</th>
-      <th scope="col">Remarks</th>
-      <th scope="col"></th>
+      <th scope="col">Design Number</th>
+      <th class="td-text" scope="col">Grey Quality</th>
+      <th class="td-text" scope="col">Sales Quality</th>
+      <th class="td-text" scope="col">Thans</th>
+      <th scope="col">Tp</th>
+      <th scope="col">Date Entered</th>
+      <th scope="col">Entry Ref. No.</th>
       <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
-    {% for order in records %}
+    {% for record in records %}
     <tr>
 
-      <!-- <td scope="row">{{ forloop.counter }}</td> -->
-      <td>{{order.order_number}}</td>
-      <td>{{order.order_date}}</td>
-      <td class="td-text">{{order.grey_supplier.supplier_name}}</td>
-      <td class="td-text">{{order.grey_quality.quality_name}}</td>
-      <td>{{order.thans}}</td>
-      <!-- <td>{{order.rate}}</td> -->
-      <td>{{order.order_status.type}}</td>
-      <td>{{order.remarks}}</td>
-
-      <td><a class="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#editGreyOrder"
-          onclick="editGreyOrder('{{order.order_number}}','{{order.order_date}}','{{order.grey_supplier.supplier_name}}','{{order.grey_quality.quality_name}}','{{order.thans}}','{{order.rate}}','{{order.remarks}}')"
-          href="">Edit</a></td>
-      {% ifnotequal order.order_status.type "Assigned Lot" %}
-      <td><a class="anchor-button button-small-text" data-toggle="modal" data-id={{order.order_number}} data-target="#assignLot" href="" onclick="setDate(),setOrder('{{order.order_number}}')">Assign Lot</a></td>
-      {% else %}
-      <td>Lot Assigned</td>
-      {% endifnotequal %}
+      <td>{{record.design_number}}</td>
+      <td>{{record.grey_quality}}</td>
+      <td class="td-text">{{record.sales_quality}}</td>
+      <td class="td-text">{{record.from_felt_thans}}-{{record.in_packing_thans}}</td>
+      <td>{{record.from_felt_tp}}-{{record.in_packing_thans}}</td>
+      <td>{{record.from_felt_date}}</td>
+      <td>{{record.felt_book_number}}</td>
 
     </tr>
     {% endfor %}
@@ -87,21 +74,19 @@
 
 <br>
 
-<!-- Order Modal -->
+<!-- Add Lump Stock Modal -->
 <div>
-  <div id="greyOrder" class="modal fade" tabindex="0">
+  <div id="addLumpStock" class="modal fade" tabindex="0">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Grey Order</h5>
+          <h5 class="modal-title">Add Lump Stock</h5>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{% url 'placeNewGreyOrder' %}" class="md-form upload-file" enctype="multipart/form-data" name="placeOrder">
+          <form method="POST" action="{% url 'saveLumpStock' %}" class="md-form upload-file" enctype="multipart/form-data" name="placeOrder">
             {% csrf_token %}
-            <div class="upload-header">
-              <h1>Place New Order</h1>
-            </div>
+
             <div class="upload-container">
               <br>
               <label for="order_date">Order Date</label>

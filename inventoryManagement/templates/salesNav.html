@@ -23,6 +23,7 @@
 <body>
   {% url 'index' as index %}
   {% url 'salesHome' as salesHome %}
+  {% url 'lumpStock' as lumpStock %}
 
     <!-- Nav Bar Start-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -34,7 +35,8 @@
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link {%if request.path == index %} active {%endif%}" href="{% url 'index' %}">Master</a>
-                <a class="nav-link {%if request.path == greyhome %} active {%endif%}" href="{% url 'salesHome' %}">Sales - Home</a>
+                <a class="nav-link {%if request.path == salesHome %} active {%endif%}" href="{% url 'salesHome' %}">Sales - Home</a>
+                <a class="nav-link {%if request.path == lumpStock %} active {%endif%}" href="{% url 'renderLumpStock' %}">Lump Stock</a>
             </li>
           </ul>
 
